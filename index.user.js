@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         agefans Enhance
-// @namespace    http://tampermonkey.net/
+// @namespace    https://github.com/IronKinoko/agefans-enhance
 // @version      0.1.11
 // @description  more powerful agefans
-// @author       kinoko
+// @author       IronKinoko
 // @match        https://www.agefans.net/play/*
 // @match        https://www.agefans.net/detail/*
 // @match        https://www.agefans.net/age/player/ckx1*

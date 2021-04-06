@@ -1,8 +1,8 @@
 {
   "name": "agefans",
-  "version": "1.0.0",
+  "version": "0.1.11",
   "description": "增强agefans功能",
-  "main": "index.js",
+  "main": "index.user.js",
   "scripts": {
   },
   "repository": {
