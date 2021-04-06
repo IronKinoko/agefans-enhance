@@ -1,0 +1,19 @@
+{
+  "name": "agefans",
+  "version": "1.0.0",
+  "description": "增强agefans功能",
+  "main": "index.js",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IronKinoko/agefans-enhance.git"
+  },
+  "keywords": [],
+  "author": "IronKinoko <kinoko_main@outlook.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/IronKinoko/agefans-enhance/issues"
+  },
+  "homepage": "https://github.com/IronKinoko/agefans-enhance#readme"
+}
