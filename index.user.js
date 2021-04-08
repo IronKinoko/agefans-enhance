@@ -71,7 +71,6 @@
 
   function genNextPartBtn() {
     let $0 = document.querySelector('[class^=timetext]')
-
     if (!$0) return requestAnimationFrame(genNextPartBtn)
 
     let div = document.createElement('div')
@@ -132,6 +131,25 @@
     videoEl.addEventListener('play', fn)
   }
 
+  function replacePlayer() {
+    const dom = document.getElementById('age_playfram')
+    if (!dom) requestAnimationFrame(replacePlayer)
+
+    // player like bilibili
+    const prefix = 'https://vip.parwix.com:4433/player/?url='
+
+    const mutationOb = new MutationObserver(() => {
+      let url = new URL(dom.src)
+
+      if (url.hostname.includes('agefans')) {
+        let videoURL = url.searchParams.get('url')
+        log(videoURL)
+        dom.src = prefix + videoURL
+      }
+    })
+    mutationOb.observe(dom, { attributes: true })
+  }
+
   function inject() {
     let dom = document.querySelector('.fullscn')
 
@@ -148,6 +166,8 @@
     let ageframediv = document.getElementById('ageframediv')
     let { width, height } = ageframediv.getBoundingClientRect()
     ageframediv.style.height = (width / 16) * 9 + 'px'
+
+    replacePlayer()
   }
 
   if (parent === self) {
@@ -169,6 +189,7 @@
       renderHistory()
     }
   } else {
-    requestAnimationFrame(genNextPartBtn)
+    // requestAnimationFrame(genNextPartBtn)
+    autoPlay()
   }
 })()
