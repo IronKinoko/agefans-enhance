@@ -66,11 +66,11 @@ function toggleFullscreen(bool) {
 }
 
 function notifyParentChangeToNextPart() {
-  parent.postMessage({ code: 233, message: 'next part' })
+  parent.postMessage({ code: 233, message: 'next part' },'*')
 }
 
 function notifyParentChangeScreenSize() {
-  parent.postMessage({ code: 666, message: 'change size', isFull })
+  parent.postMessage({ code: 666, message: 'change size', isFull },'*')
 }
 
 let url = new URLSearchParams(location.search).get('url')
