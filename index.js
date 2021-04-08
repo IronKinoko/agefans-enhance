@@ -73,7 +73,7 @@ function notifyParentChangeScreenSize() {
   parent.postMessage({ code: 666, message: 'change size', isFull }, '*')
 }
 
-let url = Qs.parse(location.search, { ignoreQueryPrefix: true }).url
+let url = location.search.replace(/\?url=(.*)/, '$1')
 
 if (url) {
   let dom = document.querySelector('.empty')
