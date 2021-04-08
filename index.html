@@ -11,11 +11,12 @@
     />
     <style>
       .empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         background: #000;
-        text-align: center;
         font-size: 88px;
         color: white;
-        line-height: 100vh;
       }
       body {
         margin: 0;
@@ -23,11 +24,9 @@
       }
       html,
       body,
-      .empty {
-        width: 100vw;
-        height: 100vh;
-      }
+      .empty,
       .plyr {
+        width: 100vw;
         height: 100vh;
       }
       video {
@@ -35,14 +34,41 @@
         height: 0;
         display: block;
       }
+      .plyr__next svg {
+        transform: scale(1.7);
+      }
     </style>
   </head>
   <body>
     <!-- http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4 -->
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      style="position: absolute; width: 0px; height: 0px; overflow: hidden"
+      aria-hidden="true"
+    >
+      <symbol id="next" viewBox="0 0 22 22">
+        <path
+          d="M16 5a1 1 0 00-1 1v4.615a1.431 1.431 0 00-.615-.829L7.21 5.23A1.439 1.439 0 005 6.445v9.11a1.44 1.44 0 002.21 1.215l7.175-4.555a1.436 1.436 0 00.616-.828V16a1 1 0 002 0V6C17 5.448 16.552 5 16 5z"
+        ></path>
+      </symbol>
+    </svg>
 
-    <div class="empty" style="display: block">Enter URL</div>
+    <template id="controls">
+      <button
+        class="plyr__controls__item plyr__control plyr__next"
+        type="button"
+        data-plyr="next"
+        aria-label="Next"
+      >
+        <svg focusable="false">
+          <use xlink:href="#next"></use>
+        </svg>
+        <span class="plyr__sr-only">Next</span>
+      </button>
+    </template>
+
+    <div class="empty">Enter URL</div>
     <video id="player"></video>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.js"></script>
     <script src="index.js"></script>
   </body>
