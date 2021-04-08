@@ -1,15 +1,13 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      0.1.11
+// @version      0.1.12
 // @description  more powerful agefans
 // @author       IronKinoko
 // @match        https://www.agefans.net/play/*
 // @match        https://www.agefans.net/detail/*
-// @match        https://www.agefans.net/age/player/ckx1*
 // @grant        none
 // @license      MIT
-// @run-at       document-start
 // ==/UserScript==
 
 ;(function () {
@@ -71,7 +69,6 @@
 
   function genNextPartBtn() {
     let $0 = document.querySelector('[class^=timetext]')
-    if (!$0) return requestAnimationFrame(genNextPartBtn)
 
     let div = document.createElement('div')
 
@@ -133,28 +130,31 @@
 
   function replacePlayer() {
     const dom = document.getElementById('age_playfram')
-    if (!dom) requestAnimationFrame(replacePlayer)
 
-    // player like bilibili
-    const prefix = 'https://vip.parwix.com:4433/player/?url='
+    const prefix = 'https://ironkinoko.github.io/agefans-enhance/?url='
 
-    const mutationOb = new MutationObserver(() => {
+    const fn = () => {
       let url = new URL(dom.src)
 
       if (url.hostname.includes('agefans')) {
         let videoURL = url.searchParams.get('url')
-        log(videoURL)
-        dom.src = prefix + videoURL
+        if (videoURL) {
+          dom.src = prefix + videoURL
+        }
       }
-    })
+    }
+
+    const mutationOb = new MutationObserver(fn)
     mutationOb.observe(dom, { attributes: true })
+    fn()
+  }
+
+  function toggleFullScreen(bool) {
+    
   }
 
   function inject() {
     let dom = document.querySelector('.fullscn')
-
-    if (!dom) return requestAnimationFrame(inject)
-
     dom.onclick = () => {
       if (document.body.style.overflow === 'hidden') {
         document.body.style.overflow = ''
@@ -166,21 +166,25 @@
     let ageframediv = document.getElementById('ageframediv')
     let { width, height } = ageframediv.getBoundingClientRect()
     ageframediv.style.height = (width / 16) * 9 + 'px'
-
-    replacePlayer()
   }
 
   if (parent === self) {
     // inject window message listener
     window.addEventListener('message', (e) => {
-      if (e.data && e.data.source === 'ckx1') {
+      if (e.data && e.data.code === 233) {
         gotoNextPart()
+      }
+
+      if (e.data && e.data.code === 666) {
+        let dom = document.querySelector('.fullscn')
+        dom.click()
       }
     })
 
     // log page to history
     if (location.pathname.startsWith('/play')) {
-      requestAnimationFrame(inject)
+      inject()
+      replacePlayer()
       saveToHistory()
     }
 
@@ -188,8 +192,5 @@
     if (location.pathname.startsWith('/detail')) {
       renderHistory()
     }
-  } else {
-    // requestAnimationFrame(genNextPartBtn)
-    autoPlay()
   }
 })()
