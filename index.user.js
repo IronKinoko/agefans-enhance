@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      0.1.13
+// @version      0.1.14
 // @description  more powerful agefans
 // @author       IronKinoko
 // @match        https://www.agefans.net/play/*
@@ -35,7 +35,7 @@
   })()
 
   function gotoNextPart() {
-    let dom = document.querySelector("li a[style*='color: rgb(238, 0, 0);']")
+    const dom = document.querySelector("li a[style*='color: rgb(238, 0, 0);']")
       .parentElement.nextElementSibling
 
     if (dom) {
@@ -69,7 +69,7 @@
   function replacePlayer() {
     const dom = document.getElementById('age_playfram')
 
-    dom.setAttribute('allow', 'autoplay; fullscreen')
+    dom.setAttribute('allow', 'autoplay')
     const prefix = 'https://ironkinoko.github.io/agefans-enhance/?url='
 
     const fn = () => {
@@ -115,6 +115,17 @@
     ageframediv.style.height = (width / 16) * 9 + 'px'
   }
 
+  function prerenderNextPartHTML() {
+    const dom = document.querySelector("li a[style*='color: rgb(238, 0, 0);']")
+      .parentElement.nextElementSibling
+    if (dom) {
+      const link = document.createElement('link')
+      link.rel = 'prerender'
+      link.href = dom.children[0].href
+      document.head.appendChild(link)
+    }
+  }
+
   if (parent === self) {
     // inject window message listener
     window.addEventListener('message', (e) => {
@@ -132,6 +143,7 @@
       inject()
       replacePlayer()
       saveToHistory()
+      prerenderNextPartHTML()
     }
 
     // in detail pages show view history
