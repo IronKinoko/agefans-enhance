@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      0.1.12
+// @version      0.1.13
 // @description  more powerful agefans
 // @author       IronKinoko
 // @match        https://www.agefans.net/play/*
@@ -16,7 +16,6 @@
   window.log = console.log
   delete window.console
   document.cookie = 'username=admin; path=/; max-age=99999999;'
-
   const his = new (class {
     cacheKey = 'view-history'
     his = JSON.parse(localStorage.getItem(this.cacheKey) || '{}')
@@ -67,70 +66,10 @@
     })
   }
 
-  function genNextPartBtn() {
-    let $0 = document.querySelector('[class^=timetext]')
-
-    let div = document.createElement('div')
-
-    /** @type {CSSStyleDeclaration}*/
-    let styles = {
-      lineHeight: '38px',
-      color: 'rgb(255, 255, 255)',
-      fontFamily: 'arial',
-      fontSize: '16px',
-      paddingLeft: '10px',
-      float: 'left',
-      overflow: 'hidden',
-      cursor: 'pointer',
-    }
-
-    Object.entries(styles).forEach(([key, value]) => {
-      div.style[key] = value
-    })
-
-    div.innerText = '下一集'
-    div.onclick = () => {
-      parent.postMessage({
-        source: 'ckx1',
-        code: 2,
-        message: 'switch to next part',
-      })
-    }
-
-    $0.parentNode.insertBefore(div, $0.nextSibling)
-
-    autoPlay()
-  }
-
-  function autoPlay() {
-    let videoEl = document.querySelector('video')
-    videoEl.addEventListener('loadeddata', function () {
-      if (videoEl.readyState >= 2) {
-        videoEl.play().then(() => {
-          log('success palyed')
-        })
-      }
-    })
-
-    let played = false
-    const fn = () => {
-      if (played) return false
-      played = true
-      videoEl.onended = () => {
-        parent.postMessage({
-          source: 'ckx1',
-          code: 1,
-          message: 'auto switch',
-        })
-      }
-      videoEl.removeEventListener('play', fn)
-    }
-    videoEl.addEventListener('play', fn)
-  }
-
   function replacePlayer() {
     const dom = document.getElementById('age_playfram')
 
+    dom.setAttribute('allow', 'autoplay; fullscreen')
     const prefix = 'https://ironkinoko.github.io/agefans-enhance/?url='
 
     const fn = () => {
@@ -139,7 +78,7 @@
       if (url.hostname.includes('agefans')) {
         let videoURL = url.searchParams.get('url')
         if (videoURL) {
-          dom.src = prefix + videoURL
+          dom.src = prefix + encodeURIComponent(videoURL)
         }
       }
     }
@@ -150,7 +89,13 @@
   }
 
   function toggleFullScreen(bool) {
-    
+    let dom = document.querySelector('.fullscn')
+    dom.click()
+  }
+
+  function notifyChildToggleFullScreen(isFull) {
+    const dom = document.getElementById('age_playfram')
+    dom.contentWindow.postMessage({ code: 999, isFull }, '*')
   }
 
   function inject() {
@@ -158,8 +103,10 @@
     dom.onclick = () => {
       if (document.body.style.overflow === 'hidden') {
         document.body.style.overflow = ''
+        notifyChildToggleFullScreen(false)
       } else {
         document.body.style.overflow = 'hidden'
+        notifyChildToggleFullScreen(true)
       }
     }
 
@@ -176,8 +123,7 @@
       }
 
       if (e.data && e.data.code === 666) {
-        let dom = document.querySelector('.fullscn')
-        dom.click()
+        toggleFullScreen()
       }
     })
 
