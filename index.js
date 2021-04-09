@@ -3,9 +3,9 @@ let getNodes = (str) =>
 
 let isFull = false
 function init() {
-  let dom = document.getElementById('player')
+  const dom = document.getElementById('player')
   dom.src = url
-  let player = new Plyr(dom, {
+  const player = new Plyr(dom, {
     autoplay: true,
   })
 
@@ -15,6 +15,10 @@ function init() {
   }
   player.once('ended', () => {
     notifyParentChangeToNextPart()
+  })
+
+  player.once('canplay', () => {
+    player.play()
   })
 
   player.on('enterfullscreen', () => {
@@ -49,20 +53,23 @@ function injectSreen() {
 }
 
 function toggleFullscreen(bool) {
-  if (typeof bool === 'boolean') {
-    isFull = bool
-  } else {
-    isFull = !isFull
-  }
+  if (isFull === bool) return
 
+  isFull = typeof bool === 'boolean' ? bool : !isFull
+
+  toggleFullscreenIcon(isFull)
+
+  notifyParentChangeScreenSize()
+}
+
+function toggleFullscreenIcon(bool) {
+  bool = typeof bool === 'boolean' ? bool : isFull
   let use = document.querySelector('.plyr__fullscreen.plyr__custom use')
-  if (isFull) {
+  if (bool) {
     use.setAttribute('xlink:href', '#fullscreen-quit')
   } else {
     use.setAttribute('xlink:href', '#fullscreen')
   }
-
-  notifyParentChangeScreenSize()
 }
 
 function notifyParentChangeToNextPart() {
@@ -79,4 +86,10 @@ if (url) {
   let dom = document.querySelector('.empty')
   dom.remove()
   init()
+
+  window.addEventListener('message', (e) => {
+    if (e.data && e.data.code === 999) {
+      toggleFullscreenIcon(e.data.isFull)
+    }
+  })
 }
