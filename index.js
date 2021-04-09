@@ -52,18 +52,16 @@ function injectSreen() {
   pNode.insertBefore(nextNode, plEl)
 }
 
-function toggleFullscreen(bool) {
+function toggleFullscreen(bool = !isFull) {
   if (isFull === bool) return
+  isFull = bool
 
-  isFull = typeof bool === 'boolean' ? bool : !isFull
-
-  toggleFullscreenIcon(isFull)
+  setFullscreenIcon(isFull)
 
   notifyParentChangeScreenSize()
 }
 
-function toggleFullscreenIcon(bool) {
-  bool = typeof bool === 'boolean' ? bool : isFull
+function setFullscreenIcon(bool = isFull) {
   let use = document.querySelector('.plyr__fullscreen.plyr__custom use')
   if (bool) {
     use.setAttribute('xlink:href', '#fullscreen-quit')
@@ -80,7 +78,8 @@ function notifyParentChangeScreenSize() {
   parent.postMessage({ code: 666, message: 'change size', isFull }, '*')
 }
 
-let url = location.search.replace(/\?url=(.*)/, '$1')
+// Decode again to ensure the link is correct
+const url = decodeURIComponent(new URLSearchParams(location.search).get('url'))
 
 if (url) {
   let dom = document.querySelector('.empty')
@@ -89,7 +88,7 @@ if (url) {
 
   window.addEventListener('message', (e) => {
     if (e.data && e.data.code === 999) {
-      toggleFullscreenIcon(e.data.isFull)
+      setFullscreenIcon(e.data.isFull)
     }
   })
 }
