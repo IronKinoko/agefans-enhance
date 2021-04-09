@@ -78,7 +78,7 @@
       if (url.hostname.includes('agefans')) {
         let videoURL = url.searchParams.get('url')
         if (videoURL) {
-          dom.src = prefix + videoURL
+          dom.src = prefix + encodeURIComponent(videoURL)
         }
       }
     }
