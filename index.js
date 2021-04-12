@@ -8,7 +8,7 @@ function init() {
   const player = new Plyr(dom, {
     autoplay: true,
     controls: [
-      'play-large', // The large play button in the center
+      // 'play-large', // The large play button in the center
       'play', // Play/pause playback
       'progress', // The progress bar and scrubber for playback and buffering
       'current-time', // The current time of playback
