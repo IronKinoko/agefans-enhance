@@ -1,7 +1,9 @@
 let getNodes = (str) =>
   new DOMParser().parseFromString(str, 'text/html').body.firstChild
 
-let isFull = false
+let isFull = sessionStorage.getItem('isFull') === '1'
+sessionStorage.removeItem('isFull')
+
 function init() {
   const dom = document.getElementById('player')
   dom.src = url
@@ -24,6 +26,10 @@ function init() {
   if (parent !== self) {
     injectNext()
     injectSreen()
+
+    if (isFull) {
+      toggleFullscreen()
+    }
   }
   player.once('ended', () => {
     notifyParentChangeToNextPart()
@@ -80,6 +86,8 @@ function setFullscreenIcon(bool = isFull) {
   } else {
     use.setAttribute('xlink:href', '#fullscreen')
   }
+
+  sessionStorage.setItem('isFull', +bool)
 }
 
 function notifyParentChangeToNextPart() {
