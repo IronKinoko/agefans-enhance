@@ -3,8 +3,7 @@
   "version": "0.1.11",
   "description": "增强agefans功能",
   "main": "index.user.js",
-  "scripts": {
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/IronKinoko/agefans-enhance.git"
@@ -15,5 +14,8 @@
   "bugs": {
     "url": "https://github.com/IronKinoko/agefans-enhance/issues"
   },
-  "homepage": "https://github.com/IronKinoko/agefans-enhance#readme"
+  "homepage": "https://github.com/IronKinoko/agefans-enhance#readme",
+  "devDependencies": {
+    "jquery": "^3.6.0"
+  }
 }

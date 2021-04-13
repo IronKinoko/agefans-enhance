@@ -1,11 +1,13 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      0.1.14
+// @version      0.1.15
 // @description  more powerful agefans
 // @author       IronKinoko
+// @match        https://www.agefans.net/*
 // @match        https://www.agefans.net/play/*
 // @match        https://www.agefans.net/detail/*
+// @require      https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js
 // @grant        none
 // @license      MIT
 // ==/UserScript==
@@ -16,21 +18,36 @@
   window.log = console.log
   delete window.console
   document.cookie = 'username=admin; path=/; max-age=99999999;'
+
   const his = new (class {
-    cacheKey = 'view-history'
-    his = JSON.parse(localStorage.getItem(this.cacheKey) || '{}')
+    cacheKey = 'v-his'
+
+    his = JSON.parse(localStorage.getItem(this.cacheKey) || '[]')
     getAll() {
       return this.his
     }
-    get(key) {
-      return this.his[key]
+    get(id) {
+      return this.his.find((o) => o.id === id)
     }
-    set(key, value = true) {
-      this.his[key] = value
-      localStorage.setItem(this.cacheKey, JSON.stringify(this.his))
+    setTime(id, time = 0) {
+      this.get(id).time = time
+      this.save()
     }
-    has(key) {
-      return Boolean(this.his[key])
+    log(item) {
+      this.his.unshift(item)
+      this.save()
+    }
+    refresh(id, data) {
+      const index = this.his.findIndex((o) => o.id === id)
+      const item = this.his.splice(index, 1)[0]
+      this.his.unshift(data || item)
+      this.save()
+    }
+    save() {
+      localStorage.setItem(this.cacheKey, JSON.stringify(this.his.slice(0, 50)))
+    }
+    has(id) {
+      return Boolean(this.his.find((o) => o.id === id))
     }
   })()
 
@@ -43,27 +60,11 @@
     }
   }
 
-  function saveToHistory() {
-    const key = location.pathname + location.search
-    his.set(key, true)
-  }
-
-  function renderHistory() {
-    const aEls = document.querySelectorAll('.movurl li a')
-
-    if (aEls.length === 0) return requestAnimationFrame(renderHistory)
-
+  function renderHistroyStyle() {
     // add a tag visited style
     let styleDom = document.createElement('style')
     styleDom.innerHTML = `.movurl li a:visited { color: red; }`
     document.head.appendChild(styleDom)
-
-    aEls.forEach((a) => {
-      const href = a.getAttribute('href')
-      if (his.has(href)) {
-        a.style.border = '1px solid red'
-      }
-    })
   }
 
   function replacePlayer() {
@@ -95,7 +96,7 @@
 
   function notifyChildToggleFullScreen(isFull) {
     const dom = document.getElementById('age_playfram')
-    dom.contentWindow.postMessage({ code: 999, isFull }, '*')
+    dom.contentWindow.postMessage({ code: 666, isFull }, '*')
   }
 
   function inject() {
@@ -126,15 +127,124 @@
     }
   }
 
+  function parseTime(time = 0) {
+    return `${Math.floor(time / 60)
+      .toString()
+      .padStart(2, '0')}:${(time % 60).toString().padStart(2, '0')}`
+  }
+  function renderHistoryList() {
+    $('#history')
+      .html('')
+      .append(() => {
+        /** @type {any[]} */
+        const histories = his.getAll()
+        let html = ''
+        histories.forEach((o) => {
+          html += `<a class="history-item" href="${o.href}">
+          <img
+            referrerpolicy="no-referrer"
+            src="${o.logo}"
+            alt="${o.title}"
+            title="${o.title}"
+          />
+          <div class="desc">
+            <div class="title">${o.title}</div>
+            <div class="position">${o.section} ${parseTime(o.time)}</div>
+          </div>
+        </a>
+        `
+        })
+        return `<div class="history-list">${
+          html || '<center>暂无数据</center>'
+        }</div>`
+      })
+  }
+  function renderHistoryPage() {
+    $(
+      '<style>#history{background:#202020;border:4px solid #303030;}.history-list{padding:16px;display:flex;flex-wrap:wrap;}.history-item{width:120px;display:inline-block;margin:4px}.history-item img{width:120px;border-radius:2px}.history-item .desc .title{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:14px;margin:4px 0}.history-item .desc .position{font-size:14px}</style>'
+    ).appendTo('head')
+    $('<div id="history"></div>').insertBefore('#footer').hide()
+
+    $(`<a class="nav_button">历史</a>`)
+      .appendTo('#nav')
+      .on('click', () => {
+        renderHistoryList()
+        $('#container').hide()
+        $('#history').show()
+      })
+    renderHistoryList()
+
+    $('.nav_button_current')
+      .on('click', (e) => {
+        $('#container').show()
+        $('#history').hide()
+      })
+      .removeAttr('href')
+
+    $('.nav_button').on('click', (e) => {
+      $('.nav_button_current').removeClass('nav_button_current')
+      $(e.currentTarget).addClass('nav_button_current')
+    })
+  }
+
+  function logHistory() {
+    const id = location.pathname.match(/\/play\/(\d*)/)?.[1]
+    if (!id) return
+
+    const hisItem = {}
+    hisItem.id = id
+    hisItem.title = $('#detailname a').text()
+    hisItem.href = location.href
+    hisItem.section = $('li a[style*="color: rgb(238, 0, 0);"]').text()
+    hisItem.time = 0
+    hisItem.logo = $('#play_poster_img').attr('src')
+
+    if (his.has(id)) {
+      const oldItem = his.get(id)
+      if (oldItem.href !== hisItem.href) {
+        his.refresh(id, hisItem)
+      } else {
+        his.refresh(id)
+      }
+    } else {
+      his.log(hisItem)
+    }
+  }
+
+  function updateTime(time = 0) {
+    const id = location.pathname.match(/\/play\/(\d*)/)?.[1]
+    if (!id) return
+
+    his.setTime(id, Math.floor(time))
+  }
+
+  function notifyChildJumpToHistoryPosition() {
+    const id = location.pathname.match(/\/play\/(\d*)/)?.[1]
+    if (!id) return
+
+    if (his.get(id)?.time && his.get(id)?.time > 3) {
+      const dom = document.getElementById('age_playfram')
+      dom.contentWindow.postMessage({ code: 999, time: his.get(id).time }, '*')
+    }
+  }
+
   if (parent === self) {
     // inject window message listener
     window.addEventListener('message', (e) => {
-      if (e.data && e.data.code === 233) {
+      if (e.data?.code === 233) {
         gotoNextPart()
       }
 
-      if (e.data && e.data.code === 666) {
+      if (e.data?.code === 200) {
+        notifyChildJumpToHistoryPosition()
+      }
+
+      if (e.data?.code === 666) {
         toggleFullScreen()
+      }
+
+      if (e.data?.code === 999) {
+        updateTime(e.data.time)
       }
     })
 
@@ -142,13 +252,15 @@
     if (location.pathname.startsWith('/play')) {
       inject()
       replacePlayer()
-      saveToHistory()
       prerenderNextPartHTML()
     }
 
     // in detail pages show view history
     if (location.pathname.startsWith('/detail')) {
-      renderHistory()
+      renderHistroyStyle()
     }
+
+    logHistory()
+    renderHistoryPage()
   }
 })()
