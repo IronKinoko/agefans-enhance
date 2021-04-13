@@ -116,7 +116,9 @@ function notifyParentUpdateTime() {
 }
 
 // Decode again to ensure the link is correct
-const url = decodeURIComponent(new URLSearchParams(location.search).get('url'))
+const url = decodeURIComponent(
+  new URLSearchParams(location.search).get('url') || ''
+)
 
 if (url) {
   let dom = document.querySelector('.empty')
