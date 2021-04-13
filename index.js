@@ -11,6 +11,7 @@ function init() {
   dom.src = url
   player = new Plyr(dom, {
     autoplay: true,
+    keyboard: { global: true },
     controls: [
       // 'play-large', // The large play button in the center
       'play', // Play/pause playback
@@ -50,6 +51,12 @@ function init() {
     if (Math.floor(player.currentTime) % 3 === 0) {
       notifyParentUpdateTime()
     }
+  })
+
+  document.querySelectorAll('.plyr__controls .plyr__control').forEach((dom) => {
+    dom.addEventListener('click', (e) => {
+      e.currentTarget.blur()
+    })
   })
 }
 
