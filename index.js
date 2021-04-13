@@ -1,13 +1,15 @@
 let getNodes = (str) =>
   new DOMParser().parseFromString(str, 'text/html').body.firstChild
 
+/** @type {Plyr} */
+let player
 let isFull = sessionStorage.getItem('isFull') === '1'
-sessionStorage.removeItem('isFull')
+const isInFrame = parent !== self
 
 function init() {
   const dom = document.getElementById('player')
   dom.src = url
-  const player = new Plyr(dom, {
+  player = new Plyr(dom, {
     autoplay: true,
     controls: [
       // 'play-large', // The large play button in the center
@@ -23,7 +25,7 @@ function init() {
     ],
   })
 
-  if (parent !== self) {
+  if (isInFrame) {
     injectNext()
     injectSreen()
 
@@ -36,11 +38,18 @@ function init() {
   })
 
   player.once('canplay', () => {
+    notifyParentReadyToPlay()
     player.play()
   })
 
   player.on('enterfullscreen', () => {
     toggleFullscreen(false)
+  })
+
+  player.on('timeupdate', (e) => {
+    if (Math.floor(player.currentTime) % 3 === 0) {
+      notifyParentUpdateTime()
+    }
   })
 }
 
@@ -98,6 +107,14 @@ function notifyParentChangeScreenSize() {
   parent.postMessage({ code: 666, message: 'change size', isFull }, '*')
 }
 
+function notifyParentReadyToPlay() {
+  parent.postMessage({ code: 200 }, '*')
+}
+
+function notifyParentUpdateTime() {
+  parent.postMessage({ code: 999, time: player.currentTime }, '*')
+}
+
 // Decode again to ensure the link is correct
 const url = decodeURIComponent(new URLSearchParams(location.search).get('url'))
 
@@ -106,9 +123,15 @@ if (url) {
   dom.remove()
   init()
 
-  window.addEventListener('message', (e) => {
-    if (e.data && e.data.code === 999) {
-      setFullscreenIcon(e.data.isFull)
-    }
-  })
+  if (isInFrame) {
+    window.addEventListener('message', (e) => {
+      if (e.data && e.data.code === 666) {
+        setFullscreenIcon(e.data.isFull)
+      }
+
+      if (e.data && e.data.code === 999) {
+        player.currentTime = e.data.time
+      }
+    })
+  }
 }
