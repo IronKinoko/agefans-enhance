@@ -5,6 +5,34 @@ let getNodes = (str) =>
 let player
 let isFull = sessionStorage.getItem('isFull') === '1'
 const isInFrame = parent !== self
+let isHoverControls = false
+
+function debounce(fn, delay = 300) {
+  if (typeof fn !== 'function') {
+    throw new TypeError('fn is not a function')
+  }
+
+  let timeID = null
+  return function (...rest) {
+    if (timeID) {
+      clearTimeout(timeID)
+    }
+    timeID = setTimeout(() => {
+      timeID = null
+      fn.apply(this, rest)
+    }, delay)
+  }
+}
+
+const hideCursorDebounced = debounce(() => {
+  const dom = document.querySelector('.plyr')
+  dom.classList.add('plyr--hide-cursor')
+}, 1000)
+
+const hideControlsDebounced = debounce(() => {
+  const dom = document.querySelector('.plyr')
+  if (!isHoverControls) dom.classList.add('plyr--hide-controls')
+}, 1000)
 
 function init() {
   const dom = document.getElementById('player')
@@ -47,6 +75,10 @@ function init() {
     toggleFullscreen(false)
   })
 
+  player.on('pause', () => {
+    hideControlsDebounced()
+  })
+
   player.on('timeupdate', (e) => {
     if (Math.floor(player.currentTime) % 3 === 0) {
       notifyParentUpdateTime()
@@ -57,6 +89,23 @@ function init() {
     dom.addEventListener('click', (e) => {
       e.currentTarget.blur()
     })
+  })
+
+  const playerEl = document.querySelector('.plyr')
+  playerEl.addEventListener('mousemove', () => {
+    playerEl.classList.remove('plyr--hide-cursor')
+    hideCursorDebounced()
+
+    if (player.paused) {
+      hideControlsDebounced()
+    }
+  })
+  const controlsEl = document.querySelector('.plyr__controls')
+  controlsEl.addEventListener('mouseenter', () => {
+    isHoverControls = true
+  })
+  controlsEl.addEventListener('mouseleave', () => {
+    isHoverControls = false
   })
 }
 
