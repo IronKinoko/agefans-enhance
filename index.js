@@ -88,6 +88,7 @@ function init() {
   })
 
   player.on('error', (e) => {
+    document.getElementById('empty').remove()
     const dom = document.getElementById('error')
     dom.style.display = 'flex'
     dom.innerHTML = `<div>视频加载失败</div><div class="error-info">${url}</div>`
