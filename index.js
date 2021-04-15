@@ -67,6 +67,8 @@ function init() {
   })
 
   player.once('canplay', () => {
+    document.getElementById('empty').remove()
+
     notifyParentReadyToPlay()
     player.play()
   })
@@ -184,8 +186,6 @@ const url = decodeURIComponent(
 )
 
 if (url) {
-  let dom = document.getElementById('empty')
-  dom.remove()
   init()
 
   if (isInFrame) {

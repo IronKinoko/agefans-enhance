@@ -10,7 +10,12 @@
       href="https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.css"
     />
     <style>
+      .error,
       .empty {
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 1;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -47,7 +52,7 @@
       .plyr--hide-cursor {
         cursor: none;
       }
-      .error-info{
+      .error-info {
         text-align: center;
         padding: 24px;
         font-size: 18px;
@@ -271,7 +276,7 @@
         <div></div>
       </div>
     </div>
-    <div id="error" class="empty" style="display: block;"></div>
+    <div id="error" class="error" style="display: none"></div>
     <video id="player"></video>
     <script src="https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.js"></script>
     <script src="index.js"></script>
