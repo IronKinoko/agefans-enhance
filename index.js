@@ -85,6 +85,13 @@ function init() {
     }
   })
 
+  player.on('error', (e) => {
+    const dom = document.getElementById('error')
+    dom.style.display = 'flex'
+    dom.innerHTML = `<div>视频加载失败</div><div class="error-info">${url}</div>`
+    player.destroy()
+  })
+
   document.querySelectorAll('.plyr__controls .plyr__control').forEach((dom) => {
     dom.addEventListener('click', (e) => {
       e.currentTarget.blur()
@@ -177,7 +184,7 @@ const url = decodeURIComponent(
 )
 
 if (url) {
-  let dom = document.querySelector('.empty')
+  let dom = document.getElementById('empty')
   dom.remove()
   init()
 
