@@ -1,6 +1,6 @@
 {
   "name": "agefans",
-  "version": "0.1.11",
+  "version": "0.1.15",
   "description": "增强agefans功能",
   "main": "index.user.js",
   "scripts": {},
@@ -8,7 +8,7 @@
     "type": "git",
     "url": "git+https://github.com/IronKinoko/agefans-enhance.git"
   },
-  "keywords": [],
+  "keywords": ["agefans","userscirpt"],
   "author": "IronKinoko <kinoko_main@outlook.com>",
   "license": "MIT",
   "bugs": {
@@ -16,6 +16,7 @@
   },
   "homepage": "https://github.com/IronKinoko/agefans-enhance#readme",
   "devDependencies": {
-    "jquery": "^3.6.0"
+    "jquery": "^3.6.0",
+    "plyr": "^3.6.5"
   }
 }
