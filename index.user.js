@@ -1,13 +1,12 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      0.1.15
+// @version      0.1.16
 // @description  more powerful agefans
 // @author       IronKinoko
 // @match        https://www.agefans.net/*
 // @match        https://www.agefans.net/play/*
 // @match        https://www.agefans.net/detail/*
-// @require      https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js
 // @grant        none
 // @license      MIT
 // ==/UserScript==
