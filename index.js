@@ -54,12 +54,16 @@ function init() {
     ],
   })
 
+  if(document.fullscreenElement){
+    player.fullscreen.enabled()
+  }
+
   if (isInFrame) {
     injectNext()
     injectSreen()
 
     if (isFull) {
-      toggleFullscreen()
+      toggleFullscreen(isFull)
     }
   }
   player.once('ended', () => {
