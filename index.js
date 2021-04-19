@@ -3,7 +3,7 @@ let getNodes = (str) =>
 
 /** @type {Plyr} */
 let player
-let isFull = sessionStorage.getItem('isFull') === '1'
+let isFull = false
 const isInFrame = parent !== self
 let isHoverControls = false
 
@@ -62,8 +62,8 @@ function init() {
     injectNext()
     injectSreen()
 
-    if (isFull) {
-      toggleFullscreen(isFull)
+    if (sessionStorage.getItem('isFull') === '1') {
+      toggleFullscreen(true)
     }
   }
   player.once('ended', () => {
