@@ -118,31 +118,39 @@
   }
 
   function renderHistoryPage() {
+    const currentDom = $('.nav_button_current');
     $(
-      '<style>#history{background:#202020;border:4px solid #303030;}.history-list{padding:16px;display:flex;flex-wrap:wrap;}.history-item{width:120px;display:inline-block;margin:4px}.history-item img{width:120px;border-radius:2px}.history-item .desc .title{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:14px;margin:4px 0}.history-item .desc .position{font-size:14px}</style>'
+      '<style>#history{background:#202020;border:4px solid #303030;}.history-list{padding:16px;display:flex;flex-wrap:wrap;}.history-item{width:115px;display:inline-block;margin:4px}.history-item img{width: 100%;border-radius:2px}.history-item .desc .title{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:14px;margin:4px 0}.history-item .desc .position{font-size:14px}</style>'
     ).appendTo('head');
     $('<div id="history"></div>').insertBefore('#footer').hide();
 
     $(`<a class="nav_button">历史</a>`)
       .appendTo('#nav')
-      .on('click', () => {
-        renderHistoryList();
-        $('#container').hide();
-        $('#history').show();
+      .on('click', (e) => {
+        if ($('#history').is(':visible')) {
+          $('#container').show();
+          $('#history').hide();
+          changeActive(currentDom);
+        } else {
+          renderHistoryList();
+          $('#container').hide();
+          $('#history').show();
+          changeActive($(e.currentTarget));
+        }
       });
-    renderHistoryList();
 
     $('.nav_button_current')
-      .on('click', () => {
+      .on('click', (e) => {
         $('#container').show();
         $('#history').hide();
+        changeActive(e.currentTarget);
       })
       .removeAttr('href');
+  }
 
-    $('.nav_button').on('click', (e) => {
-      $('.nav_button_current').removeClass('nav_button_current');
-      $(e.currentTarget).addClass('nav_button_current');
-    });
+  function changeActive(dom) {
+    $('.nav_button_current').removeClass('nav_button_current');
+    $(dom).addClass('nav_button_current');
   }
 
   function historyModule() {
@@ -262,10 +270,6 @@
     initPlayPageStyle();
     replacePlayer();
     prerenderNextPartHTML();
-  }
-
-  {
-    document.cookie = 'username=admin; path=/; max-age=99999999;';
   }
 
   if (parent === self) {
