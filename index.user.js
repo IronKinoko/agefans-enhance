@@ -120,7 +120,7 @@
   function renderHistoryPage() {
     const currentDom = $('.nav_button_current');
     $(
-      '<style>#history{background:#202020;border:4px solid #303030;}.history-list{padding:16px;display:flex;flex-wrap:wrap;}.history-item{width:115px;display:inline-block;margin:4px}.history-item img{width: 100%;border-radius:2px}.history-item .desc .title{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:14px;margin:4px 0}.history-item .desc .position{font-size:14px}</style>'
+      '<style>.nav_button{cursor: pointer;}#history{background:#202020;border:4px solid #303030;}.history-list{padding:16px;display:flex;flex-wrap:wrap;}.history-item{width:115px;display:inline-block;margin:4px}.history-item img{width: 100%;border-radius:2px}.history-item .desc .title{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:14px;margin:4px 0}.history-item .desc .position{font-size:14px}</style>'
     ).appendTo('head');
     $('<div id="history"></div>').insertBefore('#footer').hide();
 
@@ -210,6 +210,7 @@
         notifyChildToggleFullScreen(true);
       }
     };
+    dom.style.opacity = 0;
 
     let ageframediv = document.getElementById('ageframediv');
     let { width } = ageframediv.getBoundingClientRect();

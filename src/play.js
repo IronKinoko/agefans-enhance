@@ -51,6 +51,7 @@ function initPlayPageStyle() {
       notifyChildToggleFullScreen(true)
     }
   }
+  dom.style.opacity = 0
 
   let ageframediv = document.getElementById('ageframediv')
   let { width } = ageframediv.getBoundingClientRect()
