@@ -1,9 +1,13 @@
 {
   "name": "agefans",
-  "version": "0.1.15",
-  "description": "增强agefans功能",
+  "version": "1.0.0",
+  "description": "增强agefans播放功能，实现自动换集、画中画、历史记录、断点续播等功能",
   "main": "index.user.js",
-  "scripts": {},
+  "scripts": {
+    "dev": "rollup -c -w src --environment NODE_ENV:development",
+    "build": "rollup -c",
+    "lint": "eslint --fix --ext js ."
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/IronKinoko/agefans-enhance.git"
@@ -19,7 +23,13 @@
   },
   "homepage": "https://github.com/IronKinoko/agefans-enhance#readme",
   "devDependencies": {
+    "@types/node": "^14.14.41",
+    "eslint": "^7.24.0",
     "jquery": "^1.12.4",
-    "plyr": "^3.6.5"
+    "plyr": "^3.6.5",
+    "rollup": "^2.45.2"
+  },
+  "dependencies": {
+    "@rollup/plugin-replace": "^2.4.2"
   }
 }
