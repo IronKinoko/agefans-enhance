@@ -54,7 +54,7 @@ function init() {
     ],
   })
 
-  if(document.fullscreenElement){
+  if (document.fullscreenElement) {
     player.fullscreen.enabled()
   }
 
@@ -85,13 +85,13 @@ function init() {
     hideControlsDebounced()
   })
 
-  player.on('timeupdate', (e) => {
+  player.on('timeupdate', () => {
     if (Math.floor(player.currentTime) % 3 === 0) {
       notifyParentUpdateTime()
     }
   })
 
-  player.on('error', (e) => {
+  player.on('error', () => {
     document.getElementById('empty').remove()
     const dom = document.getElementById('error')
     dom.style.display = 'flex'
@@ -143,7 +143,7 @@ function injectSreen() {
   const pNode = document.querySelector('.plyr__controls')
 
   const nextNode = getNodes(dom.innerHTML)
-  nextNode.addEventListener('click', (e) => {
+  nextNode.addEventListener('click', () => {
     toggleFullscreen()
   })
   pNode.insertBefore(nextNode, plEl)
