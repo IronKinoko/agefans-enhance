@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "rollup -c -w src --environment NODE_ENV:development",
     "build": "rollup -c",
-    "lint": "eslint --fix --ext js ."
+    "lint": "eslint --fix --ext js .",
+    "build:website":"node scripts/inline-source.js"
   },
   "repository": {
     "type": "git",
@@ -23,13 +24,13 @@
   },
   "homepage": "https://github.com/IronKinoko/agefans-enhance#readme",
   "devDependencies": {
+    "@rollup/plugin-replace": "^2.4.2",
     "@types/node": "^14.14.41",
     "eslint": "^7.24.0",
+    "html-minifier-terser": "^5.1.1",
     "jquery": "^1.12.4",
+    "jsdom": "^16.5.3",
     "plyr": "^3.6.5",
     "rollup": "^2.45.2"
-  },
-  "dependencies": {
-    "@rollup/plugin-replace": "^2.4.2"
   }
 }
