@@ -12,6 +12,7 @@ function replacePlayer() {
       let videoURL = url.searchParams.get('url')
       if (videoURL) {
         dom.src = prefix + encodeURIComponent(videoURL)
+        showCurrentLink(videoURL)
       }
     }
   }
@@ -19,6 +20,24 @@ function replacePlayer() {
   const mutationOb = new MutationObserver(fn)
   mutationOb.observe(dom, { attributes: true })
   fn()
+}
+
+function showCurrentLink(url) {
+  $(`
+  <div class="baseblock">
+    <div class="blockcontent">
+      <div id="wangpan-div" class="baseblock2">
+        <div class="blocktitle">本集链接：</div>
+        <div class="blockcontent">
+          <span class="res_links">
+            ${decodeURIComponent(url)}
+          </span>
+          <br>
+        </div>
+      </div>
+    </div>
+  </div>
+`).insertBefore($('.baseblock:contains(网盘资源)'))
 }
 
 function gotoNextPart() {
