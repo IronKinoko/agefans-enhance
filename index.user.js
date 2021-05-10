@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.1.1
+// @version      1.1.2
 // @description  增强agefans播放功能，实现自动换集、画中画、历史记录、断点续播等功能
 // @author       IronKinoko
 // @match        https://www.agefans.net/*
@@ -182,6 +182,10 @@
           showCurrentLink(videoURL);
         }
       }
+      // 移除版权规避提示
+      if ($(dom).css('display') === 'none') {
+        $(dom).show();
+      }
     };
 
     const mutationOb = new MutationObserver(fn);
@@ -292,12 +296,17 @@
     });
   }
 
+  function removeCpraid() {
+    $('#cpraid').remove();
+  }
+
   function playModule() {
     addListener();
     his.logHistory();
     initPlayPageStyle();
     replacePlayer();
     prerenderNextPartHTML();
+    removeCpraid();
   }
 
   if (parent === self) {

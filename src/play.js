@@ -15,6 +15,10 @@ function replacePlayer() {
         showCurrentLink(videoURL)
       }
     }
+    // 移除版权规避提示
+    if ($(dom).css('display') === 'none') {
+      $(dom).show()
+    }
   }
 
   const mutationOb = new MutationObserver(fn)
@@ -125,10 +129,15 @@ function addListener() {
   })
 }
 
+function removeCpraid() {
+  $('#cpraid').remove()
+}
+
 export function playModule() {
   addListener()
   his.logHistory()
   initPlayPageStyle()
   replacePlayer()
   prerenderNextPartHTML()
+  removeCpraid()
 }
