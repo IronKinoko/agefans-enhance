@@ -1,4 +1,5 @@
 import { his } from './history'
+import { initGetAllVideoURL } from './getAllVideoURL'
 function replacePlayer() {
   const dom = document.getElementById('age_playfram')
 
@@ -140,4 +141,5 @@ export function playModule() {
   replacePlayer()
   prerenderNextPartHTML()
   removeCpraid()
+  initGetAllVideoURL()
 }
