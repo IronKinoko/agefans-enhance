@@ -17,6 +17,6 @@ if (parent === self) {
 
   // in detail pages show view history
   if (location.pathname.startsWith('/detail')) {
-    detailModule()
+         detailModule()
   }
 }
