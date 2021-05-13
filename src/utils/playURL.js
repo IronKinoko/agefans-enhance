@@ -1,4 +1,3 @@
-
 function __setCookie(name, value, _in_days) {
   var Days = _in_days
   var exp = new Date()

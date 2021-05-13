@@ -1,3 +1,4 @@
+import './index.scss'
 import { detailModule } from './detail'
 import { historyModule } from './history'
 import { playModule } from './play'

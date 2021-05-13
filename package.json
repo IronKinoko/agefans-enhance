@@ -9,6 +9,23 @@
     "lint": "eslint --fix --ext js .",
     "build:website": "node scripts/inline-source.js"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,sass}": [
+      "prettier -c -w",
+      "eslint --cache --fix"
+    ]
+  },
+  "prettier": {
+    "singleQuote": true,
+    "semi": false,
+    "tabWidth": 2,
+    "trailingComma": "es5"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/IronKinoko/agefans-enhance.git"
@@ -28,11 +45,15 @@
     "@types/node": "^14.14.41",
     "eslint": "^7.24.0",
     "html-minifier-terser": "^5.1.1",
+    "husky": "4",
     "jquery": "^1.12.4",
     "jsdom": "^16.5.3",
+    "lint-staged": "^11.0.0",
     "plyr": "^3.6.5",
+    "prettier": "^2.3.0",
     "rollup": "^2.45.2",
-    "jquery-modal": "^0.9.2"
+    "rollup-plugin-styles": "^3.14.1",
+    "sass": "^1.32.13"
   },
   "dependencies": {}
 }

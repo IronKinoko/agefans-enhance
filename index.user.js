@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @version      1.2.0
-// @description  增强agefans播放功能，实现自动换集、画中画、历史记录、断点续播等功能
+// @description  增强agefans播放功能，实现自动换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @match        https://www.agefans.net/*
 // @match        https://www.agefans.net/play/*
@@ -14,6 +14,11 @@
 
 (function () {
   'use strict';
+
+  var e=[],t=[];function n(n,r){if(n&&"undefined"!=typeof document){var a,s=!0===r.prepend?"prepend":"append",d=!0===r.singleTag,i="string"==typeof r.container?document.querySelector(r.container):document.getElementsByTagName("head")[0];if(d){var u=e.indexOf(i);-1===u&&(u=e.push(i)-1,t[u]={}),a=t[u]&&t[u][s]?t[u][s]:t[u][s]=c();}else a=c();65279===n.charCodeAt(0)&&(n=n.substring(1)),a.styleSheet?a.styleSheet.cssText+=n:a.appendChild(document.createTextNode(n));}function c(){var e=document.createElement("style");if(e.setAttribute("type","text/css"),r.attributes)for(var t=Object.keys(r.attributes),n=0;n<t.length;n++)e.setAttribute(t[n],r.attributes[t[n]]);var a="prepend"===s?"afterbegin":"beforeend";return i.insertAdjacentElement(a,e),e}}
+
+  var css = ".k-modal {\n  position: fixed;\n  left: 0;\n  right: 0;\n  top: 0;\n  bottom: 0;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n.k-modal * {\n  color: rgba(0, 0, 0, 0.85);\n}\n.k-modal .k-modal-mask {\n  position: absolute;\n  z-index: 100;\n  width: 100%;\n  height: 100%;\n  background: rgba(0, 0, 0, 0.45);\n  cursor: pointer;\n}\n.k-modal .k-modal-container {\n  position: absolute;\n  z-index: 101;\n  width: 520px;\n  min-height: 100px;\n  background: white;\n  border-radius: 2px;\n}\n.k-modal .k-modal-header {\n  font-size: 16px;\n  padding: 16px;\n  border-bottom: 1px solid #f1f1f1;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.k-modal .k-modal-close {\n  cursor: pointer;\n}\n.k-modal .k-modal-body,\n.k-modal .k-modal-footer {\n  padding: 16px;\n  font-size: 14px;\n}\n.k-modal .k-modal-footer {\n  border-top: 1px solid #f1f1f1;\n  display: flex;\n  justify-content: flex-end;\n}\n.k-modal .k-modal-btn {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  height: 32px;\n  border-radius: 2px;\n  border: 1px solid #2af;\n  background: #2af;\n  color: white;\n  min-width: 64px;\n  cursor: pointer;\n}\n\n.nav_button {\n  cursor: pointer;\n}\n\n#history {\n  background: #202020;\n  border: 4px solid #303030;\n}\n#history .history-list {\n  padding: 16px;\n  display: flex;\n  flex-wrap: wrap;\n}\n#history .history-item {\n  width: 115px;\n  display: inline-block;\n  margin: 4px;\n}\n#history .history-item img {\n  width: 100%;\n  border-radius: 2px;\n}\n#history .history-item .desc .title {\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  font-size: 14px;\n  margin: 4px 0;\n}\n#history .history-item .desc .position {\n  font-size: 14px;\n}";
+  n(css,{});
 
   function renderHistroyStyle() {
     // add a tag visited style
@@ -61,7 +66,7 @@
       his.unshift(data || item);
       this.his = his;
     }
-    
+
     has(id) {
       return Boolean(this.his.find((o) => o.id === id))
     }
@@ -127,9 +132,7 @@
 
   function renderHistoryPage() {
     const currentDom = $('.nav_button_current');
-    $(
-      '<style>.nav_button{cursor: pointer;}#history{background:#202020;border:4px solid #303030;}.history-list{padding:16px;display:flex;flex-wrap:wrap;}.history-item{width:115px;display:inline-block;margin:4px}.history-item img{width: 100%;border-radius:2px}.history-item .desc .title{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:14px;margin:4px 0}.history-item .desc .position{font-size:14px}</style>'
-    ).appendTo('head');
+    
     $('<div id="history"></div>').insertBefore('#footer').hide();
 
     $(`<a class="nav_button">历史</a>`)
@@ -174,79 +177,7 @@
     $temp.remove();
   }
 
-  function checkCSS() {
-    if ($('#k-modal-css').length === 0) {
-      $(`
-    <style id="k-modal-css">
-      .k-modal {
-        position: fixed;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .k-modal * {
-        color: rgba(0, 0, 0, 0.85);
-      }
-      .k-modal .k-modal-mask {
-        position: absolute;
-        z-index: 100;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.45);
-      }
-      .k-modal .k-modal-container {
-        position: absolute;
-        z-index: 101;
-        width: 520px;
-        min-height: 100px;
-        background: white;
-        border-radius: 2px;
-      }
-      .k-modal .k-modal-header {
-        font-size: 16px;
-        padding: 16px;
-        border-bottom: 1px solid #f1f1f1;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .k-modal .k-modal-close,
-      .k-modal .k-modal-mask {
-        cursor: pointer;
-      }
-      .k-modal .k-modal-body,
-      .k-modal .k-modal-footer {
-        padding: 16px;
-        font-size: 14px;
-      }
-      .k-modal .k-modal-footer {
-        border-top: 1px solid #f1f1f1;
-        display: flex;
-        justify-content: flex-end;
-      }
-      .k-modal .k-modal-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 32px;
-        border-radius: 2px;
-        border: 1px solid #2af;
-        background: #2af;
-        color: white;
-        min-width: 64px;
-        cursor: pointer;
-      }
-    </style>
-    `).appendTo('head');
-    }
-  }
   function modal({ title, content, onClose, onOk }) {
-    checkCSS();
-
     const ID = Math.random().toString(16).slice(2);
     $(`
 <div class="k-modal" role="dialog" id="${ID}">
@@ -285,10 +216,6 @@
     }
   }
 
-  /**
-   * @typedef {{title:string,href:string}} ATag
-   *
-   */
   function __setCookie(name, value, _in_days) {
     var Days = _in_days;
     var exp = new Date();
@@ -370,6 +297,10 @@
     );
     return _getplay_url
   }
+
+  /**
+   * @typedef {{title:string,href:string}} ATag
+   */
 
   function insertBtn() {
     $(`
@@ -492,13 +423,13 @@
   }
 
   const PLAY_URL_KEY = 'play-url-key';
-  function saveLocal(href, title, url) {
-    const map = JSON.parse(window.localStorage.getItem(PLAY_URL_KEY) || '{}');
-    map[href] = { title, url };
-    window.localStorage.setItem(PLAY_URL_KEY, JSON.stringify(map));
-  }
   function getLocal() {
     return JSON.parse(window.localStorage.getItem(PLAY_URL_KEY) || '{}')
+  }
+  function saveLocal(href, title, url) {
+    const map = getLocal();
+    map[href] = { title, url };
+    window.localStorage.setItem(PLAY_URL_KEY, JSON.stringify(map));
   }
   function insertLocal() {
     const map = getLocal();

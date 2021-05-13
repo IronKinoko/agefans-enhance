@@ -1,7 +1,7 @@
 import genUserScriptInfo from './src/userscirpt'
 import pkg from './package.json'
 import replace from '@rollup/plugin-replace'
-
+import styles from 'rollup-plugin-styles'
 /** @type {import('rollup').RollupOptions} */
 const config = {
   input: 'src/index.js',
@@ -19,6 +19,7 @@ const config = {
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       preventAssignment: true,
     }),
+    styles()
   ],
 }
 
