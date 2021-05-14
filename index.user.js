@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.3.0
+// @version      1.3.1
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @match        https://www.agefans.net/*
@@ -470,7 +470,7 @@
 
   async function getVurl(href) {
     const res = await fetch(getPlayUrl(href)).then((res) => res.json());
-    return res.vurl
+    return decodeURIComponent(res.vurl)
   }
   async function getVurlWithLocal(href) {
     const map = getLocal();
