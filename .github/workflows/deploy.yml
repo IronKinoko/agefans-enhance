@@ -5,10 +5,9 @@ name: Deploy Player Website
 # Controls when the action will run. 
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
-  push:
+  release:
     branches: [ master ]
-    paths:
-        - 'website/**'
+    
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -24,10 +23,10 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: inline-source
-        run: yarn && yarn build:website
+      - name: build 
+        run: yarn && yarn build
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy to gh-pages branch
         uses: JamesIves/github-pages-deploy-action@4.1.1
         with:
           branch: 'gh-pages'
