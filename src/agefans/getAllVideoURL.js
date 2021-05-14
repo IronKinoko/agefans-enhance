@@ -156,7 +156,7 @@ function insertLocal() {
 
 async function getVurl(href) {
   const res = await fetch(getPlayUrl(href)).then((res) => res.json())
-  return res.vurl
+  return decodeURIComponent(res.vurl)
 }
 export async function getVurlWithLocal(href) {
   const map = getLocal()
