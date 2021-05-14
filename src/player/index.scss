@@ -54,6 +54,9 @@
   .plyr--hide-cursor {
     cursor: none;
   }
+  .plyr__control span{
+    color: inherit;
+  }
 }
 
 // loading

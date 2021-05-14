@@ -1,6 +1,7 @@
 import './index.scss'
 import { errorHTML, loadingHTML } from './html'
-export default class KPlayer {
+import { debounce } from '../utils/debounce'
+class KPlayer {
   /**
    * Creates an instance of KPlayer.
    * @param {stromg} selector
@@ -16,7 +17,7 @@ export default class KPlayer {
 
     this.plyr = new Plyr('#k-player-contianer', {
       autoplay: true,
-      keyboard: { focused: true },
+      keyboard: { global: true },
       controls: [
         // 'play-large', // The large play button in the center
         'play', // Play/pause playback
@@ -43,6 +44,21 @@ export default class KPlayer {
     this._injectNext()
     this._injectSreen()
     this._initEvent()
+
+    /** @private */
+    this.isHoverControls = false
+
+    /** @private */
+    this.hideCursorDebounced = debounce(() => {
+      const dom = document.querySelector('.plyr')
+      dom.classList.add('plyr--hide-cursor')
+    }, 1000)
+
+    /** @private */
+    this.hideControlsDebounced = debounce(() => {
+      const dom = document.querySelector('.plyr')
+      if (!this.isHoverControls) dom.classList.add('plyr--hide-controls')
+    }, 1000)
   }
 
   /** @private */
@@ -53,10 +69,40 @@ export default class KPlayer {
     })
     this.on('canplay', () => {
       this.$loading.hide()
+      this.plyr.play()
     })
     this.on('error', () => {
       this.$loading.hide()
       this.showError(this.src)
+    })
+    this.on('pause', () => {
+      this.hideControlsDebounced()
+    })
+
+    document
+      .querySelectorAll('.plyr__controls .plyr__control')
+      .forEach((dom) => {
+        dom.addEventListener('click', (e) => {
+          e.currentTarget.blur()
+        })
+      })
+
+    const playerEl = document.querySelector('.plyr')
+    playerEl.addEventListener('mousemove', () => {
+      playerEl.classList.remove('plyr--hide-cursor')
+      this.hideCursorDebounced()
+
+      if (this.plyr.paused) {
+        this.hideControlsDebounced()
+      }
+    })
+
+    const controlsEl = document.querySelector('.plyr__controls')
+    controlsEl.addEventListener('mouseenter', () => {
+      this.isHoverControls = true
+    })
+    controlsEl.addEventListener('mouseleave', () => {
+      this.isHoverControls = false
     })
   }
 
@@ -131,6 +177,9 @@ export default class KPlayer {
     return this.$video.attr('src')
   }
 
+  set currentTime(value) {
+    this.plyr.currentTime = value
+  }
   get currentTime() {
     return this.plyr.currentTime
   }
@@ -143,3 +192,5 @@ export default class KPlayer {
     this.$error.hide()
   }
 }
+
+export { KPlayer }

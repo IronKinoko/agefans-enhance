@@ -21,7 +21,7 @@ export default function genUserScriptInfo(pkg) {
   try {
     let plyrCSS = GM_getResourceText('plyrCSS')  
     GM_addStyle(plyrCSS)
-  } catch(e) {}
+  } catch(e) { /* empty */ }
 })();
 
 `

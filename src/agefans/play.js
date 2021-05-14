@@ -1,10 +1,9 @@
 import { his } from './history'
-import { initGetAllVideoURL } from './getAllVideoURL'
+import { getVurlWithLocal, initGetAllVideoURL } from './getAllVideoURL'
+import { KPlayer } from '../player'
+
 function replacePlayer() {
   const dom = document.getElementById('age_playfram')
-
-  dom.setAttribute('allow', 'autoplay')
-  const prefix = 'https://ironkinoko.github.io/agefans-enhance/?url='
 
   const fn = () => {
     let url = new URL(dom.src)
@@ -12,13 +11,9 @@ function replacePlayer() {
     if (url.hostname.includes('agefans')) {
       let videoURL = url.searchParams.get('url')
       if (videoURL) {
-        dom.src = prefix + encodeURIComponent(videoURL)
-        showCurrentLink(videoURL)
+        initPlayer(videoURL)
+        mutationOb.disconnect()
       }
-    }
-    // 移除版权规避提示
-    if ($(dom).css('display') === 'none') {
-      $(dom).show()
     }
   }
 
@@ -27,15 +22,18 @@ function replacePlayer() {
   fn()
 }
 
-function showCurrentLink(url) {
+function showCurrentLink(vurl) {
+  if ($('#current-link').length) {
+    return $('#current-link').text(vurl)
+  }
   $(`
   <div class="baseblock">
     <div class="blockcontent">
       <div id="wangpan-div" class="baseblock2">
         <div class="blocktitle">本集链接：</div>
         <div class="blockcontent">
-          <span class="res_links">
-            ${decodeURIComponent(url)}
+          <span class="res_links" id="current-link">
+            ${decodeURIComponent(vurl)}
           </span>
           <br>
         </div>
@@ -46,11 +44,44 @@ function showCurrentLink(url) {
 }
 
 function gotoNextPart() {
-  const dom = document.querySelector("li a[style*='color: rgb(238, 0, 0);']")
-    .parentElement.nextElementSibling
+  const dom = $("li a[style*='color: rgb(238, 0, 0)']")
+    .parent()
+    .next()
+    .find('a')
 
-  if (dom) {
-    dom.children[0].click()
+  if (dom.length) {
+    switchPart(dom.data('href'), dom)
+  }
+}
+
+function getActivedom() {
+  return $("li a[style*='color: rgb(238, 0, 0)']")
+}
+
+/**
+ *
+ * @param {string} href
+ * @param {JQuery<HTMLAnchorElement>} $dom
+ * @param {boolean} [push]
+ */
+async function switchPart(href, $dom, push = true) {
+  try {
+    const vurl = await getVurlWithLocal(href)
+    player.src = vurl
+
+    showCurrentLink(vurl)
+    const $active = getActivedom()
+    $active.css('color', '')
+    $active.css('border', '')
+    const title = document.title.replace($active.text(), $dom.text())
+    push && history.pushState({}, title, href)
+    document.title = title
+    $dom.css('color', 'rgb(238, 0, 0)')
+    $dom.css('border', '1px solid rgb(238, 0, 0)')
+    his.logHistory()
+  } catch (error) {
+    console.error(error)
+    window.location.href = href
   }
 }
 
@@ -82,17 +113,6 @@ function initPlayPageStyle() {
   ageframediv.style.height = (width / 16) * 9 + 'px'
 }
 
-function prerenderNextPartHTML() {
-  const dom = document.querySelector("li a[style*='color: rgb(238, 0, 0);']")
-    .parentElement.nextElementSibling
-  if (dom) {
-    const link = document.createElement('link')
-    link.rel = 'prerender'
-    link.href = dom.children[0].href
-    document.head.appendChild(link)
-  }
-}
-
 function updateTime(time = 0) {
   const id = location.pathname.match(/\/play\/(\d*)/)?.[1]
   if (!id) return
@@ -100,34 +120,71 @@ function updateTime(time = 0) {
   his.setTime(id, Math.floor(time))
 }
 
-function notifyChildJumpToHistoryPosition() {
+function videoJumpHistoryPosition() {
   const id = location.pathname.match(/\/play\/(\d*)/)?.[1]
   if (!id) return
 
-  if (his.get(id)?.time && his.get(id)?.time > 3) {
-    const dom = document.getElementById('age_playfram')
-    dom.contentWindow.postMessage({ code: 999, time: his.get(id).time }, '*')
+  if (his.get(id)?.time > 3) {
+    player.currentTime = his.get(id).time
   }
 }
 
 function addListener() {
-  window.addEventListener('message', (e) => {
-    if (e.data?.code === 233) {
-      gotoNextPart()
-    }
+  player.on('next', () => {
+    gotoNextPart()
+  })
 
-    if (e.data?.code === 200) {
-      notifyChildJumpToHistoryPosition()
-    }
+  player.on('ended', () => {
+    gotoNextPart()
+  })
 
-    if (e.data?.code === 666) {
-      toggleFullScreen()
-    }
+  player.plyr.once('canplay', () => {
+    videoJumpHistoryPosition()
+  })
 
-    if (e.data?.code === 999) {
-      updateTime(e.data.time)
+  player.on('timeupdate', () => {
+    if (Math.floor(player.currentTime) % 3 === 0) {
+      updateTime(player.currentTime)
     }
   })
+
+  player.on('enterwidescreen', () => {
+    toggleFullScreen()
+  })
+  player.on('exitwidescreen', () => {
+    toggleFullScreen()
+  })
+
+  $('.movurl:visible li a').each(function () {
+    const href = $(this).attr('href')
+    $(this)
+      .removeAttr('href')
+      .attr('data-href', href)
+      .on('click', (e) => {
+        e.preventDefault()
+        switchPart(href, $(this))
+      })
+  })
+
+  window.addEventListener('popstate', () => {
+    const href = location.pathname + location.search
+    const $dom = $(`[data-href='${href}']`)
+
+    if ($dom.length) {
+      switchPart(href, $dom, false)
+    } else {
+      location.reload()
+    }
+  })
+}
+
+/** @type {KPlayer} */
+let player
+function initPlayer(vurl) {
+  player = new KPlayer('#age_playfram')
+  showCurrentLink(vurl)
+  addListener()
+  player.src = vurl
 }
 
 function removeCpraid() {
@@ -135,11 +192,9 @@ function removeCpraid() {
 }
 
 export function playModule() {
-  addListener()
   his.logHistory()
   initPlayPageStyle()
   replacePlayer()
-  prerenderNextPartHTML()
   removeCpraid()
   initGetAllVideoURL()
 }

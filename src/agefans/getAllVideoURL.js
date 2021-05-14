@@ -103,11 +103,10 @@ function insertResult(list) {
 
     let $msg = $dom.find('.url')
     function _getUrl() {
-      fetch(getPlayUrl(item.href))
-        .then((res) => res.json())
-        .then((res) => {
-          const url = decodeURIComponent(res.vurl)
-          saveLocal(item.href, item.title, url)
+      getVurl(item.href)
+        .then((vurl) => {
+          const url = decodeURIComponent(vurl)
+          saveLocal(item.href, url)
           $msg.text(url)
           $msg.data('status', '1')
         })
@@ -127,12 +126,15 @@ function insertResult(list) {
 }
 
 const PLAY_URL_KEY = 'play-url-key'
+/**
+ * @return {Record<string,{url:string}>}
+ */
 function getLocal() {
   return JSON.parse(window.localStorage.getItem(PLAY_URL_KEY) || '{}')
 }
-function saveLocal(href, title, url) {
+function saveLocal(href, url) {
   const map = getLocal()
-  map[href] = { title, url }
+  map[href] = { url }
   window.localStorage.setItem(PLAY_URL_KEY, JSON.stringify(map))
 }
 function insertLocal() {
@@ -151,6 +153,22 @@ function insertLocal() {
       .join('')
   ).appendTo($parent)
 }
+
+async function getVurl(href) {
+  const res = await fetch(getPlayUrl(href)).then((res) => res.json())
+  return res.vurl
+}
+export async function getVurlWithLocal(href) {
+  const map = getLocal()
+  if (map[href]) {
+    return map[href].url
+  }
+
+  const vurl = await getVurl(href)
+  saveLocal(href, vurl)
+  return vurl
+}
+
 export function initGetAllVideoURL() {
   insertBtn()
   insertLocal()
