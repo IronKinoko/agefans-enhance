@@ -372,7 +372,7 @@
     $aTagList.each(function (index, aTag) {
       aTags.push({
         title: aTag.textContent,
-        href: aTag.getAttribute('href'),
+        href: aTag.dataset.href,
       });
     });
 
@@ -1003,17 +1003,6 @@ aria-hidden="true"
       toggleFullScreen();
     });
 
-    $('.movurl:visible li a').each(function () {
-      const href = $(this).attr('href');
-      $(this)
-        .removeAttr('href')
-        .attr('data-href', href)
-        .on('click', (e) => {
-          e.preventDefault();
-          switchPart(href, $(this));
-        });
-    });
-
     window.addEventListener('popstate', () => {
       const href = location.pathname + location.search;
       const $dom = $(`[data-href='${href}']`);
@@ -1023,6 +1012,19 @@ aria-hidden="true"
       } else {
         location.reload();
       }
+    });
+  }
+
+  function replaceHref() {
+    $('.movurl:visible li a').each(function () {
+      const href = $(this).attr('href');
+      $(this)
+        .removeAttr('href')
+        .attr('data-href', href)
+        .on('click', (e) => {
+          e.preventDefault();
+          switchPart(href, $(this));
+        });
     });
   }
 
@@ -1042,6 +1044,7 @@ aria-hidden="true"
   function playModule() {
     his.logHistory();
     initPlayPageStyle();
+    replaceHref();
     replacePlayer();
     removeCpraid();
     initGetAllVideoURL();
