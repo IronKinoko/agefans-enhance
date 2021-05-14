@@ -155,17 +155,6 @@ function addListener() {
     toggleFullScreen()
   })
 
-  $('.movurl:visible li a').each(function () {
-    const href = $(this).attr('href')
-    $(this)
-      .removeAttr('href')
-      .attr('data-href', href)
-      .on('click', (e) => {
-        e.preventDefault()
-        switchPart(href, $(this))
-      })
-  })
-
   window.addEventListener('popstate', () => {
     const href = location.pathname + location.search
     const $dom = $(`[data-href='${href}']`)
@@ -175,6 +164,19 @@ function addListener() {
     } else {
       location.reload()
     }
+  })
+}
+
+function replaceHref() {
+  $('.movurl:visible li a').each(function () {
+    const href = $(this).attr('href')
+    $(this)
+      .removeAttr('href')
+      .attr('data-href', href)
+      .on('click', (e) => {
+        e.preventDefault()
+        switchPart(href, $(this))
+      })
   })
 }
 
@@ -194,6 +196,7 @@ function removeCpraid() {
 export function playModule() {
   his.logHistory()
   initPlayPageStyle()
+  replaceHref()
   replacePlayer()
   removeCpraid()
   initGetAllVideoURL()

@@ -58,7 +58,7 @@ function getAllVideoUrlList() {
   $aTagList.each(function (index, aTag) {
     aTags.push({
       title: aTag.textContent,
-      href: aTag.getAttribute('href'),
+      href: aTag.dataset.href,
     })
   })
 
