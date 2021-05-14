@@ -1,0 +1,33 @@
+#history {
+  background: #202020;
+  border: 4px solid #303030;
+
+  .history-list {
+    padding: 16px;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .history-item {
+    width: 115px;
+    display: inline-block;
+    margin: 4px;
+
+    img {
+      width: 100%;
+      border-radius: 2px;
+    }
+    .desc {
+      .title {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-size: 14px;
+        margin: 4px 0;
+      }
+      .position {
+        font-size: 14px;
+      }
+    }
+  }
+}

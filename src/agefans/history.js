@@ -1,3 +1,4 @@
+import './history.scss'
 class History {
   constructor() {
     this.cacheKey = 'v-his'

@@ -11,7 +11,9 @@
   },
   "globals": {
     "$": "readonly",
-    "Plyr": "readonly"
+    "Plyr": "readonly",
+    "GM_getResourceText": "readonly",
+    "GM_addStyle": "readonly"
   },
   "rules": {}
 }

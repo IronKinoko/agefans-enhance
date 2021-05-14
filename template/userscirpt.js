@@ -8,9 +8,21 @@ export default function genUserScriptInfo(pkg) {
 // @match        https://www.agefans.net/*
 // @match        https://www.agefans.net/play/*
 // @match        https://www.agefans.net/detail/*
+// @resource     plyrCSS https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.css
 // @require      https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js
-// @grant        none
+// @require      https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.js
+// @grant        GM_getResourceText
+// @grant        GM_addStyle
 // @license      MIT
 // ==/UserScript==
+
+(function() {
+  'use strict';
+  try {
+    let plyrCSS = GM_getResourceText('plyrCSS')  
+    GM_addStyle(plyrCSS)
+  } catch(e) {}
+})();
+
 `
 }

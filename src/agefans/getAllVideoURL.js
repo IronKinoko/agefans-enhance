@@ -1,6 +1,6 @@
-import { copyToClipboard } from './utils/copy'
-import { modal } from './utils/modal'
-import { getPlayUrl } from './utils/playURL'
+import { copyToClipboard } from '../utils/copy'
+import { modal } from '../utils/modal'
+import { getPlayUrl } from './playURL'
 
 /**
  * @typedef {{title:string,href:string}} ATag

@@ -1,3 +1,4 @@
+import './modal.scss'
 export function modal({ title, content, onClose, onOk }) {
   const ID = Math.random().toString(16).slice(2)
   $(`
