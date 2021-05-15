@@ -85,28 +85,9 @@ async function switchPart(href, $dom, push = true) {
   }
 }
 
-function toggleFullScreen() {
-  let dom = document.querySelector('.fullscn')
-  dom.click()
-}
-
-function notifyChildToggleFullScreen(isFull) {
-  const dom = document.getElementById('age_playfram')
-  dom.contentWindow.postMessage({ code: 666, isFull }, '*')
-}
-
 function initPlayPageStyle() {
   let dom = document.querySelector('.fullscn')
-  dom.onclick = () => {
-    if (document.body.style.overflow === 'hidden') {
-      document.body.style.overflow = ''
-      notifyChildToggleFullScreen(false)
-    } else {
-      document.body.style.overflow = 'hidden'
-      notifyChildToggleFullScreen(true)
-    }
-  }
-  dom.style.opacity = 0
+  dom.remove()
 
   let ageframediv = document.getElementById('ageframediv')
   let { width } = ageframediv.getBoundingClientRect()
@@ -146,13 +127,6 @@ function addListener() {
     if (Math.floor(player.currentTime) % 3 === 0) {
       updateTime(player.currentTime)
     }
-  })
-
-  player.on('enterwidescreen', () => {
-    toggleFullScreen()
-  })
-  player.on('exitwidescreen', () => {
-    toggleFullScreen()
   })
 
   window.addEventListener('popstate', () => {

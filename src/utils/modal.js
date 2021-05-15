@@ -17,14 +17,27 @@ export function modal({ title, content, onClose, onOk }) {
   $(`#${ID} .k-modal-title`).append(title)
   $(`#${ID} .k-modal-body`).append(content)
   $(`#${ID} .k-modal-close`).on('click', () => {
-    $(`#${ID}`).remove()
-    onClose && onClose()
+    handleClose()
   })
   $(`#${ID} .k-modal-mask`).on('click', () => {
-    $(`#${ID}`).remove()
-    onClose && onClose()
+    handleClose()
   })
 
+  function handleClose() {
+    $(`#${ID}`).remove()
+    onClose?.()
+    $('body').css('overflow', '')
+    window.removeEventListener('keydown', fn, { capture: true })
+  }
+
+  function fn(e) {
+    if (['Escape', '?', '？'].includes(e.key)) {
+      handleClose()
+    }
+    e.stopPropagation()
+  }
+  window.addEventListener('keydown', fn, { capture: true })
+  $('body').css('overflow', 'hidden')
   if (onOk) {
     $(`#${ID} .k-modal-container`).append(`
       <div class="k-modal-footer">

@@ -4,6 +4,13 @@
   height: 100%;
   background: #000;
 
+  &.k-player-widescreen {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 100;
+  }
+
   .k-player-contianer {
     width: 100%;
     height: 100%;
@@ -54,7 +61,7 @@
   .plyr--hide-cursor {
     cursor: none;
   }
-  .plyr__control span{
+  .plyr__control span {
     color: inherit;
   }
 }
@@ -136,5 +143,32 @@
   }
   100% {
     opacity: 0;
+  }
+}
+
+.script-info {
+  width: 100%;
+  tbody tr td:first-child {
+    white-space: nowrap;
+  }
+  td {
+    padding: 8px;
+    border-bottom: 1px solid #f1f1f1;
+    word-wrap: break-word;
+    word-break: break-all;
+  }
+  .info-title {
+    font-weight: 600;
+    padding-top: 24px;
+  }
+
+  a {
+    color: #2af;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+
+  a:hover{
+    background-color: #f1f1f1;
   }
 }

@@ -147,3 +147,37 @@ export const errorHTML = `
     <div>视频加载失败</div><div class="error-info"></div>
   </div>
 </div>`
+
+export const scriptInfo = (video) => `
+<table class="script-info">
+  <tbody>
+  <tr><td>脚本版本</td><td>${process.env.APP_VERSION}</td></tr>
+  <tr>
+    <td>脚本源码</td>
+    <td>
+      <a target="_blank" href="https://github.com/IronKinoko/agefans-enhance">GitHub</a>
+    </td>
+  </tr>
+  <tr>
+    <td>报错/意见</td>
+    <td>
+      <a target="_blank" href="https://github.com/IronKinoko/agefans-enhance/issues">GitHub Issues</a>
+      <a target="_blank" href="https://greasyfork.org/zh-CN/scripts/424023-agefans-enhance/feedback">Greasy Fork 反馈</a>
+    </td>
+  </tr>
+  <tr><td colspan="2" class="info-title">视频信息</td></tr>
+  <tr><td>视频链接</td><td>${video.src}</td></tr>
+  <tr><td>视频信息</td><td>${video.videoWidth} x ${video.videoHeight}</td></tr>
+  <tr><td colspan="2" class="info-title">快捷键</td></tr>
+  <tr><td>[w]</td><td>宽屏</td></tr>
+  <tr><td>[f]</td><td>全屏</td></tr>
+  <tr><td>[←]</td><td>后退10s</td></tr>
+  <tr><td>[→]</td><td>前进10s</td></tr>
+  <tr><td>[↑]</td><td>音量+</td></tr>
+  <tr><td>[↓]</td><td>音量-</td></tr>
+  <tr><td>[m]</td><td>静音</td></tr>
+  <tr><td>[esc]</td><td>退出全屏/宽屏</td></tr>
+  <tr><td>[?]</td><td>脚本信息</td></tr>
+  </tbody>
+</table>
+`

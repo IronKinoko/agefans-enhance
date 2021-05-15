@@ -1,6 +1,7 @@
 import './index.scss'
-import { errorHTML, loadingHTML } from './html'
+import { errorHTML, loadingHTML, scriptInfo } from './html'
 import { debounce } from '../utils/debounce'
+import { modal } from '../utils/modal'
 class KPlayer {
   /**
    * Creates an instance of KPlayer.
@@ -39,7 +40,7 @@ class KPlayer {
     this.$video = $video
 
     this.eventMap = {}
-    this.ispip = false
+    this.isWideScreen = false
 
     this._injectNext()
     this._injectSreen()
@@ -77,6 +78,26 @@ class KPlayer {
     })
     this.on('pause', () => {
       this.hideControlsDebounced()
+    })
+
+    $(window).on('keydown', (e) => {
+      if ((e.key === '?' || e.key === '？') && !this.plyr.fullscreen.active) {
+        const video = this.$video[0]
+        modal({
+          title: '脚本信息',
+          content: scriptInfo(video),
+        })
+      }
+      if (e.key === 'w' && !this.plyr.fullscreen.active) {
+        this._toggleFullscreen()
+      }
+      if (
+        e.key === 'Escape' &&
+        !this.plyr.fullscreen.active &&
+        this.isWideScreen
+      ) {
+        this._toggleFullscreen(false)
+      }
     })
 
     document
@@ -151,17 +172,25 @@ class KPlayer {
   }
 
   /** @private */
-  _toggleFullscreen(bool = !this.ispip) {
-    if (this.ispip === bool) return
-    this.ispip = bool
+  _toggleFullscreen(bool = !this.isWideScreen) {
+    if (this.isWideScreen === bool) return
+    this.isWideScreen = bool
 
-    this._setFullscreenIcon(this.ispip)
+    this._setFullscreenIcon(this.isWideScreen)
 
-    this.trigger(this.ispip ? 'enterwidescreen' : 'exitwidescreen')
+    if (this.isWideScreen) {
+      $('body').css('overflow', 'hidden')
+      this.$wrapper.addClass('k-player-widescreen')
+    } else {
+      $('body').css('overflow', '')
+      this.$wrapper.removeClass('k-player-widescreen')
+    }
+
+    this.trigger(this.isWideScreen ? 'enterwidescreen' : 'exitwidescreen')
   }
 
   /** @private */
-  _setFullscreenIcon(bool = this.ispip) {
+  _setFullscreenIcon(bool = this.isWideScreen) {
     const $use = $('.plyr__fullscreen.plyr__custom use')
     $use.attr('xlink:href', bool ? '#fullscreen-quit' : '#fullscreen')
   }

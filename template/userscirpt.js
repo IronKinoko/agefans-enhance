@@ -1,4 +1,4 @@
-export default function genUserScriptInfo(pkg) {
+function genUserScriptInfo(pkg) {
   return `// ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
@@ -8,6 +8,7 @@ export default function genUserScriptInfo(pkg) {
 // @match        https://www.agefans.net/*
 // @match        https://www.agefans.net/play/*
 // @match        https://www.agefans.net/detail/*
+// @match        *.yhdm.so/v/*
 // @resource     plyrCSS https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.css
 // @require      https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js
 // @require      https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.js
@@ -25,4 +26,8 @@ export default function genUserScriptInfo(pkg) {
 })();
 
 `
+}
+
+module.exports = {
+  genUserScriptInfo,
 }
