@@ -5,7 +5,7 @@
   "main": "index.user.js",
   "scripts": {
     "dev": "webpack -w",
-    "build": "webpack",
+    "build": "webpack --mode production",
     "lint": "eslint --fix --ext js .",
     "prepare": "husky install"
   },

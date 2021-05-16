@@ -148,7 +148,7 @@ export const errorHTML = `
   </div>
 </div>`
 
-export const scriptInfo = (video) => `
+export const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
   <tr><td>脚本版本</td><td>${process.env.APP_VERSION}</td></tr>
@@ -161,7 +161,7 @@ export const scriptInfo = (video) => `
   <tr>
     <td>报错/意见</td>
     <td>
-      <a target="_blank" href="https://github.com/IronKinoko/agefans-enhance/issues">GitHub Issues</a>
+      <a target="_blank" href="${githubIssueURL}">GitHub Issues</a>
       <a target="_blank" href="https://greasyfork.org/zh-CN/scripts/424023-agefans-enhance/feedback">Greasy Fork 反馈</a>
     </td>
   </tr>
@@ -180,4 +180,20 @@ export const scriptInfo = (video) => `
   <tr><td>[?]</td><td>脚本信息</td></tr>
   </tbody>
 </table>
+`
+
+export const issueBody = (src) =>
+  `# 文字描述
+<!-- 如果有需要额外描述，或者提意见可以写在下面空白处 -->
+
+
+# 网址链接
+${window.location.href}
+
+# 视频链接
+${src}
+
+# 环境
+userAgent: ${navigator.userAgent}
+脚本版本: ${process.env.APP_VERSION}
 `

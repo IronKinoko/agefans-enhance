@@ -1,7 +1,8 @@
 import './index.scss'
-import { errorHTML, loadingHTML, scriptInfo } from './html'
+import { errorHTML, issueBody, loadingHTML, scriptInfo } from './html'
 import { debounce } from '../utils/debounce'
 import { modal } from '../utils/modal'
+import { genIssueURL } from '../utils/genIssueURL'
 class KPlayer {
   /**
    * Creates an instance of KPlayer.
@@ -83,9 +84,13 @@ class KPlayer {
     $(window).on('keydown', (e) => {
       if ((e.key === '?' || e.key === '？') && !this.plyr.fullscreen.active) {
         const video = this.$video[0]
+        const githubIssueURL = genIssueURL({
+          title: '无法正常播放',
+          body: issueBody(video.src),
+        })
         modal({
           title: '脚本信息',
-          content: scriptInfo(video),
+          content: scriptInfo(video, githubIssueURL),
         })
       }
       if (e.key === 'w' && !this.plyr.fullscreen.active) {

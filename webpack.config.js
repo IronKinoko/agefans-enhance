@@ -37,5 +37,9 @@ const config = {
       'process.env.APP_VERSION': JSON.stringify(pkg.version),
     }),
   ],
+  optimization: {
+    minimize: false,
+  },
 }
+
 module.exports = config

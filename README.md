@@ -2,6 +2,8 @@
 
 增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 
+额外支持支持`yhdm.so`使用
+
 ## 安装
 
 [Greasy Fork链接，点击安装](https://greasyfork.org/zh-CN/scripts/424023-agefans-enhance)
@@ -23,4 +25,4 @@
 
 ## 待做事项
 
-- 暂无，欢迎提交意见（issue）
+- 暂无，欢迎提交意见（[issue](https://github.com/IronKinoko/agefans-enhance/issues)）
