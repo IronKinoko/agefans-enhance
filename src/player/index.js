@@ -39,6 +39,7 @@ class KPlayer {
     this.$loading = $loading
     this.$error = $error
     this.$video = $video
+    this.$videoWrapper = $wrapper.find('.plyr')
 
     this.eventMap = {}
     this.isWideScreen = false
@@ -71,10 +72,12 @@ class KPlayer {
     })
     this.on('canplay', () => {
       this.$loading.hide()
+      this.$videoWrapper.show()
       this.plyr.play()
     })
     this.on('error', () => {
       this.$loading.hide()
+      this.$videoWrapper.hide()
       this.showError(this.src)
     })
     this.on('pause', () => {
