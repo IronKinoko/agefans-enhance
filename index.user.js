@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.4.1
+// @version      1.5.0
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @match        https://www.agefans.net/*
@@ -912,6 +912,8 @@ function insertBtn() {
           <a id="open-modal" class="res_links_a" style="cursor:pointer">获取全部视频链接</a>
           <span>｜</span>
           <a id="all-select" class="res_links_a" style="cursor:pointer">复制内容</a>
+          <span>｜</span>
+          <a id="thunder-link" target="_blank" class="res_links_a" style="cursor:pointer">导出迅雷链接</a>
           <div id="url-list" style="width:100%; max-height:400px; overflow:auto;"></div>
         </div>
       </div>
@@ -942,6 +944,28 @@ function insertBtn() {
         insertResult(list);
       }
     });
+  });
+  $('#thunder-link').attr('href', () => {
+    const map = getLocal();
+    const list = getAllVideoUrlList();
+    const tasks = [];
+    const taskGroupName = $('#detailname a').text();
+    list.forEach(item => {
+      if (map[item.href]) {
+        tasks.push({
+          url: map[item.href].url,
+          baseName: `${item.title}.mp4`
+        });
+      }
+    });
+    const params = {
+      taskGroupName,
+      tasks
+    };
+    const baseURL =  false ? 0 : 'https://ironkinoko.github.io/agefans-enhance/thunder.html';
+    const url = new URL(baseURL);
+    url.searchParams.append('params', JSON.stringify(params));
+    return url.toString();
   });
 }
 /**
@@ -1231,7 +1255,7 @@ const errorHTML = `
 const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.4.1"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.5.0"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -1273,7 +1297,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.4.1"}
+脚本版本: ${"1.5.0"}
 `;
 ;// CONCATENATED MODULE: ./src/utils/debounce.js
 function debounce(fn, delay = 300) {
