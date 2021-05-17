@@ -31,7 +31,7 @@ const config = {
       raw: true,
     }),
     new CopyPlugin({
-      patterns: ['README.md', 'package.json', 'LICENSE'],
+      patterns: ['README.md', 'package.json', 'LICENSE', 'website/thunder.html'],
     }),
     new webpack.DefinePlugin({
       'process.env.APP_VERSION': JSON.stringify(pkg.version),
