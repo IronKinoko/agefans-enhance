@@ -23,11 +23,19 @@ export function modal({ title, content, onClose, onOk }) {
     handleClose()
   })
 
-  function handleClose() {
+  function reset() {
     $(`#${ID}`).remove()
-    onClose?.()
     $('body').css('overflow', '')
     window.removeEventListener('keydown', fn, { capture: true })
+  }
+
+  function handleClose() {
+    onClose?.()
+    reset()
+  }
+  function handleOk() {
+    onOk()
+    reset()
   }
 
   function fn(e) {
@@ -45,8 +53,7 @@ export function modal({ title, content, onClose, onOk }) {
       </div>
     `)
     $(`#${ID} .k-modal-ok`).on('click', () => {
-      onOk()
-      $(`#${ID}`).remove()
+      handleOk()
     })
   }
 }
