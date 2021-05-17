@@ -16,6 +16,8 @@ function insertBtn() {
           <a id="open-modal" class="res_links_a" style="cursor:pointer">获取全部视频链接</a>
           <span>｜</span>
           <a id="all-select" class="res_links_a" style="cursor:pointer">复制内容</a>
+          <span>｜</span>
+          <a id="thunder-link" target="_blank" class="res_links_a" style="cursor:pointer">导出迅雷链接</a>
           <div id="url-list" style="width:100%; max-height:400px; overflow:auto;"></div>
         </div>
       </div>
@@ -46,6 +48,30 @@ function insertBtn() {
         insertResult(list)
       },
     })
+  })
+  $('#thunder-link').attr('href', () => {
+    const map = getLocal()
+    const list = getAllVideoUrlList()
+    const tasks = []
+    const taskGroupName = $('#detailname a').text()
+    list.forEach((item) => {
+      if (map[item.href]) {
+        tasks.push({
+          url: map[item.href].url,
+          baseName: `${item.title}.mp4`,
+        })
+      }
+    })
+
+    const params = { taskGroupName, tasks }
+
+    const baseURL =
+      process.env.NODE_ENV === 'development'
+        ? 'http://127.0.0.1:5500/website/thunder.html'
+        : 'https://ironkinoko.github.io/agefans-enhance/thunder.html'
+    const url = new URL(baseURL)
+    url.searchParams.append('params', JSON.stringify(params))
+    return url.toString()
   })
 }
 

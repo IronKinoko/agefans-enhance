@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>agefans链接批量下载</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+    />
+    <style>
+      .body {
+        margin: 0;
+      }
+      * {
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="container">
+        <h1 class="display-4">agefans链接批量下载</h1>
+        <div class="card">
+          <div class="card-header">迅雷下载</div>
+          <div class="card-body">
+            <div class="form-group">
+              <label for="taskGroupName">任务组名称</label>
+              <input
+                v-model="taskGroupName"
+                type="text"
+                class="form-control"
+                name="taskGroupName"
+                id="taskGroupName"
+                aria-describedby="taskGroupNameHelp"
+                :placeholder="taskGroupName||origin.taskGroupName"
+              />
+              <small id="taskGroupNameHelp" class="form-text text-muted"
+                >指定任务组名称，可将批量任务合并成类似BT任务的【任务组】，迅雷将在下载目录中创建同名子文件夹保存所有下载文件。</small
+              >
+            </div>
+            <div class="form-group">
+              <label for="task">下载列表</label>
+              <textarea
+                readonly
+                v-model="tasksStr"
+                class="form-control"
+                name="tasks"
+                id="tasks"
+                rows="10"
+              ></textarea>
+            </div>
+          </div>
+          <div class="card-footer text-muted">
+            <button type="submit" class="btn btn-primary" @click="download">
+              下载
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.min.js"></script>
+    <script src="//open.thunderurl.com/thunder-link.js"></script>
+
+    <script>
+      let params = {
+        taskGroupName: '',
+        tasks: [],
+      }
+      try {
+        params = JSON.parse(new URLSearchParams(location.search).get('params'))
+      } catch (error) {
+        console.error(error)
+      }
+
+      new Vue({
+        el: '#app',
+        data: { ...params, origin: params },
+        created() {
+          this.tasks = this.tasks.map((o) => {
+            o.name = `${params.taskGroupName} ${o.baseName}`
+            return o
+          })
+        },
+        computed: {
+          tasksStr: {
+            get() {
+              return this.tasks.map((o) => `[${o.name}]\n${o.url}`).join('\n\n')
+            },
+          },
+        },
+        watch: {
+          taskGroupName(newValue) {
+            newValue = newValue || params.taskGroupName
+            this.tasks = this.tasks.map((o) => {
+              o.name = `${newValue} ${o.baseName}`
+              return o
+            })
+          },
+        },
+        methods: {
+          download() {
+            thunderLink.newTask({
+              taskGroupName: this.taskGroupName || params.taskGroupName,
+              tasks: this.tasks,
+            })
+          },
+        },
+      })
+    </script>
+  </body>
+</html>
