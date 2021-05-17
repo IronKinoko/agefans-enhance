@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.4.0
+// @version      1.4.1
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @match        https://www.agefans.net/*
@@ -771,13 +771,22 @@ function modal_modal({
     handleClose();
   });
 
-  function handleClose() {
+  function reset() {
     $(`#${ID}`).remove();
-    onClose === null || onClose === void 0 ? void 0 : onClose();
     $('body').css('overflow', '');
     window.removeEventListener('keydown', fn, {
       capture: true
     });
+  }
+
+  function handleClose() {
+    onClose === null || onClose === void 0 ? void 0 : onClose();
+    reset();
+  }
+
+  function handleOk() {
+    onOk();
+    reset();
   }
 
   function fn(e) {
@@ -800,8 +809,7 @@ function modal_modal({
       </div>
     `);
     $(`#${ID} .k-modal-ok`).on('click', () => {
-      onOk();
-      $(`#${ID}`).remove();
+      handleOk();
     });
   }
 }
@@ -1223,7 +1231,7 @@ const errorHTML = `
 const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.4.0"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.4.1"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -1265,7 +1273,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.4.0"}
+脚本版本: ${"1.4.1"}
 `;
 ;// CONCATENATED MODULE: ./src/utils/debounce.js
 function debounce(fn, delay = 300) {
