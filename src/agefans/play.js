@@ -43,6 +43,17 @@ function showCurrentLink(vurl) {
 `).insertBefore($('.baseblock:contains(网盘资源)'))
 }
 
+function gotoPrevPart() {
+  const dom = $("li a[style*='color: rgb(238, 0, 0)']")
+    .parent()
+    .prev()
+    .find('a')
+
+  if (dom.length) {
+    switchPart(dom.data('href'), dom)
+  }
+}
+
 function gotoNextPart() {
   const dom = $("li a[style*='color: rgb(238, 0, 0)']")
     .parent()
@@ -117,6 +128,10 @@ function addListener() {
 
   player.on('ended', () => {
     gotoNextPart()
+  })
+
+  player.on('prev', () => {
+    gotoPrevPart()
   })
 
   player.plyr.once('canplay', () => {

@@ -177,6 +177,8 @@ export const scriptInfo = (video, githubIssueURL) => `
   <tr><td>[↓]</td><td>音量-</td></tr>
   <tr><td>[m]</td><td>静音</td></tr>
   <tr><td>[esc]</td><td>退出全屏/宽屏</td></tr>
+  <tr><td>[p | PageUp]</td><td>上一集</td></tr>
+  <tr><td>[n | PageDn]</td><td>下一集</td></tr>
   <tr><td>[?]</td><td>脚本信息</td></tr>
   </tbody>
 </table>

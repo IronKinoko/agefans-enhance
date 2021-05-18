@@ -86,15 +86,13 @@ class KPlayer {
 
     $(window).on('keydown', (e) => {
       if ((e.key === '?' || e.key === '？') && !this.plyr.fullscreen.active) {
-        const video = this.$video[0]
-        const githubIssueURL = genIssueURL({
-          title: '无法正常播放',
-          body: issueBody(video.src),
-        })
-        modal({
-          title: '脚本信息',
-          content: scriptInfo(video, githubIssueURL),
-        })
+        this.showInfo()
+      }
+      if (e.key === 'n' || e.key === 'PageDown') {
+        this.trigger('next')
+      }
+      if (e.key === 'p' || e.key === 'PageUp') {
+        this.trigger('prev')
       }
       if (e.key === 'w' && !this.plyr.fullscreen.active) {
         this._toggleFullscreen()
@@ -135,14 +133,26 @@ class KPlayer {
     })
   }
 
-  /** @typedef {'next'|'enterwidescreen'|'exitwidescreen'} CustomEventMap */
+  showInfo() {
+    const video = this.$video[0]
+    const githubIssueURL = genIssueURL({
+      title: '🐛[Bug]',
+      body: issueBody(video.src),
+    })
+    modal({
+      title: '脚本信息',
+      content: scriptInfo(video, githubIssueURL),
+    })
+  }
+
+  /** @typedef {'prev'|'next'|'enterwidescreen'|'exitwidescreen'} CustomEventMap */
   /**
    * @param {CustomEventMap | keyof Plyr.PlyrEventMap} event
    * @param {function} callback
    * @private
    */
   on(event, callback) {
-    if (['next', 'enterwidescreen', 'exitwidescreen'].includes(event)) {
+    if (['prev', 'next', 'enterwidescreen', 'exitwidescreen'].includes(event)) {
       if (!this.eventMap[event]) this.eventMap[event] = []
       this.eventMap[event].push(callback)
     } else {
