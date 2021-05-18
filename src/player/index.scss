@@ -168,7 +168,23 @@
     border-radius: 4px;
   }
 
-  a:hover{
+  a:hover {
     background-color: #f1f1f1;
+  }
+  .key {
+    position: relative;
+    background: #333;
+    text-align: center;
+    color: #eee;
+    float: left;
+    border-radius: 0.3em;
+    padding: 0.2em;
+    width: 3.3em;
+    height: 100%;
+    box-sizing: border-box;
+    border: 1px solid #444;
+    box-shadow: 0 0.2em 0 0.05em #222;
+    border-bottom-color: #555;
+    user-select: none;
   }
 }

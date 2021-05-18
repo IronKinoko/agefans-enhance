@@ -89,9 +89,11 @@ class KPlayer {
         this.showInfo()
       }
       if (e.key === 'n' || e.key === 'PageDown') {
+        e.preventDefault()
         this.trigger('next')
       }
       if (e.key === 'p' || e.key === 'PageUp') {
+        e.preventDefault()
         this.trigger('prev')
       }
       if (e.key === 'w' && !this.plyr.fullscreen.active) {

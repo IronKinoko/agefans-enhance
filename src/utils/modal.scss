@@ -24,18 +24,40 @@
   }
 
   .k-modal-mask {
-    position: absolute;
-    width: 100%;
-    height: 100%;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
     background: rgba(0, 0, 0, 0.45);
     cursor: pointer;
   }
+  .k-modal-wrap {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    overflow: auto;
+    text-align: center;
+    &::before {
+      content: '';
+      display: inline-block;
+      height: 100%;
+      vertical-align: middle;
+    }
+  }
   .k-modal-container {
-    position: absolute;
+    margin: 20px 0;
+    display: inline-block;
+    vertical-align: middle;
+    text-align: left;
+    position: relative;
     width: 520px;
     min-height: 100px;
     background: white;
     border-radius: 2px;
+    pointer-events: auto;
   }
   .k-modal-header {
     font-size: 16px;

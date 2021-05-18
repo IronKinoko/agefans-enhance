@@ -4,12 +4,14 @@ export function modal({ title, content, onClose, onOk }) {
   $(`
 <div class="k-modal" role="dialog" id="${ID}">
   <div class="k-modal-mask"></div>
-  <div class="k-modal-container">
-    <div class="k-modal-header">
-      <div class="k-modal-title"></div>
-      <a class="k-modal-close">X</a>
-    </div>
-    <div class="k-modal-body">
+  <div class="k-modal-wrap">
+    <div class="k-modal-container">
+      <div class="k-modal-header">
+        <div class="k-modal-title"></div>
+        <a class="k-modal-close">X</a>
+      </div>
+      <div class="k-modal-body">
+      </div>
     </div>
   </div>
 </div>`).appendTo('body')
@@ -19,7 +21,10 @@ export function modal({ title, content, onClose, onOk }) {
   $(`#${ID} .k-modal-close`).on('click', () => {
     handleClose()
   })
-  $(`#${ID} .k-modal-mask`).on('click', () => {
+  $(`#${ID} .k-modal-container`).on('click', (e) => {
+    e.stopPropagation()
+  })
+  $(`#${ID} .k-modal-wrap`).on('click', () => {
     handleClose()
   })
 

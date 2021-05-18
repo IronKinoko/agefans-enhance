@@ -156,7 +156,8 @@ export const scriptInfo = (video, githubIssueURL) => `
     <td>脚本源码</td>
     <td>
       <a target="_blank" href="https://github.com/IronKinoko/agefans-enhance">GitHub</a>
-    </td>
+      <a target="_blank" href="https://github.com/IronKinoko/agefans-enhance/releases">更新记录</a>
+      </td>
   </tr>
   <tr>
     <td>报错/意见</td>
@@ -169,17 +170,17 @@ export const scriptInfo = (video, githubIssueURL) => `
   <tr><td>视频链接</td><td>${video.src}</td></tr>
   <tr><td>视频信息</td><td>${video.videoWidth} x ${video.videoHeight}</td></tr>
   <tr><td colspan="2" class="info-title">快捷键</td></tr>
-  <tr><td>[w]</td><td>宽屏</td></tr>
-  <tr><td>[f]</td><td>全屏</td></tr>
-  <tr><td>[←]</td><td>后退10s</td></tr>
-  <tr><td>[→]</td><td>前进10s</td></tr>
-  <tr><td>[↑]</td><td>音量+</td></tr>
-  <tr><td>[↓]</td><td>音量-</td></tr>
-  <tr><td>[m]</td><td>静音</td></tr>
-  <tr><td>[esc]</td><td>退出全屏/宽屏</td></tr>
-  <tr><td>[p | PageUp]</td><td>上一集</td></tr>
-  <tr><td>[n | PageDn]</td><td>下一集</td></tr>
-  <tr><td>[?]</td><td>脚本信息</td></tr>
+  <tr><td><span class="key">W</span></td><td>宽屏</td></tr>
+  <tr><td><span class="key">F</span></td><td>全屏</td></tr>
+  <tr><td><span class="key">←</span></td><td>后退10s</td></tr>
+  <tr><td><span class="key">→</span></td><td>前进10s</td></tr>
+  <tr><td><span class="key">↑</span></td><td>音量+</td></tr>
+  <tr><td><span class="key">↓</span></td><td>音量-</td></tr>
+  <tr><td><span class="key">M</span></td><td>静音</td></tr>
+  <tr><td><span class="key">esc</span></td><td>退出全屏/宽屏</td></tr>
+  <tr><td><span class="key">P</span></td><td>上一集</td></tr>
+  <tr><td><span class="key">N</span></td><td>下一集</td></tr>
+  <tr><td><span class="key">?</span></td><td>脚本信息</td></tr>
   </tbody>
 </table>
 `
