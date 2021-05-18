@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.5.1
+// @version      1.5.2
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @match        https://www.agefans.net/*
@@ -151,7 +151,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, ".agefans-wrapper .nav_button{cursor:po
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#k-player-wrapper{position:relative;width:100%;height:100%;background:#000}#k-player-wrapper.k-player-widescreen{position:fixed;left:0;top:0;z-index:100}#k-player-wrapper .k-player-contianer{width:100%;height:100%}#k-player-wrapper #k-player-loading,#k-player-wrapper #k-player-error{position:absolute;left:0;top:0;right:0;bottom:0;z-index:10;font-size:88px;color:#fff}#k-player-wrapper .k-player-center{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center}#k-player-wrapper .error-info{text-align:center;padding:24px;font-size:18px}#k-player-wrapper .plyr{width:100%;height:100%}#k-player-wrapper video{display:block}#k-player-wrapper .plyr__next svg{transform:scale(1.7)}#k-player-wrapper .plyr__widescreen svg{transform:scale(1.3)}#k-player-wrapper .plyr__fullscreen svg{transform:scale(1.3)}#k-player-wrapper .plyr--hide-cursor{cursor:none}#k-player-wrapper .plyr__control span{color:inherit}.lds-spinner{color:official;display:inline-block;position:relative;width:80px;height:80px}.lds-spinner div{transform-origin:40px 40px;animation:lds-spinner 1.2s linear infinite}.lds-spinner div:after{content:\" \";display:block;position:absolute;top:3px;left:37px;width:6px;height:18px;border-radius:20%;background:#fff}.lds-spinner div:nth-child(1){transform:rotate(0deg);animation-delay:-1.1s}.lds-spinner div:nth-child(2){transform:rotate(30deg);animation-delay:-1s}.lds-spinner div:nth-child(3){transform:rotate(60deg);animation-delay:-0.9s}.lds-spinner div:nth-child(4){transform:rotate(90deg);animation-delay:-0.8s}.lds-spinner div:nth-child(5){transform:rotate(120deg);animation-delay:-0.7s}.lds-spinner div:nth-child(6){transform:rotate(150deg);animation-delay:-0.6s}.lds-spinner div:nth-child(7){transform:rotate(180deg);animation-delay:-0.5s}.lds-spinner div:nth-child(8){transform:rotate(210deg);animation-delay:-0.4s}.lds-spinner div:nth-child(9){transform:rotate(240deg);animation-delay:-0.3s}.lds-spinner div:nth-child(10){transform:rotate(270deg);animation-delay:-0.2s}.lds-spinner div:nth-child(11){transform:rotate(300deg);animation-delay:-0.1s}.lds-spinner div:nth-child(12){transform:rotate(330deg);animation-delay:0s}@keyframes lds-spinner{0%{opacity:1}100%{opacity:0}}.script-info{width:100%}.script-info tbody tr td:first-child{white-space:nowrap}.script-info td{padding:8px;border-bottom:1px solid #f1f1f1;word-wrap:break-word;word-break:break-all}.script-info .info-title{font-weight:600;padding-top:24px}.script-info a{color:#2af;padding:4px 8px;border-radius:4px}.script-info a:hover{background-color:#f1f1f1}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#k-player-wrapper{position:relative;width:100%;height:100%;background:#000}#k-player-wrapper.k-player-widescreen{position:fixed;left:0;top:0;z-index:100}#k-player-wrapper .k-player-contianer{width:100%;height:100%}#k-player-wrapper #k-player-loading,#k-player-wrapper #k-player-error{position:absolute;left:0;top:0;right:0;bottom:0;z-index:10;font-size:88px;color:#fff}#k-player-wrapper .k-player-center{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center}#k-player-wrapper .error-info{text-align:center;padding:24px;font-size:18px}#k-player-wrapper .plyr{width:100%;height:100%}#k-player-wrapper video{display:block}#k-player-wrapper .plyr__next svg{transform:scale(1.7)}#k-player-wrapper .plyr__widescreen svg{transform:scale(1.3)}#k-player-wrapper .plyr__fullscreen svg{transform:scale(1.3)}#k-player-wrapper .plyr--hide-cursor{cursor:none}#k-player-wrapper .plyr__control span{color:inherit}.lds-spinner{color:official;display:inline-block;position:relative;width:80px;height:80px}.lds-spinner div{transform-origin:40px 40px;animation:lds-spinner 1.2s linear infinite}.lds-spinner div:after{content:\" \";display:block;position:absolute;top:3px;left:37px;width:6px;height:18px;border-radius:20%;background:#fff}.lds-spinner div:nth-child(1){transform:rotate(0deg);animation-delay:-1.1s}.lds-spinner div:nth-child(2){transform:rotate(30deg);animation-delay:-1s}.lds-spinner div:nth-child(3){transform:rotate(60deg);animation-delay:-0.9s}.lds-spinner div:nth-child(4){transform:rotate(90deg);animation-delay:-0.8s}.lds-spinner div:nth-child(5){transform:rotate(120deg);animation-delay:-0.7s}.lds-spinner div:nth-child(6){transform:rotate(150deg);animation-delay:-0.6s}.lds-spinner div:nth-child(7){transform:rotate(180deg);animation-delay:-0.5s}.lds-spinner div:nth-child(8){transform:rotate(210deg);animation-delay:-0.4s}.lds-spinner div:nth-child(9){transform:rotate(240deg);animation-delay:-0.3s}.lds-spinner div:nth-child(10){transform:rotate(270deg);animation-delay:-0.2s}.lds-spinner div:nth-child(11){transform:rotate(300deg);animation-delay:-0.1s}.lds-spinner div:nth-child(12){transform:rotate(330deg);animation-delay:0s}@keyframes lds-spinner{0%{opacity:1}100%{opacity:0}}.script-info{width:100%}.script-info tbody tr td:first-child{white-space:nowrap}.script-info td{padding:8px;border-bottom:1px solid #f1f1f1;word-wrap:break-word;word-break:break-all}.script-info .info-title{font-weight:600;padding-top:24px}.script-info a{color:#2af;padding:4px 8px;border-radius:4px}.script-info a:hover{background-color:#f1f1f1}.script-info .key{position:relative;background:#333;text-align:center;color:#eee;float:left;border-radius:.3em;padding:.2em;width:3.3em;height:100%;box-sizing:border-box;border:1px solid #444;box-shadow:0 .2em 0 .05em #222;border-bottom-color:#555;user-select:none}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -170,7 +170,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, "#k-player-wrapper{position:relative;wi
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".k-modal{position:fixed;left:0;right:0;top:0;bottom:0;display:flex;align-items:center;justify-content:center;z-index:1000;text-align:left;animation:fadeIn .3s ease forwards}@keyframes fadeIn{from{opacity:0}to{opacity:1}}.k-modal *{color:rgba(0,0,0,.85)}.k-modal .k-modal-mask{position:absolute;width:100%;height:100%;background:rgba(0,0,0,.45);cursor:pointer}.k-modal .k-modal-container{position:absolute;width:520px;min-height:100px;background:#fff;border-radius:2px}.k-modal .k-modal-header{font-size:16px;padding:16px;border-bottom:1px solid #f1f1f1;display:flex;justify-content:space-between;align-items:center}.k-modal .k-modal-close{cursor:pointer}.k-modal .k-modal-body,.k-modal .k-modal-footer{padding:16px;font-size:14px}.k-modal .k-modal-footer{border-top:1px solid #f1f1f1;display:flex;justify-content:flex-end}.k-modal .k-modal-btn{display:flex;align-items:center;justify-content:center;height:32px;border-radius:2px;border:1px solid #2af;background:#2af;color:#fff;min-width:64px;cursor:pointer}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".k-modal{position:fixed;left:0;right:0;top:0;bottom:0;display:flex;align-items:center;justify-content:center;z-index:1000;text-align:left;animation:fadeIn .3s ease forwards}@keyframes fadeIn{from{opacity:0}to{opacity:1}}.k-modal *{color:rgba(0,0,0,.85)}.k-modal .k-modal-mask{position:fixed;left:0;right:0;bottom:0;top:0;background:rgba(0,0,0,.45);cursor:pointer}.k-modal .k-modal-wrap{position:fixed;left:0;right:0;bottom:0;top:0;overflow:auto;text-align:center}.k-modal .k-modal-wrap::before{content:\"\";display:inline-block;height:100%;vertical-align:middle}.k-modal .k-modal-container{margin:20px 0;display:inline-block;vertical-align:middle;text-align:left;position:relative;width:520px;min-height:100px;background:#fff;border-radius:2px;pointer-events:auto}.k-modal .k-modal-header{font-size:16px;padding:16px;border-bottom:1px solid #f1f1f1;display:flex;justify-content:space-between;align-items:center}.k-modal .k-modal-close{cursor:pointer}.k-modal .k-modal-body,.k-modal .k-modal-footer{padding:16px;font-size:14px}.k-modal .k-modal-footer{border-top:1px solid #f1f1f1;display:flex;justify-content:flex-end}.k-modal .k-modal-btn{display:flex;align-items:center;justify-content:center;height:32px;border-radius:2px;border:1px solid #2af;background:#2af;color:#fff;min-width:64px;cursor:pointer}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -753,12 +753,14 @@ function modal_modal({
   $(`
 <div class="k-modal" role="dialog" id="${ID}">
   <div class="k-modal-mask"></div>
-  <div class="k-modal-container">
-    <div class="k-modal-header">
-      <div class="k-modal-title"></div>
-      <a class="k-modal-close">X</a>
-    </div>
-    <div class="k-modal-body">
+  <div class="k-modal-wrap">
+    <div class="k-modal-container">
+      <div class="k-modal-header">
+        <div class="k-modal-title"></div>
+        <a class="k-modal-close">X</a>
+      </div>
+      <div class="k-modal-body">
+      </div>
     </div>
   </div>
 </div>`).appendTo('body');
@@ -767,7 +769,10 @@ function modal_modal({
   $(`#${ID} .k-modal-close`).on('click', () => {
     handleClose();
   });
-  $(`#${ID} .k-modal-mask`).on('click', () => {
+  $(`#${ID} .k-modal-container`).on('click', e => {
+    e.stopPropagation();
+  });
+  $(`#${ID} .k-modal-wrap`).on('click', () => {
     handleClose();
   });
 
@@ -1255,12 +1260,13 @@ const errorHTML = `
 const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.5.1"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.5.2"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
       <a target="_blank" href="https://github.com/IronKinoko/agefans-enhance">GitHub</a>
-    </td>
+      <a target="_blank" href="https://github.com/IronKinoko/agefans-enhance/releases">更新记录</a>
+      </td>
   </tr>
   <tr>
     <td>报错/意见</td>
@@ -1273,17 +1279,17 @@ const scriptInfo = (video, githubIssueURL) => `
   <tr><td>视频链接</td><td>${video.src}</td></tr>
   <tr><td>视频信息</td><td>${video.videoWidth} x ${video.videoHeight}</td></tr>
   <tr><td colspan="2" class="info-title">快捷键</td></tr>
-  <tr><td>[w]</td><td>宽屏</td></tr>
-  <tr><td>[f]</td><td>全屏</td></tr>
-  <tr><td>[←]</td><td>后退10s</td></tr>
-  <tr><td>[→]</td><td>前进10s</td></tr>
-  <tr><td>[↑]</td><td>音量+</td></tr>
-  <tr><td>[↓]</td><td>音量-</td></tr>
-  <tr><td>[m]</td><td>静音</td></tr>
-  <tr><td>[esc]</td><td>退出全屏/宽屏</td></tr>
-  <tr><td>[p | PageUp]</td><td>上一集</td></tr>
-  <tr><td>[n | PageDn]</td><td>下一集</td></tr>
-  <tr><td>[?]</td><td>脚本信息</td></tr>
+  <tr><td><span class="key">W</span></td><td>宽屏</td></tr>
+  <tr><td><span class="key">F</span></td><td>全屏</td></tr>
+  <tr><td><span class="key">←</span></td><td>后退10s</td></tr>
+  <tr><td><span class="key">→</span></td><td>前进10s</td></tr>
+  <tr><td><span class="key">↑</span></td><td>音量+</td></tr>
+  <tr><td><span class="key">↓</span></td><td>音量-</td></tr>
+  <tr><td><span class="key">M</span></td><td>静音</td></tr>
+  <tr><td><span class="key">esc</span></td><td>退出全屏/宽屏</td></tr>
+  <tr><td><span class="key">P</span></td><td>上一集</td></tr>
+  <tr><td><span class="key">N</span></td><td>下一集</td></tr>
+  <tr><td><span class="key">?</span></td><td>脚本信息</td></tr>
   </tbody>
 </table>
 `;
@@ -1299,7 +1305,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.5.1"}
+脚本版本: ${"1.5.2"}
 `;
 ;// CONCATENATED MODULE: ./src/utils/debounce.js
 function debounce(fn, delay = 300) {
@@ -1423,10 +1429,12 @@ class KPlayer {
       }
 
       if (e.key === 'n' || e.key === 'PageDown') {
+        e.preventDefault();
         this.trigger('next');
       }
 
       if (e.key === 'p' || e.key === 'PageUp') {
+        e.preventDefault();
         this.trigger('prev');
       }
 
