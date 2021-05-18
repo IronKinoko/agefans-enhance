@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.5.0
+// @version      1.5.1
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @match        https://www.agefans.net/*
@@ -1255,7 +1255,7 @@ const errorHTML = `
 const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.5.0"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.5.1"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -1281,6 +1281,8 @@ const scriptInfo = (video, githubIssueURL) => `
   <tr><td>[↓]</td><td>音量-</td></tr>
   <tr><td>[m]</td><td>静音</td></tr>
   <tr><td>[esc]</td><td>退出全屏/宽屏</td></tr>
+  <tr><td>[p | PageUp]</td><td>上一集</td></tr>
+  <tr><td>[n | PageDn]</td><td>下一集</td></tr>
   <tr><td>[?]</td><td>脚本信息</td></tr>
   </tbody>
 </table>
@@ -1297,7 +1299,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.5.0"}
+脚本版本: ${"1.5.1"}
 `;
 ;// CONCATENATED MODULE: ./src/utils/debounce.js
 function debounce(fn, delay = 300) {
@@ -1417,15 +1419,15 @@ class KPlayer {
     });
     $(window).on('keydown', e => {
       if ((e.key === '?' || e.key === '？') && !this.plyr.fullscreen.active) {
-        const video = this.$video[0];
-        const githubIssueURL = genIssueURL({
-          title: '无法正常播放',
-          body: issueBody(video.src)
-        });
-        modal_modal({
-          title: '脚本信息',
-          content: scriptInfo(video, githubIssueURL)
-        });
+        this.showInfo();
+      }
+
+      if (e.key === 'n' || e.key === 'PageDown') {
+        this.trigger('next');
+      }
+
+      if (e.key === 'p' || e.key === 'PageUp') {
+        this.trigger('prev');
       }
 
       if (e.key === 'w' && !this.plyr.fullscreen.active) {
@@ -1458,7 +1460,19 @@ class KPlayer {
       this.isHoverControls = false;
     });
   }
-  /** @typedef {'next'|'enterwidescreen'|'exitwidescreen'} CustomEventMap */
+
+  showInfo() {
+    const video = this.$video[0];
+    const githubIssueURL = genIssueURL({
+      title: '🐛[Bug]',
+      body: issueBody(video.src)
+    });
+    modal_modal({
+      title: '脚本信息',
+      content: scriptInfo(video, githubIssueURL)
+    });
+  }
+  /** @typedef {'prev'|'next'|'enterwidescreen'|'exitwidescreen'} CustomEventMap */
 
   /**
    * @param {CustomEventMap | keyof Plyr.PlyrEventMap} event
@@ -1468,7 +1482,7 @@ class KPlayer {
 
 
   on(event, callback) {
-    if (['next', 'enterwidescreen', 'exitwidescreen'].includes(event)) {
+    if (['prev', 'next', 'enterwidescreen', 'exitwidescreen'].includes(event)) {
       if (!this.eventMap[event]) this.eventMap[event] = [];
       this.eventMap[event].push(callback);
     } else {
@@ -1612,6 +1626,14 @@ function showCurrentLink(vurl) {
 `).insertBefore($('.baseblock:contains(网盘资源)'));
 }
 
+function gotoPrevPart() {
+  const dom = $("li a[style*='color: rgb(238, 0, 0)']").parent().prev().find('a');
+
+  if (dom.length) {
+    switchPart(dom.data('href'), dom);
+  }
+}
+
 function gotoNextPart() {
   const dom = $("li a[style*='color: rgb(238, 0, 0)']").parent().next().find('a');
 
@@ -1686,6 +1708,9 @@ function addListener() {
   });
   play_player.on('ended', () => {
     gotoNextPart();
+  });
+  play_player.on('prev', () => {
+    gotoPrevPart();
   });
   play_player.plyr.once('canplay', () => {
     videoJumpHistoryPosition();
