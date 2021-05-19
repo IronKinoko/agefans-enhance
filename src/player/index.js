@@ -45,6 +45,8 @@ class KPlayer {
     this.isWideScreen = false
     this.wideScreenBodyStyles = {}
 
+    this.statusSessionKey = 'k-player-status'
+
     this._injectNext()
     this._injectSreen()
     this._initEvent()
@@ -63,6 +65,12 @@ class KPlayer {
       const dom = document.querySelector('.plyr')
       if (!this.isHoverControls) dom.classList.add('plyr--hide-controls')
     }, 1000)
+
+    const status = window.sessionStorage.getItem(this.statusSessionKey)
+    if (status) {
+      window.sessionStorage.removeItem(this.statusSessionKey)
+      this._toggleFullscreen(true)
+    }
   }
 
   /** @private */
@@ -196,6 +204,8 @@ class KPlayer {
   _toggleFullscreen(bool = !this.isWideScreen) {
     if (this.isWideScreen === bool) return
     this.isWideScreen = bool
+
+    window.sessionStorage.setItem(this.statusSessionKey, this.isWideScreen)
 
     this._setFullscreenIcon(this.isWideScreen)
 

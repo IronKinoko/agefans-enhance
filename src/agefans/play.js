@@ -79,7 +79,6 @@ async function switchPart(href, $dom, push = true) {
   try {
     const vurl = await getVurlWithLocal(href)
     player.src = vurl
-
     showCurrentLink(vurl)
     const $active = getActivedom()
     $active.css('color', '')
