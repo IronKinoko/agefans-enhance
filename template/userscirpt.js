@@ -1,4 +1,4 @@
-function genUserScriptInfo(pkg) {
+export function genUserScriptInfo(pkg) {
   return `// ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
@@ -26,8 +26,4 @@ function genUserScriptInfo(pkg) {
 })();
 
 `
-}
-
-module.exports = {
-  genUserScriptInfo,
 }

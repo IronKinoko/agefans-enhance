@@ -30,7 +30,7 @@ function gotoNextPart() {
 function initEvent() {
   player.on('next', gotoNextPart)
 }
-export function playmodule() {
+export function playModule() {
   replacePlayer()
   initEvent()
 }
