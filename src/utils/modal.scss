@@ -40,9 +40,11 @@
     top: 0;
     overflow: auto;
     text-align: center;
+    user-select: none;
     &::before {
       content: '';
       display: inline-block;
+      width: 0;
       height: 100%;
       vertical-align: middle;
     }
@@ -57,7 +59,7 @@
     min-height: 100px;
     background: white;
     border-radius: 2px;
-    pointer-events: auto;
+    user-select: text;
   }
   .k-modal-header {
     font-size: 16px;
@@ -69,6 +71,22 @@
   }
   .k-modal-close {
     cursor: pointer;
+    height: 55px;
+    width: 55px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    * {
+      color: rgba(0, 0, 0, 0.45);
+      transition: color .15s ease;
+    }
+    &:hover * {
+      color: rgba(0, 0, 0, 0.85);
+    }
   }
   .k-modal-body,
   .k-modal-footer {
@@ -81,6 +99,7 @@
     justify-content: flex-end;
   }
   .k-modal-btn {
+    user-select: none;
     display: flex;
     align-items: center;
     justify-content: center;

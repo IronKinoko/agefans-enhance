@@ -43,6 +43,7 @@ class KPlayer {
 
     this.eventMap = {}
     this.isWideScreen = false
+    this.wideScreenBodyStyles = {}
 
     this._injectNext()
     this._injectSreen()
@@ -199,10 +200,11 @@ class KPlayer {
     this._setFullscreenIcon(this.isWideScreen)
 
     if (this.isWideScreen) {
+      this.wideScreenBodyStyles = $('body').css(['overflow'])
       $('body').css('overflow', 'hidden')
       this.$wrapper.addClass('k-player-widescreen')
     } else {
-      $('body').css('overflow', '')
+      $('body').css(this.wideScreenBodyStyles)
       this.$wrapper.removeClass('k-player-widescreen')
     }
 
