@@ -69,7 +69,7 @@ class KPlayer {
     const status = window.sessionStorage.getItem(this.statusSessionKey)
     if (status) {
       window.sessionStorage.removeItem(this.statusSessionKey)
-      this._toggleFullscreen(true)
+      this._toggleFullscreen(JSON.parse(status))
     }
   }
 
@@ -205,7 +205,10 @@ class KPlayer {
     if (this.isWideScreen === bool) return
     this.isWideScreen = bool
 
-    window.sessionStorage.setItem(this.statusSessionKey, this.isWideScreen)
+    window.sessionStorage.setItem(
+      this.statusSessionKey,
+      JSON.stringify(this.isWideScreen)
+    )
 
     this._setFullscreenIcon(this.isWideScreen)
 
