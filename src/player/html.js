@@ -75,7 +75,7 @@ aria-hidden="true"
     <svg focusable="false">
       <use xlink:href="#next"></use>
     </svg>
-    <span class="plyr__tooltip"">下一集</span>
+    <span class="plyr__tooltip">下一集</span>
   </button>
 </template>
 
@@ -92,8 +92,8 @@ aria-hidden="true"
     <svg class="icon--pressed" focusable="false">
       <use xlink:href="#widescreen-quit"></use>
     </svg>
-    <span class="label--not-pressed plyr__tooltip"">网页全屏</span>
-    <span class="label--pressed plyr__tooltip"">退出网页全屏</span>
+    <span class="label--not-pressed plyr__tooltip">网页全屏</span>
+    <span class="label--pressed plyr__tooltip">退出网页全屏</span>
   </button>
 </template>
 `
