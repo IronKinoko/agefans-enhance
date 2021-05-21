@@ -148,8 +148,8 @@ export const scriptInfo = (video, githubIssueURL) => `
     </td>
   </tr>
   <tr><td colspan="2" class="info-title">视频信息</td></tr>
-  <tr><td>视频链接</td><td>${video.src}</td></tr>
-  <tr><td>视频信息</td><td>${video.videoWidth} x ${video.videoHeight}</td></tr>
+  <tr><td>视频链接</td><td>${video?.src}</td></tr>
+  <tr><td>视频信息</td><td>${video?.videoWidth} x ${video?.videoHeight}</td></tr>
   <tr><td colspan="2" class="info-title">快捷键</td></tr>
   <tr>
     <td colspan="2">

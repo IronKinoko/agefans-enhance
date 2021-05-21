@@ -1,4 +1,4 @@
-import { his } from './history'
+import { his, parseTime } from './history'
 import { getVurlWithLocal, initGetAllVideoURL } from './getAllVideoURL'
 import { KPlayer } from '../player'
 
@@ -44,10 +44,7 @@ function showCurrentLink(vurl) {
 }
 
 function gotoPrevPart() {
-  const dom = $("li a[style*='color: rgb(238, 0, 0)']")
-    .parent()
-    .prev()
-    .find('a')
+  const dom = getActivedom().parent().prev().find('a')
 
   if (dom.length) {
     switchPart(dom.data('href'), dom)
@@ -55,10 +52,7 @@ function gotoPrevPart() {
 }
 
 function gotoNextPart() {
-  const dom = $("li a[style*='color: rgb(238, 0, 0)']")
-    .parent()
-    .next()
-    .find('a')
+  const dom = getActivedom().parent().next().find('a')
 
   if (dom.length) {
     switchPart(dom.data('href'), dom)
@@ -117,6 +111,9 @@ function videoJumpHistoryPosition() {
 
   if (his.get(id)?.time > 3) {
     player.currentTime = his.get(id).time
+    player.message.info(
+      `已自动跳转至历史播放位置 ${parseTime(his.get(id).time)}`
+    )
   }
 }
 

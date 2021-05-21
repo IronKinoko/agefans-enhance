@@ -23,11 +23,11 @@ class KPlayer {
     const $loading = $(loadingHTML)
     const $error = $(errorHTML)
     const $message = $(messageHTML)
-    const $video = $('<video id="k-player-contianer" />')
+    const $video = $('<video id="k-player" />')
 
-    $wrapper.append($loading).append($error).append($video).append($message)
+    $wrapper.append($video)
 
-    this.plyr = new Plyr('#k-player-contianer', {
+    this.plyr = new Plyr('#k-player', {
       autoplay: true,
       keyboard: { global: true },
       controls: [
@@ -103,6 +103,8 @@ class KPlayer {
     this.$video = $video
     this.$videoWrapper = $wrapper.find('.plyr')
 
+    this.$videoWrapper.append($loading).append($error).append($message)
+
     this.eventMap = {}
     this.isWideScreen = false
     this.wideScreenBodyStyles = {}
@@ -143,12 +145,10 @@ class KPlayer {
     })
     this.on('canplay', () => {
       this.$loading.hide()
-      this.$videoWrapper.show()
       this.plyr.play()
     })
     this.on('error', () => {
       this.$loading.hide()
-      this.$videoWrapper.hide()
       this.showError(this.src)
     })
     this.on('pause', () => {
@@ -158,11 +158,6 @@ class KPlayer {
     $(window).on('keydown', (e) => {
       let idx = speedList.indexOf(this.plyr.speed)
       switch (e.key) {
-        case '?':
-        case '？':
-          if (this.plyr.fullscreen.active) break
-          this.showInfo()
-          break
         case 'n':
         case 'PageDown':
           e.preventDefault()
@@ -191,7 +186,6 @@ class KPlayer {
             e.key === 'x'
               ? Math.max(0, idx - 1)
               : Math.min(speedList.length - 1, idx + 1)
-          console.log(newIdx, idx)
           if (newIdx === idx) break
           const speed = speedList[newIdx]
           this.message.info(`视频速度：${speed}`)
@@ -228,18 +222,6 @@ class KPlayer {
     })
     controlsEl.addEventListener('mouseleave', () => {
       this.isHoverControls = false
-    })
-  }
-
-  showInfo() {
-    const video = this.$video[0]
-    const githubIssueURL = genIssueURL({
-      title: '🐛[Bug]',
-      body: issueBody(video.src),
-    })
-    modal({
-      title: '脚本信息',
-      content: scriptInfo(video, githubIssueURL),
     })
   }
 
@@ -356,5 +338,25 @@ class KPlayer {
     }
   }
 }
+
+export function showInfo() {
+  const video = $('#k-player')[0]
+  const githubIssueURL = genIssueURL({
+    title: '🐛[Bug]',
+    body: issueBody(video?.src),
+  })
+  modal({
+    title: '脚本信息',
+    content: scriptInfo(video, githubIssueURL),
+  })
+}
+
+$(window).on('keydown', (e) => {
+  if ('?？'.includes(e.key) && !document.fullscreenElement) {
+    e.stopPropagation()
+    e.preventDefault()
+    showInfo()
+  }
+})
 
 export { KPlayer }
