@@ -9,34 +9,9 @@ aria-hidden="true"
     d="M16 5a1 1 0 00-1 1v4.615a1.431 1.431 0 00-.615-.829L7.21 5.23A1.439 1.439 0 005 6.445v9.11a1.44 1.44 0 002.21 1.215l7.175-4.555a1.436 1.436 0 00.616-.828V16a1 1 0 002 0V6C17 5.448 16.552 5 16 5z"
   ></path>
 </symbol>
+
 <symbol
   id="widescreen"
-  viewBox="0 0 88 88"
-  preserveAspectRatio="xMidYMid meet"
->
-  <defs>
-    <clipPath id="__lottie_element_117">
-      <rect width="88" height="88" x="0" y="0"></rect>
-    </clipPath>
-  </defs>
-  <g clip-path="url(#__lottie_element_117)">
-    <g
-      transform="matrix(1,0,0,1,44,44)"
-      opacity="1"
-      style="display: block"
-    >
-      <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-        <path
-          fill="rgb(255,255,255)"
-          fill-opacity="1"
-          d=" M12.437999725341797,-12.70199966430664 C12.437999725341797,-12.70199966430664 9.618000030517578,-9.881999969482422 9.618000030517578,-9.881999969482422 C8.82800006866455,-9.092000007629395 8.82800006866455,-7.831999778747559 9.618000030517578,-7.052000045776367 C9.618000030517578,-7.052000045776367 16.687999725341797,0.017999999225139618 16.687999725341797,0.017999999225139618 C16.687999725341797,0.017999999225139618 9.618000030517578,7.0879998207092285 9.618000030517578,7.0879998207092285 C8.82800006866455,7.877999782562256 8.82800006866455,9.137999534606934 9.618000030517578,9.918000221252441 C9.618000030517578,9.918000221252441 12.437999725341797,12.748000144958496 12.437999725341797,12.748000144958496 C13.227999687194824,13.527999877929688 14.48799991607666,13.527999877929688 15.267999649047852,12.748000144958496 C15.267999649047852,12.748000144958496 26.58799934387207,1.437999963760376 26.58799934387207,1.437999963760376 C27.368000030517578,0.6579999923706055 27.368000030517578,-0.6119999885559082 26.58799934387207,-1.3919999599456787 C26.58799934387207,-1.3919999599456787 15.267999649047852,-12.70199966430664 15.267999649047852,-12.70199966430664 C14.48799991607666,-13.491999626159668 13.227999687194824,-13.491999626159668 12.437999725341797,-12.70199966430664z M-12.442000389099121,-12.70199966430664 C-13.182000160217285,-13.442000389099121 -14.362000465393066,-13.482000350952148 -15.142000198364258,-12.821999549865723 C-15.142000198364258,-12.821999549865723 -15.272000312805176,-12.70199966430664 -15.272000312805176,-12.70199966430664 C-15.272000312805176,-12.70199966430664 -26.582000732421875,-1.3919999599456787 -26.582000732421875,-1.3919999599456787 C-27.32200050354004,-0.6520000100135803 -27.36199951171875,0.5180000066757202 -26.70199966430664,1.3079999685287476 C-26.70199966430664,1.3079999685287476 -26.582000732421875,1.437999963760376 -26.582000732421875,1.437999963760376 C-26.582000732421875,1.437999963760376 -15.272000312805176,12.748000144958496 -15.272000312805176,12.748000144958496 C-14.531999588012695,13.48799991607666 -13.362000465393066,13.527999877929688 -12.571999549865723,12.868000030517578 C-12.571999549865723,12.868000030517578 -12.442000389099121,12.748000144958496 -12.442000389099121,12.748000144958496 C-12.442000389099121,12.748000144958496 -9.612000465393066,9.918000221252441 -9.612000465393066,9.918000221252441 C-8.871999740600586,9.178000450134277 -8.831999778747559,8.008000373840332 -9.501999855041504,7.2179999351501465 C-9.501999855041504,7.2179999351501465 -9.612000465393066,7.0879998207092285 -9.612000465393066,7.0879998207092285 C-9.612000465393066,7.0879998207092285 -16.68199920654297,0.017999999225139618 -16.68199920654297,0.017999999225139618 C-16.68199920654297,0.017999999225139618 -9.612000465393066,-7.052000045776367 -9.612000465393066,-7.052000045776367 C-8.871999740600586,-7.791999816894531 -8.831999778747559,-8.961999893188477 -9.501999855041504,-9.751999855041504 C-9.501999855041504,-9.751999855041504 -9.612000465393066,-9.881999969482422 -9.612000465393066,-9.881999969482422 C-9.612000465393066,-9.881999969482422 -12.442000389099121,-12.70199966430664 -12.442000389099121,-12.70199966430664z M28,-28 C32.41999816894531,-28 36,-24.420000076293945 36,-20 C36,-20 36,20 36,20 C36,24.420000076293945 32.41999816894531,28 28,28 C28,28 -28,28 -28,28 C-32.41999816894531,28 -36,24.420000076293945 -36,20 C-36,20 -36,-20 -36,-20 C-36,-24.420000076293945 -32.41999816894531,-28 -28,-28 C-28,-28 28,-28 28,-28z"
-        ></path>
-      </g>
-    </g>
-  </g>
-</symbol>
-<symbol
-  id="fullscreen"
   viewBox="0 0 88 88"
   preserveAspectRatio="xMidYMid meet"
 >
@@ -63,7 +38,7 @@ aria-hidden="true"
 </symbol>
 
 <symbol
-  id="fullscreen-quit"
+  id="widescreen-quit"
   viewBox="0 0 88 88"
   preserveAspectRatio="xMidYMid meet"
 >
@@ -100,21 +75,25 @@ aria-hidden="true"
     <svg focusable="false">
       <use xlink:href="#next"></use>
     </svg>
-    <span class="plyr__sr-only">Next</span>
+    <span class="plyr__tooltip"">下一集</span>
   </button>
 </template>
 
-<template id="plyr__fullscreen">
+<template id="plyr__widescreen">
   <button
-    class="plyr__controls__item plyr__control plyr__fullscreen plyr__custom"
+    class="plyr__controls__item plyr__control plyr__widescreen plyr__custom"
     type="button"
     data-plyr="next"
-    aria-label="fullscreen"
+    aria-label="widescreen"
   >
-    <svg focusable="false">
-      <use xlink:href="#fullscreen"></use>
+    <svg class="icon--not-pressed" focusable="false">
+      <use xlink:href="#widescreen"></use>
     </svg>
-    <span class="plyr__sr-only">Next</span>
+    <svg class="icon--pressed" focusable="false">
+      <use xlink:href="#widescreen-quit"></use>
+    </svg>
+    <span class="label--not-pressed plyr__tooltip"">网页全屏</span>
+    <span class="label--pressed plyr__tooltip"">退出网页全屏</span>
   </button>
 </template>
 `
@@ -148,6 +127,8 @@ export const errorHTML = `
   </div>
 </div>`
 
+export const messageHTML = `<div id="k-player-message"></div>`
+
 export const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
@@ -170,17 +151,34 @@ export const scriptInfo = (video, githubIssueURL) => `
   <tr><td>视频链接</td><td>${video.src}</td></tr>
   <tr><td>视频信息</td><td>${video.videoWidth} x ${video.videoHeight}</td></tr>
   <tr><td colspan="2" class="info-title">快捷键</td></tr>
-  <tr><td><span class="key">W</span></td><td>宽屏</td></tr>
-  <tr><td><span class="key">F</span></td><td>全屏</td></tr>
-  <tr><td><span class="key">←</span></td><td>后退10s</td></tr>
-  <tr><td><span class="key">→</span></td><td>前进10s</td></tr>
-  <tr><td><span class="key">↑</span></td><td>音量+</td></tr>
-  <tr><td><span class="key">↓</span></td><td>音量-</td></tr>
-  <tr><td><span class="key">M</span></td><td>静音</td></tr>
-  <tr><td><span class="key">esc</span></td><td>退出全屏/宽屏</td></tr>
-  <tr><td><span class="key">P</span></td><td>上一集</td></tr>
-  <tr><td><span class="key">N</span></td><td>下一集</td></tr>
-  <tr><td><span class="key">?</span></td><td>脚本信息</td></tr>
+  <tr>
+    <td colspan="2">
+      <div class="shortcuts-wrap">
+        <table class="shortcuts-table">
+          <tbody>
+            <tr><td><span class="key">W</span></td><td>宽屏</td></tr>
+            <tr><td><span class="key">F</span></td><td>全屏</td></tr>
+            <tr><td><span class="key">←</span></td><td>后退10s</td></tr>
+            <tr><td><span class="key">→</span></td><td>前进10s</td></tr>
+            <tr><td><span class="key">↑</span></td><td>音量+</td></tr>
+            <tr><td><span class="key">↓</span></td><td>音量-</td></tr>
+            <tr><td><span class="key">M</span></td><td>静音</td></tr>
+          </tbody>
+        </table>
+        <table class="shortcuts-table">
+          <tbody>
+            <tr><td><span class="key">esc</span></td><td>退出全屏/宽屏</td></tr>
+            <tr><td><span class="key">P</span></td><td>上一集</td></tr>
+            <tr><td><span class="key">N</span></td><td>下一集</td></tr>
+            <tr><td><span class="key">Z</span></td><td>原速播放</td></tr>
+            <tr><td><span class="key">X</span></td><td>减速播放</td></tr>
+            <tr><td><span class="key">C</span></td><td>加速播放</td></tr>
+            <tr><td><span class="key">?</span></td><td>脚本信息</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </td>
+  </tr>
   </tbody>
 </table>
 `

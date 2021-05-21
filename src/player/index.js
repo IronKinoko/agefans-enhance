@@ -1,8 +1,17 @@
 import './index.scss'
-import { errorHTML, issueBody, loadingHTML, scriptInfo } from './html'
+import {
+  errorHTML,
+  issueBody,
+  loadingHTML,
+  messageHTML,
+  scriptInfo,
+} from './html'
 import { debounce } from '../utils/debounce'
 import { modal } from '../utils/modal'
 import { genIssueURL } from '../utils/genIssueURL'
+
+const speedList = [0.5, 0.75, 1, 1.25, 1.5, 2, 4]
+
 class KPlayer {
   /**
    * Creates an instance of KPlayer.
@@ -13,9 +22,10 @@ class KPlayer {
     const $wrapper = $('<div id="k-player-wrapper"/>').replaceAll(selector)
     const $loading = $(loadingHTML)
     const $error = $(errorHTML)
+    const $message = $(messageHTML)
     const $video = $('<video id="k-player-contianer" />')
 
-    $wrapper.append($loading).append($error).append($video)
+    $wrapper.append($loading).append($error).append($video).append($message)
 
     this.plyr = new Plyr('#k-player-contianer', {
       autoplay: true,
@@ -32,12 +42,64 @@ class KPlayer {
         'pip', // Picture-in-picture (currently Safari only)
         'fullscreen', // Toggle fullscreen
       ],
+      seekTime: 5,
+      speed: { options: speedList },
+      i18n: {
+        restart: '重播',
+        rewind: '快退 {seektime}s',
+        play: '播放',
+        pause: '暂停',
+        fastForward: '快进 {seektime}s',
+        seek: 'Seek',
+        seekLabel: '{currentTime} / {duration}',
+        played: '已播放',
+        buffered: '已缓冲',
+        currentTime: '当前时间',
+        duration: '片长',
+        volume: '音量',
+        mute: '静音',
+        unmute: '取消静音',
+        enableCaptions: '显示字幕',
+        disableCaptions: '隐藏字幕',
+        download: '下载',
+        enterFullscreen: '进入全屏',
+        exitFullscreen: '退出全屏',
+        frameTitle: '标题名称： {title}',
+        captions: '字幕',
+        settings: '设置',
+        pip: '画中画',
+        menuBack: '返回上级',
+        speed: '倍速',
+        normal: '1.0x',
+        quality: '分辨率',
+        loop: '循环',
+        start: '开始',
+        end: '结束',
+        all: '全部',
+        reset: '重置',
+        disabled: '禁用',
+        enabled: '启用',
+        advertisement: '广告',
+        qualityBadge: {
+          2160: '4K',
+          1440: 'HD',
+          1080: 'HD',
+          720: 'HD',
+          576: 'SD',
+          480: 'SD',
+        },
+      },
+      tooltips: {
+        controls: true,
+        seek: true,
+      },
       ...opts,
     })
 
     this.$wrapper = $wrapper
     this.$loading = $loading
     this.$error = $error
+    this.$message = $message
     this.$video = $video
     this.$videoWrapper = $wrapper.find('.plyr')
 
@@ -94,26 +156,51 @@ class KPlayer {
     })
 
     $(window).on('keydown', (e) => {
-      if ((e.key === '?' || e.key === '？') && !this.plyr.fullscreen.active) {
-        this.showInfo()
-      }
-      if (e.key === 'n' || e.key === 'PageDown') {
-        e.preventDefault()
-        this.trigger('next')
-      }
-      if (e.key === 'p' || e.key === 'PageUp') {
-        e.preventDefault()
-        this.trigger('prev')
-      }
-      if (e.key === 'w' && !this.plyr.fullscreen.active) {
-        this._toggleFullscreen()
-      }
-      if (
-        e.key === 'Escape' &&
-        !this.plyr.fullscreen.active &&
-        this.isWideScreen
-      ) {
-        this._toggleFullscreen(false)
+      let idx = speedList.indexOf(this.plyr.speed)
+      switch (e.key) {
+        case '?':
+        case '？':
+          if (this.plyr.fullscreen.active) break
+          this.showInfo()
+          break
+        case 'n':
+        case 'PageDown':
+          e.preventDefault()
+          this.trigger('next')
+          break
+        case 'p':
+        case 'PageUp':
+          e.preventDefault()
+          this.trigger('prev')
+          break
+        case 'w':
+          if (this.plyr.fullscreen.active) break
+          this._toggleFullscreen()
+          break
+        case 'Escape':
+          if (this.plyr.fullscreen.active || !this.isWideScreen) break
+          this._toggleFullscreen(false)
+          break
+        case 'z':
+          this.plyr.speed = 1
+          this.message.info(`视频速度：${1}`)
+          break
+        case 'x':
+        case 'c': {
+          const newIdx =
+            e.key === 'x'
+              ? Math.max(0, idx - 1)
+              : Math.min(speedList.length - 1, idx + 1)
+          console.log(newIdx, idx)
+          if (newIdx === idx) break
+          const speed = speedList[newIdx]
+          this.message.info(`视频速度：${speed}`)
+          this.plyr.speed = speed
+          break
+        }
+
+        default:
+          break
       }
     })
 
@@ -193,7 +280,7 @@ class KPlayer {
 
   /** @private */
   _injectSreen() {
-    $($('#plyr__fullscreen').html())
+    $($('#plyr__widescreen').html())
       .insertBefore('[data-plyr="fullscreen"]')
       .on('click', () => {
         this._toggleFullscreen()
@@ -210,24 +297,18 @@ class KPlayer {
       JSON.stringify(this.isWideScreen)
     )
 
-    this._setFullscreenIcon(this.isWideScreen)
-
     if (this.isWideScreen) {
       this.wideScreenBodyStyles = $('body').css(['overflow'])
       $('body').css('overflow', 'hidden')
       this.$wrapper.addClass('k-player-widescreen')
+      $('.plyr__widescreen').addClass('plyr__control--pressed')
     } else {
       $('body').css(this.wideScreenBodyStyles)
       this.$wrapper.removeClass('k-player-widescreen')
+      $('.plyr__widescreen').removeClass('plyr__control--pressed')
     }
 
     this.trigger(this.isWideScreen ? 'enterwidescreen' : 'exitwidescreen')
-  }
-
-  /** @private */
-  _setFullscreenIcon(bool = this.isWideScreen) {
-    const $use = $('.plyr__fullscreen.plyr__custom use')
-    $use.attr('xlink:href', bool ? '#fullscreen-quit' : '#fullscreen')
   }
 
   /**
@@ -254,6 +335,25 @@ class KPlayer {
 
   hideError() {
     this.$error.hide()
+  }
+
+  get message() {
+    return {
+      info: (text) => {
+        this.$message.empty()
+        $(`<div class="k-player-message-item">${text}</div>`)
+          .hide()
+          .appendTo(this.$message)
+          .fadeIn(150)
+          .delay(1500)
+          .fadeOut(150, function () {
+            $(this).remove()
+          })
+      },
+      destroy: () => {
+        this.$message.empty()
+      },
+    }
   }
 }
 
