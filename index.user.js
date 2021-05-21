@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.5.4
+// @version      1.6.0
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @match        https://www.agefans.net/*
@@ -574,7 +574,7 @@
     insertLocal();
   }
 
-  var css$1 = "#k-player-wrapper {\n  position: relative;\n  width: 100%;\n  height: 100%;\n  background: #000;\n}\n#k-player-wrapper.k-player-widescreen {\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 100;\n}\n#k-player-wrapper .k-player-contianer {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper #k-player-loading,\n#k-player-wrapper #k-player-error {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  font-size: 88px;\n  color: white;\n}\n#k-player-wrapper .k-player-center {\n  width: 100%;\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n}\n#k-player-wrapper .error-info {\n  text-align: center;\n  padding: 24px;\n  font-size: 18px;\n}\n#k-player-wrapper .plyr {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper video {\n  display: block;\n}\n#k-player-wrapper .plyr__next svg {\n  transform: scale(1.7);\n}\n#k-player-wrapper .plyr__widescreen svg {\n  transform: scale(1.3);\n}\n#k-player-wrapper .plyr__fullscreen svg {\n  transform: scale(1.3);\n}\n#k-player-wrapper .plyr--hide-cursor {\n  cursor: none;\n}\n#k-player-wrapper .plyr__control span {\n  color: inherit;\n}\n\n.lds-spinner {\n  color: official;\n  display: inline-block;\n  position: relative;\n  width: 80px;\n  height: 80px;\n}\n\n.lds-spinner div {\n  transform-origin: 40px 40px;\n  animation: lds-spinner 1.2s linear infinite;\n}\n\n.lds-spinner div:after {\n  content: \" \";\n  display: block;\n  position: absolute;\n  top: 3px;\n  left: 37px;\n  width: 6px;\n  height: 18px;\n  border-radius: 20%;\n  background: #fff;\n}\n\n.lds-spinner div:nth-child(1) {\n  transform: rotate(0deg);\n  animation-delay: -1.1s;\n}\n\n.lds-spinner div:nth-child(2) {\n  transform: rotate(30deg);\n  animation-delay: -1s;\n}\n\n.lds-spinner div:nth-child(3) {\n  transform: rotate(60deg);\n  animation-delay: -0.9s;\n}\n\n.lds-spinner div:nth-child(4) {\n  transform: rotate(90deg);\n  animation-delay: -0.8s;\n}\n\n.lds-spinner div:nth-child(5) {\n  transform: rotate(120deg);\n  animation-delay: -0.7s;\n}\n\n.lds-spinner div:nth-child(6) {\n  transform: rotate(150deg);\n  animation-delay: -0.6s;\n}\n\n.lds-spinner div:nth-child(7) {\n  transform: rotate(180deg);\n  animation-delay: -0.5s;\n}\n\n.lds-spinner div:nth-child(8) {\n  transform: rotate(210deg);\n  animation-delay: -0.4s;\n}\n\n.lds-spinner div:nth-child(9) {\n  transform: rotate(240deg);\n  animation-delay: -0.3s;\n}\n\n.lds-spinner div:nth-child(10) {\n  transform: rotate(270deg);\n  animation-delay: -0.2s;\n}\n\n.lds-spinner div:nth-child(11) {\n  transform: rotate(300deg);\n  animation-delay: -0.1s;\n}\n\n.lds-spinner div:nth-child(12) {\n  transform: rotate(330deg);\n  animation-delay: 0s;\n}\n\n@keyframes lds-spinner {\n  0% {\n    opacity: 1;\n  }\n  100% {\n    opacity: 0;\n  }\n}\n.script-info {\n  width: 100%;\n}\n.script-info tbody tr td:first-child {\n  white-space: nowrap;\n}\n.script-info td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n}\n.script-info .info-title {\n  font-weight: 600;\n  padding-top: 24px;\n}\n.script-info a {\n  color: #2af;\n  padding: 4px 8px;\n  border-radius: 4px;\n}\n.script-info a:hover {\n  background-color: #f1f1f1;\n}\n.script-info .key {\n  position: relative;\n  background: #333;\n  text-align: center;\n  color: #eee;\n  float: left;\n  border-radius: 0.3em;\n  padding: 0.2em;\n  width: 3.3em;\n  height: 100%;\n  box-sizing: border-box;\n  border: 1px solid #444;\n  box-shadow: 0 0.2em 0 0.05em #222;\n  border-bottom-color: #555;\n  user-select: none;\n}";
+  var css$1 = "#k-player-wrapper {\n  position: relative;\n  width: 100%;\n  height: 100%;\n  background: #000;\n  overflow: hidden;\n}\n#k-player-wrapper.k-player-widescreen {\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 100;\n}\n#k-player-wrapper .k-player-contianer {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper #k-player-message {\n  position: absolute;\n  left: 20px;\n  bottom: 60px;\n}\n#k-player-wrapper #k-player-message .k-player-message-item {\n  display: block;\n  width: max-content;\n  padding: 8px 16px;\n  background: rgba(0, 0, 0, 0.45);\n  border-radius: 4px;\n  color: white;\n  font-size: 14px;\n  white-space: nowrap;\n  overflow: hidden;\n  box-sizing: border-box;\n  margin-top: 4px;\n}\n#k-player-wrapper #k-player-loading,\n#k-player-wrapper #k-player-error {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  font-size: 88px;\n  color: white;\n}\n#k-player-wrapper .k-player-center {\n  width: 100%;\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n}\n#k-player-wrapper .error-info {\n  text-align: center;\n  padding: 24px;\n  font-size: 18px;\n}\n#k-player-wrapper .plyr {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper video {\n  display: block;\n}\n#k-player-wrapper .plyr__next svg {\n  transform: scale(1.7);\n}\n#k-player-wrapper .plyr__widescreen svg {\n  transform: scale(1.3);\n}\n#k-player-wrapper .plyr--hide-cursor {\n  cursor: none;\n}\n#k-player-wrapper .plyr__control span:not(.plyr__tooltip) {\n  color: inherit;\n}\n\n.lds-spinner {\n  color: official;\n  display: inline-block;\n  position: relative;\n  width: 80px;\n  height: 80px;\n}\n\n.lds-spinner div {\n  transform-origin: 40px 40px;\n  animation: lds-spinner 1.2s linear infinite;\n}\n\n.lds-spinner div:after {\n  content: \" \";\n  display: block;\n  position: absolute;\n  top: 3px;\n  left: 37px;\n  width: 6px;\n  height: 18px;\n  border-radius: 20%;\n  background: #fff;\n}\n\n.lds-spinner div:nth-child(1) {\n  transform: rotate(0deg);\n  animation-delay: -1.1s;\n}\n\n.lds-spinner div:nth-child(2) {\n  transform: rotate(30deg);\n  animation-delay: -1s;\n}\n\n.lds-spinner div:nth-child(3) {\n  transform: rotate(60deg);\n  animation-delay: -0.9s;\n}\n\n.lds-spinner div:nth-child(4) {\n  transform: rotate(90deg);\n  animation-delay: -0.8s;\n}\n\n.lds-spinner div:nth-child(5) {\n  transform: rotate(120deg);\n  animation-delay: -0.7s;\n}\n\n.lds-spinner div:nth-child(6) {\n  transform: rotate(150deg);\n  animation-delay: -0.6s;\n}\n\n.lds-spinner div:nth-child(7) {\n  transform: rotate(180deg);\n  animation-delay: -0.5s;\n}\n\n.lds-spinner div:nth-child(8) {\n  transform: rotate(210deg);\n  animation-delay: -0.4s;\n}\n\n.lds-spinner div:nth-child(9) {\n  transform: rotate(240deg);\n  animation-delay: -0.3s;\n}\n\n.lds-spinner div:nth-child(10) {\n  transform: rotate(270deg);\n  animation-delay: -0.2s;\n}\n\n.lds-spinner div:nth-child(11) {\n  transform: rotate(300deg);\n  animation-delay: -0.1s;\n}\n\n.lds-spinner div:nth-child(12) {\n  transform: rotate(330deg);\n  animation-delay: 0s;\n}\n\n@keyframes lds-spinner {\n  0% {\n    opacity: 1;\n  }\n  100% {\n    opacity: 0;\n  }\n}\n.script-info {\n  width: 100%;\n}\n.script-info * {\n  box-sizing: border-box;\n}\n.script-info tbody tr td:first-child {\n  white-space: nowrap;\n}\n.script-info td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n}\n.script-info .info-title {\n  font-weight: 600;\n  padding-top: 24px;\n}\n.script-info a {\n  color: #2af;\n  padding: 4px 8px;\n  border-radius: 4px;\n}\n.script-info a:hover {\n  background-color: #f1f1f1;\n}\n.script-info .shortcuts-wrap {\n  display: flex;\n  width: 100%;\n  margin: -8px;\n}\n.script-info .shortcuts-table {\n  flex: 1;\n}\n.script-info .shortcuts-table tr td:first-child {\n  width: 77px;\n}\n.script-info .key {\n  position: relative;\n  background: #333;\n  text-align: center;\n  color: #eee;\n  float: left;\n  border-radius: 0.3em;\n  padding: 0.2em;\n  width: 3.3em;\n  height: 100%;\n  box-sizing: border-box;\n  border: 1px solid #444;\n  box-shadow: 0 0.2em 0 0.05em #222;\n  border-bottom-color: #555;\n  user-select: none;\n}";
   n(css$1,{});
 
   const icons = `
@@ -588,34 +588,9 @@ aria-hidden="true"
     d="M16 5a1 1 0 00-1 1v4.615a1.431 1.431 0 00-.615-.829L7.21 5.23A1.439 1.439 0 005 6.445v9.11a1.44 1.44 0 002.21 1.215l7.175-4.555a1.436 1.436 0 00.616-.828V16a1 1 0 002 0V6C17 5.448 16.552 5 16 5z"
   ></path>
 </symbol>
+
 <symbol
   id="widescreen"
-  viewBox="0 0 88 88"
-  preserveAspectRatio="xMidYMid meet"
->
-  <defs>
-    <clipPath id="__lottie_element_117">
-      <rect width="88" height="88" x="0" y="0"></rect>
-    </clipPath>
-  </defs>
-  <g clip-path="url(#__lottie_element_117)">
-    <g
-      transform="matrix(1,0,0,1,44,44)"
-      opacity="1"
-      style="display: block"
-    >
-      <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-        <path
-          fill="rgb(255,255,255)"
-          fill-opacity="1"
-          d=" M12.437999725341797,-12.70199966430664 C12.437999725341797,-12.70199966430664 9.618000030517578,-9.881999969482422 9.618000030517578,-9.881999969482422 C8.82800006866455,-9.092000007629395 8.82800006866455,-7.831999778747559 9.618000030517578,-7.052000045776367 C9.618000030517578,-7.052000045776367 16.687999725341797,0.017999999225139618 16.687999725341797,0.017999999225139618 C16.687999725341797,0.017999999225139618 9.618000030517578,7.0879998207092285 9.618000030517578,7.0879998207092285 C8.82800006866455,7.877999782562256 8.82800006866455,9.137999534606934 9.618000030517578,9.918000221252441 C9.618000030517578,9.918000221252441 12.437999725341797,12.748000144958496 12.437999725341797,12.748000144958496 C13.227999687194824,13.527999877929688 14.48799991607666,13.527999877929688 15.267999649047852,12.748000144958496 C15.267999649047852,12.748000144958496 26.58799934387207,1.437999963760376 26.58799934387207,1.437999963760376 C27.368000030517578,0.6579999923706055 27.368000030517578,-0.6119999885559082 26.58799934387207,-1.3919999599456787 C26.58799934387207,-1.3919999599456787 15.267999649047852,-12.70199966430664 15.267999649047852,-12.70199966430664 C14.48799991607666,-13.491999626159668 13.227999687194824,-13.491999626159668 12.437999725341797,-12.70199966430664z M-12.442000389099121,-12.70199966430664 C-13.182000160217285,-13.442000389099121 -14.362000465393066,-13.482000350952148 -15.142000198364258,-12.821999549865723 C-15.142000198364258,-12.821999549865723 -15.272000312805176,-12.70199966430664 -15.272000312805176,-12.70199966430664 C-15.272000312805176,-12.70199966430664 -26.582000732421875,-1.3919999599456787 -26.582000732421875,-1.3919999599456787 C-27.32200050354004,-0.6520000100135803 -27.36199951171875,0.5180000066757202 -26.70199966430664,1.3079999685287476 C-26.70199966430664,1.3079999685287476 -26.582000732421875,1.437999963760376 -26.582000732421875,1.437999963760376 C-26.582000732421875,1.437999963760376 -15.272000312805176,12.748000144958496 -15.272000312805176,12.748000144958496 C-14.531999588012695,13.48799991607666 -13.362000465393066,13.527999877929688 -12.571999549865723,12.868000030517578 C-12.571999549865723,12.868000030517578 -12.442000389099121,12.748000144958496 -12.442000389099121,12.748000144958496 C-12.442000389099121,12.748000144958496 -9.612000465393066,9.918000221252441 -9.612000465393066,9.918000221252441 C-8.871999740600586,9.178000450134277 -8.831999778747559,8.008000373840332 -9.501999855041504,7.2179999351501465 C-9.501999855041504,7.2179999351501465 -9.612000465393066,7.0879998207092285 -9.612000465393066,7.0879998207092285 C-9.612000465393066,7.0879998207092285 -16.68199920654297,0.017999999225139618 -16.68199920654297,0.017999999225139618 C-16.68199920654297,0.017999999225139618 -9.612000465393066,-7.052000045776367 -9.612000465393066,-7.052000045776367 C-8.871999740600586,-7.791999816894531 -8.831999778747559,-8.961999893188477 -9.501999855041504,-9.751999855041504 C-9.501999855041504,-9.751999855041504 -9.612000465393066,-9.881999969482422 -9.612000465393066,-9.881999969482422 C-9.612000465393066,-9.881999969482422 -12.442000389099121,-12.70199966430664 -12.442000389099121,-12.70199966430664z M28,-28 C32.41999816894531,-28 36,-24.420000076293945 36,-20 C36,-20 36,20 36,20 C36,24.420000076293945 32.41999816894531,28 28,28 C28,28 -28,28 -28,28 C-32.41999816894531,28 -36,24.420000076293945 -36,20 C-36,20 -36,-20 -36,-20 C-36,-24.420000076293945 -32.41999816894531,-28 -28,-28 C-28,-28 28,-28 28,-28z"
-        ></path>
-      </g>
-    </g>
-  </g>
-</symbol>
-<symbol
-  id="fullscreen"
   viewBox="0 0 88 88"
   preserveAspectRatio="xMidYMid meet"
 >
@@ -642,7 +617,7 @@ aria-hidden="true"
 </symbol>
 
 <symbol
-  id="fullscreen-quit"
+  id="widescreen-quit"
   viewBox="0 0 88 88"
   preserveAspectRatio="xMidYMid meet"
 >
@@ -679,21 +654,25 @@ aria-hidden="true"
     <svg focusable="false">
       <use xlink:href="#next"></use>
     </svg>
-    <span class="plyr__sr-only">Next</span>
+    <span class="plyr__tooltip"">下一集</span>
   </button>
 </template>
 
-<template id="plyr__fullscreen">
+<template id="plyr__widescreen">
   <button
-    class="plyr__controls__item plyr__control plyr__fullscreen plyr__custom"
+    class="plyr__controls__item plyr__control plyr__widescreen plyr__custom"
     type="button"
     data-plyr="next"
-    aria-label="fullscreen"
+    aria-label="widescreen"
   >
-    <svg focusable="false">
-      <use xlink:href="#fullscreen"></use>
+    <svg class="icon--not-pressed" focusable="false">
+      <use xlink:href="#widescreen"></use>
     </svg>
-    <span class="plyr__sr-only">Next</span>
+    <svg class="icon--pressed" focusable="false">
+      <use xlink:href="#widescreen-quit"></use>
+    </svg>
+    <span class="label--not-pressed plyr__tooltip"">网页全屏</span>
+    <span class="label--pressed plyr__tooltip"">退出网页全屏</span>
   </button>
 </template>
 `;
@@ -724,10 +703,11 @@ aria-hidden="true"
     <div>视频加载失败</div><div class="error-info"></div>
   </div>
 </div>`;
+  const messageHTML = `<div id="k-player-message"></div>`;
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.5.4"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.6.0"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -746,17 +726,34 @@ aria-hidden="true"
   <tr><td>视频链接</td><td>${video.src}</td></tr>
   <tr><td>视频信息</td><td>${video.videoWidth} x ${video.videoHeight}</td></tr>
   <tr><td colspan="2" class="info-title">快捷键</td></tr>
-  <tr><td><span class="key">W</span></td><td>宽屏</td></tr>
-  <tr><td><span class="key">F</span></td><td>全屏</td></tr>
-  <tr><td><span class="key">←</span></td><td>后退10s</td></tr>
-  <tr><td><span class="key">→</span></td><td>前进10s</td></tr>
-  <tr><td><span class="key">↑</span></td><td>音量+</td></tr>
-  <tr><td><span class="key">↓</span></td><td>音量-</td></tr>
-  <tr><td><span class="key">M</span></td><td>静音</td></tr>
-  <tr><td><span class="key">esc</span></td><td>退出全屏/宽屏</td></tr>
-  <tr><td><span class="key">P</span></td><td>上一集</td></tr>
-  <tr><td><span class="key">N</span></td><td>下一集</td></tr>
-  <tr><td><span class="key">?</span></td><td>脚本信息</td></tr>
+  <tr>
+    <td colspan="2">
+      <div class="shortcuts-wrap">
+        <table class="shortcuts-table">
+          <tbody>
+            <tr><td><span class="key">W</span></td><td>宽屏</td></tr>
+            <tr><td><span class="key">F</span></td><td>全屏</td></tr>
+            <tr><td><span class="key">←</span></td><td>后退10s</td></tr>
+            <tr><td><span class="key">→</span></td><td>前进10s</td></tr>
+            <tr><td><span class="key">↑</span></td><td>音量+</td></tr>
+            <tr><td><span class="key">↓</span></td><td>音量-</td></tr>
+            <tr><td><span class="key">M</span></td><td>静音</td></tr>
+          </tbody>
+        </table>
+        <table class="shortcuts-table">
+          <tbody>
+            <tr><td><span class="key">esc</span></td><td>退出全屏/宽屏</td></tr>
+            <tr><td><span class="key">P</span></td><td>上一集</td></tr>
+            <tr><td><span class="key">N</span></td><td>下一集</td></tr>
+            <tr><td><span class="key">Z</span></td><td>原速播放</td></tr>
+            <tr><td><span class="key">X</span></td><td>减速播放</td></tr>
+            <tr><td><span class="key">C</span></td><td>加速播放</td></tr>
+            <tr><td><span class="key">?</span></td><td>脚本信息</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </td>
+  </tr>
   </tbody>
 </table>
 `;
@@ -772,7 +769,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.5.4"}
+脚本版本: ${"1.6.0"}
 `;
 
   function debounce(fn, delay = 300) {
@@ -803,6 +800,8 @@ userAgent: ${navigator.userAgent}
     return url.toString();
   }
 
+  const speedList = [0.5, 0.75, 1, 1.25, 1.5, 2, 4];
+
   class KPlayer {
     /**
      * Creates an instance of KPlayer.
@@ -813,8 +812,9 @@ userAgent: ${navigator.userAgent}
       const $wrapper = $('<div id="k-player-wrapper"/>').replaceAll(selector);
       const $loading = $(loadingHTML);
       const $error = $(errorHTML);
+      const $message = $(messageHTML);
       const $video = $('<video id="k-player-contianer" />');
-      $wrapper.append($loading).append($error).append($video);
+      $wrapper.append($loading).append($error).append($video).append($message);
       this.plyr = new Plyr('#k-player-contianer', {
         autoplay: true,
         keyboard: {
@@ -831,11 +831,65 @@ userAgent: ${navigator.userAgent}
         'pip', // Picture-in-picture (currently Safari only)
         'fullscreen' // Toggle fullscreen
         ],
+        seekTime: 5,
+        speed: {
+          options: speedList
+        },
+        i18n: {
+          restart: '重播',
+          rewind: '快退 {seektime}s',
+          play: '播放',
+          pause: '暂停',
+          fastForward: '快进 {seektime}s',
+          seek: 'Seek',
+          seekLabel: '{currentTime} / {duration}',
+          played: '已播放',
+          buffered: '已缓冲',
+          currentTime: '当前时间',
+          duration: '片长',
+          volume: '音量',
+          mute: '静音',
+          unmute: '取消静音',
+          enableCaptions: '显示字幕',
+          disableCaptions: '隐藏字幕',
+          download: '下载',
+          enterFullscreen: '进入全屏',
+          exitFullscreen: '退出全屏',
+          frameTitle: '标题名称： {title}',
+          captions: '字幕',
+          settings: '设置',
+          pip: '画中画',
+          menuBack: '返回上级',
+          speed: '倍速',
+          normal: '1.0x',
+          quality: '分辨率',
+          loop: '循环',
+          start: '开始',
+          end: '结束',
+          all: '全部',
+          reset: '重置',
+          disabled: '禁用',
+          enabled: '启用',
+          advertisement: '广告',
+          qualityBadge: {
+            2160: '4K',
+            1440: 'HD',
+            1080: 'HD',
+            720: 'HD',
+            576: 'SD',
+            480: 'SD'
+          }
+        },
+        tooltips: {
+          controls: true,
+          seek: true
+        },
         ...opts
       });
       this.$wrapper = $wrapper;
       this.$loading = $loading;
       this.$error = $error;
+      this.$message = $message;
       this.$video = $video;
       this.$videoWrapper = $wrapper.find('.plyr');
       this.eventMap = {};
@@ -894,26 +948,57 @@ userAgent: ${navigator.userAgent}
         this.hideControlsDebounced();
       });
       $(window).on('keydown', e => {
-        if ((e.key === '?' || e.key === '？') && !this.plyr.fullscreen.active) {
-          this.showInfo();
-        }
+        let idx = speedList.indexOf(this.plyr.speed);
 
-        if (e.key === 'n' || e.key === 'PageDown') {
-          e.preventDefault();
-          this.trigger('next');
-        }
+        switch (e.key) {
+          case '?':
+          case '？':
+            if (this.plyr.fullscreen.active) break;
+            this.showInfo();
+            break;
 
-        if (e.key === 'p' || e.key === 'PageUp') {
-          e.preventDefault();
-          this.trigger('prev');
-        }
+          case 'n':
+          case 'PageDown':
+            e.preventDefault();
+            this.trigger('next');
+            break;
 
-        if (e.key === 'w' && !this.plyr.fullscreen.active) {
-          this._toggleFullscreen();
-        }
+          case 'p':
+          case 'PageUp':
+            e.preventDefault();
+            this.trigger('prev');
+            break;
 
-        if (e.key === 'Escape' && !this.plyr.fullscreen.active && this.isWideScreen) {
-          this._toggleFullscreen(false);
+          case 'w':
+            if (this.plyr.fullscreen.active) break;
+
+            this._toggleFullscreen();
+
+            break;
+
+          case 'Escape':
+            if (this.plyr.fullscreen.active || !this.isWideScreen) break;
+
+            this._toggleFullscreen(false);
+
+            break;
+
+          case 'z':
+            this.plyr.speed = 1;
+            this.message.info(`视频速度：${1}`);
+            break;
+
+          case 'x':
+          case 'c':
+            {
+              const newIdx = e.key === 'x' ? Math.max(0, idx - 1) : Math.min(speedList.length - 1, idx + 1);
+              console.log(newIdx, idx);
+              if (newIdx === idx) break;
+              const speed = speedList[newIdx];
+              this.message.info(`视频速度：${speed}`);
+              this.plyr.speed = speed;
+              break;
+            }
         }
       });
       document.querySelectorAll('.plyr__controls .plyr__control').forEach(dom => {
@@ -991,7 +1076,7 @@ userAgent: ${navigator.userAgent}
 
 
     _injectSreen() {
-      $($('#plyr__fullscreen').html()).insertBefore('[data-plyr="fullscreen"]').on('click', () => {
+      $($('#plyr__widescreen').html()).insertBefore('[data-plyr="fullscreen"]').on('click', () => {
         this._toggleFullscreen();
       });
     }
@@ -1003,25 +1088,18 @@ userAgent: ${navigator.userAgent}
       this.isWideScreen = bool;
       window.sessionStorage.setItem(this.statusSessionKey, JSON.stringify(this.isWideScreen));
 
-      this._setFullscreenIcon(this.isWideScreen);
-
       if (this.isWideScreen) {
         this.wideScreenBodyStyles = $('body').css(['overflow']);
         $('body').css('overflow', 'hidden');
         this.$wrapper.addClass('k-player-widescreen');
+        $('.plyr__widescreen').addClass('plyr__control--pressed');
       } else {
         $('body').css(this.wideScreenBodyStyles);
         this.$wrapper.removeClass('k-player-widescreen');
+        $('.plyr__widescreen').removeClass('plyr__control--pressed');
       }
 
       this.trigger(this.isWideScreen ? 'enterwidescreen' : 'exitwidescreen');
-    }
-    /** @private */
-
-
-    _setFullscreenIcon(bool = this.isWideScreen) {
-      const $use = $('.plyr__fullscreen.plyr__custom use');
-      $use.attr('xlink:href', bool ? '#fullscreen-quit' : '#fullscreen');
     }
     /**
      * video src
@@ -1051,6 +1129,20 @@ userAgent: ${navigator.userAgent}
 
     hideError() {
       this.$error.hide();
+    }
+
+    get message() {
+      return {
+        info: text => {
+          this.$message.empty();
+          $(`<div class="k-player-message-item">${text}</div>`).hide().appendTo(this.$message).fadeIn(150).delay(1500).fadeOut(150, function () {
+            $(this).remove();
+          });
+        },
+        destroy: () => {
+          this.$message.empty();
+        }
+      };
     }
 
   }
