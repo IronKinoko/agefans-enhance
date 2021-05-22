@@ -15,6 +15,8 @@ function insertBtn() {
         <div class="blockcontent">
           <a id="open-modal" class="res_links_a" style="cursor:pointer">获取全部视频链接</a>
           <span>｜</span>
+          <a id="clean-all" class="res_links_a" style="cursor:pointer">清空</a>
+          <span>｜</span>
           <a id="all-select" class="res_links_a" style="cursor:pointer">复制内容</a>
           <span>｜</span>
           <a id="thunder-link" target="_blank" class="res_links_a" style="cursor:pointer">导出迅雷链接</a>
@@ -30,6 +32,12 @@ function insertBtn() {
     setTimeout(() => {
       $(this).text('复制内容')
     }, 1000)
+  })
+  $('#clean-all').on('click', () => {
+    getAllVideoUrlList().forEach((o) => {
+      removeLocal(o.href)
+    })
+    insertLocal()
   })
   $('#open-modal').on('click', function () {
     modal({
@@ -158,15 +166,23 @@ const PLAY_URL_KEY = 'play-url-key'
 function getLocal() {
   return JSON.parse(window.localStorage.getItem(PLAY_URL_KEY) || '{}')
 }
-function saveLocal(href, url) {
+export function saveLocal(href, url) {
   const map = getLocal()
   map[href] = { url }
   window.localStorage.setItem(PLAY_URL_KEY, JSON.stringify(map))
 }
+
+export function removeLocal(href) {
+  const map = getLocal()
+  delete map[href]
+  window.localStorage.setItem(PLAY_URL_KEY, JSON.stringify(map))
+}
+
 function insertLocal() {
   const map = getLocal()
   const list = getAllVideoUrlList()
   const $parent = $('#url-list')
+  $parent.empty()
   $(
     list
       .map((item) => {
@@ -181,7 +197,9 @@ function insertLocal() {
 }
 
 async function getVurl(href) {
-  const res = await fetch(getPlayUrl(href)).then((res) => res.json())
+  const res = await fetch(getPlayUrl(href), {
+    referrerPolicy: 'strict-origin-when-cross-origin',
+  }).then((res) => res.json())
   return decodeURIComponent(res.vurl)
 }
 export async function getVurlWithLocal(href) {

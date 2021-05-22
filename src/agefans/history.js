@@ -101,7 +101,7 @@ export function renderHistoryList() {
 function renderHistoryPage() {
   const currentDom = $('.nav_button_current')
 
-  $('<div id="history"></div>').insertBefore('#footer').hide()
+  $('<div id="history"></div>').insertAfter('#container').hide()
 
   $(`<a class="nav_button">历史</a>`)
     .appendTo('#nav')

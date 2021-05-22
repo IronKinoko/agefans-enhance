@@ -1,5 +1,10 @@
 import { his, parseTime } from './history'
-import { getVurlWithLocal, initGetAllVideoURL } from './getAllVideoURL'
+import {
+  getVurlWithLocal,
+  initGetAllVideoURL,
+  removeLocal,
+  saveLocal,
+} from './getAllVideoURL'
 import { KPlayer } from '../player'
 
 function replacePlayer() {
@@ -134,6 +139,10 @@ function addListener() {
     videoJumpHistoryPosition()
   })
 
+  player.on('error', () => {
+    removeLocal(getActivedom().data('href'))
+  })
+
   player.on('timeupdate', () => {
     if (Math.floor(player.currentTime) % 3 === 0) {
       updateTime(player.currentTime)
@@ -158,6 +167,7 @@ function replaceHref() {
     $(this)
       .removeAttr('href')
       .attr('data-href', href)
+      .css('cursor', 'pointer')
       .on('click', (e) => {
         e.preventDefault()
         switchPart(href, $(this))
@@ -172,6 +182,8 @@ function initPlayer(vurl) {
   showCurrentLink(vurl)
   addListener()
   player.src = vurl
+
+  saveLocal(getActivedom().data('href'), vurl)
 }
 
 function removeCpraid() {

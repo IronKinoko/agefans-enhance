@@ -157,6 +157,7 @@ class KPlayer {
 
     $(window).on('keydown', (e) => {
       let idx = speedList.indexOf(this.plyr.speed)
+      if (e.metaKey || e.shiftKey || e.altKey || e.ctrlKey) return
       switch (e.key) {
         case 'n':
         case 'PageDown':
@@ -337,6 +338,13 @@ class KPlayer {
       },
     }
   }
+}
+
+if ($('meta[name=referrer]').length === 0) {
+  $('head').append('<meta name="referrer" content="same-origin">')
+} else {
+  const $meta = $('meta[name=referrer]')
+  $meta.attr('content', 'same-origin')
 }
 
 export function showInfo() {
