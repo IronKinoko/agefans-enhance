@@ -5,20 +5,30 @@ import {
   removeLocal,
   saveLocal,
 } from './getAllVideoURL'
-import { KPlayer } from '../player'
+import { KPlayer, addReferrerMeta } from '../player'
+import { Message } from '../utils/message'
 
 function replacePlayer() {
   const dom = document.getElementById('age_playfram')
 
   const fn = () => {
+    if (!dom.src) return
     let url = new URL(dom.src)
 
     if (url.hostname.includes('agefans')) {
       let videoURL = url.searchParams.get('url')
       if (videoURL) {
+        addReferrerMeta()
         initPlayer(videoURL)
         mutationOb.disconnect()
       }
+    } else {
+      const message = new Message('#ageframediv')
+      message.info(
+        '这个视频似乎是第三方链接，并非由agefans自身提供，将使用默认播放器播放',
+        3000
+      )
+      mutationOb.disconnect()
     }
   }
 

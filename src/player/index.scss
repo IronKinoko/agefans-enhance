@@ -17,25 +17,6 @@
     height: 100%;
   }
 
-  #k-player-message {
-    position: absolute;
-    left: 20px;
-    bottom: 60px;
-    .k-player-message-item {
-      display: block;
-      width: max-content;
-      padding: 8px 16px;
-      background: rgba(0, 0, 0, 0.45);
-      border-radius: 4px;
-      color: white;
-      font-size: 14px;
-      white-space: nowrap;
-      overflow: hidden;
-      box-sizing: border-box;
-      margin-top: 4px;
-    }
-  }
-
   #k-player-loading,
   #k-player-error {
     position: absolute;
@@ -83,6 +64,7 @@
     color: inherit;
   }
 }
+
 
 // loading
 .lds-spinner {
@@ -171,6 +153,7 @@
   width: 100%;
   tbody tr td:first-child {
     white-space: nowrap;
+    width: 77px;
   }
   td {
     padding: 8px;
@@ -200,9 +183,6 @@
   }
   .shortcuts-table {
     flex: 1;
-    tr td:first-child {
-      width: 77px;
-    }
   }
   .key {
     position: relative;

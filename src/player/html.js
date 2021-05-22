@@ -127,8 +127,6 @@ export const errorHTML = `
   </div>
 </div>`
 
-export const messageHTML = `<div id="k-player-message"></div>`
-
 export const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>

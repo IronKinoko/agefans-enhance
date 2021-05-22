@@ -1,14 +1,9 @@
 import './index.scss'
-import {
-  errorHTML,
-  issueBody,
-  loadingHTML,
-  messageHTML,
-  scriptInfo,
-} from './html'
+import { errorHTML, issueBody, loadingHTML, scriptInfo } from './html'
 import { debounce } from '../utils/debounce'
 import { modal } from '../utils/modal'
 import { genIssueURL } from '../utils/genIssueURL'
+import { Message } from '../utils/message'
 
 const speedList = [0.5, 0.75, 1, 1.25, 1.5, 2, 4]
 
@@ -22,7 +17,6 @@ class KPlayer {
     const $wrapper = $('<div id="k-player-wrapper"/>').replaceAll(selector)
     const $loading = $(loadingHTML)
     const $error = $(errorHTML)
-    const $message = $(messageHTML)
     const $video = $('<video id="k-player" />')
 
     $wrapper.append($video)
@@ -99,12 +93,12 @@ class KPlayer {
     this.$wrapper = $wrapper
     this.$loading = $loading
     this.$error = $error
-    this.$message = $message
     this.$video = $video
     this.$videoWrapper = $wrapper.find('.plyr')
 
-    this.$videoWrapper.append($loading).append($error).append($message)
+    this.$videoWrapper.append($loading).append($error)
 
+    this.message = new Message(this.$videoWrapper)
     this.eventMap = {}
     this.isWideScreen = false
     this.wideScreenBodyStyles = {}
@@ -319,32 +313,15 @@ class KPlayer {
   hideError() {
     this.$error.hide()
   }
-
-  get message() {
-    return {
-      info: (text) => {
-        this.$message.empty()
-        $(`<div class="k-player-message-item">${text}</div>`)
-          .hide()
-          .appendTo(this.$message)
-          .fadeIn(150)
-          .delay(1500)
-          .fadeOut(150, function () {
-            $(this).remove()
-          })
-      },
-      destroy: () => {
-        this.$message.empty()
-      },
-    }
-  }
 }
 
-if ($('meta[name=referrer]').length === 0) {
-  $('head').append('<meta name="referrer" content="same-origin">')
-} else {
-  const $meta = $('meta[name=referrer]')
-  $meta.attr('content', 'same-origin')
+export function addReferrerMeta() {
+  if ($('meta[name=referrer]').length === 0) {
+    $('head').append('<meta name="referrer" content="same-origin">')
+  } else {
+    const $meta = $('meta[name=referrer]')
+    $meta.attr('content', 'same-origin')
+  }
 }
 
 export function showInfo() {

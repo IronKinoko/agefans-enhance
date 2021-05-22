@@ -1,0 +1,19 @@
+#k-player-message {
+  z-index: 999;
+  position: absolute;
+  left: 20px;
+  bottom: 60px;
+  .k-player-message-item {
+    display: block;
+    width: max-content;
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.45);
+    border-radius: 4px;
+    color: white;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    box-sizing: border-box;
+    margin-top: 4px;
+  }
+}
