@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.6.1
+// @version      1.6.2
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @match        https://www.agefans.net/*
@@ -176,7 +176,7 @@
 
   function renderHistoryPage() {
     const currentDom = $('.nav_button_current');
-    $('<div id="history"></div>').insertBefore('#footer').hide();
+    $('<div id="history"></div>').insertAfter('#container').hide();
     $(`<a class="nav_button">历史</a>`).appendTo('#nav').on('click', e => {
       if ($('#history').is(':visible')) {
         $('#container').show();
@@ -394,6 +394,8 @@
         <div class="blockcontent">
           <a id="open-modal" class="res_links_a" style="cursor:pointer">获取全部视频链接</a>
           <span>｜</span>
+          <a id="clean-all" class="res_links_a" style="cursor:pointer">清空</a>
+          <span>｜</span>
           <a id="all-select" class="res_links_a" style="cursor:pointer">复制内容</a>
           <span>｜</span>
           <a id="thunder-link" target="_blank" class="res_links_a" style="cursor:pointer">导出迅雷链接</a>
@@ -409,6 +411,12 @@
       setTimeout(() => {
         $(this).text('复制内容');
       }, 1000);
+    });
+    $('#clean-all').on('click', () => {
+      getAllVideoUrlList().forEach(o => {
+        removeLocal(o.href);
+      });
+      insertLocal();
     });
     $('#open-modal').on('click', function () {
       modal({
@@ -537,11 +545,17 @@
     };
     window.localStorage.setItem(PLAY_URL_KEY, JSON.stringify(map));
   }
+  function removeLocal(href) {
+    const map = getLocal();
+    delete map[href];
+    window.localStorage.setItem(PLAY_URL_KEY, JSON.stringify(map));
+  }
 
   function insertLocal() {
     const map = getLocal();
     const list = getAllVideoUrlList();
     const $parent = $('#url-list');
+    $parent.empty();
     $(list.map(item => {
       if (map[item.href]) {
         return genUrlItem(item.title, map[item.href].url);
@@ -552,7 +566,9 @@
   }
 
   async function getVurl(href) {
-    const res = await fetch(getPlayUrl(href)).then(res => res.json());
+    const res = await fetch(getPlayUrl(href), {
+      referrerPolicy: 'strict-origin-when-cross-origin'
+    }).then(res => res.json());
     return decodeURIComponent(res.vurl);
   }
 
@@ -705,7 +721,7 @@ aria-hidden="true"
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.6.1"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.6.2"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -767,7 +783,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.6.1"}
+脚本版本: ${"1.6.2"}
 `;
 
   function debounce(fn, delay = 300) {
@@ -946,6 +962,7 @@ userAgent: ${navigator.userAgent}
       });
       $(window).on('keydown', e => {
         let idx = speedList.indexOf(this.plyr.speed);
+        if (e.metaKey || e.shiftKey || e.altKey || e.ctrlKey) return;
 
         switch (e.key) {
           case 'n':
@@ -1125,6 +1142,13 @@ userAgent: ${navigator.userAgent}
 
   }
 
+  if ($('meta[name=referrer]').length === 0) {
+    $('head').append('<meta name="referrer" content="same-origin">');
+  } else {
+    const $meta = $('meta[name=referrer]');
+    $meta.attr('content', 'same-origin');
+  }
+
   function showInfo() {
     const video = $('#k-player')[0];
     const githubIssueURL = genIssueURL({
@@ -1279,6 +1303,9 @@ userAgent: ${navigator.userAgent}
     player$1.plyr.once('canplay', () => {
       videoJumpHistoryPosition();
     });
+    player$1.on('error', () => {
+      removeLocal(getActivedom().data('href'));
+    });
     player$1.on('timeupdate', () => {
       if (Math.floor(player$1.currentTime) % 3 === 0) {
         updateTime(player$1.currentTime);
@@ -1299,7 +1326,7 @@ userAgent: ${navigator.userAgent}
   function replaceHref() {
     $('.movurl:visible li a').each(function () {
       const href = $(this).attr('href');
-      $(this).removeAttr('href').attr('data-href', href).on('click', e => {
+      $(this).removeAttr('href').attr('data-href', href).css('cursor', 'pointer').on('click', e => {
         e.preventDefault();
         switchPart(href, $(this));
       });
@@ -1315,6 +1342,7 @@ userAgent: ${navigator.userAgent}
     showCurrentLink(vurl);
     addListener();
     player$1.src = vurl;
+    saveLocal(getActivedom().data('href'), vurl);
   }
 
   function removeCpraid() {
