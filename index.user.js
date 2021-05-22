@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.6.2
+// @version      1.6.3
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @match        https://www.agefans.net/*
@@ -54,8 +54,8 @@
     }
   }
 
-  var css$4 = ".agefans-wrapper .nav_button {\n  cursor: pointer;\n}\n.agefans-wrapper .res_links {\n  word-break: break-all;\n  word-wrap: break-word;\n}";
-  n(css$4,{});
+  var css$5 = ".agefans-wrapper .nav_button {\n  cursor: pointer;\n}\n.agefans-wrapper .res_links {\n  word-break: break-all;\n  word-wrap: break-word;\n}";
+  n(css$5,{});
 
   function renderHistroyStyle() {
     // add a tag visited style
@@ -68,8 +68,8 @@
     renderHistroyStyle();
   }
 
-  var css$3 = ".agefans-wrapper #history {\n  background: #202020;\n  border: 4px solid #303030;\n}\n.agefans-wrapper #history .history-list {\n  padding: 16px;\n  display: flex;\n  flex-wrap: wrap;\n}\n.agefans-wrapper #history .history-item {\n  width: 115px;\n  display: inline-block;\n  margin: 4px;\n}\n.agefans-wrapper #history .history-item img {\n  width: 100%;\n  border-radius: 2px;\n}\n.agefans-wrapper #history .history-item .desc .title {\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  font-size: 14px;\n  margin: 4px 0;\n}\n.agefans-wrapper #history .history-item .desc .position {\n  font-size: 14px;\n}";
-  n(css$3,{});
+  var css$4 = ".agefans-wrapper #history {\n  background: #202020;\n  border: 4px solid #303030;\n}\n.agefans-wrapper #history .history-list {\n  padding: 16px;\n  display: flex;\n  flex-wrap: wrap;\n}\n.agefans-wrapper #history .history-item {\n  width: 115px;\n  display: inline-block;\n  margin: 4px;\n}\n.agefans-wrapper #history .history-item img {\n  width: 100%;\n  border-radius: 2px;\n}\n.agefans-wrapper #history .history-item .desc .title {\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  font-size: 14px;\n  margin: 4px 0;\n}\n.agefans-wrapper #history .history-item .desc .position {\n  font-size: 14px;\n}";
+  n(css$4,{});
 
   class History {
     constructor() {
@@ -214,8 +214,8 @@
     $temp.remove();
   }
 
-  var css$2 = ".k-modal {\n  position: fixed;\n  left: 0;\n  right: 0;\n  top: 0;\n  bottom: 0;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  z-index: 1000;\n  text-align: left;\n  animation: fadeIn 0.3s ease forwards;\n}\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 1;\n  }\n}\n.k-modal * {\n  color: rgba(0, 0, 0, 0.85);\n}\n.k-modal .k-modal-mask {\n  position: fixed;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  top: 0;\n  background: rgba(0, 0, 0, 0.45);\n  cursor: pointer;\n}\n.k-modal .k-modal-wrap {\n  position: fixed;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  top: 0;\n  overflow: auto;\n  text-align: center;\n  user-select: none;\n}\n.k-modal .k-modal-wrap::before {\n  content: \"\";\n  display: inline-block;\n  width: 0;\n  height: 100%;\n  vertical-align: middle;\n}\n.k-modal .k-modal-container {\n  margin: 20px 0;\n  display: inline-block;\n  vertical-align: middle;\n  text-align: left;\n  position: relative;\n  width: 520px;\n  min-height: 100px;\n  background: white;\n  border-radius: 2px;\n  user-select: text;\n}\n.k-modal .k-modal-header {\n  font-size: 16px;\n  padding: 16px;\n  border-bottom: 1px solid #f1f1f1;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.k-modal .k-modal-close {\n  cursor: pointer;\n  height: 55px;\n  width: 55px;\n  position: absolute;\n  right: 0;\n  top: 0;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  user-select: none;\n}\n.k-modal .k-modal-close * {\n  color: rgba(0, 0, 0, 0.45);\n  transition: color 0.15s ease;\n}\n.k-modal .k-modal-close:hover * {\n  color: rgba(0, 0, 0, 0.85);\n}\n.k-modal .k-modal-body,\n.k-modal .k-modal-footer {\n  padding: 16px;\n  font-size: 14px;\n}\n.k-modal .k-modal-footer {\n  border-top: 1px solid #f1f1f1;\n  display: flex;\n  justify-content: flex-end;\n}\n.k-modal .k-modal-btn {\n  user-select: none;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  height: 32px;\n  border-radius: 2px;\n  border: 1px solid #2af;\n  background: #2af;\n  color: white;\n  min-width: 64px;\n  cursor: pointer;\n}";
-  n(css$2,{});
+  var css$3 = ".k-modal {\n  position: fixed;\n  left: 0;\n  right: 0;\n  top: 0;\n  bottom: 0;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  z-index: 1000;\n  text-align: left;\n  animation: fadeIn 0.3s ease forwards;\n}\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 1;\n  }\n}\n.k-modal * {\n  color: rgba(0, 0, 0, 0.85);\n}\n.k-modal .k-modal-mask {\n  position: fixed;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  top: 0;\n  background: rgba(0, 0, 0, 0.45);\n  cursor: pointer;\n}\n.k-modal .k-modal-wrap {\n  position: fixed;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  top: 0;\n  overflow: auto;\n  text-align: center;\n  user-select: none;\n}\n.k-modal .k-modal-wrap::before {\n  content: \"\";\n  display: inline-block;\n  width: 0;\n  height: 100%;\n  vertical-align: middle;\n}\n.k-modal .k-modal-container {\n  margin: 20px 0;\n  display: inline-block;\n  vertical-align: middle;\n  text-align: left;\n  position: relative;\n  width: 520px;\n  min-height: 100px;\n  background: white;\n  border-radius: 2px;\n  user-select: text;\n}\n.k-modal .k-modal-header {\n  font-size: 16px;\n  padding: 16px;\n  border-bottom: 1px solid #f1f1f1;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.k-modal .k-modal-close {\n  cursor: pointer;\n  height: 55px;\n  width: 55px;\n  position: absolute;\n  right: 0;\n  top: 0;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  user-select: none;\n}\n.k-modal .k-modal-close * {\n  color: rgba(0, 0, 0, 0.45);\n  transition: color 0.15s ease;\n}\n.k-modal .k-modal-close:hover * {\n  color: rgba(0, 0, 0, 0.85);\n}\n.k-modal .k-modal-body,\n.k-modal .k-modal-footer {\n  padding: 16px;\n  font-size: 14px;\n}\n.k-modal .k-modal-footer {\n  border-top: 1px solid #f1f1f1;\n  display: flex;\n  justify-content: flex-end;\n}\n.k-modal .k-modal-btn {\n  user-select: none;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  height: 32px;\n  border-radius: 2px;\n  border: 1px solid #2af;\n  background: #2af;\n  color: white;\n  min-width: 64px;\n  cursor: pointer;\n}";
+  n(css$3,{});
 
   function modal({
     title,
@@ -588,8 +588,8 @@
     insertLocal();
   }
 
-  var css$1 = "#k-player-wrapper {\n  position: relative;\n  width: 100%;\n  height: 100%;\n  background: #000;\n  overflow: hidden;\n}\n#k-player-wrapper.k-player-widescreen {\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 100;\n}\n#k-player-wrapper .k-player-contianer {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper #k-player-message {\n  position: absolute;\n  left: 20px;\n  bottom: 60px;\n}\n#k-player-wrapper #k-player-message .k-player-message-item {\n  display: block;\n  width: max-content;\n  padding: 8px 16px;\n  background: rgba(0, 0, 0, 0.45);\n  border-radius: 4px;\n  color: white;\n  font-size: 14px;\n  white-space: nowrap;\n  overflow: hidden;\n  box-sizing: border-box;\n  margin-top: 4px;\n}\n#k-player-wrapper #k-player-loading,\n#k-player-wrapper #k-player-error {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  font-size: 88px;\n  color: white;\n  pointer-events: none;\n}\n#k-player-wrapper .k-player-center {\n  width: 100%;\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n}\n#k-player-wrapper .error-info {\n  text-align: center;\n  padding: 24px;\n  font-size: 18px;\n}\n#k-player-wrapper .plyr {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper video {\n  display: block;\n}\n#k-player-wrapper .plyr__next svg {\n  transform: scale(1.7);\n}\n#k-player-wrapper .plyr__widescreen svg {\n  transform: scale(1.3);\n}\n#k-player-wrapper .plyr--hide-cursor {\n  cursor: none;\n}\n#k-player-wrapper .plyr__control span:not(.plyr__tooltip) {\n  color: inherit;\n}\n\n.lds-spinner {\n  color: official;\n  display: inline-block;\n  position: relative;\n  width: 80px;\n  height: 80px;\n}\n\n.lds-spinner div {\n  transform-origin: 40px 40px;\n  animation: lds-spinner 1.2s linear infinite;\n}\n\n.lds-spinner div:after {\n  content: \" \";\n  display: block;\n  position: absolute;\n  top: 3px;\n  left: 37px;\n  width: 6px;\n  height: 18px;\n  border-radius: 20%;\n  background: #fff;\n}\n\n.lds-spinner div:nth-child(1) {\n  transform: rotate(0deg);\n  animation-delay: -1.1s;\n}\n\n.lds-spinner div:nth-child(2) {\n  transform: rotate(30deg);\n  animation-delay: -1s;\n}\n\n.lds-spinner div:nth-child(3) {\n  transform: rotate(60deg);\n  animation-delay: -0.9s;\n}\n\n.lds-spinner div:nth-child(4) {\n  transform: rotate(90deg);\n  animation-delay: -0.8s;\n}\n\n.lds-spinner div:nth-child(5) {\n  transform: rotate(120deg);\n  animation-delay: -0.7s;\n}\n\n.lds-spinner div:nth-child(6) {\n  transform: rotate(150deg);\n  animation-delay: -0.6s;\n}\n\n.lds-spinner div:nth-child(7) {\n  transform: rotate(180deg);\n  animation-delay: -0.5s;\n}\n\n.lds-spinner div:nth-child(8) {\n  transform: rotate(210deg);\n  animation-delay: -0.4s;\n}\n\n.lds-spinner div:nth-child(9) {\n  transform: rotate(240deg);\n  animation-delay: -0.3s;\n}\n\n.lds-spinner div:nth-child(10) {\n  transform: rotate(270deg);\n  animation-delay: -0.2s;\n}\n\n.lds-spinner div:nth-child(11) {\n  transform: rotate(300deg);\n  animation-delay: -0.1s;\n}\n\n.lds-spinner div:nth-child(12) {\n  transform: rotate(330deg);\n  animation-delay: 0s;\n}\n\n@keyframes lds-spinner {\n  0% {\n    opacity: 1;\n  }\n  100% {\n    opacity: 0;\n  }\n}\n.script-info {\n  width: 100%;\n}\n.script-info * {\n  box-sizing: border-box;\n}\n.script-info tbody tr td:first-child {\n  white-space: nowrap;\n}\n.script-info td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n}\n.script-info .info-title {\n  font-weight: 600;\n  padding-top: 24px;\n}\n.script-info a {\n  color: #2af;\n  padding: 4px 8px;\n  border-radius: 4px;\n}\n.script-info a:hover {\n  background-color: #f1f1f1;\n}\n.script-info .shortcuts-wrap {\n  display: flex;\n  width: 100%;\n  margin: -8px;\n}\n.script-info .shortcuts-table {\n  flex: 1;\n}\n.script-info .shortcuts-table tr td:first-child {\n  width: 77px;\n}\n.script-info .key {\n  position: relative;\n  background: #333;\n  text-align: center;\n  color: #eee;\n  float: left;\n  border-radius: 0.3em;\n  padding: 0.2em;\n  width: 3.3em;\n  height: 100%;\n  box-sizing: border-box;\n  border: 1px solid #444;\n  box-shadow: 0 0.2em 0 0.05em #222;\n  border-bottom-color: #555;\n  user-select: none;\n}";
-  n(css$1,{});
+  var css$2 = "#k-player-wrapper {\n  position: relative;\n  width: 100%;\n  height: 100%;\n  background: #000;\n  overflow: hidden;\n}\n#k-player-wrapper.k-player-widescreen {\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 100;\n}\n#k-player-wrapper .k-player-contianer {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper #k-player-loading,\n#k-player-wrapper #k-player-error {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  font-size: 88px;\n  color: white;\n  pointer-events: none;\n}\n#k-player-wrapper .k-player-center {\n  width: 100%;\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n}\n#k-player-wrapper .error-info {\n  text-align: center;\n  padding: 24px;\n  font-size: 18px;\n}\n#k-player-wrapper .plyr {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper video {\n  display: block;\n}\n#k-player-wrapper .plyr__next svg {\n  transform: scale(1.7);\n}\n#k-player-wrapper .plyr__widescreen svg {\n  transform: scale(1.3);\n}\n#k-player-wrapper .plyr--hide-cursor {\n  cursor: none;\n}\n#k-player-wrapper .plyr__control span:not(.plyr__tooltip) {\n  color: inherit;\n}\n\n.lds-spinner {\n  color: official;\n  display: inline-block;\n  position: relative;\n  width: 80px;\n  height: 80px;\n}\n\n.lds-spinner div {\n  transform-origin: 40px 40px;\n  animation: lds-spinner 1.2s linear infinite;\n}\n\n.lds-spinner div:after {\n  content: \" \";\n  display: block;\n  position: absolute;\n  top: 3px;\n  left: 37px;\n  width: 6px;\n  height: 18px;\n  border-radius: 20%;\n  background: #fff;\n}\n\n.lds-spinner div:nth-child(1) {\n  transform: rotate(0deg);\n  animation-delay: -1.1s;\n}\n\n.lds-spinner div:nth-child(2) {\n  transform: rotate(30deg);\n  animation-delay: -1s;\n}\n\n.lds-spinner div:nth-child(3) {\n  transform: rotate(60deg);\n  animation-delay: -0.9s;\n}\n\n.lds-spinner div:nth-child(4) {\n  transform: rotate(90deg);\n  animation-delay: -0.8s;\n}\n\n.lds-spinner div:nth-child(5) {\n  transform: rotate(120deg);\n  animation-delay: -0.7s;\n}\n\n.lds-spinner div:nth-child(6) {\n  transform: rotate(150deg);\n  animation-delay: -0.6s;\n}\n\n.lds-spinner div:nth-child(7) {\n  transform: rotate(180deg);\n  animation-delay: -0.5s;\n}\n\n.lds-spinner div:nth-child(8) {\n  transform: rotate(210deg);\n  animation-delay: -0.4s;\n}\n\n.lds-spinner div:nth-child(9) {\n  transform: rotate(240deg);\n  animation-delay: -0.3s;\n}\n\n.lds-spinner div:nth-child(10) {\n  transform: rotate(270deg);\n  animation-delay: -0.2s;\n}\n\n.lds-spinner div:nth-child(11) {\n  transform: rotate(300deg);\n  animation-delay: -0.1s;\n}\n\n.lds-spinner div:nth-child(12) {\n  transform: rotate(330deg);\n  animation-delay: 0s;\n}\n\n@keyframes lds-spinner {\n  0% {\n    opacity: 1;\n  }\n  100% {\n    opacity: 0;\n  }\n}\n.script-info {\n  width: 100%;\n}\n.script-info * {\n  box-sizing: border-box;\n}\n.script-info tbody tr td:first-child {\n  white-space: nowrap;\n  width: 77px;\n}\n.script-info td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n}\n.script-info .info-title {\n  font-weight: 600;\n  padding-top: 24px;\n}\n.script-info a {\n  color: #2af;\n  padding: 4px 8px;\n  border-radius: 4px;\n}\n.script-info a:hover {\n  background-color: #f1f1f1;\n}\n.script-info .shortcuts-wrap {\n  display: flex;\n  width: 100%;\n  margin: -8px;\n}\n.script-info .shortcuts-table {\n  flex: 1;\n}\n.script-info .key {\n  position: relative;\n  background: #333;\n  text-align: center;\n  color: #eee;\n  float: left;\n  border-radius: 0.3em;\n  padding: 0.2em;\n  width: 3.3em;\n  height: 100%;\n  box-sizing: border-box;\n  border: 1px solid #444;\n  box-shadow: 0 0.2em 0 0.05em #222;\n  border-bottom-color: #555;\n  user-select: none;\n}";
+  n(css$2,{});
 
   const icons = `
 <svg
@@ -717,11 +717,10 @@ aria-hidden="true"
     <div>视频加载失败</div><div class="error-info"></div>
   </div>
 </div>`;
-  const messageHTML = `<div id="k-player-message"></div>`;
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.6.2"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.6.3"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -783,7 +782,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.6.2"}
+脚本版本: ${"1.6.3"}
 `;
 
   function debounce(fn, delay = 300) {
@@ -814,6 +813,28 @@ userAgent: ${navigator.userAgent}
     return url.toString();
   }
 
+  var css$1 = "#k-player-message {\n  z-index: 999;\n  position: absolute;\n  left: 20px;\n  bottom: 60px;\n}\n#k-player-message .k-player-message-item {\n  display: block;\n  width: max-content;\n  padding: 8px 16px;\n  background: rgba(0, 0, 0, 0.45);\n  border-radius: 4px;\n  color: white;\n  font-size: 14px;\n  white-space: nowrap;\n  overflow: hidden;\n  box-sizing: border-box;\n  margin-top: 4px;\n}";
+  n(css$1,{});
+
+  class Message {
+    constructor(selector) {
+      this.$message = $('<div id="k-player-message">');
+      this.$message.appendTo($(selector));
+    }
+
+    info(text, duration = 1500) {
+      this.$message.empty();
+      $(`<div class="k-player-message-item">${text}</div>`).hide().appendTo(this.$message).fadeIn(150).delay(duration).fadeOut(150, function () {
+        $(this).remove();
+      });
+    }
+
+    destroy() {
+      this.$message.empty();
+    }
+
+  }
+
   const speedList = [0.5, 0.75, 1, 1.25, 1.5, 2, 4];
 
   class KPlayer {
@@ -826,7 +847,6 @@ userAgent: ${navigator.userAgent}
       const $wrapper = $('<div id="k-player-wrapper"/>').replaceAll(selector);
       const $loading = $(loadingHTML);
       const $error = $(errorHTML);
-      const $message = $(messageHTML);
       const $video = $('<video id="k-player" />');
       $wrapper.append($video);
       this.plyr = new Plyr('#k-player', {
@@ -903,10 +923,10 @@ userAgent: ${navigator.userAgent}
       this.$wrapper = $wrapper;
       this.$loading = $loading;
       this.$error = $error;
-      this.$message = $message;
       this.$video = $video;
       this.$videoWrapper = $wrapper.find('.plyr');
-      this.$videoWrapper.append($loading).append($error).append($message);
+      this.$videoWrapper.append($loading).append($error);
+      this.message = new Message(this.$videoWrapper);
       this.eventMap = {};
       this.isWideScreen = false;
       this.wideScreenBodyStyles = {};
@@ -1126,29 +1146,16 @@ userAgent: ${navigator.userAgent}
       this.$error.hide();
     }
 
-    get message() {
-      return {
-        info: text => {
-          this.$message.empty();
-          $(`<div class="k-player-message-item">${text}</div>`).hide().appendTo(this.$message).fadeIn(150).delay(1500).fadeOut(150, function () {
-            $(this).remove();
-          });
-        },
-        destroy: () => {
-          this.$message.empty();
-        }
-      };
+  }
+
+  function addReferrerMeta() {
+    if ($('meta[name=referrer]').length === 0) {
+      $('head').append('<meta name="referrer" content="same-origin">');
+    } else {
+      const $meta = $('meta[name=referrer]');
+      $meta.attr('content', 'same-origin');
     }
-
   }
-
-  if ($('meta[name=referrer]').length === 0) {
-    $('head').append('<meta name="referrer" content="same-origin">');
-  } else {
-    const $meta = $('meta[name=referrer]');
-    $meta.attr('content', 'same-origin');
-  }
-
   function showInfo() {
     const video = $('#k-player')[0];
     const githubIssueURL = genIssueURL({
@@ -1172,15 +1179,21 @@ userAgent: ${navigator.userAgent}
     const dom = document.getElementById('age_playfram');
 
     const fn = () => {
+      if (!dom.src) return;
       let url = new URL(dom.src);
 
       if (url.hostname.includes('agefans')) {
         let videoURL = url.searchParams.get('url');
 
         if (videoURL) {
+          addReferrerMeta();
           initPlayer(videoURL);
           mutationOb.disconnect();
         }
+      } else {
+        const message = new Message('#ageframediv');
+        message.info('这个视频似乎是第三方链接，并非由agefans自身提供，将使用默认播放器播放', 3000);
+        mutationOb.disconnect();
       }
     };
 
