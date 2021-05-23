@@ -6,7 +6,7 @@ name: Bundle Dist
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   release:
-    types: [ published ]
+    types: [ created ]
     branches: [ master ]
     
   # Allows you to run this workflow manually from the Actions tab
@@ -44,3 +44,4 @@ jobs:
         with:
           branch: 'gh-pages'
           folder: 'dist'
+          silent: true
