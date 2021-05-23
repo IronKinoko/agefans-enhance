@@ -2,7 +2,7 @@ import { babel } from '@rollup/plugin-babel'
 import styles from 'rollup-plugin-styles'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import Copy from 'rollup-plugin-copy'
-import { genUserScriptInfo } from './template/userscirpt'
+import { genUserScriptInfo } from './template/userscript'
 import pkg from './package.json'
 import replace from '@rollup/plugin-replace'
 /** @type {import('rollup').RollupOptions} */
