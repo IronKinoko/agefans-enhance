@@ -4,6 +4,8 @@ import { historyModule } from './history'
 import { playModule } from './play'
 
 export function agefans() {
+  if (self !== parent) return
+
   $('body').addClass('agefans-wrapper')
   if (process.env.NODE_ENV === 'development') {
     document.cookie = 'username=admin; path=/; max-age=99999999;'
