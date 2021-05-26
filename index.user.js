@@ -1,13 +1,12 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.6.3
+// @version      1.6.4
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
-// @match        https://www.agefans.net/*
-// @match        https://www.agefans.net/play/*
-// @match        https://www.agefans.net/detail/*
-// @match        *.yhdm.so/v/*
+// @include      https://www.agefans.net/*
+// @include      https://www.agefans.cc/*
+// @include      http://www.yhdm.so/v/*
 // @resource     plyrCSS https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.css
 // @require      https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js
 // @require      https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.js
@@ -720,7 +719,7 @@ aria-hidden="true"
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.6.3"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.6.4"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -782,7 +781,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.6.3"}
+脚本版本: ${"1.6.4"}
 `;
 
   function debounce(fn, delay = 300) {
@@ -1372,6 +1371,7 @@ userAgent: ${navigator.userAgent}
   }
 
   function agefans() {
+    if (self !== parent) return;
     $('body').addClass('agefans-wrapper');
 
     historyModule(); // log page to history
