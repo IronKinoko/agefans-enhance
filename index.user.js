@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.6.4
+// @version      1.6.5
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @include      https://www.agefans.net/*
@@ -719,7 +719,7 @@ aria-hidden="true"
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.6.4"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.6.5"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -781,7 +781,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.6.4"}
+脚本版本: ${"1.6.5"}
 `;
 
   function debounce(fn, delay = 300) {
@@ -1255,7 +1255,9 @@ userAgent: ${navigator.userAgent}
   async function switchPart(href, $dom, push = true) {
     try {
       const vurl = await getVurlWithLocal(href);
+      const speed = player$1.plyr.speed;
       player$1.src = vurl;
+      player$1.plyr.speed = speed;
       showCurrentLink(vurl);
       const $active = getActivedom();
       $active.css('color', '');
