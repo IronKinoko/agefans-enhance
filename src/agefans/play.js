@@ -87,7 +87,9 @@ function getActivedom() {
 async function switchPart(href, $dom, push = true) {
   try {
     const vurl = await getVurlWithLocal(href)
+    const speed = player.plyr.speed
     player.src = vurl
+    player.plyr.speed = speed
     showCurrentLink(vurl)
     const $active = getActivedom()
     $active.css('color', '')
