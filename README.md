@@ -27,3 +27,13 @@
 ## 待做事项
 
 - 暂无，欢迎提交意见（[issue](https://github.com/IronKinoko/agefans-enhance/issues)）
+
+## agefans 防止打开`devtools`时自动跳转主页
+
+为实现这个功能，会替换掉用户自己的登录状态。当然你可以之后再重新登录自己的账号
+
+在首页打开控制台，输入下面这段代码
+
+```javascript
+document.cookie="username=admin; path=/;max-age=9000000"
+```
