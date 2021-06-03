@@ -1,0 +1,22 @@
+#modal-form {
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    box-sizing: border-box;
+    .col {
+      flex-basis: 20%;
+      padding: 4px 0;
+    }
+  }
+  .mb8{
+    margin-bottom: 8px;
+  }
+}
+.k-checkbox {
+  display: inline-flex;
+  align-items: center;
+  input {
+    margin-right: 4px;
+  }
+}
+

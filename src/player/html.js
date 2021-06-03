@@ -145,9 +145,13 @@ export const scriptInfo = (video, githubIssueURL) => `
       <a target="_blank" href="https://greasyfork.org/zh-CN/scripts/424023-agefans-enhance/feedback">Greasy Fork 反馈</a>
     </td>
   </tr>
-  <tr><td colspan="2" class="info-title">视频信息</td></tr>
-  <tr><td>视频链接</td><td>${video?.src}</td></tr>
-  <tr><td>视频信息</td><td>${video?.videoWidth} x ${video?.videoHeight}</td></tr>
+  ${
+    video
+      ? `<tr><td colspan="2" class="info-title">视频信息</td></tr>
+     <tr><td>视频链接</td><td>${video.src}</td></tr>
+     <tr><td>视频信息</td><td>${video.videoWidth} x ${video.videoHeight}</td></tr>`
+      : ''
+  }
   <tr><td colspan="2" class="info-title">快捷键</td></tr>
   <tr>
     <td colspan="2">
@@ -156,8 +160,8 @@ export const scriptInfo = (video, githubIssueURL) => `
           <tbody>
             <tr><td><span class="key">W</span></td><td>宽屏</td></tr>
             <tr><td><span class="key">F</span></td><td>全屏</td></tr>
-            <tr><td><span class="key">←</span></td><td>后退10s</td></tr>
-            <tr><td><span class="key">→</span></td><td>前进10s</td></tr>
+            <tr><td><span class="key">←</span></td><td>后退5s</td></tr>
+            <tr><td><span class="key">→</span></td><td>前进5s</td></tr>
             <tr><td><span class="key">↑</span></td><td>音量+</td></tr>
             <tr><td><span class="key">↓</span></td><td>音量-</td></tr>
             <tr><td><span class="key">M</span></td><td>静音</td></tr>
@@ -181,7 +185,7 @@ export const scriptInfo = (video, githubIssueURL) => `
 </table>
 `
 
-export const issueBody = (src) =>
+export const issueBody = (src = '') =>
   `# 文字描述
 <!-- 如果有需要额外描述，或者提意见可以写在下面空白处 -->
 

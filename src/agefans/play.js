@@ -78,6 +78,8 @@ function getActivedom() {
   return $("li a[style*='color: rgb(238, 0, 0)']")
 }
 
+// switch part retry count
+let retryCount = 0
 /**
  *
  * @param {string} href
@@ -86,6 +88,7 @@ function getActivedom() {
  */
 async function switchPart(href, $dom, push = true) {
   try {
+    retryCount++
     const vurl = await getVurlWithLocal(href)
     const speed = player.plyr.speed
     player.src = vurl
@@ -100,9 +103,14 @@ async function switchPart(href, $dom, push = true) {
     $dom.css('color', 'rgb(238, 0, 0)')
     $dom.css('border', '1px solid rgb(238, 0, 0)')
     his.logHistory()
+    retryCount = 0
   } catch (error) {
-    console.error(error)
-    window.location.href = href
+    if (retryCount > 3) {
+      console.error(error)
+      window.location.href = href
+    } else {
+      switchPart(href, $dom, push)
+    }
   }
 }
 

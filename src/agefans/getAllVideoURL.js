@@ -1,7 +1,7 @@
 import { copyToClipboard } from '../utils/copy'
 import { modal } from '../utils/modal'
 import { getPlayUrl } from './playURL'
-
+import './getAllVideoURL.scss'
 /**
  * @typedef {{title:string,href:string}} ATag
  */
@@ -104,12 +104,12 @@ function insertModalForm() {
 
   let $dom = $(`
   <div id="modal-form">
-    <ul>
+    <ul class="row">
       ${list
         .map(
           (aTag) => `
-        <li>
-          <label><input type="checkbox" name="${aTag.href}" data-title="${aTag.title}" checked />${aTag.title}</label>
+        <li class="col">
+          <label class="k-checkbox"><input type="checkbox" name="${aTag.href}" data-title="${aTag.title}" checked />${aTag.title}</label>
         </li>`
         )
         .join('')}

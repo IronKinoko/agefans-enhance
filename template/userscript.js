@@ -7,6 +7,7 @@ export function genUserScriptInfo(pkg) {
 // @author       IronKinoko
 // @include      https://www.agefans.net/*
 // @include      https://www.agefans.cc/*
+// @include      https://www.agefans.vip/*
 // @include      http://www.yhdm.so/v/*
 // @resource     plyrCSS https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.css
 // @require      https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js

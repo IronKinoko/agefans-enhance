@@ -154,11 +154,15 @@ class KPlayer {
       if (e.metaKey || e.shiftKey || e.altKey || e.ctrlKey) return
       switch (e.key) {
         case 'n':
+        case ']':
+        case '【':
         case 'PageDown':
           e.preventDefault()
           this.trigger('next')
           break
         case 'p':
+        case '[':
+        case '】':
         case 'PageUp':
           e.preventDefault()
           this.trigger('prev')
