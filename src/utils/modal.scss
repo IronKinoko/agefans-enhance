@@ -10,7 +10,7 @@
   z-index: 1000;
   text-align: left;
   animation: fadeIn 0.3s ease forwards;
-
+  color: rgba(0, 0, 0, 0.85);
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -20,7 +20,7 @@
     }
   }
   * {
-    color: rgba(0, 0, 0, 0.85);
+    color: inherit;
   }
 
   .k-modal-mask {
@@ -88,12 +88,13 @@
       color: rgba(0, 0, 0, 0.85);
     }
   }
-  .k-modal-body,
-  .k-modal-footer {
+  .k-modal-body {
     padding: 16px;
     font-size: 14px;
   }
   .k-modal-footer {
+    padding: 10px 16px;
+    font-size: 14px;
     border-top: 1px solid #f1f1f1;
     display: flex;
     justify-content: flex-end;

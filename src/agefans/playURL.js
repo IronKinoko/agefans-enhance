@@ -5,62 +5,7 @@ function __setCookie(name, value, _in_days) {
   document.cookie =
     name + '=' + escape(value) + ';expires=' + exp.toGMTString() + ';path=/'
 }
-function __getCookie(name) {
-  var arr,
-    reg = new RegExp('(^| )' + name + '=([^;]*)(;|$)')
-  if ((arr = document.cookie.match(reg))) {
-    return unescape(arr[2])
-  } else {
-    return null
-  }
-}
-function getCookie2(name) {
-  return __getCookie(name)
-}
 
-function FEI2(in_epi) {
-  //
-  var hf_epi = Number(in_epi)
-  const time_curr = new Date().getTime()
-
-  var fa_t = Number(getCookie2('fa_t'))
-  if (!fa_t) {
-    fa_t = time_curr
-  }
-
-  var fa_c = Number(getCookie2('fa_c'))
-  if (!fa_c) {
-    fa_c = 0
-  }
-
-  //
-  if (time_curr - fa_t > 6000) {
-    fa_t = 0
-    fa_c = 0
-  }
-
-  //
-  fa_c += 1
-  fa_t = time_curr
-
-  //
-  if (fa_c > 10) {
-    fa_t = 0
-    fa_c = 0
-    //
-    if (hf_epi > 1) {
-      hf_epi = time_curr % hf_epi
-      if (!hf_epi) {
-        hf_epi = 1
-      }
-    }
-  }
-
-  __setCookie('fa_t', fa_t, 1)
-  __setCookie('fa_c', fa_c, 1)
-
-  return hf_epi
-}
 export function getPlayUrl(_url) {
   const _rand = Math.random()
   var _getplay_url =
@@ -70,12 +15,26 @@ export function getPlayUrl(_url) {
     ) +
     '&r=' +
     _rand
-  var re_resl = _getplay_url.match(/[&?]+epindex=(\d+)/)
-  const hf_epi = '' + FEI2(re_resl[1])
-  const t_epindex_ = 'epindex='
-  _getplay_url = _getplay_url.replace(
-    t_epindex_ + re_resl[1],
-    t_epindex_ + hf_epi
-  )
+
+  __setCookie('fa_t', Date.now(), 1)
+  __setCookie('fa_c', 1, 1)
   return _getplay_url
+}
+
+/** 因为agefans的安全策略，需要刷新下他的cookie才能正常访问 */
+export function updateCookie(href) {
+  href = href ? location.origin + href : location.href
+  return new Promise((resolve, reject) => {
+    $('<iframe/>')
+      .hide()
+      .on('load', (e) => {
+        e.currentTarget.remove()
+        resolve()
+      })
+      .on('error', () => {
+        reject()
+      })
+      .attr('src', href)
+      .appendTo('body')
+  })
 }

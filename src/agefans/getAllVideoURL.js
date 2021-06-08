@@ -1,6 +1,6 @@
 import { copyToClipboard } from '../utils/copy'
 import { modal } from '../utils/modal'
-import { getPlayUrl } from './playURL'
+import { getPlayUrl, updateCookie } from './playURL'
 import './getAllVideoURL.scss'
 /**
  * @typedef {{title:string,href:string}} ATag
@@ -11,13 +11,16 @@ function insertBtn() {
   <div class="baseblock">
     <div class="blockcontent">
       <div id="wangpan-div" class="baseblock2">
-        <div class="blocktitle">获取全部视频链接：</div>
+        <div class="blocktitle flex-align-center">
+          获取全部视频链接：
+          <span id="status-xr7" class="flex-align-center"></span>
+        </div>
         <div class="blockcontent">
           <a id="open-modal" class="res_links_a" style="cursor:pointer">获取全部视频链接</a>
           <span>｜</span>
           <a id="clean-all" class="res_links_a" style="cursor:pointer">清空</a>
           <span>｜</span>
-          <a id="all-select" class="res_links_a" style="cursor:pointer">复制内容</a>
+          <a id="copy-text" class="res_links_a" style="cursor:pointer">复制内容</a>
           <span>｜</span>
           <a id="thunder-link" target="_blank" class="res_links_a" style="cursor:pointer">导出迅雷链接</a>
           <div id="url-list" style="width:100%; max-height:400px; overflow:auto;"></div>
@@ -26,7 +29,7 @@ function insertBtn() {
     </div>
   </div>
 `).insertAfter($('.baseblock:contains(网盘资源)'))
-  $('#all-select').on('click', function () {
+  $('#copy-text').on('click', function () {
     copyToClipboard($('#url-list'))
     $(this).text('已复制')
     setTimeout(() => {
@@ -102,6 +105,16 @@ function insertModalForm() {
 
   let $dom = $(`
   <div id="modal-form">
+    <div class="k-alert k-alert-info">
+      <span class="k-alert-icon">
+        <svg viewBox="64 64 896 896" focusable="false" data-icon="info-circle" width="1em" height="1em" fill="currentColor" aria-hidden="true">
+          <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm32 664c0 4.4-3.6 8-8 8h-48c-4.4 0-8-3.6-8-8V456c0-4.4 3.6-8 8-8h48c4.4 0 8 3.6 8 8v272zm-32-344a48.01 48.01 0 010-96 48.01 48.01 0 010 96z"></path>
+        </svg>
+      </span>
+      <div class="k-alert-content">
+        <div class="k-alert-message">如果在1-2分钟内调用超过70多次，会被限流影响正常观看视频</div>
+      </div>
+    </div>
     <label class="k-checkbox">
       <input id="all-check" type="checkbox" checked/>全选
     </label>
@@ -137,12 +150,28 @@ function genUrlItem(title, content = '加载中...') {
   <div class="url" data-status='0' style="word-break:break-all; word-wrap:break-word;">${content}</div>
 </div>`
 }
+
+const loadingIcon = `
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin-right:4px;" width="1em" height="1em" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+  <circle cx="50" cy="50" fill="none" stroke="#5699d2" stroke-width="10" r="40" stroke-dasharray="164.93361431346415 56.97787143782138">
+    <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="0.6s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform>
+  </circle>
+</svg>`
+
 /**
  * @param {ATag[]} list
  */
-function insertResult(list) {
+async function insertResult(list) {
   const $parent = $('#url-list')
   $parent.empty()
+
+  $('#status-xr7')
+    .hide()
+    .fadeIn(300)
+    .html(`${loadingIcon}<div>更新cookie中...</div>`)
+  await updateCookie()
+  $('#status-xr7').text('更新完成').delay(1500).fadeOut(300)
+
   list.forEach((item) => {
     let $dom = $(genUrlItem(item.title)).appendTo($parent)
 
@@ -159,11 +188,17 @@ function insertResult(list) {
           console.error(error)
           $msg.empty()
           $msg.data('status', '2')
-          $(`<a style="cursor:pointer">加载出错，重试</a>`)
-            .appendTo($msg)
-            .on('click', () => {
-              _getUrl()
-            })
+          if (error instanceof AGEfansError) {
+            $(`<span>${error.message}</span>`).appendTo($msg)
+          } else {
+            $(`<a style="cursor:pointer">加载错误，请重试</a>`)
+              .appendTo($msg)
+              .on('click', async () => {
+                // 失败需要重试获取cookie
+                await updateCookie()
+                _getUrl()
+              })
+          }
         })
     }
     _getUrl()
@@ -207,10 +242,26 @@ function insertLocal() {
   ).appendTo($parent)
 }
 
+class AGEfansError extends Error {
+  constructor(message) {
+    super(message)
+    this.name = 'AGEfans Enhance Exception'
+  }
+}
 async function getVurl(href) {
   const res = await fetch(getPlayUrl(href), {
     referrerPolicy: 'strict-origin-when-cross-origin',
-  }).then((res) => res.json())
+  })
+    .then((res) => res.text())
+    .then((text) => {
+      if (text.includes('ipchk')) {
+        throw new AGEfansError(`你被限流了，请5分钟后重试（${text}）`)
+      }
+      if (text.includes('timeout')) {
+        throw new AGEfansError(`Cookie过期，请刷新页面重试（${text}）`)
+      }
+      return JSON.parse(text)
+    })
   return decodeURIComponent(res.vurl)
 }
 export async function getVurlWithLocal(href) {
@@ -219,6 +270,7 @@ export async function getVurlWithLocal(href) {
     return map[href].url
   }
 
+  await updateCookie(href)
   const vurl = await getVurl(href)
   saveLocal(href, vurl)
   return vurl
