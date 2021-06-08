@@ -25,16 +25,17 @@ export function getPlayUrl(_url) {
 export function updateCookie(href) {
   href = href ? location.origin + href : location.href
   return new Promise((resolve, reject) => {
-    $('<iframe/>')
-      .hide()
-      .on('load', (e) => {
-        e.currentTarget.remove()
-        resolve()
-      })
-      .on('error', () => {
-        reject()
-      })
-      .attr('src', href)
-      .appendTo('body')
+    const doneFn = () => {
+      resolve()
+      dom.remove()
+    }
+    // DOMContentLoaded is faster than load
+    const dom = document.createElement('iframe')
+    dom.style.display = 'none'
+    dom.src = href
+    document.body.append(dom)
+    dom.contentWindow.addEventListener('DOMContentLoaded', doneFn)
+    dom.contentWindow.addEventListener('load', doneFn)
+    dom.contentWindow.addEventListener('error', reject)
   })
 }
