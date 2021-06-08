@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.6.7
+// @version      1.6.8
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @include      https://www.agefans.net/*
@@ -323,12 +323,19 @@
   function updateCookie(href) {
     href = href ? location.origin + href : location.href;
     return new Promise((resolve, reject) => {
-      $('<iframe/>').hide().on('load', e => {
-        e.currentTarget.remove();
+      const doneFn = () => {
         resolve();
-      }).on('error', () => {
-        reject();
-      }).attr('src', href).appendTo('body');
+        dom.remove();
+      }; // DOMContentLoaded is faster than load
+
+
+      const dom = document.createElement('iframe');
+      dom.style.display = 'none';
+      dom.src = href;
+      document.body.append(dom);
+      dom.contentWindow.addEventListener('DOMContentLoaded', doneFn);
+      dom.contentWindow.addEventListener('load', doneFn);
+      dom.contentWindow.addEventListener('error', reject);
     });
   }
 
@@ -732,7 +739,7 @@ aria-hidden="true"
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.6.7"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.6.8"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -794,7 +801,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.6.7"}
+脚本版本: ${"1.6.8"}
 `;
 
   function debounce(fn, delay = 300) {
