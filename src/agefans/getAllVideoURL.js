@@ -45,13 +45,11 @@ function insertBtn() {
       content: insertModalForm(),
       onOk: () => {
         let list = []
-        $('#modal-form input').each(function (_, el) {
-          if (el.checked) {
-            list.push({
-              title: $(this).data('title'),
-              href: $(this).attr('name'),
-            })
-          }
+        $('#modal-form .col input:checked').each((_, el) => {
+          list.push({
+            title: $(el).data('title'),
+            href: $(el).attr('name'),
+          })
         })
         insertResult(list)
       },
@@ -104,6 +102,9 @@ function insertModalForm() {
 
   let $dom = $(`
   <div id="modal-form">
+    <label class="k-checkbox">
+      <input id="all-check" type="checkbox" checked/>全选
+    </label>
     <ul class="row">
       ${list
         .map(
@@ -117,6 +118,16 @@ function insertModalForm() {
   </div>
   `)
 
+  $dom.find('.row .col input').on('change', () => {
+    const length = list.length
+    const checkedLength = $dom.find('.row .col input:checked').length
+    $dom
+      .find('.k-checkbox #all-check')
+      .prop('checked', length === checkedLength)
+  })
+  $dom.find('.k-checkbox #all-check').on('change', (e) => {
+    $dom.find('.row .col input').prop('checked', e.currentTarget.checked)
+  })
   return $dom
 }
 
