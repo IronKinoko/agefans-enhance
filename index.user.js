@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.6.6
+// @version      1.6.7
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @include      https://www.agefans.net/*
@@ -214,7 +214,7 @@
     $temp.remove();
   }
 
-  var css$4 = ".k-modal {\n  position: fixed;\n  left: 0;\n  right: 0;\n  top: 0;\n  bottom: 0;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  z-index: 1000;\n  text-align: left;\n  animation: fadeIn 0.3s ease forwards;\n}\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 1;\n  }\n}\n.k-modal * {\n  color: rgba(0, 0, 0, 0.85);\n}\n.k-modal .k-modal-mask {\n  position: fixed;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  top: 0;\n  background: rgba(0, 0, 0, 0.45);\n  cursor: pointer;\n}\n.k-modal .k-modal-wrap {\n  position: fixed;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  top: 0;\n  overflow: auto;\n  text-align: center;\n  user-select: none;\n}\n.k-modal .k-modal-wrap::before {\n  content: \"\";\n  display: inline-block;\n  width: 0;\n  height: 100%;\n  vertical-align: middle;\n}\n.k-modal .k-modal-container {\n  margin: 20px 0;\n  display: inline-block;\n  vertical-align: middle;\n  text-align: left;\n  position: relative;\n  width: 520px;\n  min-height: 100px;\n  background: white;\n  border-radius: 2px;\n  user-select: text;\n}\n.k-modal .k-modal-header {\n  font-size: 16px;\n  padding: 16px;\n  border-bottom: 1px solid #f1f1f1;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.k-modal .k-modal-close {\n  cursor: pointer;\n  height: 55px;\n  width: 55px;\n  position: absolute;\n  right: 0;\n  top: 0;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  user-select: none;\n}\n.k-modal .k-modal-close * {\n  color: rgba(0, 0, 0, 0.45);\n  transition: color 0.15s ease;\n}\n.k-modal .k-modal-close:hover * {\n  color: rgba(0, 0, 0, 0.85);\n}\n.k-modal .k-modal-body,\n.k-modal .k-modal-footer {\n  padding: 16px;\n  font-size: 14px;\n}\n.k-modal .k-modal-footer {\n  border-top: 1px solid #f1f1f1;\n  display: flex;\n  justify-content: flex-end;\n}\n.k-modal .k-modal-btn {\n  user-select: none;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  height: 32px;\n  border-radius: 2px;\n  border: 1px solid #1890ff;\n  background: #1890ff;\n  color: white;\n  min-width: 64px;\n  cursor: pointer;\n}";
+  var css$4 = ".k-modal {\n  position: fixed;\n  left: 0;\n  right: 0;\n  top: 0;\n  bottom: 0;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  z-index: 1000;\n  text-align: left;\n  animation: fadeIn 0.3s ease forwards;\n  color: rgba(0, 0, 0, 0.85);\n}\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 1;\n  }\n}\n.k-modal * {\n  color: inherit;\n}\n.k-modal .k-modal-mask {\n  position: fixed;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  top: 0;\n  background: rgba(0, 0, 0, 0.45);\n  cursor: pointer;\n}\n.k-modal .k-modal-wrap {\n  position: fixed;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  top: 0;\n  overflow: auto;\n  text-align: center;\n  user-select: none;\n}\n.k-modal .k-modal-wrap::before {\n  content: \"\";\n  display: inline-block;\n  width: 0;\n  height: 100%;\n  vertical-align: middle;\n}\n.k-modal .k-modal-container {\n  margin: 20px 0;\n  display: inline-block;\n  vertical-align: middle;\n  text-align: left;\n  position: relative;\n  width: 520px;\n  min-height: 100px;\n  background: white;\n  border-radius: 2px;\n  user-select: text;\n}\n.k-modal .k-modal-header {\n  font-size: 16px;\n  padding: 16px;\n  border-bottom: 1px solid #f1f1f1;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.k-modal .k-modal-close {\n  cursor: pointer;\n  height: 55px;\n  width: 55px;\n  position: absolute;\n  right: 0;\n  top: 0;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  user-select: none;\n}\n.k-modal .k-modal-close * {\n  color: rgba(0, 0, 0, 0.45);\n  transition: color 0.15s ease;\n}\n.k-modal .k-modal-close:hover * {\n  color: rgba(0, 0, 0, 0.85);\n}\n.k-modal .k-modal-body {\n  padding: 16px;\n  font-size: 14px;\n}\n.k-modal .k-modal-footer {\n  padding: 10px 16px;\n  font-size: 14px;\n  border-top: 1px solid #f1f1f1;\n  display: flex;\n  justify-content: flex-end;\n}\n.k-modal .k-modal-btn {\n  user-select: none;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  height: 32px;\n  border-radius: 2px;\n  border: 1px solid #1890ff;\n  background: #1890ff;\n  color: white;\n  min-width: 64px;\n  cursor: pointer;\n}";
   n(css$4,{});
 
   function modal({
@@ -307,81 +307,32 @@
     document.cookie = name + '=' + escape(value) + ';expires=' + exp.toGMTString() + ';path=/';
   }
 
-  function __getCookie(name) {
-    var arr,
-        reg = new RegExp('(^| )' + name + '=([^;]*)(;|$)');
-
-    if (arr = document.cookie.match(reg)) {
-      return unescape(arr[2]);
-    } else {
-      return null;
-    }
-  }
-
-  function getCookie2(name) {
-    return __getCookie(name);
-  }
-
-  function FEI2(in_epi) {
-    //
-    var hf_epi = Number(in_epi);
-    const time_curr = new Date().getTime();
-    var fa_t = Number(getCookie2('fa_t'));
-
-    if (!fa_t) {
-      fa_t = time_curr;
-    }
-
-    var fa_c = Number(getCookie2('fa_c'));
-
-    if (!fa_c) {
-      fa_c = 0;
-    } //
-
-
-    if (time_curr - fa_t > 6000) {
-      fa_t = 0;
-      fa_c = 0;
-    } //
-
-
-    fa_c += 1;
-    fa_t = time_curr; //
-
-    if (fa_c > 10) {
-      fa_t = 0;
-      fa_c = 0; //
-
-      if (hf_epi > 1) {
-        hf_epi = time_curr % hf_epi;
-
-        if (!hf_epi) {
-          hf_epi = 1;
-        }
-      }
-    }
-
-    __setCookie('fa_t', fa_t, 1);
-
-    __setCookie('fa_c', fa_c, 1);
-
-    return hf_epi;
-  }
-
   function getPlayUrl(_url) {
     const _rand = Math.random();
 
     var _getplay_url = _url.replace(/.*\/play\/(\d+?)\?playid=(\d+)_(\d+).*/, '/_getplay?aid=$1&playindex=$2&epindex=$3') + '&r=' + _rand;
 
-    var re_resl = _getplay_url.match(/[&?]+epindex=(\d+)/);
+    __setCookie('fa_t', Date.now(), 1);
 
-    const hf_epi = '' + FEI2(re_resl[1]);
-    const t_epindex_ = 'epindex=';
-    _getplay_url = _getplay_url.replace(t_epindex_ + re_resl[1], t_epindex_ + hf_epi);
+    __setCookie('fa_c', 1, 1);
+
     return _getplay_url;
   }
+  /** 因为agefans的安全策略，需要刷新下他的cookie才能正常访问 */
 
-  var css$3 = "#modal-form .row {\n  display: flex;\n  flex-wrap: wrap;\n  box-sizing: border-box;\n}\n#modal-form .row .col {\n  flex-basis: 20%;\n  padding: 4px 0;\n}\n#modal-form .mb8 {\n  margin-bottom: 8px;\n}\n\n.k-checkbox {\n  display: inline-flex;\n  align-items: center;\n}\n.k-checkbox input {\n  margin-right: 4px;\n}";
+  function updateCookie(href) {
+    href = href ? location.origin + href : location.href;
+    return new Promise((resolve, reject) => {
+      $('<iframe/>').hide().on('load', e => {
+        e.currentTarget.remove();
+        resolve();
+      }).on('error', () => {
+        reject();
+      }).attr('src', href).appendTo('body');
+    });
+  }
+
+  var css$3 = "#modal-form .row {\n  display: flex;\n  flex-wrap: wrap;\n  box-sizing: border-box;\n}\n#modal-form .row .col {\n  flex-basis: 20%;\n  padding: 4px 0;\n}\n#modal-form .mb8 {\n  margin-bottom: 8px;\n}\n\n.k-checkbox {\n  display: inline-flex;\n  align-items: center;\n}\n.k-checkbox input {\n  margin-right: 4px;\n}\n\n.flex-align-center {\n  display: flex;\n  align-items: center;\n}\n\n.k-alert {\n  margin-bottom: 16px;\n  box-sizing: border-box;\n  color: #000000d9;\n  font-size: 14px;\n  font-variant: tabular-nums;\n  line-height: 1.5715;\n  list-style: none;\n  font-feature-settings: \"tnum\";\n  position: relative;\n  display: flex;\n  align-items: center;\n  padding: 8px 15px;\n  word-wrap: break-word;\n  border-radius: 2px;\n}\n.k-alert .k-alert-icon {\n  margin-right: 8px;\n  display: inline-block;\n  color: inherit;\n  font-style: normal;\n  line-height: 0;\n  text-align: center;\n  text-transform: none;\n  vertical-align: -0.125em;\n  text-rendering: optimizeLegibility;\n  -webkit-font-smoothing: antialiased;\n}\n.k-alert .k-alert-content {\n  flex: 1;\n  min-width: 0;\n}\n\n.k-alert-info {\n  background-color: #e6f7ff;\n  border: 1px solid #91d5ff;\n}\n.k-alert-info .k-alert-icon {\n  color: #1890ff;\n}";
   n(css$3,{});
 
   /**
@@ -393,13 +344,16 @@
   <div class="baseblock">
     <div class="blockcontent">
       <div id="wangpan-div" class="baseblock2">
-        <div class="blocktitle">获取全部视频链接：</div>
+        <div class="blocktitle flex-align-center">
+          获取全部视频链接：
+          <span id="status-xr7" class="flex-align-center"></span>
+        </div>
         <div class="blockcontent">
           <a id="open-modal" class="res_links_a" style="cursor:pointer">获取全部视频链接</a>
           <span>｜</span>
           <a id="clean-all" class="res_links_a" style="cursor:pointer">清空</a>
           <span>｜</span>
-          <a id="all-select" class="res_links_a" style="cursor:pointer">复制内容</a>
+          <a id="copy-text" class="res_links_a" style="cursor:pointer">复制内容</a>
           <span>｜</span>
           <a id="thunder-link" target="_blank" class="res_links_a" style="cursor:pointer">导出迅雷链接</a>
           <div id="url-list" style="width:100%; max-height:400px; overflow:auto;"></div>
@@ -408,7 +362,7 @@
     </div>
   </div>
 `).insertAfter($('.baseblock:contains(网盘资源)'));
-    $('#all-select').on('click', function () {
+    $('#copy-text').on('click', function () {
       copyToClipboard($('#url-list'));
       $(this).text('已复制');
       setTimeout(() => {
@@ -427,13 +381,11 @@
         content: insertModalForm(),
         onOk: () => {
           let list = [];
-          $('#modal-form input').each(function (_, el) {
-            if (el.checked) {
-              list.push({
-                title: $(this).data('title'),
-                href: $(this).attr('name')
-              });
-            }
+          $('#modal-form .col input:checked').each((_, el) => {
+            list.push({
+              title: $(el).data('title'),
+              href: $(el).attr('name')
+            });
           });
           insertResult(list);
         }
@@ -483,6 +435,19 @@
     const list = getAllVideoUrlList();
     let $dom = $(`
   <div id="modal-form">
+    <div class="k-alert k-alert-info">
+      <span class="k-alert-icon">
+        <svg viewBox="64 64 896 896" focusable="false" data-icon="info-circle" width="1em" height="1em" fill="currentColor" aria-hidden="true">
+          <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm32 664c0 4.4-3.6 8-8 8h-48c-4.4 0-8-3.6-8-8V456c0-4.4 3.6-8 8-8h48c4.4 0 8 3.6 8 8v272zm-32-344a48.01 48.01 0 010-96 48.01 48.01 0 010 96z"></path>
+        </svg>
+      </span>
+      <div class="k-alert-content">
+        <div class="k-alert-message">如果在1-2分钟内调用超过70多次，会被限流影响正常观看视频</div>
+      </div>
+    </div>
+    <label class="k-checkbox">
+      <input id="all-check" type="checkbox" checked/>全选
+    </label>
     <ul class="row">
       ${list.map(aTag => `
         <li class="col">
@@ -491,6 +456,14 @@
     </ul>
   </div>
   `);
+    $dom.find('.row .col input').on('change', () => {
+      const length = list.length;
+      const checkedLength = $dom.find('.row .col input:checked').length;
+      $dom.find('.k-checkbox #all-check').prop('checked', length === checkedLength);
+    });
+    $dom.find('.k-checkbox #all-check').on('change', e => {
+      $dom.find('.row .col input').prop('checked', e.currentTarget.checked);
+    });
     return $dom;
   }
 
@@ -500,14 +473,23 @@
   <div class="url" data-status='0' style="word-break:break-all; word-wrap:break-word;">${content}</div>
 </div>`;
   }
+
+  const loadingIcon = `
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin-right:4px;" width="1em" height="1em" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+  <circle cx="50" cy="50" fill="none" stroke="#5699d2" stroke-width="10" r="40" stroke-dasharray="164.93361431346415 56.97787143782138">
+    <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="0.6s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform>
+  </circle>
+</svg>`;
   /**
    * @param {ATag[]} list
    */
 
-
-  function insertResult(list) {
+  async function insertResult(list) {
     const $parent = $('#url-list');
     $parent.empty();
+    $('#status-xr7').hide().fadeIn(300).html(`${loadingIcon}<div>更新cookie中...</div>`);
+    await updateCookie();
+    $('#status-xr7').text('更新完成').delay(1500).fadeOut(300);
     list.forEach(item => {
       let $dom = $(genUrlItem(item.title)).appendTo($parent);
       let $msg = $dom.find('.url');
@@ -522,9 +504,17 @@
           console.error(error);
           $msg.empty();
           $msg.data('status', '2');
-          $(`<a style="cursor:pointer">加载出错，重试</a>`).appendTo($msg).on('click', () => {
-            _getUrl();
-          });
+
+          if (error instanceof AGEfansError) {
+            $(`<span>${error.message}</span>`).appendTo($msg);
+          } else {
+            $(`<a style="cursor:pointer">加载错误，请重试</a>`).appendTo($msg).on('click', async () => {
+              // 失败需要重试获取cookie
+              await updateCookie();
+
+              _getUrl();
+            });
+          }
         });
       }
 
@@ -568,10 +558,28 @@
     }).join('')).appendTo($parent);
   }
 
+  class AGEfansError extends Error {
+    constructor(message) {
+      super(message);
+      this.name = 'AGEfans Enhance Exception';
+    }
+
+  }
+
   async function getVurl(href) {
     const res = await fetch(getPlayUrl(href), {
       referrerPolicy: 'strict-origin-when-cross-origin'
-    }).then(res => res.json());
+    }).then(res => res.text()).then(text => {
+      if (text.includes('ipchk')) {
+        throw new AGEfansError(`你被限流了，请5分钟后重试（${text}）`);
+      }
+
+      if (text.includes('timeout')) {
+        throw new AGEfansError(`Cookie过期，请刷新页面重试（${text}）`);
+      }
+
+      return JSON.parse(text);
+    });
     return decodeURIComponent(res.vurl);
   }
 
@@ -582,6 +590,7 @@
       return map[href].url;
     }
 
+    await updateCookie(href);
     const vurl = await getVurl(href);
     saveLocal(href, vurl);
     return vurl;
@@ -723,7 +732,7 @@ aria-hidden="true"
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.6.6"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.6.7"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -785,7 +794,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.6.6"}
+脚本版本: ${"1.6.7"}
 `;
 
   function debounce(fn, delay = 300) {
