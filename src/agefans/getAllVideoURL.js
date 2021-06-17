@@ -182,30 +182,28 @@ async function insertResult(list) {
     let $dom = $(genUrlItem(item.title)).appendTo($parent)
 
     let $msg = $dom.find('.url')
-    function _getUrl() {
-      getVurl(item.href)
-        .then((vurl) => {
-          const url = decodeURIComponent(vurl)
-          saveLocal(item.href, url)
-          $msg.html(`<a href="${url}" download>${url}</a>`)
-          $msg.data('status', '1')
-        })
-        .catch((error) => {
-          console.error(error)
-          $msg.empty()
-          $msg.data('status', '2')
-          if (error instanceof AGEfansError) {
-            $(`<span>${error.message}</span>`).appendTo($msg)
-          } else {
-            $(`<a style="cursor:pointer">加载错误，请重试</a>`)
-              .appendTo($msg)
-              .on('click', async () => {
-                // 失败需要重试获取cookie
-                await updateCookie()
-                _getUrl()
-              })
-          }
-        })
+    async function _getUrl() {
+      try {
+        const vurl = await getVurl(item.href)
+        saveLocal(item.href, vurl)
+        $msg.html(`<a href="${vurl}" download>${vurl}</a>`)
+        $msg.data('status', '1')
+      } catch (error) {
+        console.error(error)
+        $msg.empty()
+        $msg.data('status', '2')
+        if (error instanceof AGEfansError) {
+          $(`<span>${error.message}</span>`).appendTo($msg)
+        } else {
+          $(`<a style="cursor:pointer">加载错误，请重试</a>`)
+            .appendTo($msg)
+            .on('click', async () => {
+              // 失败需要重试获取cookie
+              await updateCookie()
+              _getUrl()
+            })
+        }
+      }
     }
     _getUrl()
   })
@@ -258,17 +256,17 @@ async function getVurl(href) {
   const res = await fetch(getPlayUrl(href), {
     referrerPolicy: 'strict-origin-when-cross-origin',
   })
-    .then((res) => res.text())
-    .then((text) => {
-      if (text.includes('ipchk')) {
-        throw new AGEfansError(`你被限流了，请5分钟后重试（${text}）`)
-      }
-      if (text.includes('timeout')) {
-        throw new AGEfansError(`Cookie过期，请刷新页面重试（${text}）`)
-      }
-      return JSON.parse(text)
-    })
-  return decodeURIComponent(res.vurl)
+  const text = await res.text()
+
+  if (text.includes('ipchk')) {
+    throw new AGEfansError(`你被限流了，请5分钟后重试（${text}）`)
+  }
+  if (text.includes('timeout')) {
+    throw new AGEfansError(`Cookie过期，请刷新页面重试（${text}）`)
+  }
+
+  const json = JSON.parse(text)
+  return decodeURIComponent(json.vurl)
 }
 export async function getVurlWithLocal(href) {
   const map = getLocal()
