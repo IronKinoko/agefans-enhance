@@ -38,8 +38,12 @@ function replacePlayer() {
 }
 
 function showCurrentLink(vurl) {
+  const decodeVurl = decodeURIComponent(vurl)
+
   if ($('#current-link').length) {
-    return $('#current-link').text(vurl)
+    $('#current-link').text(decodeVurl)
+    $('#current-link').attr('href', decodeVurl)
+    return
   }
   $(`
   <div class="baseblock">
@@ -47,10 +51,7 @@ function showCurrentLink(vurl) {
       <div id="wangpan-div" class="baseblock2">
         <div class="blocktitle">本集链接：</div>
         <div class="blockcontent">
-          <a class="res_links" id="current-link" download href="${decodeURIComponent(
-            vurl
-          )}">${decodeURIComponent(vurl)}</a>
-          <br>
+          <a class="res_links" id="current-link" download href="${decodeVurl}">${decodeVurl}</a>
         </div>
       </div>
     </div>

@@ -145,11 +145,15 @@ function insertModalForm() {
 }
 
 function genUrlItem(title, content = '加载中...') {
+  const contentHTML = content.startsWith('http')
+    ? `<a href="${content}" download>${content}</a>`
+    : content
+
   return `<div>
   <div style="white-space: nowrap;">[${title}]</div>
   <div class="url" data-status='0' style="word-break:break-all; word-wrap:break-word;">
-  <a href="${content}" download>${content}</a>
-</div>
+    ${contentHTML}
+  </div>
 </div>`
 }
 
@@ -183,7 +187,7 @@ async function insertResult(list) {
         .then((vurl) => {
           const url = decodeURIComponent(vurl)
           saveLocal(item.href, url)
-          $msg.text(url)
+          $msg.html(`<a href="${url}" download>${url}</a>`)
           $msg.data('status', '1')
         })
         .catch((error) => {
