@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.6.8
+// @version      1.7.0
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @include      https://www.agefans.net/*
@@ -300,25 +300,66 @@
     }
   }
 
-  function __setCookie(name, value, _in_days) {
+  function set(name, value, _in_days = 1) {
     var Days = _in_days;
     var exp = new Date();
     exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);
     document.cookie = name + '=' + escape(value) + ';expires=' + exp.toGMTString() + ';path=/';
   }
 
+  function get(name) {
+    var arr,
+        reg = new RegExp('(^| )' + name + '=([^;]*)(;|$)');
+
+    if (arr = document.cookie.match(reg)) {
+      return decodeURIComponent(arr[2]);
+    } else {
+      return null;
+    }
+  }
+
+  const Cookie = {
+    get,
+    set,
+    remove: function (name) {
+      set(name, '', 0);
+    }
+  };
+
+  /**
+   * agefans 安全机制：
+   * 1. 从服务端获取cookie `t1` `k1`
+   * 2. 本地根据规则生成cookie `t2` `k2`
+   * 3. 获取链接时候生成cookie `fa_t` `fa_c`
+   *
+   * t1 t2 fa_t 均为时间，相差太多就报错超时
+   * k1 k2 类似密钥
+   * fa_c 不重要
+   */
+
+  /**
+   * 获取视频链接的请求地址
+   */
+
   function getPlayUrl(_url) {
     const _rand = Math.random();
 
     var _getplay_url = _url.replace(/.*\/play\/(\d+?)\?playid=(\d+)_(\d+).*/, '/_getplay?aid=$1&playindex=$2&epindex=$3') + '&r=' + _rand;
+    /**
+     * fa_t 取当前时间
+     * fa_c 1-9之间随便取 固定1就行
+     */
 
-    __setCookie('fa_t', Date.now(), 1);
 
-    __setCookie('fa_c', 1, 1);
-
+    Cookie.set('fa_t', Date.now(), 1);
+    Cookie.set('fa_c', 1, 1);
     return _getplay_url;
   }
-  /** 因为agefans的安全策略，需要刷新下他的cookie才能正常访问 */
+  /**
+   * 因为agefans的安全策略，需要刷新下cookie才能正常访问
+   *
+   * 这个方法实现了 t1 k1 t2 k2 全部刷新
+   */
 
   function updateCookie(href) {
     href = href ? location.origin + href : location.href;
@@ -475,9 +516,12 @@
   }
 
   function genUrlItem(title, content = '加载中...') {
+    const contentHTML = content.startsWith('http') ? `<a href="${content}" download>${content}</a>` : content;
     return `<div>
   <div style="white-space: nowrap;">[${title}]</div>
-  <div class="url" data-status='0' style="word-break:break-all; word-wrap:break-word;">${content}</div>
+  <div class="url" data-status='0' style="word-break:break-all; word-wrap:break-word;">
+    ${contentHTML}
+  </div>
 </div>`;
   }
 
@@ -505,7 +549,7 @@
         getVurl(item.href).then(vurl => {
           const url = decodeURIComponent(vurl);
           saveLocal(item.href, url);
-          $msg.text(url);
+          $msg.html(`<a href="${url}" download>${url}</a>`);
           $msg.data('status', '1');
         }).catch(error => {
           console.error(error);
@@ -739,7 +783,7 @@ aria-hidden="true"
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.6.8"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.7.0"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -801,7 +845,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.6.8"}
+脚本版本: ${"1.7.0"}
 `;
 
   function debounce(fn, delay = 300) {
@@ -1228,8 +1272,12 @@ userAgent: ${navigator.userAgent}
   }
 
   function showCurrentLink(vurl) {
+    const decodeVurl = decodeURIComponent(vurl);
+
     if ($('#current-link').length) {
-      return $('#current-link').text(vurl);
+      $('#current-link').text(decodeVurl);
+      $('#current-link').attr('href', decodeVurl);
+      return;
     }
 
     $(`
@@ -1238,10 +1286,7 @@ userAgent: ${navigator.userAgent}
       <div id="wangpan-div" class="baseblock2">
         <div class="blocktitle">本集链接：</div>
         <div class="blockcontent">
-          <span class="res_links" id="current-link">
-            ${decodeURIComponent(vurl)}
-          </span>
-          <br>
+          <a class="res_links" id="current-link" download href="${decodeVurl}">${decodeVurl}</a>
         </div>
       </div>
     </div>
