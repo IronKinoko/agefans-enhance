@@ -147,7 +147,9 @@ function insertModalForm() {
 function genUrlItem(title, content = '加载中...') {
   return `<div>
   <div style="white-space: nowrap;">[${title}]</div>
-  <div class="url" data-status='0' style="word-break:break-all; word-wrap:break-word;">${content}</div>
+  <div class="url" data-status='0' style="word-break:break-all; word-wrap:break-word;">
+  <a href="${content}" download>${content}</a>
+</div>
 </div>`
 }
 

@@ -47,9 +47,9 @@ function showCurrentLink(vurl) {
       <div id="wangpan-div" class="baseblock2">
         <div class="blocktitle">本集链接：</div>
         <div class="blockcontent">
-          <span class="res_links" id="current-link">
-            ${decodeURIComponent(vurl)}
-          </span>
+          <a class="res_links" id="current-link" download href="${decodeURIComponent(
+            vurl
+          )}">${decodeURIComponent(vurl)}</a>
           <br>
         </div>
       </div>
