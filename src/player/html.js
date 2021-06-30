@@ -200,3 +200,10 @@ ${src}
 userAgent: ${navigator.userAgent}
 脚本版本: ${process.env.APP_VERSION}
 `
+
+export const progressHTML = `
+<div class="k-player-progress">
+  <div class="k-player-progress-current"></div>
+  <div class="k-player-progress-buffer"></div>
+</div>
+`

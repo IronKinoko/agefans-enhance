@@ -63,6 +63,41 @@
   .plyr__control span:not(.plyr__tooltip) {
     color: inherit;
   }
+
+  .plyr--hide-controls .k-player-progress {
+    opacity: 1;
+    transition: opacity 0.3s ease-in 0.2s;
+  }
+  .k-player-fullscreen .k-player-progress {
+    display: none;
+  }
+  .k-player-progress {
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+    height: 2px;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    .k-player-progress-current {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      z-index: 2;
+      background-color: rgba(35, 173, 229, 1);
+    }
+    .k-player-progress-buffer {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 1;
+      height: 100%;
+      background-color: var(
+        --plyr-video-progress-buffered-background,
+        rgba(255, 255, 255, 0.25)
+      );
+    }
+  }
 }
 
 // loading

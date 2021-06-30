@@ -1,5 +1,11 @@
 import './index.scss'
-import { errorHTML, issueBody, loadingHTML, scriptInfo } from './html'
+import {
+  errorHTML,
+  issueBody,
+  loadingHTML,
+  scriptInfo,
+  progressHTML,
+} from './html'
 import { debounce } from '../utils/debounce'
 import { modal } from '../utils/modal'
 import { genIssueURL } from '../utils/genIssueURL'
@@ -18,6 +24,7 @@ class KPlayer {
     const $loading = $(loadingHTML)
     const $error = $(errorHTML)
     const $video = $('<video id="k-player" />')
+    const $progress = $(progressHTML)
 
     $wrapper.append($video)
 
@@ -94,9 +101,10 @@ class KPlayer {
     this.$loading = $loading
     this.$error = $error
     this.$video = $video
+    this.$progress = $progress
     this.$videoWrapper = $wrapper.find('.plyr')
 
-    this.$videoWrapper.append($loading).append($error)
+    this.$videoWrapper.append($loading).append($error).append($progress)
 
     this.message = new Message(this.$videoWrapper)
     this.eventMap = {}
@@ -147,6 +155,20 @@ class KPlayer {
     })
     this.on('pause', () => {
       this.hideControlsDebounced()
+    })
+    this.on('enterfullscreen', () => {
+      this.$videoWrapper.addClass('k-player-fullscreen')
+    })
+    this.on('exitfullscreen', () => {
+      this.$videoWrapper.removeClass('k-player-fullscreen')
+    })
+    this.on('timeupdate', () => {
+      this.$progress
+        .find('.k-player-progress-current')
+        .css('width', (this.plyr.currentTime / this.plyr.duration) * 100 + '%')
+      this.$progress
+        .find('.k-player-progress-buffer')
+        .css('width', this.plyr.buffered * 100 + '%')
     })
 
     $(window).on('keydown', (e) => {
