@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.8.1
+// @version      1.8.2
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @include      https://www.agefans.net/*
@@ -652,7 +652,7 @@
     insertLocal();
   }
 
-  var css$2 = "#k-player-wrapper {\n  position: relative;\n  width: 100%;\n  height: 100%;\n  background: #000;\n  overflow: hidden;\n}\n#k-player-wrapper.k-player-widescreen {\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 100;\n}\n#k-player-wrapper .k-player-contianer {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper #k-player-loading,\n#k-player-wrapper #k-player-error {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  font-size: 88px;\n  color: white;\n  pointer-events: none;\n}\n#k-player-wrapper .k-player-center {\n  width: 100%;\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n}\n#k-player-wrapper .error-info {\n  text-align: center;\n  padding: 24px;\n  font-size: 18px;\n}\n#k-player-wrapper .plyr {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper video {\n  display: block;\n}\n#k-player-wrapper .plyr__next svg {\n  transform: scale(1.7);\n}\n#k-player-wrapper .plyr__widescreen svg {\n  transform: scale(1.3);\n}\n#k-player-wrapper .plyr--hide-cursor {\n  cursor: none;\n}\n#k-player-wrapper .plyr__control span:not(.plyr__tooltip) {\n  color: inherit;\n}\n#k-player-wrapper .plyr--hide-controls .k-player-progress {\n  opacity: 1;\n  transition: opacity 0.3s ease-in 0.2s;\n}\n#k-player-wrapper .k-player-fullscreen .k-player-progress {\n  display: none;\n}\n#k-player-wrapper .k-player-progress {\n  opacity: 0;\n  transition: opacity 0.2s ease-out;\n  height: 2px;\n  width: 100%;\n  position: absolute;\n  bottom: 0;\n}\n#k-player-wrapper .k-player-progress .k-player-progress-current {\n  position: absolute;\n  left: 0;\n  top: 0;\n  height: 100%;\n  z-index: 2;\n  background-color: #23ade5;\n}\n#k-player-wrapper .k-player-progress .k-player-progress-buffer {\n  position: absolute;\n  left: 0;\n  top: 0;\n  z-index: 1;\n  height: 100%;\n  background-color: var(--plyr-video-progress-buffered-background, rgba(255, 255, 255, 0.25));\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item:first-child {\n  margin-right: 0;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container {\n  position: absolute;\n  top: 15px;\n  left: 10px;\n  right: 10px;\n  --plyr-range-track-height: 2px;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container .plyr__progress input[type=range]::-webkit-slider-thumb {\n  transform: scale(0);\n  transition: transform 0.2s ease;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover {\n  --plyr-range-track-height: 4px;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover .plyr__progress input[type=range] {\n  cursor: pointer;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover .plyr__progress input[type=range]::-webkit-slider-thumb {\n  transform: scale(1);\n}\n#k-player-wrapper .plyr__controls .plyr__volume {\n  margin-left: auto;\n}\n\n.lds-spinner {\n  color: official;\n  display: inline-block;\n  position: relative;\n  width: 80px;\n  height: 80px;\n}\n\n.lds-spinner div {\n  transform-origin: 40px 40px;\n  animation: lds-spinner 1.2s linear infinite;\n}\n\n.lds-spinner div:after {\n  content: \" \";\n  display: block;\n  position: absolute;\n  top: 3px;\n  left: 37px;\n  width: 6px;\n  height: 18px;\n  border-radius: 20%;\n  background: #fff;\n}\n\n.lds-spinner div:nth-child(1) {\n  transform: rotate(0deg);\n  animation-delay: -1.1s;\n}\n\n.lds-spinner div:nth-child(2) {\n  transform: rotate(30deg);\n  animation-delay: -1s;\n}\n\n.lds-spinner div:nth-child(3) {\n  transform: rotate(60deg);\n  animation-delay: -0.9s;\n}\n\n.lds-spinner div:nth-child(4) {\n  transform: rotate(90deg);\n  animation-delay: -0.8s;\n}\n\n.lds-spinner div:nth-child(5) {\n  transform: rotate(120deg);\n  animation-delay: -0.7s;\n}\n\n.lds-spinner div:nth-child(6) {\n  transform: rotate(150deg);\n  animation-delay: -0.6s;\n}\n\n.lds-spinner div:nth-child(7) {\n  transform: rotate(180deg);\n  animation-delay: -0.5s;\n}\n\n.lds-spinner div:nth-child(8) {\n  transform: rotate(210deg);\n  animation-delay: -0.4s;\n}\n\n.lds-spinner div:nth-child(9) {\n  transform: rotate(240deg);\n  animation-delay: -0.3s;\n}\n\n.lds-spinner div:nth-child(10) {\n  transform: rotate(270deg);\n  animation-delay: -0.2s;\n}\n\n.lds-spinner div:nth-child(11) {\n  transform: rotate(300deg);\n  animation-delay: -0.1s;\n}\n\n.lds-spinner div:nth-child(12) {\n  transform: rotate(330deg);\n  animation-delay: 0s;\n}\n\n@keyframes lds-spinner {\n  0% {\n    opacity: 1;\n  }\n  100% {\n    opacity: 0;\n  }\n}\n.script-info {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  width: 100%;\n}\n.script-info * {\n  box-sizing: border-box;\n}\n.script-info tbody tr td:first-child {\n  white-space: nowrap;\n  width: 77px;\n}\n.script-info td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n}\n.script-info .info-title {\n  font-weight: 600;\n  padding-top: 24px;\n}\n.script-info a {\n  color: #1890ff;\n  padding: 4px 8px;\n  border-radius: 4px;\n  text-decoration: none;\n}\n.script-info a:hover {\n  text-decoration: underline;\n  background-color: #f1f1f1;\n}\n.script-info .shortcuts-wrap {\n  display: flex;\n  width: 100%;\n  margin: -8px;\n}\n.script-info .shortcuts-table {\n  flex: 1;\n}\n.script-info .key {\n  position: relative;\n  background: #333;\n  text-align: center;\n  color: #eee;\n  float: left;\n  border-radius: 0.3em;\n  padding: 0.2em;\n  width: 3.3em;\n  height: 100%;\n  box-sizing: border-box;\n  border: 1px solid #444;\n  box-shadow: 0 0.2em 0 0.05em #222;\n  border-bottom-color: #555;\n  user-select: none;\n}";
+  var css$2 = "#k-player-wrapper {\n  position: relative;\n  width: 100%;\n  height: 100%;\n  background: #000;\n  overflow: hidden;\n}\n#k-player-wrapper.k-player-widescreen {\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 100;\n}\n#k-player-wrapper .k-player-contianer {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper #k-player-loading,\n#k-player-wrapper #k-player-error {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  font-size: 88px;\n  color: white;\n  pointer-events: none;\n}\n#k-player-wrapper .k-player-center {\n  width: 100%;\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n}\n#k-player-wrapper .error-info {\n  text-align: center;\n  padding: 24px;\n  font-size: 18px;\n}\n#k-player-wrapper .plyr {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper video {\n  display: block;\n}\n#k-player-wrapper .plyr__next svg {\n  transform: scale(1.7);\n}\n#k-player-wrapper .plyr__widescreen svg {\n  transform: scale(1.3);\n}\n#k-player-wrapper .plyr--hide-cursor {\n  cursor: none;\n}\n#k-player-wrapper .plyr__control span:not(.plyr__tooltip) {\n  color: inherit;\n}\n#k-player-wrapper .plyr--hide-controls .k-player-progress {\n  opacity: 1;\n  transition: opacity 0.3s ease-in 0.2s;\n}\n#k-player-wrapper .k-player-fullscreen .k-player-progress {\n  display: none;\n}\n#k-player-wrapper .k-player-progress {\n  opacity: 0;\n  transition: opacity 0.2s ease-out;\n  height: 2px;\n  width: 100%;\n  position: absolute;\n  bottom: 0;\n}\n#k-player-wrapper .k-player-progress .k-player-progress-current {\n  position: absolute;\n  left: 0;\n  top: 0;\n  height: 100%;\n  z-index: 2;\n  background-color: #23ade5;\n}\n#k-player-wrapper .k-player-progress .k-player-progress-buffer {\n  position: absolute;\n  left: 0;\n  top: 0;\n  z-index: 1;\n  height: 100%;\n  background-color: var(--plyr-video-progress-buffered-background, rgba(255, 255, 255, 0.25));\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item:first-child {\n  margin-right: 0;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container {\n  position: absolute;\n  top: 15px;\n  left: 10px;\n  right: 10px;\n  --plyr-range-track-height: 2px;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container .plyr__progress input[type=range]::-webkit-slider-thumb {\n  transform: scale(0);\n  transition: transform 0.2s ease;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover {\n  --plyr-range-track-height: 4px;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover .plyr__progress input[type=range] {\n  cursor: pointer;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover .plyr__progress input[type=range]::-webkit-slider-thumb {\n  transform: scale(1);\n}\n#k-player-wrapper .plyr__controls .plyr__volume {\n  margin-left: auto;\n}\n\n.lds-spinner {\n  color: official;\n  display: inline-block;\n  position: relative;\n  width: 80px;\n  height: 80px;\n}\n\n.lds-spinner div {\n  transform-origin: 40px 40px;\n  animation: lds-spinner 1.2s linear infinite;\n}\n\n.lds-spinner div:after {\n  content: \" \";\n  display: block;\n  position: absolute;\n  top: 3px;\n  left: 37px;\n  width: 6px;\n  height: 18px;\n  border-radius: 20%;\n  background: #fff;\n}\n\n.lds-spinner div:nth-child(1) {\n  transform: rotate(0deg);\n  animation-delay: -1.1s;\n}\n\n.lds-spinner div:nth-child(2) {\n  transform: rotate(30deg);\n  animation-delay: -1s;\n}\n\n.lds-spinner div:nth-child(3) {\n  transform: rotate(60deg);\n  animation-delay: -0.9s;\n}\n\n.lds-spinner div:nth-child(4) {\n  transform: rotate(90deg);\n  animation-delay: -0.8s;\n}\n\n.lds-spinner div:nth-child(5) {\n  transform: rotate(120deg);\n  animation-delay: -0.7s;\n}\n\n.lds-spinner div:nth-child(6) {\n  transform: rotate(150deg);\n  animation-delay: -0.6s;\n}\n\n.lds-spinner div:nth-child(7) {\n  transform: rotate(180deg);\n  animation-delay: -0.5s;\n}\n\n.lds-spinner div:nth-child(8) {\n  transform: rotate(210deg);\n  animation-delay: -0.4s;\n}\n\n.lds-spinner div:nth-child(9) {\n  transform: rotate(240deg);\n  animation-delay: -0.3s;\n}\n\n.lds-spinner div:nth-child(10) {\n  transform: rotate(270deg);\n  animation-delay: -0.2s;\n}\n\n.lds-spinner div:nth-child(11) {\n  transform: rotate(300deg);\n  animation-delay: -0.1s;\n}\n\n.lds-spinner div:nth-child(12) {\n  transform: rotate(330deg);\n  animation-delay: 0s;\n}\n\n@keyframes lds-spinner {\n  0% {\n    opacity: 1;\n  }\n  100% {\n    opacity: 0;\n  }\n}\n.script-info {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  width: 100%;\n}\n.script-info * {\n  box-sizing: border-box;\n}\n.script-info tbody tr td:first-child {\n  white-space: nowrap;\n  width: 77px;\n}\n.script-info td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n}\n.script-info .info-title {\n  font-weight: 600;\n  padding-top: 24px;\n}\n.script-info a {\n  color: #1890ff;\n  padding: 4px 8px;\n  border-radius: 4px;\n  text-decoration: none;\n}\n.script-info a:hover {\n  text-decoration: underline;\n  background-color: #f1f1f1;\n}\n.script-info .shortcuts-wrap {\n  display: flex;\n  width: 100%;\n  margin: -8px;\n}\n.script-info .shortcuts-table {\n  flex: 1;\n}\n.script-info .key {\n  position: relative;\n  background: #333;\n  text-align: center;\n  color: #eee;\n  float: left;\n  border-radius: 0.3em;\n  padding: 0.2em;\n  width: 3.6em;\n  height: 100%;\n  box-sizing: border-box;\n  border: 1px solid #444;\n  box-shadow: 0 0.2em 0 0.05em #222;\n  border-bottom-color: #555;\n  user-select: none;\n}";
   n(css$2,{});
 
   const icons = `
@@ -784,7 +784,7 @@ aria-hidden="true"
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.8.1"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.8.2"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -810,11 +810,12 @@ aria-hidden="true"
           <tbody>
             <tr><td><span class="key">W</span></td><td>宽屏</td></tr>
             <tr><td><span class="key">F</span></td><td>全屏</td></tr>
-            <tr><td><span class="key">←</span></td><td>后退5s</td></tr>
-            <tr><td><span class="key">→</span></td><td>前进5s</td></tr>
-            <tr><td><span class="key">↑</span></td><td>音量+</td></tr>
-            <tr><td><span class="key">↓</span></td><td>音量-</td></tr>
+            <tr><td><span class="key">←</span></td><td>步退5s</td></tr>
+            <tr><td><span class="key">→</span></td><td>步进5s</td></tr>
+            <tr><td><span class="key">Ctrl+←</span></td><td>步退90s</td></tr>
+            <tr><td><span class="key">Ctrl+→</span></td><td>步进90s</td></tr>
             <tr><td><span class="key">M</span></td><td>静音</td></tr>
+            <tr><td><span class="key">?</span></td><td>脚本信息</td></tr>
           </tbody>
         </table>
         <table class="shortcuts-table">
@@ -825,7 +826,8 @@ aria-hidden="true"
             <tr><td><span class="key">Z</span></td><td>原速播放</td></tr>
             <tr><td><span class="key">X</span></td><td>减速播放</td></tr>
             <tr><td><span class="key">C</span></td><td>加速播放</td></tr>
-            <tr><td><span class="key">?</span></td><td>脚本信息</td></tr>
+            <tr><td><span class="key">↑</span></td><td>音量+</td></tr>
+            <tr><td><span class="key">↓</span></td><td>音量-</td></tr>
           </tbody>
         </table>
       </div>
@@ -846,7 +848,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.8.1"}
+脚本版本: ${"1.8.2"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -1063,13 +1065,28 @@ userAgent: ${navigator.userAgent}
         this.$progress.find('.k-player-progress-buffer').css('width', this.plyr.buffered * 100 + '%');
       });
       $(window).on('keydown', e => {
-        let idx = speedList.indexOf(this.plyr.speed);
-        if (e.metaKey || e.shiftKey || e.altKey || e.ctrlKey) return;
+        // 如果不是ctrl+左右，说明是特殊键，不做处理
+        if (!((e.metaKey || e.ctrlKey) && (e.key === 'ArrowLeft' || e.key === 'ArrowRight'))) if (e.metaKey || e.shiftKey || e.altKey || e.ctrlKey) return;
 
         switch (e.key) {
+          case 'ArrowLeft':
+          case 'ArrowRight':
+            e.stopPropagation();
+            e.preventDefault();
+
+            if (e.key === 'ArrowLeft') {
+              this.currentTime = Math.max(0, this.currentTime - 90);
+              this.message.info('步退90s');
+            } else {
+              this.currentTime = Math.min(this.currentTime + 90, this.plyr.duration);
+              this.message.info('步进90s');
+            }
+
+            break;
+
           case 'n':
           case ']':
-          case '【':
+          case '】':
           case 'PageDown':
             e.preventDefault();
             this.trigger('next');
@@ -1077,7 +1094,7 @@ userAgent: ${navigator.userAgent}
 
           case 'p':
           case '[':
-          case '】':
+          case '【':
           case 'PageUp':
             e.preventDefault();
             this.trigger('prev');
@@ -1105,6 +1122,7 @@ userAgent: ${navigator.userAgent}
           case 'x':
           case 'c':
             {
+              let idx = speedList.indexOf(this.plyr.speed);
               const newIdx = e.key === 'x' ? Math.max(0, idx - 1) : Math.min(speedList.length - 1, idx + 1);
               if (newIdx === idx) break;
               const speed = speedList[newIdx];
