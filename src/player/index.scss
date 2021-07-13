@@ -98,6 +98,35 @@
       );
     }
   }
+
+  .plyr__controls {
+    .plyr__controls__item:first-child {
+      margin-right: 0;
+    }
+    .plyr__controls__item.plyr__progress__container {
+      position: absolute;
+      top: 15px;
+      left: 10px;
+      right: 10px;
+      --plyr-range-track-height: 2px;
+      .plyr__progress input[type='range']::-webkit-slider-thumb {
+        transform: scale(0);
+        transition: transform .2s ease;
+      }
+      &:hover {
+        --plyr-range-track-height: 4px;
+        .plyr__progress input[type='range'] {
+          cursor: pointer;
+          &::-webkit-slider-thumb {
+            transform: scale(1);
+          }
+        }
+      }
+    }
+    .plyr__volume {
+      margin-left: auto;
+    }
+  }
 }
 
 // loading
