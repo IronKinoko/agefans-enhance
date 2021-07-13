@@ -160,11 +160,12 @@ export const scriptInfo = (video, githubIssueURL) => `
           <tbody>
             <tr><td><span class="key">W</span></td><td>宽屏</td></tr>
             <tr><td><span class="key">F</span></td><td>全屏</td></tr>
-            <tr><td><span class="key">←</span></td><td>后退5s</td></tr>
-            <tr><td><span class="key">→</span></td><td>前进5s</td></tr>
-            <tr><td><span class="key">↑</span></td><td>音量+</td></tr>
-            <tr><td><span class="key">↓</span></td><td>音量-</td></tr>
+            <tr><td><span class="key">←</span></td><td>步退5s</td></tr>
+            <tr><td><span class="key">→</span></td><td>步进5s</td></tr>
+            <tr><td><span class="key">Ctrl+←</span></td><td>步退90s</td></tr>
+            <tr><td><span class="key">Ctrl+→</span></td><td>步进90s</td></tr>
             <tr><td><span class="key">M</span></td><td>静音</td></tr>
+            <tr><td><span class="key">?</span></td><td>脚本信息</td></tr>
           </tbody>
         </table>
         <table class="shortcuts-table">
@@ -175,7 +176,8 @@ export const scriptInfo = (video, githubIssueURL) => `
             <tr><td><span class="key">Z</span></td><td>原速播放</td></tr>
             <tr><td><span class="key">X</span></td><td>减速播放</td></tr>
             <tr><td><span class="key">C</span></td><td>加速播放</td></tr>
-            <tr><td><span class="key">?</span></td><td>脚本信息</td></tr>
+            <tr><td><span class="key">↑</span></td><td>音量+</td></tr>
+            <tr><td><span class="key">↓</span></td><td>音量-</td></tr>
           </tbody>
         </table>
       </div>

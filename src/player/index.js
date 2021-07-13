@@ -172,19 +172,40 @@ class KPlayer {
     })
 
     $(window).on('keydown', (e) => {
-      let idx = speedList.indexOf(this.plyr.speed)
-      if (e.metaKey || e.shiftKey || e.altKey || e.ctrlKey) return
+      // 如果不是ctrl+左右，说明是特殊键，不做处理
+      if (
+        !(
+          (e.metaKey || e.ctrlKey) &&
+          (e.key === 'ArrowLeft' || e.key === 'ArrowRight')
+        )
+      )
+        if (e.metaKey || e.shiftKey || e.altKey || e.ctrlKey) return
       switch (e.key) {
+        case 'ArrowLeft':
+        case 'ArrowRight':
+          e.stopPropagation()
+          e.preventDefault()
+          if (e.key === 'ArrowLeft') {
+            this.currentTime = Math.max(0, this.currentTime - 90)
+            this.message.info('步退90s')
+          } else {
+            this.currentTime = Math.min(
+              this.currentTime + 90,
+              this.plyr.duration
+            )
+            this.message.info('步进90s')
+          }
+          break
         case 'n':
         case ']':
-        case '【':
+        case '】':
         case 'PageDown':
           e.preventDefault()
           this.trigger('next')
           break
         case 'p':
         case '[':
-        case '】':
+        case '【':
         case 'PageUp':
           e.preventDefault()
           this.trigger('prev')
@@ -203,6 +224,8 @@ class KPlayer {
           break
         case 'x':
         case 'c': {
+          let idx = speedList.indexOf(this.plyr.speed)
+
           const newIdx =
             e.key === 'x'
               ? Math.max(0, idx - 1)
