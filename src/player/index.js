@@ -183,9 +183,9 @@ class KPlayer {
       switch (e.key) {
         case 'ArrowLeft':
         case 'ArrowRight':
+          if (!(e.metaKey || e.ctrlKey)) break
           e.stopPropagation()
           e.preventDefault()
-          if (!(e.metaKey || e.ctrlKey)) break
           if (e.key === 'ArrowLeft') {
             this.currentTime = Math.max(0, this.currentTime - 90)
             this.message.info('步退90s')
