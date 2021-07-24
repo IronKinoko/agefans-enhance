@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.8.4
+// @version      1.8.5
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @include      https://www.agefans.net/*
@@ -784,7 +784,7 @@ aria-hidden="true"
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.8.4"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.8.5"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -848,7 +848,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.8.4"}
+脚本版本: ${"1.8.5"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -1354,6 +1354,7 @@ userAgent: ${navigator.userAgent}
 
 
   let retryCount = 0;
+  let switchLoading = false;
   /**
    *
    * @param {string} href
@@ -1363,23 +1364,34 @@ userAgent: ${navigator.userAgent}
 
   async function switchPart(href, $dom, push = true) {
     try {
+      if (switchLoading === true) return;
+      switchLoading = true;
       retryCount++;
+      push && player$1.message.info(`即将播放${$dom.text()}`);
       const vurl = await getVurlWithLocal(href);
+      push && player$1.message.destroy();
       const speed = player$1.plyr.speed;
       player$1.src = vurl;
       player$1.plyr.speed = speed;
-      showCurrentLink(vurl);
       const $active = getActivedom();
-      $active.css('color', '');
-      $active.css('border', '');
+      $active.css({
+        color: '',
+        border: ''
+      });
+      $dom.css({
+        color: 'rgb(238, 0, 0)',
+        border: '1px solid rgb(238, 0, 0)'
+      });
       const title = document.title.replace($active.text(), $dom.text());
       push && history.pushState({}, title, href);
       document.title = title;
-      $dom.css('color', 'rgb(238, 0, 0)');
-      $dom.css('border', '1px solid rgb(238, 0, 0)');
+      showCurrentLink(vurl);
       his.logHistory();
       retryCount = 0;
+      switchLoading = false;
     } catch (error) {
+      switchLoading = false;
+
       if (retryCount > 3) {
         console.error(error);
         window.location.href = href;
