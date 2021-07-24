@@ -81,6 +81,7 @@ function getActivedom() {
 
 // switch part retry count
 let retryCount = 0
+let switchLoading = false
 /**
  *
  * @param {string} href
@@ -89,23 +90,32 @@ let retryCount = 0
  */
 async function switchPart(href, $dom, push = true) {
   try {
+    if (switchLoading === true) return
+    switchLoading = true
     retryCount++
+
+    push && player.message.info(`即将播放${$dom.text()}`)
     const vurl = await getVurlWithLocal(href)
+    push && player.message.destroy()
+
     const speed = player.plyr.speed
     player.src = vurl
     player.plyr.speed = speed
-    showCurrentLink(vurl)
+
     const $active = getActivedom()
-    $active.css('color', '')
-    $active.css('border', '')
+    $active.css({ color: '', border: '' })
+    $dom.css({ color: 'rgb(238, 0, 0)', border: '1px solid rgb(238, 0, 0)' })
+
     const title = document.title.replace($active.text(), $dom.text())
     push && history.pushState({}, title, href)
     document.title = title
-    $dom.css('color', 'rgb(238, 0, 0)')
-    $dom.css('border', '1px solid rgb(238, 0, 0)')
+
+    showCurrentLink(vurl)
     his.logHistory()
     retryCount = 0
+    switchLoading = false
   } catch (error) {
+    switchLoading = false
     if (retryCount > 3) {
       console.error(error)
       window.location.href = href
