@@ -10,6 +10,7 @@ import { debounce } from '../utils/debounce'
 import { modal } from '../utils/modal'
 import { genIssueURL } from '../utils/genIssueURL'
 import { Message } from '../utils/message'
+import keybind from '../utils/keybind'
 
 const speedList = [0.5, 0.75, 1, 1.25, 1.5, 2, 4]
 
@@ -171,77 +172,119 @@ class KPlayer {
         .css('width', this.plyr.buffered * 100 + '%')
     })
 
-    $(window).on('keydown', (e) => {
-      // 如果不是ctrl+左右，说明是特殊键，不做处理
-      if (
-        !(
-          (e.metaKey || e.ctrlKey) &&
-          (e.key === 'ArrowLeft' || e.key === 'ArrowRight')
-        )
-      )
-        if (e.metaKey || e.shiftKey || e.altKey || e.ctrlKey) return
-      switch (e.key) {
-        case 'ArrowLeft':
-        case 'ArrowRight':
-          if (!(e.metaKey || e.ctrlKey)) break
-          e.stopPropagation()
-          e.preventDefault()
-          if (e.key === 'ArrowLeft') {
-            this.currentTime = Math.max(0, this.currentTime - 90)
-            this.message.info('步退90s')
-          } else {
-            this.currentTime = Math.min(
-              this.currentTime + 90,
-              this.plyr.duration
-            )
-            this.message.info('步进90s')
+    keybind(
+      [
+        // 进退 30s
+        'shift+ArrowLeft',
+        'shift+ArrowRight',
+        // 进退 60s
+        'alt+ArrowLeft',
+        'alt+ArrowRight',
+        // 进退 90s
+        'ctrl+ArrowLeft',
+        'ctrl+ArrowRight',
+        'meta+ArrowLeft',
+        'meta+ArrowRight',
+        // 下一集
+        'n',
+        ']',
+        '】',
+        'PageDown',
+        // 上一集
+        'p',
+        '[',
+        '【',
+        'PageUp',
+        // 切换网页全屏
+        'w',
+        // 关闭网页全屏
+        'Escape',
+        // 播放速度
+        'z',
+        'x',
+        'c',
+      ],
+      (e, key) => {
+        switch (key) {
+          case 'ctrl+ArrowLeft':
+          case 'meta+ArrowLeft':
+          case 'shift+ArrowLeft':
+          case 'alt+ArrowLeft':
+          case 'ctrl+ArrowRight':
+          case 'meta+ArrowRight':
+          case 'shift+ArrowRight':
+          case 'alt+ArrowRight':
+            e.stopPropagation()
+            e.preventDefault()
+
+            // eslint-disable-next-line no-case-declarations
+            const time = {
+              'ctrl+ArrowLeft': 90,
+              'meta+ArrowLeft': 90,
+              'shift+ArrowLeft': 30,
+              'alt+ArrowLeft': 60,
+              'ctrl+ArrowRight': 90,
+              'meta+ArrowRight': 90,
+              'shift+ArrowRight': 30,
+              'alt+ArrowRight': 60,
+            }[key]
+            if (e.key === 'ArrowLeft') {
+              this.currentTime = Math.max(0, this.currentTime - time)
+              this.message.info(`步退${time}s`)
+            } else {
+              this.currentTime = Math.min(
+                this.currentTime + time,
+                this.plyr.duration
+              )
+              this.message.info(`步进${time}s`)
+            }
+            break
+          case 'n':
+          case ']':
+          case '】':
+          case 'PageDown':
+            e.preventDefault()
+            this.trigger('next')
+            break
+          case 'p':
+          case '[':
+          case '【':
+          case 'PageUp':
+            e.preventDefault()
+            this.trigger('prev')
+            break
+          case 'w':
+            if (this.plyr.fullscreen.active) break
+            this._toggleFullscreen()
+            break
+          case 'Escape':
+            if (this.plyr.fullscreen.active || !this.isWideScreen) break
+            this._toggleFullscreen(false)
+            break
+          case 'z':
+            this.plyr.speed = 1
+            this.message.info(`视频速度：${1}`)
+            break
+          case 'x':
+          case 'c': {
+            let idx = speedList.indexOf(this.plyr.speed)
+
+            const newIdx =
+              key === 'x'
+                ? Math.max(0, idx - 1)
+                : Math.min(speedList.length - 1, idx + 1)
+            if (newIdx === idx) break
+            const speed = speedList[newIdx]
+            this.message.info(`视频速度：${speed}`)
+            this.plyr.speed = speed
+            break
           }
-          break
-        case 'n':
-        case ']':
-        case '】':
-        case 'PageDown':
-          e.preventDefault()
-          this.trigger('next')
-          break
-        case 'p':
-        case '[':
-        case '【':
-        case 'PageUp':
-          e.preventDefault()
-          this.trigger('prev')
-          break
-        case 'w':
-          if (this.plyr.fullscreen.active) break
-          this._toggleFullscreen()
-          break
-        case 'Escape':
-          if (this.plyr.fullscreen.active || !this.isWideScreen) break
-          this._toggleFullscreen(false)
-          break
-        case 'z':
-          this.plyr.speed = 1
-          this.message.info(`视频速度：${1}`)
-          break
-        case 'x':
-        case 'c': {
-          let idx = speedList.indexOf(this.plyr.speed)
 
-          const newIdx =
-            e.key === 'x'
-              ? Math.max(0, idx - 1)
-              : Math.min(speedList.length - 1, idx + 1)
-          if (newIdx === idx) break
-          const speed = speedList[newIdx]
-          this.message.info(`视频速度：${speed}`)
-          this.plyr.speed = speed
-          break
+          default:
+            break
         }
-
-        default:
-          break
       }
-    })
+    )
 
     document
       .querySelectorAll('.plyr__controls .plyr__control')
@@ -386,8 +429,8 @@ export function showInfo() {
   })
 }
 
-$(window).on('keydown', (e) => {
-  if ('?？'.includes(e.key) && !document.fullscreenElement) {
+keybind(['?', '？'], (e) => {
+  if (!document.fullscreenElement) {
     e.stopPropagation()
     e.preventDefault()
     showInfo()
