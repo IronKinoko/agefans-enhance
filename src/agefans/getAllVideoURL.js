@@ -22,7 +22,7 @@ function insertBtn() {
           <span>｜</span>
           <a id="copy-text" class="res_links_a" style="cursor:pointer">复制内容</a>
           <span>｜</span>
-          <a id="thunder-link" target="_blank" class="res_links_a" style="cursor:pointer">导出迅雷链接</a>
+          <a id="thunder-link" rel="noreferrer" target="_blank" class="res_links_a" style="cursor:pointer">导出迅雷链接</a>
           <div id="url-list" style="width:100%; max-height:400px; overflow:auto;"></div>
         </div>
       </div>

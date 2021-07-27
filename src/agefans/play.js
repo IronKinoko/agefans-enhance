@@ -51,7 +51,7 @@ function showCurrentLink(vurl) {
       <div id="wangpan-div" class="baseblock2">
         <div class="blocktitle">本集链接：</div>
         <div class="blockcontent">
-          <a class="res_links" id="current-link" download href="${decodeVurl}">${decodeVurl}</a>
+          <a class="res_links" id="current-link" download rel="noreferrer" href="${decodeVurl}">${decodeVurl}</a>
         </div>
       </div>
     </div>

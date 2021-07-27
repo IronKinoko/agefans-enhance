@@ -134,15 +134,15 @@ export const scriptInfo = (video, githubIssueURL) => `
   <tr>
     <td>脚本源码</td>
     <td>
-      <a target="_blank" href="https://github.com/IronKinoko/agefans-enhance">GitHub</a>
-      <a target="_blank" href="https://github.com/IronKinoko/agefans-enhance/releases">更新记录</a>
+      <a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko/agefans-enhance">GitHub</a>
+      <a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko/agefans-enhance/releases">更新记录</a>
       </td>
   </tr>
   <tr>
     <td>报错/意见</td>
     <td>
-      <a target="_blank" href="${githubIssueURL}">GitHub Issues</a>
-      <a target="_blank" href="https://greasyfork.org/zh-CN/scripts/424023-agefans-enhance/feedback">Greasy Fork 反馈</a>
+      <a target="_blank" rel="noreferrer" href="${githubIssueURL}">GitHub Issues</a>
+      <a target="_blank" rel="noreferrer" href="https://greasyfork.org/zh-CN/scripts/424023-agefans-enhance/feedback">Greasy Fork 反馈</a>
     </td>
   </tr>
   ${
