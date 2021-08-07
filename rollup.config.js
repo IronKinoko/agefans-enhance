@@ -5,8 +5,8 @@ import Copy from 'rollup-plugin-copy'
 import { genUserScriptInfo } from './template/userscript'
 import pkg from './package.json'
 import replace from '@rollup/plugin-replace'
-/** @type {import('rollup').RollupOptions} */
-const config = {
+import { defineConfig } from 'rollup'
+export default defineConfig({
   input: 'src/index.js',
   output: {
     dir: 'dist',
@@ -32,6 +32,4 @@ const config = {
       ],
     }),
   ],
-}
-
-export default config
+})
