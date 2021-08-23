@@ -7,14 +7,17 @@ export class Message {
 
   info(text, duration = 1500) {
     this.$message.empty()
-    $(`<div class="k-player-message-item">${text}</div>`)
-      .hide()
-      .appendTo(this.$message)
-      .fadeIn(150)
-      .delay(duration)
-      .fadeOut(150, function () {
-        $(this).remove()
-      })
+    return new Promise((resolve) => {
+      $(`<div class="k-player-message-item">${text}</div>`)
+        .hide()
+        .appendTo(this.$message)
+        .fadeIn(150)
+        .delay(duration)
+        .fadeOut(150, function () {
+          $(this).remove()
+          resolve()
+        })
+    })
   }
 
   destroy() {

@@ -13,7 +13,13 @@ import { Message } from '../utils/message'
 import keybind from '../utils/keybind'
 
 const speedList = [0.5, 0.75, 1, 1.25, 1.5, 2, 4]
-
+const MediaErrorMessage = {
+  1: '你中止了媒体播放',
+  2: '一个网络错误导致媒体下载中途失败',
+  3: '由于损坏问题或由于媒体使用了你的浏览器不支持的功能，媒体播放被中止了',
+  4: '媒体无法被加载，要么是因为服务器或网络故障，要么是因为格式不被支持',
+  5: '该媒体是加密的，我们没有解密的钥匙',
+}
 class KPlayer {
   /**
    * Creates an instance of KPlayer.
@@ -151,8 +157,14 @@ class KPlayer {
       this.plyr.play()
     })
     this.on('error', () => {
+      const code = this.plyr.media.error.code
       this.$loading.hide()
-      this.showError(this.src)
+      this.showError(MediaErrorMessage[code] || this.src)
+      if (code === 3) {
+        this.message.info('视频源出现问题，尝试跳过错误片段', 3000).then(() => {
+          this.trigger('skiperror')
+        })
+      }
     })
     this.on('pause', () => {
       this.hideControlsDebounced()
@@ -166,7 +178,7 @@ class KPlayer {
     this.on('timeupdate', () => {
       this.$progress
         .find('.k-player-progress-current')
-        .css('width', (this.plyr.currentTime / this.plyr.duration) * 100 + '%')
+        .css('width', (this.currentTime / this.plyr.duration) * 100 + '%')
       this.$progress
         .find('.k-player-progress-buffer')
         .css('width', this.plyr.buffered * 100 + '%')
@@ -213,11 +225,10 @@ class KPlayer {
           case 'ctrl+ArrowRight':
           case 'meta+ArrowRight':
           case 'shift+ArrowRight':
-          case 'alt+ArrowRight':
+          case 'alt+ArrowRight': {
             e.stopPropagation()
             e.preventDefault()
 
-            // eslint-disable-next-line no-case-declarations
             const time = {
               'ctrl+ArrowLeft': 90,
               'meta+ArrowLeft': 90,
@@ -239,6 +250,7 @@ class KPlayer {
               this.message.info(`步进${time}s`)
             }
             break
+          }
           case 'n':
           case ']':
           case '】':
@@ -313,14 +325,22 @@ class KPlayer {
     })
   }
 
-  /** @typedef {'prev'|'next'|'enterwidescreen'|'exitwidescreen'} CustomEventMap */
+  /** @typedef {'prev'|'next'|'enterwidescreen'|'exitwidescreen'|'skiperror'} CustomEventMap */
   /**
    * @param {CustomEventMap | keyof Plyr.PlyrEventMap} event
    * @param {function} callback
    * @private
    */
   on(event, callback) {
-    if (['prev', 'next', 'enterwidescreen', 'exitwidescreen'].includes(event)) {
+    if (
+      [
+        'prev',
+        'next',
+        'enterwidescreen',
+        'exitwidescreen',
+        'skiperror',
+      ].includes(event)
+    ) {
       if (!this.eventMap[event]) this.eventMap[event] = []
       this.eventMap[event].push(callback)
     } else {

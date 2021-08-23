@@ -180,6 +180,11 @@ function addListener() {
     }
   })
 
+  player.on('skiperror', () => {
+    updateTime(player.currentTime + 2)
+    location.reload()
+  })
+
   window.addEventListener('popstate', () => {
     const href = location.pathname + location.search
     const $dom = $(`[data-href='${href}']`)
