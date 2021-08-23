@@ -180,8 +180,12 @@ function addListener() {
     }
   })
 
-  player.on('skiperror', () => {
-    updateTime(player.currentTime + 2)
+  player.on('skiperror', (_, duration) => {
+    if (duration === 0) {
+      updateTime(0)
+    } else {
+      updateTime(player.currentTime + duration)
+    }
     location.reload()
   })
 

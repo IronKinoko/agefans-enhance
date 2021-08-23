@@ -7,9 +7,9 @@ function set(name, value, _in_days = 1) {
 }
 
 function get(name) {
-  var arr,
-    reg = new RegExp('(^| )' + name + '=([^;]*)(;|$)')
-  if ((arr = document.cookie.match(reg))) {
+  let reg = new RegExp('(^| )' + name + '=([^;]*)(;|$)')
+  let arr = document.cookie.match(reg)
+  if (arr) {
     return decodeURIComponent(arr[2])
   } else {
     return null

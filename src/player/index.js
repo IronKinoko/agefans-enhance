@@ -16,7 +16,7 @@ const speedList = [0.5, 0.75, 1, 1.25, 1.5, 2, 4]
 const MediaErrorMessage = {
   1: '你中止了媒体播放',
   2: '一个网络错误导致媒体下载中途失败',
-  3: '由于损坏问题或由于媒体使用了你的浏览器不支持的功能，媒体播放被中止了',
+  3: '由于损坏问题或媒体使用了你的浏览器不支持的功能，媒体播放被中止了',
   4: '媒体无法被加载，要么是因为服务器或网络故障，要么是因为格式不被支持',
   5: '该媒体是加密的，我们没有解密的钥匙',
 }
@@ -161,9 +161,33 @@ class KPlayer {
       this.$loading.hide()
       this.showError(MediaErrorMessage[code] || this.src)
       if (code === 3) {
-        this.message.info('视频源出现问题，尝试跳过错误片段', 3000).then(() => {
-          this.trigger('skiperror')
-        })
+        const countKey = 'skip-error-retry-count' + window.location.search
+        let skipErrorRetryCount = parseInt(
+          window.sessionStorage.getItem(countKey) || '0'
+        )
+        if (skipErrorRetryCount < 3) {
+          skipErrorRetryCount++
+          const duration = 2 * skipErrorRetryCount
+          this.message
+            .info(
+              `视频源出现问题，第${skipErrorRetryCount}次尝试跳过${duration}s错误片段`,
+              4000
+            )
+            .then(() => {
+              this.trigger('skiperror', 2 * skipErrorRetryCount)
+            })
+          window.sessionStorage.setItem(
+            countKey,
+            skipErrorRetryCount.toString()
+          )
+        } else {
+          this.message
+            .info(`视频源出现问题，多次尝试失败，请手动跳过错误片段`, 4000)
+            .then(() => {
+              this.trigger('skiperror', 0)
+            })
+          window.sessionStorage.removeItem(countKey)
+        }
       }
     })
     this.on('pause', () => {
