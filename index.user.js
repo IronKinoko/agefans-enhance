@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.8.6
+// @version      1.8.7
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @include      https://www.agefans.net/*
@@ -308,10 +308,10 @@
   }
 
   function get(name) {
-    var arr,
-        reg = new RegExp('(^| )' + name + '=([^;]*)(;|$)');
+    let reg = new RegExp('(^| )' + name + '=([^;]*)(;|$)');
+    let arr = document.cookie.match(reg);
 
-    if (arr = document.cookie.match(reg)) {
+    if (arr) {
       return decodeURIComponent(arr[2]);
     } else {
       return null;
@@ -403,7 +403,7 @@
           <span>｜</span>
           <a id="copy-text" class="res_links_a" style="cursor:pointer">复制内容</a>
           <span>｜</span>
-          <a id="thunder-link" target="_blank" class="res_links_a" style="cursor:pointer">导出迅雷链接</a>
+          <a id="thunder-link" rel="noreferrer" target="_blank" class="res_links_a" style="cursor:pointer">导出迅雷链接</a>
           <div id="url-list" style="width:100%; max-height:400px; overflow:auto;"></div>
         </div>
       </div>
@@ -652,7 +652,7 @@
     insertLocal();
   }
 
-  var css$2 = "#k-player-wrapper {\n  position: relative;\n  width: 100%;\n  height: 100%;\n  background: #000;\n  overflow: hidden;\n}\n#k-player-wrapper.k-player-widescreen {\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 100;\n}\n#k-player-wrapper .k-player-contianer {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper #k-player-loading,\n#k-player-wrapper #k-player-error {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  font-size: 88px;\n  color: white;\n  pointer-events: none;\n}\n#k-player-wrapper .k-player-center {\n  width: 100%;\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n}\n#k-player-wrapper .error-info {\n  text-align: center;\n  padding: 24px;\n  font-size: 18px;\n}\n#k-player-wrapper .plyr {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper video {\n  display: block;\n}\n#k-player-wrapper .plyr__next svg {\n  transform: scale(1.7);\n}\n#k-player-wrapper .plyr__widescreen svg {\n  transform: scale(1.3);\n}\n#k-player-wrapper .plyr--hide-cursor {\n  cursor: none;\n}\n#k-player-wrapper .plyr__control span:not(.plyr__tooltip) {\n  color: inherit;\n}\n#k-player-wrapper .plyr--hide-controls .k-player-progress {\n  opacity: 1;\n  transition: opacity 0.3s ease-in 0.2s;\n}\n#k-player-wrapper .k-player-fullscreen .k-player-progress {\n  display: none;\n}\n#k-player-wrapper .k-player-progress {\n  opacity: 0;\n  transition: opacity 0.2s ease-out;\n  height: 2px;\n  width: 100%;\n  position: absolute;\n  bottom: 0;\n}\n#k-player-wrapper .k-player-progress .k-player-progress-current {\n  position: absolute;\n  left: 0;\n  top: 0;\n  height: 100%;\n  z-index: 2;\n  background-color: #23ade5;\n}\n#k-player-wrapper .k-player-progress .k-player-progress-buffer {\n  position: absolute;\n  left: 0;\n  top: 0;\n  z-index: 1;\n  height: 100%;\n  background-color: var(--plyr-video-progress-buffered-background, rgba(255, 255, 255, 0.25));\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item:first-child {\n  margin-right: 0;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container {\n  position: absolute;\n  top: 15px;\n  left: 10px;\n  right: 10px;\n  --plyr-range-track-height: 2px;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container .plyr__progress input[type=range]::-webkit-slider-thumb {\n  transform: scale(0);\n  transition: transform 0.2s ease;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover {\n  --plyr-range-track-height: 4px;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover .plyr__progress input[type=range] {\n  cursor: pointer;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover .plyr__progress input[type=range]::-webkit-slider-thumb {\n  transform: scale(1);\n}\n#k-player-wrapper .plyr__controls .plyr__volume {\n  margin-left: auto;\n}\n\n.lds-spinner {\n  color: official;\n  display: inline-block;\n  position: relative;\n  width: 80px;\n  height: 80px;\n}\n\n.lds-spinner div {\n  transform-origin: 40px 40px;\n  animation: lds-spinner 1.2s linear infinite;\n}\n\n.lds-spinner div:after {\n  content: \" \";\n  display: block;\n  position: absolute;\n  top: 3px;\n  left: 37px;\n  width: 6px;\n  height: 18px;\n  border-radius: 20%;\n  background: #fff;\n}\n\n.lds-spinner div:nth-child(1) {\n  transform: rotate(0deg);\n  animation-delay: -1.1s;\n}\n\n.lds-spinner div:nth-child(2) {\n  transform: rotate(30deg);\n  animation-delay: -1s;\n}\n\n.lds-spinner div:nth-child(3) {\n  transform: rotate(60deg);\n  animation-delay: -0.9s;\n}\n\n.lds-spinner div:nth-child(4) {\n  transform: rotate(90deg);\n  animation-delay: -0.8s;\n}\n\n.lds-spinner div:nth-child(5) {\n  transform: rotate(120deg);\n  animation-delay: -0.7s;\n}\n\n.lds-spinner div:nth-child(6) {\n  transform: rotate(150deg);\n  animation-delay: -0.6s;\n}\n\n.lds-spinner div:nth-child(7) {\n  transform: rotate(180deg);\n  animation-delay: -0.5s;\n}\n\n.lds-spinner div:nth-child(8) {\n  transform: rotate(210deg);\n  animation-delay: -0.4s;\n}\n\n.lds-spinner div:nth-child(9) {\n  transform: rotate(240deg);\n  animation-delay: -0.3s;\n}\n\n.lds-spinner div:nth-child(10) {\n  transform: rotate(270deg);\n  animation-delay: -0.2s;\n}\n\n.lds-spinner div:nth-child(11) {\n  transform: rotate(300deg);\n  animation-delay: -0.1s;\n}\n\n.lds-spinner div:nth-child(12) {\n  transform: rotate(330deg);\n  animation-delay: 0s;\n}\n\n@keyframes lds-spinner {\n  0% {\n    opacity: 1;\n  }\n  100% {\n    opacity: 0;\n  }\n}\n.script-info {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  width: 100%;\n}\n.script-info * {\n  box-sizing: border-box;\n}\n.script-info tbody tr td:first-child {\n  white-space: nowrap;\n  width: 77px;\n}\n.script-info td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n}\n.script-info .info-title {\n  font-weight: 600;\n  padding-top: 24px;\n}\n.script-info a {\n  color: #1890ff;\n  padding: 4px 8px;\n  border-radius: 4px;\n  text-decoration: none;\n}\n.script-info a:hover {\n  text-decoration: underline;\n  background-color: #f1f1f1;\n}\n.script-info .shortcuts-wrap {\n  display: flex;\n  width: 100%;\n  margin: -8px;\n}\n.script-info .shortcuts-table {\n  flex: 1;\n}\n.script-info .key {\n  display: inline-block;\n  position: relative;\n  background: #333;\n  text-align: center;\n  color: #eee;\n  border-radius: 4px;\n  padding: 2px 0;\n  width: 56px;\n  box-sizing: border-box;\n  border: 1px solid #444;\n  box-shadow: 0 2px 0 1px #222;\n  border-bottom-color: #555;\n  user-select: none;\n}\n.script-info .carousel {\n  position: relative;\n  display: flex;\n  flex-wrap: nowrap;\n  overflow: hidden;\n}\n.script-info .carousel span {\n  display: block;\n  width: 100%;\n  height: 100%;\n  flex-basis: 100%;\n  flex-shrink: 0;\n  animation: carousel-3 6s infinite alternate;\n}\n\n@keyframes carousel-3 {\n  0% {\n    transform: translateX(0);\n  }\n  20% {\n    transform: translateX(0);\n  }\n  40% {\n    transform: translateX(-100%);\n  }\n  60% {\n    transform: translateX(-100%);\n  }\n  80% {\n    transform: translateX(-200%);\n  }\n  100% {\n    transform: translateX(-200%);\n  }\n}";
+  var css$2 = "#k-player-wrapper {\n  position: relative;\n  width: 100%;\n  height: 100%;\n  background: #000;\n  overflow: hidden;\n}\n#k-player-wrapper.k-player-widescreen {\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 100;\n}\n#k-player-wrapper .k-player-contianer {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper #k-player-loading,\n#k-player-wrapper #k-player-error {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  font-size: 88px;\n  color: white;\n  pointer-events: none;\n  background: black;\n}\n#k-player-wrapper .k-player-center {\n  width: 100%;\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n}\n#k-player-wrapper .error-info {\n  text-align: center;\n  padding: 24px;\n  font-size: 18px;\n}\n#k-player-wrapper .plyr {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper video {\n  display: block;\n}\n#k-player-wrapper .plyr__next svg {\n  transform: scale(1.7);\n}\n#k-player-wrapper .plyr__widescreen svg {\n  transform: scale(1.3);\n}\n#k-player-wrapper .plyr--hide-cursor {\n  cursor: none;\n}\n#k-player-wrapper .plyr__control span:not(.plyr__tooltip) {\n  color: inherit;\n}\n#k-player-wrapper .plyr--hide-controls .k-player-progress {\n  opacity: 1;\n  transition: opacity 0.3s ease-in 0.2s;\n}\n#k-player-wrapper .k-player-fullscreen .k-player-progress {\n  display: none;\n}\n#k-player-wrapper .k-player-progress {\n  opacity: 0;\n  transition: opacity 0.2s ease-out;\n  height: 2px;\n  width: 100%;\n  position: absolute;\n  bottom: 0;\n}\n#k-player-wrapper .k-player-progress .k-player-progress-current {\n  position: absolute;\n  left: 0;\n  top: 0;\n  height: 100%;\n  z-index: 2;\n  background-color: #23ade5;\n}\n#k-player-wrapper .k-player-progress .k-player-progress-buffer {\n  position: absolute;\n  left: 0;\n  top: 0;\n  z-index: 1;\n  height: 100%;\n  background-color: var(--plyr-video-progress-buffered-background, rgba(255, 255, 255, 0.25));\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item:first-child {\n  margin-right: 0;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container {\n  position: absolute;\n  top: 15px;\n  left: 10px;\n  right: 10px;\n  --plyr-range-track-height: 2px;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container .plyr__progress input[type=range]::-webkit-slider-thumb {\n  transform: scale(0);\n  transition: transform 0.2s ease;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover {\n  --plyr-range-track-height: 4px;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover .plyr__progress input[type=range] {\n  cursor: pointer;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover .plyr__progress input[type=range]::-webkit-slider-thumb {\n  transform: scale(1);\n}\n#k-player-wrapper .plyr__controls .plyr__volume {\n  margin-left: auto;\n}\n\n.lds-spinner {\n  color: official;\n  display: inline-block;\n  position: relative;\n  width: 80px;\n  height: 80px;\n}\n\n.lds-spinner div {\n  transform-origin: 40px 40px;\n  animation: lds-spinner 1.2s linear infinite;\n}\n\n.lds-spinner div:after {\n  content: \" \";\n  display: block;\n  position: absolute;\n  top: 3px;\n  left: 37px;\n  width: 6px;\n  height: 18px;\n  border-radius: 20%;\n  background: #fff;\n}\n\n.lds-spinner div:nth-child(1) {\n  transform: rotate(0deg);\n  animation-delay: -1.1s;\n}\n\n.lds-spinner div:nth-child(2) {\n  transform: rotate(30deg);\n  animation-delay: -1s;\n}\n\n.lds-spinner div:nth-child(3) {\n  transform: rotate(60deg);\n  animation-delay: -0.9s;\n}\n\n.lds-spinner div:nth-child(4) {\n  transform: rotate(90deg);\n  animation-delay: -0.8s;\n}\n\n.lds-spinner div:nth-child(5) {\n  transform: rotate(120deg);\n  animation-delay: -0.7s;\n}\n\n.lds-spinner div:nth-child(6) {\n  transform: rotate(150deg);\n  animation-delay: -0.6s;\n}\n\n.lds-spinner div:nth-child(7) {\n  transform: rotate(180deg);\n  animation-delay: -0.5s;\n}\n\n.lds-spinner div:nth-child(8) {\n  transform: rotate(210deg);\n  animation-delay: -0.4s;\n}\n\n.lds-spinner div:nth-child(9) {\n  transform: rotate(240deg);\n  animation-delay: -0.3s;\n}\n\n.lds-spinner div:nth-child(10) {\n  transform: rotate(270deg);\n  animation-delay: -0.2s;\n}\n\n.lds-spinner div:nth-child(11) {\n  transform: rotate(300deg);\n  animation-delay: -0.1s;\n}\n\n.lds-spinner div:nth-child(12) {\n  transform: rotate(330deg);\n  animation-delay: 0s;\n}\n\n@keyframes lds-spinner {\n  0% {\n    opacity: 1;\n  }\n  100% {\n    opacity: 0;\n  }\n}\n.script-info {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  width: 100%;\n}\n.script-info * {\n  box-sizing: border-box;\n}\n.script-info tbody tr td:first-child {\n  white-space: nowrap;\n  width: 77px;\n}\n.script-info td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n}\n.script-info .info-title {\n  font-weight: 600;\n  padding-top: 24px;\n}\n.script-info a {\n  color: #1890ff;\n  padding: 4px 8px;\n  border-radius: 4px;\n  text-decoration: none;\n}\n.script-info a:hover {\n  text-decoration: underline;\n  background-color: #f1f1f1;\n}\n.script-info .shortcuts-wrap {\n  display: flex;\n  width: 100%;\n  margin: -8px;\n}\n.script-info .shortcuts-table {\n  flex: 1;\n}\n.script-info .key {\n  display: inline-block;\n  position: relative;\n  background: #333;\n  text-align: center;\n  color: #eee;\n  border-radius: 4px;\n  padding: 2px 0;\n  width: 56px;\n  box-sizing: border-box;\n  border: 1px solid #444;\n  box-shadow: 0 2px 0 1px #222;\n  border-bottom-color: #555;\n  user-select: none;\n}\n.script-info .carousel {\n  position: relative;\n  display: flex;\n  flex-wrap: nowrap;\n  overflow: hidden;\n}\n.script-info .carousel span {\n  display: block;\n  width: 100%;\n  height: 100%;\n  flex-basis: 100%;\n  flex-shrink: 0;\n  animation: carousel-3 6s infinite alternate;\n}\n\n@keyframes carousel-3 {\n  0% {\n    transform: translateX(0);\n  }\n  20% {\n    transform: translateX(0);\n  }\n  40% {\n    transform: translateX(-100%);\n  }\n  60% {\n    transform: translateX(-100%);\n  }\n  80% {\n    transform: translateX(-200%);\n  }\n  100% {\n    transform: translateX(-200%);\n  }\n}";
   n(css$2,{});
 
   const icons = `
@@ -784,19 +784,19 @@ aria-hidden="true"
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.8.6"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.8.7"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
-      <a target="_blank" href="https://github.com/IronKinoko/agefans-enhance">GitHub</a>
-      <a target="_blank" href="https://github.com/IronKinoko/agefans-enhance/releases">更新记录</a>
+      <a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko/agefans-enhance">GitHub</a>
+      <a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko/agefans-enhance/releases">更新记录</a>
       </td>
   </tr>
   <tr>
     <td>报错/意见</td>
     <td>
-      <a target="_blank" href="${githubIssueURL}">GitHub Issues</a>
-      <a target="_blank" href="https://greasyfork.org/zh-CN/scripts/424023-agefans-enhance/feedback">Greasy Fork 反馈</a>
+      <a target="_blank" rel="noreferrer" href="${githubIssueURL}">GitHub Issues</a>
+      <a target="_blank" rel="noreferrer" href="https://greasyfork.org/zh-CN/scripts/424023-agefans-enhance/feedback">Greasy Fork 反馈</a>
     </td>
   </tr>
   ${video ? `<tr><td colspan="2" class="info-title">视频信息</td></tr>
@@ -870,7 +870,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.8.6"}
+脚本版本: ${"1.8.7"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -918,8 +918,11 @@ userAgent: ${navigator.userAgent}
 
     info(text, duration = 1500) {
       this.$message.empty();
-      $(`<div class="k-player-message-item">${text}</div>`).hide().appendTo(this.$message).fadeIn(150).delay(duration).fadeOut(150, function () {
-        $(this).remove();
+      return new Promise(resolve => {
+        $(`<div class="k-player-message-item">${text}</div>`).hide().appendTo(this.$message).fadeIn(150).delay(duration).fadeOut(150, function () {
+          $(this).remove();
+          resolve();
+        });
       });
     }
 
@@ -963,6 +966,13 @@ userAgent: ${navigator.userAgent}
   }
 
   const speedList = [0.5, 0.75, 1, 1.25, 1.5, 2, 4];
+  const MediaErrorMessage = {
+    1: '你中止了媒体播放',
+    2: '一个网络错误导致媒体下载中途失败',
+    3: '由于损坏问题或媒体使用了你的浏览器不支持的功能，媒体播放被中止了',
+    4: '媒体无法被加载，要么是因为服务器或网络故障，要么是因为格式不被支持',
+    5: '该媒体是加密的，我们没有解密的钥匙'
+  };
 
   class KPlayer {
     /**
@@ -1103,8 +1113,28 @@ userAgent: ${navigator.userAgent}
         this.plyr.play();
       });
       this.on('error', () => {
+        const code = this.plyr.media.error.code;
         this.$loading.hide();
-        this.showError(this.src);
+        this.showError(MediaErrorMessage[code] || this.src);
+
+        if (code === 3) {
+          const countKey = 'skip-error-retry-count' + window.location.search;
+          let skipErrorRetryCount = parseInt(window.sessionStorage.getItem(countKey) || '0');
+
+          if (skipErrorRetryCount < 3) {
+            skipErrorRetryCount++;
+            const duration = 2 * skipErrorRetryCount;
+            this.message.info(`视频源出现问题，第${skipErrorRetryCount}次尝试跳过${duration}s错误片段`, 4000).then(() => {
+              this.trigger('skiperror', 2 * skipErrorRetryCount);
+            });
+            window.sessionStorage.setItem(countKey, skipErrorRetryCount.toString());
+          } else {
+            this.message.info(`视频源出现问题，多次尝试失败，请手动跳过错误片段`, 4000).then(() => {
+              this.trigger('skiperror', 0);
+            });
+            window.sessionStorage.removeItem(countKey);
+          }
+        }
       });
       this.on('pause', () => {
         this.hideControlsDebounced();
@@ -1116,7 +1146,7 @@ userAgent: ${navigator.userAgent}
         this.$videoWrapper.removeClass('k-player-fullscreen');
       });
       this.on('timeupdate', () => {
-        this.$progress.find('.k-player-progress-current').css('width', this.plyr.currentTime / this.plyr.duration * 100 + '%');
+        this.$progress.find('.k-player-progress-current').css('width', this.currentTime / this.plyr.duration * 100 + '%');
         this.$progress.find('.k-player-progress-buffer').css('width', this.plyr.buffered * 100 + '%');
       });
       keybind([// 进退 30s
@@ -1137,29 +1167,30 @@ userAgent: ${navigator.userAgent}
           case 'meta+ArrowRight':
           case 'shift+ArrowRight':
           case 'alt+ArrowRight':
-            e.stopPropagation();
-            e.preventDefault(); // eslint-disable-next-line no-case-declarations
+            {
+              e.stopPropagation();
+              e.preventDefault();
+              const time = {
+                'ctrl+ArrowLeft': 90,
+                'meta+ArrowLeft': 90,
+                'shift+ArrowLeft': 30,
+                'alt+ArrowLeft': 60,
+                'ctrl+ArrowRight': 90,
+                'meta+ArrowRight': 90,
+                'shift+ArrowRight': 30,
+                'alt+ArrowRight': 60
+              }[key];
 
-            const time = {
-              'ctrl+ArrowLeft': 90,
-              'meta+ArrowLeft': 90,
-              'shift+ArrowLeft': 30,
-              'alt+ArrowLeft': 60,
-              'ctrl+ArrowRight': 90,
-              'meta+ArrowRight': 90,
-              'shift+ArrowRight': 30,
-              'alt+ArrowRight': 60
-            }[key];
+              if (e.key === 'ArrowLeft') {
+                this.currentTime = Math.max(0, this.currentTime - time);
+                this.message.info(`步退${time}s`);
+              } else {
+                this.currentTime = Math.min(this.currentTime + time, this.plyr.duration);
+                this.message.info(`步进${time}s`);
+              }
 
-            if (e.key === 'ArrowLeft') {
-              this.currentTime = Math.max(0, this.currentTime - time);
-              this.message.info(`步退${time}s`);
-            } else {
-              this.currentTime = Math.min(this.currentTime + time, this.plyr.duration);
-              this.message.info(`步进${time}s`);
+              break;
             }
-
-            break;
 
           case 'n':
           case ']':
@@ -1231,7 +1262,7 @@ userAgent: ${navigator.userAgent}
         this.isHoverControls = false;
       });
     }
-    /** @typedef {'prev'|'next'|'enterwidescreen'|'exitwidescreen'} CustomEventMap */
+    /** @typedef {'prev'|'next'|'enterwidescreen'|'exitwidescreen'|'skiperror'} CustomEventMap */
 
     /**
      * @param {CustomEventMap | keyof Plyr.PlyrEventMap} event
@@ -1241,7 +1272,7 @@ userAgent: ${navigator.userAgent}
 
 
     on(event, callback) {
-      if (['prev', 'next', 'enterwidescreen', 'exitwidescreen'].includes(event)) {
+      if (['prev', 'next', 'enterwidescreen', 'exitwidescreen', 'skiperror'].includes(event)) {
         if (!this.eventMap[event]) this.eventMap[event] = [];
         this.eventMap[event].push(callback);
       } else {
@@ -1400,7 +1431,7 @@ userAgent: ${navigator.userAgent}
       <div id="wangpan-div" class="baseblock2">
         <div class="blocktitle">本集链接：</div>
         <div class="blockcontent">
-          <a class="res_links" id="current-link" download href="${decodeVurl}">${decodeVurl}</a>
+          <a class="res_links" id="current-link" download rel="noreferrer" href="${decodeVurl}">${decodeVurl}</a>
         </div>
       </div>
     </div>
@@ -1527,6 +1558,15 @@ userAgent: ${navigator.userAgent}
       if (Math.floor(player$1.currentTime) % 3 === 0) {
         updateTime(player$1.currentTime);
       }
+    });
+    player$1.on('skiperror', (_, duration) => {
+      if (duration === 0) {
+        updateTime(0);
+      } else {
+        updateTime(player$1.currentTime + duration);
+      }
+
+      location.reload();
     });
     window.addEventListener('popstate', () => {
       const href = location.pathname + location.search;

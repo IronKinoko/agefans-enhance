@@ -1,6 +1,6 @@
 {
   "name": "agefans",
-  "version": "1.8.6",
+  "version": "1.8.7",
   "description": "增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能",
   "main": "index.user.js",
   "scripts": {
@@ -51,7 +51,7 @@
     "lint-staged": "^11.0.0",
     "plyr": "^3.6.5",
     "prettier": "^2.3.0",
-    "rollup": "^2.48.0",
+    "rollup": "^2.56.0",
     "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-styles": "^3.14.1",
     "sass": "^1.32.13"
