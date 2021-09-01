@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.8.7
+// @version      1.8.8
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @include      https://www.agefans.net/*
@@ -383,6 +383,19 @@
   var css$3 = "#modal-form .row {\n  display: flex;\n  flex-wrap: wrap;\n  box-sizing: border-box;\n}\n#modal-form .row .col {\n  flex-basis: 20%;\n  padding: 4px 0;\n}\n#modal-form .mb8 {\n  margin-bottom: 8px;\n}\n\n.k-checkbox {\n  display: inline-flex;\n  align-items: center;\n}\n.k-checkbox input {\n  margin-right: 4px;\n}\n\n.flex-align-center {\n  display: flex;\n  align-items: center;\n}\n\n.k-alert {\n  margin-bottom: 16px;\n  box-sizing: border-box;\n  color: #000000d9;\n  font-size: 14px;\n  font-variant: tabular-nums;\n  line-height: 1.5715;\n  list-style: none;\n  font-feature-settings: \"tnum\";\n  position: relative;\n  display: flex;\n  align-items: center;\n  padding: 8px 15px;\n  word-wrap: break-word;\n  border-radius: 2px;\n}\n.k-alert .k-alert-icon {\n  margin-right: 8px;\n  display: inline-block;\n  color: inherit;\n  font-style: normal;\n  line-height: 0;\n  text-align: center;\n  text-transform: none;\n  vertical-align: -0.125em;\n  text-rendering: optimizeLegibility;\n  -webkit-font-smoothing: antialiased;\n}\n.k-alert .k-alert-content {\n  flex: 1;\n  min-width: 0;\n}\n\n.k-alert-info {\n  background-color: #e6f7ff;\n  border: 1px solid #91d5ff;\n}\n.k-alert-info .k-alert-icon {\n  color: #1890ff;\n}";
   n(css$3,{});
 
+  function parseToURL(url, count = 0) {
+    if (count > 4) throw new Error('url解析失败');
+
+    try {
+      url = new URL(url);
+    } catch (error) {
+      url = decodeURIComponent(url);
+      url = parseToURL(url, ++count);
+    }
+
+    return url.toString();
+  }
+
   /**
    * @typedef {{title:string,href:string}} ATag
    */
@@ -632,7 +645,7 @@
     }
 
     const json = JSON.parse(text);
-    return decodeURIComponent(json.vurl);
+    return parseToURL(json.vurl);
   }
 
   async function getVurlWithLocal(href) {
@@ -784,7 +797,7 @@ aria-hidden="true"
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.8.7"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.8.8"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -870,7 +883,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.8.7"}
+脚本版本: ${"1.8.8"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -1399,7 +1412,7 @@ userAgent: ${navigator.userAgent}
 
         if (videoURL) {
           addReferrerMeta();
-          initPlayer(videoURL);
+          initPlayer(parseToURL(videoURL));
           mutationOb.disconnect();
         }
       } else {
@@ -1417,7 +1430,7 @@ userAgent: ${navigator.userAgent}
   }
 
   function showCurrentLink(vurl) {
-    const decodeVurl = decodeURIComponent(vurl);
+    const decodeVurl = parseToURL(vurl);
 
     if ($('#current-link').length) {
       $('#current-link').text(decodeVurl);
