@@ -7,6 +7,7 @@ import {
 } from './getAllVideoURL'
 import { KPlayer, addReferrerMeta } from '../player'
 import { Message } from '../utils/message'
+import parseToURL from '../utils/parseToURL'
 
 function replacePlayer() {
   const dom = document.getElementById('age_playfram')
@@ -19,7 +20,7 @@ function replacePlayer() {
       let videoURL = url.searchParams.get('url')
       if (videoURL) {
         addReferrerMeta()
-        initPlayer(videoURL)
+        initPlayer(parseToURL(videoURL))
         mutationOb.disconnect()
       }
     } else {
@@ -38,7 +39,7 @@ function replacePlayer() {
 }
 
 function showCurrentLink(vurl) {
-  const decodeVurl = decodeURIComponent(vurl)
+  const decodeVurl = parseToURL(vurl)
 
   if ($('#current-link').length) {
     $('#current-link').text(decodeVurl)

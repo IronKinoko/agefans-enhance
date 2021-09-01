@@ -2,6 +2,7 @@ import { copyToClipboard } from '../utils/copy'
 import { modal } from '../utils/modal'
 import { getPlayUrl, updateCookie } from './playURL'
 import './getAllVideoURL.scss'
+import parseToURL from '../utils/parseToURL'
 /**
  * @typedef {{title:string,href:string}} ATag
  */
@@ -266,7 +267,7 @@ async function getVurl(href) {
   }
 
   const json = JSON.parse(text)
-  return decodeURIComponent(json.vurl)
+  return parseToURL(json.vurl)
 }
 export async function getVurlWithLocal(href) {
   const map = getLocal()
