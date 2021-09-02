@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.8.8
+// @version      1.9.0
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @include      https://www.agefans.net/*
@@ -11,6 +11,7 @@
 // @resource     plyrCSS https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.css
 // @require      https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js
 // @require      https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.js
+// @require      https://cdn.jsdelivr.net/npm/hls.js@1.0.9/dist/hls.min.js
 // @grant        GM_getResourceText
 // @grant        GM_addStyle
 // @license      MIT
@@ -25,8 +26,14 @@
 })();
 
 
-(function () {
+(function ($, Plyr, Hls) {
   'use strict';
+
+  function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+  var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+  var Plyr__default = /*#__PURE__*/_interopDefaultLegacy(Plyr);
+  var Hls__default = /*#__PURE__*/_interopDefaultLegacy(Hls);
 
   var e = [],
       t = [];
@@ -125,11 +132,11 @@
       if (!id) return;
       const hisItem = {};
       hisItem.id = id;
-      hisItem.title = $('#detailname a').text();
+      hisItem.title = $__default['default']('#detailname a').text();
       hisItem.href = location.href;
-      hisItem.section = $('li a[style*="color: rgb(238, 0, 0);"]').text();
+      hisItem.section = $__default['default']('li a[style*="color: rgb(238, 0, 0);"]').text();
       hisItem.time = 0;
-      hisItem.logo = $('#play_poster_img').attr('src');
+      hisItem.logo = $__default['default']('#play_poster_img').attr('src');
 
       if (this.has(id)) {
         const oldItem = this.get(id);
@@ -151,7 +158,7 @@
     return `${Math.floor(time / 60).toString().padStart(2, '0')}:${(time % 60).toString().padStart(2, '0')}`;
   }
   function renderHistoryList() {
-    $('#history').html('').append(() => {
+    $__default['default']('#history').html('').append(() => {
       /** @type {any[]} */
       const histories = his.getAll();
       let html = '';
@@ -175,30 +182,30 @@
   }
 
   function renderHistoryPage() {
-    const currentDom = $('.nav_button_current');
-    $('<div id="history"></div>').insertAfter('#container').hide();
-    $(`<a class="nav_button">历史</a>`).appendTo('#nav').on('click', e => {
-      if ($('#history').is(':visible')) {
-        $('#container').show();
-        $('#history').hide();
+    const currentDom = $__default['default']('.nav_button_current');
+    $__default['default']('<div id="history"></div>').insertAfter('#container').hide();
+    $__default['default'](`<a class="nav_button">历史</a>`).appendTo('#nav').on('click', e => {
+      if ($__default['default']('#history').is(':visible')) {
+        $__default['default']('#container').show();
+        $__default['default']('#history').hide();
         changeActive(currentDom);
       } else {
         renderHistoryList();
-        $('#container').hide();
-        $('#history').show();
-        changeActive($(e.currentTarget));
+        $__default['default']('#container').hide();
+        $__default['default']('#history').show();
+        changeActive($__default['default'](e.currentTarget));
       }
     });
-    $('.nav_button_current').on('click', e => {
-      $('#container').show();
-      $('#history').hide();
+    $__default['default']('.nav_button_current').on('click', e => {
+      $__default['default']('#container').show();
+      $__default['default']('#history').hide();
       changeActive(e.currentTarget);
     }).removeAttr('href');
   }
 
   function changeActive(dom) {
-    $('.nav_button_current').removeClass('nav_button_current');
-    $(dom).addClass('nav_button_current');
+    $__default['default']('.nav_button_current').removeClass('nav_button_current');
+    $__default['default'](dom).addClass('nav_button_current');
   }
 
   function historyModule() {
@@ -206,467 +213,8 @@
     renderHistoryList();
   }
 
-  function copyToClipboard(element) {
-    var $temp = $("<textarea>");
-    $("body").append($temp);
-    $temp.val($(element).text()).trigger('select');
-    document.execCommand("copy");
-    $temp.remove();
-  }
-
-  var css$4 = ".k-modal {\n  position: fixed;\n  left: 0;\n  right: 0;\n  top: 0;\n  bottom: 0;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  z-index: 1000;\n  text-align: left;\n  animation: fadeIn 0.3s ease forwards;\n  color: rgba(0, 0, 0, 0.85);\n}\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 1;\n  }\n}\n.k-modal * {\n  color: inherit;\n}\n.k-modal .k-modal-mask {\n  position: fixed;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  top: 0;\n  background: rgba(0, 0, 0, 0.45);\n  cursor: pointer;\n}\n.k-modal .k-modal-wrap {\n  position: fixed;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  top: 0;\n  overflow: auto;\n  text-align: center;\n  user-select: none;\n}\n.k-modal .k-modal-wrap::before {\n  content: \"\";\n  display: inline-block;\n  width: 0;\n  height: 100%;\n  vertical-align: middle;\n}\n.k-modal .k-modal-container {\n  margin: 20px 0;\n  display: inline-block;\n  vertical-align: middle;\n  text-align: left;\n  position: relative;\n  width: 520px;\n  min-height: 100px;\n  background: white;\n  border-radius: 2px;\n  user-select: text;\n}\n.k-modal .k-modal-header {\n  font-size: 16px;\n  padding: 16px;\n  border-bottom: 1px solid #f1f1f1;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.k-modal .k-modal-close {\n  cursor: pointer;\n  height: 55px;\n  width: 55px;\n  position: absolute;\n  right: 0;\n  top: 0;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  user-select: none;\n}\n.k-modal .k-modal-close * {\n  color: rgba(0, 0, 0, 0.45);\n  transition: color 0.15s ease;\n}\n.k-modal .k-modal-close:hover * {\n  color: rgba(0, 0, 0, 0.85);\n}\n.k-modal .k-modal-body {\n  padding: 16px;\n  font-size: 14px;\n}\n.k-modal .k-modal-footer {\n  padding: 10px 16px;\n  font-size: 14px;\n  border-top: 1px solid #f1f1f1;\n  display: flex;\n  justify-content: flex-end;\n}\n.k-modal .k-modal-btn {\n  user-select: none;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  height: 32px;\n  border-radius: 2px;\n  border: 1px solid #1890ff;\n  background: #1890ff;\n  color: white;\n  min-width: 64px;\n  cursor: pointer;\n}";
+  var css$4 = "#k-player-wrapper {\n  position: relative;\n  width: 100%;\n  height: 100%;\n  background: #000;\n  overflow: hidden;\n}\n#k-player-wrapper.k-player-widescreen {\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 100;\n}\n#k-player-wrapper .k-player-contianer {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper #k-player-loading,\n#k-player-wrapper #k-player-error {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  font-size: 88px;\n  color: white;\n  pointer-events: none;\n  background: black;\n}\n#k-player-wrapper .k-player-center {\n  width: 100%;\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n}\n#k-player-wrapper .error-info {\n  text-align: center;\n  padding: 24px;\n  font-size: 18px;\n}\n#k-player-wrapper .plyr {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper video {\n  display: block;\n}\n#k-player-wrapper .plyr__next svg {\n  transform: scale(1.7);\n}\n#k-player-wrapper .plyr__widescreen svg {\n  transform: scale(1.3);\n}\n#k-player-wrapper .plyr--hide-cursor {\n  cursor: none;\n}\n#k-player-wrapper .plyr__control span:not(.plyr__tooltip) {\n  color: inherit;\n}\n#k-player-wrapper .plyr--hide-controls .k-player-progress {\n  opacity: 1;\n  transition: opacity 0.3s ease-in 0.2s;\n}\n#k-player-wrapper .k-player-fullscreen .k-player-progress {\n  display: none;\n}\n#k-player-wrapper .k-player-progress {\n  opacity: 0;\n  transition: opacity 0.2s ease-out;\n  height: 2px;\n  width: 100%;\n  position: absolute;\n  bottom: 0;\n}\n#k-player-wrapper .k-player-progress .k-player-progress-current {\n  position: absolute;\n  left: 0;\n  top: 0;\n  height: 100%;\n  z-index: 2;\n  background-color: #23ade5;\n}\n#k-player-wrapper .k-player-progress .k-player-progress-buffer {\n  position: absolute;\n  left: 0;\n  top: 0;\n  z-index: 1;\n  height: 100%;\n  background-color: var(--plyr-video-progress-buffered-background, rgba(255, 255, 255, 0.25));\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item:first-child {\n  margin-right: 0;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container {\n  position: absolute;\n  top: 15px;\n  left: 10px;\n  right: 10px;\n  --plyr-range-track-height: 2px;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container .plyr__progress input[type=range]::-webkit-slider-thumb {\n  transform: scale(0);\n  transition: transform 0.2s ease;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover {\n  --plyr-range-track-height: 4px;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover .plyr__progress input[type=range] {\n  cursor: pointer;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover .plyr__progress input[type=range]::-webkit-slider-thumb {\n  transform: scale(1);\n}\n#k-player-wrapper .plyr__controls .plyr__volume {\n  margin-left: auto;\n}\n\n.lds-spinner {\n  color: official;\n  display: inline-block;\n  position: relative;\n  width: 80px;\n  height: 80px;\n}\n\n.lds-spinner div {\n  transform-origin: 40px 40px;\n  animation: lds-spinner 1.2s linear infinite;\n}\n\n.lds-spinner div:after {\n  content: \" \";\n  display: block;\n  position: absolute;\n  top: 3px;\n  left: 37px;\n  width: 6px;\n  height: 18px;\n  border-radius: 20%;\n  background: #fff;\n}\n\n.lds-spinner div:nth-child(1) {\n  transform: rotate(0deg);\n  animation-delay: -1.1s;\n}\n\n.lds-spinner div:nth-child(2) {\n  transform: rotate(30deg);\n  animation-delay: -1s;\n}\n\n.lds-spinner div:nth-child(3) {\n  transform: rotate(60deg);\n  animation-delay: -0.9s;\n}\n\n.lds-spinner div:nth-child(4) {\n  transform: rotate(90deg);\n  animation-delay: -0.8s;\n}\n\n.lds-spinner div:nth-child(5) {\n  transform: rotate(120deg);\n  animation-delay: -0.7s;\n}\n\n.lds-spinner div:nth-child(6) {\n  transform: rotate(150deg);\n  animation-delay: -0.6s;\n}\n\n.lds-spinner div:nth-child(7) {\n  transform: rotate(180deg);\n  animation-delay: -0.5s;\n}\n\n.lds-spinner div:nth-child(8) {\n  transform: rotate(210deg);\n  animation-delay: -0.4s;\n}\n\n.lds-spinner div:nth-child(9) {\n  transform: rotate(240deg);\n  animation-delay: -0.3s;\n}\n\n.lds-spinner div:nth-child(10) {\n  transform: rotate(270deg);\n  animation-delay: -0.2s;\n}\n\n.lds-spinner div:nth-child(11) {\n  transform: rotate(300deg);\n  animation-delay: -0.1s;\n}\n\n.lds-spinner div:nth-child(12) {\n  transform: rotate(330deg);\n  animation-delay: 0s;\n}\n\n@keyframes lds-spinner {\n  0% {\n    opacity: 1;\n  }\n  100% {\n    opacity: 0;\n  }\n}\n.script-info {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  width: 100%;\n}\n.script-info * {\n  box-sizing: border-box;\n}\n.script-info tbody tr td:first-child {\n  white-space: nowrap;\n  width: 77px;\n}\n.script-info td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n}\n.script-info .info-title {\n  font-weight: 600;\n  padding-top: 24px;\n}\n.script-info a {\n  color: #1890ff;\n  padding: 4px 8px;\n  border-radius: 4px;\n  text-decoration: none;\n}\n.script-info a:hover {\n  text-decoration: underline;\n  background-color: #f1f1f1;\n}\n.script-info .shortcuts-wrap {\n  display: flex;\n  width: 100%;\n  margin: -8px;\n}\n.script-info .shortcuts-table {\n  flex: 1;\n}\n.script-info .key {\n  display: inline-block;\n  position: relative;\n  background: #333;\n  text-align: center;\n  color: #eee;\n  border-radius: 4px;\n  padding: 2px 0;\n  width: 56px;\n  box-sizing: border-box;\n  border: 1px solid #444;\n  box-shadow: 0 2px 0 1px #222;\n  border-bottom-color: #555;\n  user-select: none;\n}\n.script-info .carousel {\n  position: relative;\n  display: flex;\n  flex-wrap: nowrap;\n  overflow: hidden;\n}\n.script-info .carousel span {\n  display: block;\n  width: 100%;\n  height: 100%;\n  flex-basis: 100%;\n  flex-shrink: 0;\n  animation: carousel-3 6s infinite alternate;\n}\n\n@keyframes carousel-3 {\n  0% {\n    transform: translateX(0);\n  }\n  20% {\n    transform: translateX(0);\n  }\n  40% {\n    transform: translateX(-100%);\n  }\n  60% {\n    transform: translateX(-100%);\n  }\n  80% {\n    transform: translateX(-200%);\n  }\n  100% {\n    transform: translateX(-200%);\n  }\n}";
   n(css$4,{});
-
-  function modal({
-    title,
-    content,
-    onClose,
-    onOk
-  }) {
-    const store = $('body').css(['width', 'overflow']);
-    const ID = Math.random().toString(16).slice(2);
-    $(`
-<div class="k-modal" role="dialog" id="${ID}">
-  <div class="k-modal-mask"></div>
-  <div class="k-modal-wrap">
-    <div class="k-modal-container">
-      <div class="k-modal-header">
-        <div class="k-modal-title"></div>
-        <a class="k-modal-close">
-          <svg viewBox="64 64 896 896" focusable="false" data-icon="close" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 00203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"></path></svg>
-        </a>
-      </div>
-      <div class="k-modal-body">
-      </div>
-    </div>
-  </div>
-</div>`).appendTo('body'); // init css
-
-    $('body').css({
-      width: `calc(100% - ${window.innerWidth - document.body.clientWidth}px)`,
-      overflow: 'hidden'
-    });
-    $(`#${ID} .k-modal-title`).append(title);
-    $(`#${ID} .k-modal-body`).append(content);
-    $(`#${ID} .k-modal-close`).on('click', () => {
-      handleClose();
-    });
-    $(`#${ID} .k-modal-container`).on('click', e => {
-      e.stopPropagation();
-    });
-    $(`#${ID} .k-modal-wrap`).on('click', () => {
-      handleClose();
-    });
-
-    function reset() {
-      $(`#${ID}`).remove();
-      $('body').css(store);
-      window.removeEventListener('keydown', fn, {
-        capture: true
-      });
-    }
-
-    function handleClose() {
-      onClose === null || onClose === void 0 ? void 0 : onClose();
-      reset();
-    }
-
-    function handleOk() {
-      onOk();
-      reset();
-    }
-
-    function fn(e) {
-      if (['Escape', '?', '？'].includes(e.key)) {
-        handleClose();
-      }
-
-      e.stopPropagation();
-    }
-
-    window.addEventListener('keydown', fn, {
-      capture: true
-    });
-
-    if (onOk) {
-      $(`#${ID} .k-modal-container`).append(`
-      <div class="k-modal-footer">
-        <button class="k-modal-btn k-modal-ok">确 定</button>
-      </div>
-    `);
-      $(`#${ID} .k-modal-ok`).on('click', () => {
-        handleOk();
-      });
-    }
-  }
-
-  function set(name, value, _in_days = 1) {
-    var Days = _in_days;
-    var exp = new Date();
-    exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);
-    document.cookie = name + '=' + escape(value) + ';expires=' + exp.toGMTString() + ';path=/';
-  }
-
-  function get(name) {
-    let reg = new RegExp('(^| )' + name + '=([^;]*)(;|$)');
-    let arr = document.cookie.match(reg);
-
-    if (arr) {
-      return decodeURIComponent(arr[2]);
-    } else {
-      return null;
-    }
-  }
-
-  const Cookie = {
-    get,
-    set,
-    remove: function (name) {
-      set(name, '', 0);
-    }
-  };
-
-  /**
-   * agefans 安全机制：
-   * 1. 从服务端获取cookie `t1` `k1`
-   * 2. 本地根据规则生成cookie `t2` `k2`
-   * 3. 获取链接时候生成cookie `fa_t` `fa_c`
-   *
-   * t1 t2 fa_t 均为时间，相差太多就报错超时
-   * k1 k2 类似密钥
-   * fa_c 不重要
-   */
-
-  /**
-   * 获取视频链接的请求地址
-   */
-
-  function getPlayUrl(_url) {
-    const _rand = Math.random();
-
-    var _getplay_url = _url.replace(/.*\/play\/(\d+?)\?playid=(\d+)_(\d+).*/, '/_getplay?aid=$1&playindex=$2&epindex=$3') + '&r=' + _rand;
-    /**
-     * fa_t 取当前时间
-     * fa_c 1-9之间随便取 固定1就行
-     */
-
-
-    Cookie.set('fa_t', Date.now(), 1);
-    Cookie.set('fa_c', 1, 1);
-    return _getplay_url;
-  }
-  /**
-   * 因为agefans的安全策略，需要刷新下cookie才能正常访问
-   *
-   * 这个方法实现了 t1 k1 t2 k2 全部刷新
-   */
-
-  function updateCookie(href) {
-    href = href ? location.origin + href : location.href;
-    return new Promise((resolve, reject) => {
-      const doneFn = () => {
-        resolve();
-        dom.remove();
-      }; // DOMContentLoaded is faster than load
-
-
-      const dom = document.createElement('iframe');
-      dom.style.display = 'none';
-      dom.src = href;
-      document.body.append(dom);
-      dom.contentWindow.addEventListener('DOMContentLoaded', doneFn);
-      dom.contentWindow.addEventListener('load', doneFn);
-      dom.contentWindow.addEventListener('error', reject);
-    });
-  }
-
-  var css$3 = "#modal-form .row {\n  display: flex;\n  flex-wrap: wrap;\n  box-sizing: border-box;\n}\n#modal-form .row .col {\n  flex-basis: 20%;\n  padding: 4px 0;\n}\n#modal-form .mb8 {\n  margin-bottom: 8px;\n}\n\n.k-checkbox {\n  display: inline-flex;\n  align-items: center;\n}\n.k-checkbox input {\n  margin-right: 4px;\n}\n\n.flex-align-center {\n  display: flex;\n  align-items: center;\n}\n\n.k-alert {\n  margin-bottom: 16px;\n  box-sizing: border-box;\n  color: #000000d9;\n  font-size: 14px;\n  font-variant: tabular-nums;\n  line-height: 1.5715;\n  list-style: none;\n  font-feature-settings: \"tnum\";\n  position: relative;\n  display: flex;\n  align-items: center;\n  padding: 8px 15px;\n  word-wrap: break-word;\n  border-radius: 2px;\n}\n.k-alert .k-alert-icon {\n  margin-right: 8px;\n  display: inline-block;\n  color: inherit;\n  font-style: normal;\n  line-height: 0;\n  text-align: center;\n  text-transform: none;\n  vertical-align: -0.125em;\n  text-rendering: optimizeLegibility;\n  -webkit-font-smoothing: antialiased;\n}\n.k-alert .k-alert-content {\n  flex: 1;\n  min-width: 0;\n}\n\n.k-alert-info {\n  background-color: #e6f7ff;\n  border: 1px solid #91d5ff;\n}\n.k-alert-info .k-alert-icon {\n  color: #1890ff;\n}";
-  n(css$3,{});
-
-  function parseToURL(url, count = 0) {
-    if (count > 4) throw new Error('url解析失败');
-
-    try {
-      url = new URL(url);
-    } catch (error) {
-      url = decodeURIComponent(url);
-      url = parseToURL(url, ++count);
-    }
-
-    return url.toString();
-  }
-
-  /**
-   * @typedef {{title:string,href:string}} ATag
-   */
-
-  function insertBtn() {
-    $(`
-  <div class="baseblock">
-    <div class="blockcontent">
-      <div id="wangpan-div" class="baseblock2">
-        <div class="blocktitle flex-align-center">
-          获取全部视频链接：
-          <span id="status-xr7" class="flex-align-center"></span>
-        </div>
-        <div class="blockcontent">
-          <a id="open-modal" class="res_links_a" style="cursor:pointer">获取全部视频链接</a>
-          <span>｜</span>
-          <a id="clean-all" class="res_links_a" style="cursor:pointer">清空</a>
-          <span>｜</span>
-          <a id="copy-text" class="res_links_a" style="cursor:pointer">复制内容</a>
-          <span>｜</span>
-          <a id="thunder-link" rel="noreferrer" target="_blank" class="res_links_a" style="cursor:pointer">导出迅雷链接</a>
-          <div id="url-list" style="width:100%; max-height:400px; overflow:auto;"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-`).insertAfter($('.baseblock:contains(网盘资源)'));
-    $('#copy-text').on('click', function () {
-      copyToClipboard($('#url-list'));
-      $(this).text('已复制');
-      setTimeout(() => {
-        $(this).text('复制内容');
-      }, 1000);
-    });
-    $('#clean-all').on('click', () => {
-      getAllVideoUrlList().forEach(o => {
-        removeLocal(o.href);
-      });
-      insertLocal();
-    });
-    $('#open-modal').on('click', function () {
-      modal({
-        title: '选择需要的链接',
-        content: insertModalForm(),
-        onOk: () => {
-          let list = [];
-          $('#modal-form .col input:checked').each((_, el) => {
-            list.push({
-              title: $(el).data('title'),
-              href: $(el).attr('name')
-            });
-          });
-          insertResult(list);
-        }
-      });
-    });
-    $('#thunder-link').attr('href', () => {
-      const map = getLocal();
-      const list = getAllVideoUrlList();
-      const tasks = [];
-      const taskGroupName = $('#detailname a').text();
-      list.forEach(item => {
-        if (map[item.href]) {
-          tasks.push({
-            url: map[item.href].url,
-            baseName: `${item.title}.mp4`
-          });
-        }
-      });
-      const params = {
-        taskGroupName,
-        tasks
-      };
-      const baseURL = 'https://ironkinoko.github.io/agefans-enhance/thunder.html';
-      const url = new URL(baseURL);
-      url.searchParams.append('params', JSON.stringify(params));
-      return url.toString();
-    });
-  }
-  /**
-   * @return {ATag[]}
-   */
-
-
-  function getAllVideoUrlList() {
-    const $aTagList = $('.movurl:visible li a');
-    const aTags = [];
-    $aTagList.each(function (index, aTag) {
-      aTags.push({
-        title: aTag.textContent,
-        href: aTag.dataset.href
-      });
-    });
-    return aTags;
-  }
-
-  function insertModalForm() {
-    const list = getAllVideoUrlList();
-    let $dom = $(`
-  <div id="modal-form">
-    <div class="k-alert k-alert-info">
-      <span class="k-alert-icon">
-        <svg viewBox="64 64 896 896" focusable="false" data-icon="info-circle" width="1em" height="1em" fill="currentColor" aria-hidden="true">
-          <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm32 664c0 4.4-3.6 8-8 8h-48c-4.4 0-8-3.6-8-8V456c0-4.4 3.6-8 8-8h48c4.4 0 8 3.6 8 8v272zm-32-344a48.01 48.01 0 010-96 48.01 48.01 0 010 96z"></path>
-        </svg>
-      </span>
-      <div class="k-alert-content">
-        <div class="k-alert-message">如果在1-2分钟内调用超过70多次，会被限流影响正常观看视频</div>
-      </div>
-    </div>
-    <label class="k-checkbox">
-      <input id="all-check" type="checkbox" checked/>全选
-    </label>
-    <ul class="row">
-      ${list.map(aTag => `
-        <li class="col">
-          <label class="k-checkbox"><input type="checkbox" name="${aTag.href}" data-title="${aTag.title}" checked />${aTag.title}</label>
-        </li>`).join('')}
-    </ul>
-  </div>
-  `);
-    $dom.find('.row .col input').on('change', () => {
-      const length = list.length;
-      const checkedLength = $dom.find('.row .col input:checked').length;
-      $dom.find('.k-checkbox #all-check').prop('checked', length === checkedLength);
-    });
-    $dom.find('.k-checkbox #all-check').on('change', e => {
-      $dom.find('.row .col input').prop('checked', e.currentTarget.checked);
-    });
-    return $dom;
-  }
-
-  function genUrlItem(title, content = '加载中...') {
-    const contentHTML = content.startsWith('http') ? `<a href="${content}" download>${content}</a>` : content;
-    return `<div>
-  <div style="white-space: nowrap;">[${title}]</div>
-  <div class="url" data-status='0' style="word-break:break-all; word-wrap:break-word;">
-    ${contentHTML}
-  </div>
-</div>`;
-  }
-
-  const loadingIcon = `
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin-right:4px;" width="1em" height="1em" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
-  <circle cx="50" cy="50" fill="none" stroke="#5699d2" stroke-width="10" r="40" stroke-dasharray="164.93361431346415 56.97787143782138">
-    <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="0.6s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform>
-  </circle>
-</svg>`;
-  /**
-   * @param {ATag[]} list
-   */
-
-  async function insertResult(list) {
-    const $parent = $('#url-list');
-    $parent.empty();
-    $('#status-xr7').hide().fadeIn(300).html(`${loadingIcon}<div>更新cookie中...</div>`);
-    await updateCookie();
-    $('#status-xr7').text('更新完成').delay(1500).fadeOut(300);
-    list.forEach(item => {
-      let $dom = $(genUrlItem(item.title)).appendTo($parent);
-      let $msg = $dom.find('.url');
-
-      async function _getUrl() {
-        try {
-          const vurl = await getVurl(item.href);
-          saveLocal(item.href, vurl);
-          $msg.html(`<a href="${vurl}" download>${vurl}</a>`);
-          $msg.data('status', '1');
-        } catch (error) {
-          console.error(error);
-          $msg.empty();
-          $msg.data('status', '2');
-
-          if (error instanceof AGEfansError) {
-            $(`<span>${error.message}</span>`).appendTo($msg);
-          } else {
-            $(`<a style="cursor:pointer">加载错误，请重试</a>`).appendTo($msg).on('click', async () => {
-              // 失败需要重试获取cookie
-              await updateCookie();
-
-              _getUrl();
-            });
-          }
-        }
-      }
-
-      _getUrl();
-    });
-  }
-
-  const PLAY_URL_KEY = 'play-url-key';
-  /**
-   * @return {Record<string,{url:string}>}
-   */
-
-  function getLocal() {
-    return JSON.parse(window.localStorage.getItem(PLAY_URL_KEY) || '{}');
-  }
-
-  function saveLocal(href, url) {
-    const map = getLocal();
-    map[href] = {
-      url
-    };
-    window.localStorage.setItem(PLAY_URL_KEY, JSON.stringify(map));
-  }
-  function removeLocal(href) {
-    const map = getLocal();
-    delete map[href];
-    window.localStorage.setItem(PLAY_URL_KEY, JSON.stringify(map));
-  }
-
-  function insertLocal() {
-    const map = getLocal();
-    const list = getAllVideoUrlList();
-    const $parent = $('#url-list');
-    $parent.empty();
-    $(list.map(item => {
-      if (map[item.href]) {
-        return genUrlItem(item.title, map[item.href].url);
-      } else {
-        return '';
-      }
-    }).join('')).appendTo($parent);
-  }
-
-  class AGEfansError extends Error {
-    constructor(message) {
-      super(message);
-      this.name = 'AGEfans Enhance Exception';
-    }
-
-  }
-
-  async function getVurl(href) {
-    const res = await fetch(getPlayUrl(href), {
-      referrerPolicy: 'strict-origin-when-cross-origin'
-    });
-    const text = await res.text();
-
-    if (text.includes('ipchk')) {
-      throw new AGEfansError(`你被限流了，请5分钟后重试（${text}）`);
-    }
-
-    if (text.includes('timeout')) {
-      throw new AGEfansError(`Cookie过期，请刷新页面重试（${text}）`);
-    }
-
-    const json = JSON.parse(text);
-    return parseToURL(json.vurl);
-  }
-
-  async function getVurlWithLocal(href) {
-    const map = getLocal();
-
-    if (map[href]) {
-      return map[href].url;
-    }
-
-    await updateCookie(href);
-    const vurl = await getVurl(href);
-    saveLocal(href, vurl);
-    return vurl;
-  }
-  function initGetAllVideoURL() {
-    insertBtn();
-    insertLocal();
-  }
-
-  var css$2 = "#k-player-wrapper {\n  position: relative;\n  width: 100%;\n  height: 100%;\n  background: #000;\n  overflow: hidden;\n}\n#k-player-wrapper.k-player-widescreen {\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 100;\n}\n#k-player-wrapper .k-player-contianer {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper #k-player-loading,\n#k-player-wrapper #k-player-error {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  font-size: 88px;\n  color: white;\n  pointer-events: none;\n  background: black;\n}\n#k-player-wrapper .k-player-center {\n  width: 100%;\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n}\n#k-player-wrapper .error-info {\n  text-align: center;\n  padding: 24px;\n  font-size: 18px;\n}\n#k-player-wrapper .plyr {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper video {\n  display: block;\n}\n#k-player-wrapper .plyr__next svg {\n  transform: scale(1.7);\n}\n#k-player-wrapper .plyr__widescreen svg {\n  transform: scale(1.3);\n}\n#k-player-wrapper .plyr--hide-cursor {\n  cursor: none;\n}\n#k-player-wrapper .plyr__control span:not(.plyr__tooltip) {\n  color: inherit;\n}\n#k-player-wrapper .plyr--hide-controls .k-player-progress {\n  opacity: 1;\n  transition: opacity 0.3s ease-in 0.2s;\n}\n#k-player-wrapper .k-player-fullscreen .k-player-progress {\n  display: none;\n}\n#k-player-wrapper .k-player-progress {\n  opacity: 0;\n  transition: opacity 0.2s ease-out;\n  height: 2px;\n  width: 100%;\n  position: absolute;\n  bottom: 0;\n}\n#k-player-wrapper .k-player-progress .k-player-progress-current {\n  position: absolute;\n  left: 0;\n  top: 0;\n  height: 100%;\n  z-index: 2;\n  background-color: #23ade5;\n}\n#k-player-wrapper .k-player-progress .k-player-progress-buffer {\n  position: absolute;\n  left: 0;\n  top: 0;\n  z-index: 1;\n  height: 100%;\n  background-color: var(--plyr-video-progress-buffered-background, rgba(255, 255, 255, 0.25));\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item:first-child {\n  margin-right: 0;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container {\n  position: absolute;\n  top: 15px;\n  left: 10px;\n  right: 10px;\n  --plyr-range-track-height: 2px;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container .plyr__progress input[type=range]::-webkit-slider-thumb {\n  transform: scale(0);\n  transition: transform 0.2s ease;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover {\n  --plyr-range-track-height: 4px;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover .plyr__progress input[type=range] {\n  cursor: pointer;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover .plyr__progress input[type=range]::-webkit-slider-thumb {\n  transform: scale(1);\n}\n#k-player-wrapper .plyr__controls .plyr__volume {\n  margin-left: auto;\n}\n\n.lds-spinner {\n  color: official;\n  display: inline-block;\n  position: relative;\n  width: 80px;\n  height: 80px;\n}\n\n.lds-spinner div {\n  transform-origin: 40px 40px;\n  animation: lds-spinner 1.2s linear infinite;\n}\n\n.lds-spinner div:after {\n  content: \" \";\n  display: block;\n  position: absolute;\n  top: 3px;\n  left: 37px;\n  width: 6px;\n  height: 18px;\n  border-radius: 20%;\n  background: #fff;\n}\n\n.lds-spinner div:nth-child(1) {\n  transform: rotate(0deg);\n  animation-delay: -1.1s;\n}\n\n.lds-spinner div:nth-child(2) {\n  transform: rotate(30deg);\n  animation-delay: -1s;\n}\n\n.lds-spinner div:nth-child(3) {\n  transform: rotate(60deg);\n  animation-delay: -0.9s;\n}\n\n.lds-spinner div:nth-child(4) {\n  transform: rotate(90deg);\n  animation-delay: -0.8s;\n}\n\n.lds-spinner div:nth-child(5) {\n  transform: rotate(120deg);\n  animation-delay: -0.7s;\n}\n\n.lds-spinner div:nth-child(6) {\n  transform: rotate(150deg);\n  animation-delay: -0.6s;\n}\n\n.lds-spinner div:nth-child(7) {\n  transform: rotate(180deg);\n  animation-delay: -0.5s;\n}\n\n.lds-spinner div:nth-child(8) {\n  transform: rotate(210deg);\n  animation-delay: -0.4s;\n}\n\n.lds-spinner div:nth-child(9) {\n  transform: rotate(240deg);\n  animation-delay: -0.3s;\n}\n\n.lds-spinner div:nth-child(10) {\n  transform: rotate(270deg);\n  animation-delay: -0.2s;\n}\n\n.lds-spinner div:nth-child(11) {\n  transform: rotate(300deg);\n  animation-delay: -0.1s;\n}\n\n.lds-spinner div:nth-child(12) {\n  transform: rotate(330deg);\n  animation-delay: 0s;\n}\n\n@keyframes lds-spinner {\n  0% {\n    opacity: 1;\n  }\n  100% {\n    opacity: 0;\n  }\n}\n.script-info {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  width: 100%;\n}\n.script-info * {\n  box-sizing: border-box;\n}\n.script-info tbody tr td:first-child {\n  white-space: nowrap;\n  width: 77px;\n}\n.script-info td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n}\n.script-info .info-title {\n  font-weight: 600;\n  padding-top: 24px;\n}\n.script-info a {\n  color: #1890ff;\n  padding: 4px 8px;\n  border-radius: 4px;\n  text-decoration: none;\n}\n.script-info a:hover {\n  text-decoration: underline;\n  background-color: #f1f1f1;\n}\n.script-info .shortcuts-wrap {\n  display: flex;\n  width: 100%;\n  margin: -8px;\n}\n.script-info .shortcuts-table {\n  flex: 1;\n}\n.script-info .key {\n  display: inline-block;\n  position: relative;\n  background: #333;\n  text-align: center;\n  color: #eee;\n  border-radius: 4px;\n  padding: 2px 0;\n  width: 56px;\n  box-sizing: border-box;\n  border: 1px solid #444;\n  box-shadow: 0 2px 0 1px #222;\n  border-bottom-color: #555;\n  user-select: none;\n}\n.script-info .carousel {\n  position: relative;\n  display: flex;\n  flex-wrap: nowrap;\n  overflow: hidden;\n}\n.script-info .carousel span {\n  display: block;\n  width: 100%;\n  height: 100%;\n  flex-basis: 100%;\n  flex-shrink: 0;\n  animation: carousel-3 6s infinite alternate;\n}\n\n@keyframes carousel-3 {\n  0% {\n    transform: translateX(0);\n  }\n  20% {\n    transform: translateX(0);\n  }\n  40% {\n    transform: translateX(-100%);\n  }\n  60% {\n    transform: translateX(-100%);\n  }\n  80% {\n    transform: translateX(-200%);\n  }\n  100% {\n    transform: translateX(-200%);\n  }\n}";
-  n(css$2,{});
 
   const icons = `
 <svg
@@ -767,7 +315,7 @@ aria-hidden="true"
   </button>
 </template>
 `;
-  $('body').append(icons);
+  $__default['default']('body').append(icons);
   const loadingHTML = `
 <div id="k-player-loading" style="display: none">
   <div class="k-player-center">
@@ -797,7 +345,7 @@ aria-hidden="true"
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.8.8"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.9.0"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -883,7 +431,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.8.8"}
+脚本版本: ${"1.9.0"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -910,6 +458,92 @@ userAgent: ${navigator.userAgent}
     };
   }
 
+  var css$3 = ".k-modal {\n  position: fixed;\n  left: 0;\n  right: 0;\n  top: 0;\n  bottom: 0;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  z-index: 1000;\n  text-align: left;\n  animation: fadeIn 0.3s ease forwards;\n  color: rgba(0, 0, 0, 0.85);\n}\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 1;\n  }\n}\n.k-modal * {\n  color: inherit;\n}\n.k-modal .k-modal-mask {\n  position: fixed;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  top: 0;\n  background: rgba(0, 0, 0, 0.45);\n  cursor: pointer;\n}\n.k-modal .k-modal-wrap {\n  position: fixed;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  top: 0;\n  overflow: auto;\n  text-align: center;\n  user-select: none;\n}\n.k-modal .k-modal-wrap::before {\n  content: \"\";\n  display: inline-block;\n  width: 0;\n  height: 100%;\n  vertical-align: middle;\n}\n.k-modal .k-modal-container {\n  margin: 20px 0;\n  display: inline-block;\n  vertical-align: middle;\n  text-align: left;\n  position: relative;\n  width: 520px;\n  min-height: 100px;\n  background: white;\n  border-radius: 2px;\n  user-select: text;\n}\n.k-modal .k-modal-header {\n  font-size: 16px;\n  padding: 16px;\n  border-bottom: 1px solid #f1f1f1;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.k-modal .k-modal-close {\n  cursor: pointer;\n  height: 55px;\n  width: 55px;\n  position: absolute;\n  right: 0;\n  top: 0;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  user-select: none;\n}\n.k-modal .k-modal-close * {\n  color: rgba(0, 0, 0, 0.45);\n  transition: color 0.15s ease;\n}\n.k-modal .k-modal-close:hover * {\n  color: rgba(0, 0, 0, 0.85);\n}\n.k-modal .k-modal-body {\n  padding: 16px;\n  font-size: 14px;\n}\n.k-modal .k-modal-footer {\n  padding: 10px 16px;\n  font-size: 14px;\n  border-top: 1px solid #f1f1f1;\n  display: flex;\n  justify-content: flex-end;\n}\n.k-modal .k-modal-btn {\n  user-select: none;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  height: 32px;\n  border-radius: 2px;\n  border: 1px solid #1890ff;\n  background: #1890ff;\n  color: white;\n  min-width: 64px;\n  cursor: pointer;\n}";
+  n(css$3,{});
+
+  function modal({
+    title,
+    content,
+    onClose,
+    onOk
+  }) {
+    const store = $__default['default']('body').css(['width', 'overflow']);
+    const ID = Math.random().toString(16).slice(2);
+    $__default['default'](`
+<div class="k-modal" role="dialog" id="${ID}">
+  <div class="k-modal-mask"></div>
+  <div class="k-modal-wrap">
+    <div class="k-modal-container">
+      <div class="k-modal-header">
+        <div class="k-modal-title"></div>
+        <a class="k-modal-close">
+          <svg viewBox="64 64 896 896" focusable="false" data-icon="close" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 00203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"></path></svg>
+        </a>
+      </div>
+      <div class="k-modal-body">
+      </div>
+    </div>
+  </div>
+</div>`).appendTo('body'); // init css
+
+    $__default['default']('body').css({
+      width: `calc(100% - ${window.innerWidth - document.body.clientWidth}px)`,
+      overflow: 'hidden'
+    });
+    $__default['default'](`#${ID} .k-modal-title`).append(title);
+    $__default['default'](`#${ID} .k-modal-body`).append(content);
+    $__default['default'](`#${ID} .k-modal-close`).on('click', () => {
+      handleClose();
+    });
+    $__default['default'](`#${ID} .k-modal-container`).on('click', e => {
+      e.stopPropagation();
+    });
+    $__default['default'](`#${ID} .k-modal-wrap`).on('click', () => {
+      handleClose();
+    });
+
+    function reset() {
+      $__default['default'](`#${ID}`).remove();
+      $__default['default']('body').css(store);
+      window.removeEventListener('keydown', fn, {
+        capture: true
+      });
+    }
+
+    function handleClose() {
+      onClose === null || onClose === void 0 ? void 0 : onClose();
+      reset();
+    }
+
+    function handleOk() {
+      onOk();
+      reset();
+    }
+
+    function fn(e) {
+      if (['Escape', '?', '？'].includes(e.key)) {
+        handleClose();
+      }
+
+      e.stopPropagation();
+    }
+
+    window.addEventListener('keydown', fn, {
+      capture: true
+    });
+
+    if (onOk) {
+      $__default['default'](`#${ID} .k-modal-container`).append(`
+      <div class="k-modal-footer">
+        <button class="k-modal-btn k-modal-ok">确 定</button>
+      </div>
+    `);
+      $__default['default'](`#${ID} .k-modal-ok`).on('click', () => {
+        handleOk();
+      });
+    }
+  }
+
   function genIssueURL({
     title,
     body
@@ -920,20 +554,20 @@ userAgent: ${navigator.userAgent}
     return url.toString();
   }
 
-  var css$1 = "#k-player-message {\n  z-index: 999;\n  position: absolute;\n  left: 20px;\n  bottom: 60px;\n}\n#k-player-message .k-player-message-item {\n  display: block;\n  width: max-content;\n  padding: 8px 16px;\n  background: rgba(0, 0, 0, 0.45);\n  border-radius: 4px;\n  color: white;\n  font-size: 14px;\n  white-space: nowrap;\n  overflow: hidden;\n  box-sizing: border-box;\n  margin-top: 4px;\n}";
-  n(css$1,{});
+  var css$2 = "#k-player-message {\n  z-index: 999;\n  position: absolute;\n  left: 20px;\n  bottom: 60px;\n}\n#k-player-message .k-player-message-item {\n  display: block;\n  width: max-content;\n  padding: 8px 16px;\n  background: rgba(0, 0, 0, 0.45);\n  border-radius: 4px;\n  color: white;\n  font-size: 14px;\n  white-space: nowrap;\n  overflow: hidden;\n  box-sizing: border-box;\n  margin-top: 4px;\n}";
+  n(css$2,{});
 
   class Message {
     constructor(selector) {
-      this.$message = $('<div id="k-player-message">');
-      this.$message.appendTo($(selector));
+      this.$message = $__default['default']('<div id="k-player-message">');
+      this.$message.appendTo($__default['default'](selector));
     }
 
     info(text, duration = 1500) {
       this.$message.empty();
       return new Promise(resolve => {
-        $(`<div class="k-player-message-item">${text}</div>`).hide().appendTo(this.$message).fadeIn(150).delay(duration).fadeOut(150, function () {
-          $(this).remove();
+        $__default['default'](`<div class="k-player-message-item">${text}</div>`).hide().appendTo(this.$message).fadeIn(150).delay(duration).fadeOut(150, function () {
+          $__default['default'](this).remove();
           resolve();
         });
       });
@@ -958,7 +592,7 @@ userAgent: ${navigator.userAgent}
       keys = keys.filter(key => !key.includes('meta'));
     }
 
-    $(window).on('keydown', e => {
+    $__default['default'](window).on('keydown', e => {
       let keyArr = [];
       e.ctrlKey && keyArr.push('ctrl');
       e.metaKey && keyArr.push('meta');
@@ -994,13 +628,13 @@ userAgent: ${navigator.userAgent}
      * @param {Plyr.Options} opts
      */
     constructor(selector, opts) {
-      const $wrapper = $('<div id="k-player-wrapper"/>').replaceAll(selector);
-      const $loading = $(loadingHTML);
-      const $error = $(errorHTML);
-      const $video = $('<video id="k-player" />');
-      const $progress = $(progressHTML);
+      const $wrapper = $__default['default']('<div id="k-player-wrapper"/>').replaceAll(selector);
+      const $loading = $__default['default'](loadingHTML);
+      const $error = $__default['default'](errorHTML);
+      const $video = $__default['default']('<video id="k-player" />');
+      const $progress = $__default['default'](progressHTML);
       $wrapper.append($video);
-      this.plyr = new Plyr('#k-player', {
+      this.plyr = new Plyr__default['default']('#k-player', {
         autoplay: true,
         keyboard: {
           global: true
@@ -1308,7 +942,7 @@ userAgent: ${navigator.userAgent}
 
 
     _injectNext() {
-      $($('#plyr__next').html()).insertBefore('.plyr__controls__item.plyr__progress__container').on('click', () => {
+      $__default['default']($__default['default']('#plyr__next').html()).insertBefore('.plyr__controls__item.plyr__progress__container').on('click', () => {
         this.trigger('next');
       });
     }
@@ -1316,7 +950,7 @@ userAgent: ${navigator.userAgent}
 
 
     _injectSreen() {
-      $($('#plyr__widescreen').html()).insertBefore('[data-plyr="fullscreen"]').on('click', () => {
+      $__default['default']($__default['default']('#plyr__widescreen').html()).insertBefore('[data-plyr="fullscreen"]').on('click', () => {
         this._toggleFullscreen();
       });
     }
@@ -1329,14 +963,14 @@ userAgent: ${navigator.userAgent}
       window.sessionStorage.setItem(this.statusSessionKey, JSON.stringify(this.isWideScreen));
 
       if (this.isWideScreen) {
-        this.wideScreenBodyStyles = $('body').css(['overflow']);
-        $('body').css('overflow', 'hidden');
+        this.wideScreenBodyStyles = $__default['default']('body').css(['overflow']);
+        $__default['default']('body').css('overflow', 'hidden');
         this.$wrapper.addClass('k-player-widescreen');
-        $('.plyr__widescreen').addClass('plyr__control--pressed');
+        $__default['default']('.plyr__widescreen').addClass('plyr__control--pressed');
       } else {
-        $('body').css(this.wideScreenBodyStyles);
+        $__default['default']('body').css(this.wideScreenBodyStyles);
         this.$wrapper.removeClass('k-player-widescreen');
-        $('.plyr__widescreen').removeClass('plyr__control--pressed');
+        $__default['default']('.plyr__widescreen').removeClass('plyr__control--pressed');
       }
 
       this.trigger(this.isWideScreen ? 'enterwidescreen' : 'exitwidescreen');
@@ -1348,7 +982,14 @@ userAgent: ${navigator.userAgent}
 
 
     set src(src) {
-      this.$video.attr('src', src);
+      if (src.includes('.m3u8')) {
+        if (!Hls__default['default'].isSupported()) throw new Error('不支持播放 hls 文件');
+        const hls = new Hls__default['default']();
+        hls.loadSource(src);
+        hls.attachMedia(this.$video[0]);
+      } else {
+        this.$video.attr('src', src);
+      }
     }
 
     get src() {
@@ -1374,15 +1015,15 @@ userAgent: ${navigator.userAgent}
   }
 
   function addReferrerMeta() {
-    if ($('meta[name=referrer]').length === 0) {
-      $('head').append('<meta name="referrer" content="same-origin">');
+    if ($__default['default']('meta[name=referrer]').length === 0) {
+      $__default['default']('head').append('<meta name="referrer" content="same-origin">');
     } else {
-      const $meta = $('meta[name=referrer]');
+      const $meta = $__default['default']('meta[name=referrer]');
       $meta.attr('content', 'same-origin');
     }
   }
   function showInfo() {
-    const video = $('#k-player')[0];
+    const video = $__default['default']('#k-player')[0];
     const githubIssueURL = genIssueURL({
       title: '🐛[Bug]',
       body: issueBody(video === null || video === void 0 ? void 0 : video.src)
@@ -1399,6 +1040,384 @@ userAgent: ${navigator.userAgent}
       showInfo();
     }
   });
+
+  /**
+   * @param {string} url
+   * @param {number} [count=0]
+   * @return {string}
+   */
+  function parseToURL(url, count = 0) {
+    if (count > 4) throw new Error('url解析失败');
+
+    try {
+      url = new URL(url);
+    } catch (error) {
+      url = decodeURIComponent(url);
+      url = parseToURL(url, ++count);
+    }
+
+    return url.toString();
+  }
+
+  function copyToClipboard(element) {
+    var $temp = $__default['default']('<textarea>');
+    $__default['default']('body').append($temp);
+    $temp.val($__default['default'](element).text()).trigger('select');
+    document.execCommand('copy');
+    $temp.remove();
+  }
+
+  var css$1 = "#modal-form .row {\n  display: flex;\n  flex-wrap: wrap;\n  box-sizing: border-box;\n}\n#modal-form .row .col {\n  flex-basis: 20%;\n  padding: 4px 0;\n}\n#modal-form .mb8 {\n  margin-bottom: 8px;\n}\n\n.k-checkbox {\n  display: inline-flex;\n  align-items: center;\n}\n.k-checkbox input {\n  margin-right: 4px;\n}\n\n.flex-align-center {\n  display: flex;\n  align-items: center;\n}\n\n.k-alert {\n  margin-bottom: 16px;\n  box-sizing: border-box;\n  color: #000000d9;\n  font-size: 14px;\n  font-variant: tabular-nums;\n  line-height: 1.5715;\n  list-style: none;\n  font-feature-settings: \"tnum\";\n  position: relative;\n  display: flex;\n  align-items: center;\n  padding: 8px 15px;\n  word-wrap: break-word;\n  border-radius: 2px;\n}\n.k-alert .k-alert-icon {\n  margin-right: 8px;\n  display: inline-block;\n  color: inherit;\n  font-style: normal;\n  line-height: 0;\n  text-align: center;\n  text-transform: none;\n  vertical-align: -0.125em;\n  text-rendering: optimizeLegibility;\n  -webkit-font-smoothing: antialiased;\n}\n.k-alert .k-alert-content {\n  flex: 1;\n  min-width: 0;\n}\n\n.k-alert-info {\n  background-color: #e6f7ff;\n  border: 1px solid #91d5ff;\n}\n.k-alert-info .k-alert-icon {\n  color: #1890ff;\n}";
+  n(css$1,{});
+
+  function set(name, value, _in_days = 1) {
+    var Days = _in_days;
+    var exp = new Date();
+    exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);
+    document.cookie = name + '=' + escape(value) + ';expires=' + exp.toGMTString() + ';path=/';
+  }
+
+  function get(name) {
+    let reg = new RegExp('(^| )' + name + '=([^;]*)(;|$)');
+    let arr = document.cookie.match(reg);
+
+    if (arr) {
+      return decodeURIComponent(arr[2]);
+    } else {
+      return null;
+    }
+  }
+
+  const Cookie = {
+    get,
+    set,
+    remove: function (name) {
+      set(name, '', 0);
+    }
+  };
+
+  /**
+   * agefans 安全机制：
+   * 1. 从服务端获取cookie `t1` `k1`
+   * 2. 本地根据规则生成cookie `t2` `k2`
+   * 3. 获取链接时候生成cookie `fa_t` `fa_c`
+   *
+   * t1 t2 fa_t 均为时间，相差太多就报错超时
+   * k1 k2 类似密钥
+   * fa_c 不重要
+   */
+
+  /**
+   * 获取视频链接的请求地址
+   */
+
+  function getPlayUrl(_url) {
+    const _rand = Math.random();
+
+    var _getplay_url = _url.replace(/.*\/play\/(\d+?)\?playid=(\d+)_(\d+).*/, '/_getplay?aid=$1&playindex=$2&epindex=$3') + '&r=' + _rand;
+    /**
+     * fa_t 取当前时间
+     * fa_c 1-9之间随便取 固定1就行
+     */
+
+
+    Cookie.set('fa_t', Date.now(), 1);
+    Cookie.set('fa_c', 1, 1);
+    return _getplay_url;
+  }
+  /**
+   * 因为agefans的安全策略，需要刷新下cookie才能正常访问
+   *
+   * 这个方法实现了 t1 k1 t2 k2 全部刷新
+   */
+
+  function updateCookie(href) {
+    href = href ? location.origin + href : location.href;
+    return new Promise((resolve, reject) => {
+      const doneFn = () => {
+        resolve();
+        dom.remove();
+      }; // DOMContentLoaded is faster than load
+
+
+      const dom = document.createElement('iframe');
+      dom.style.display = 'none';
+      dom.src = href;
+      document.body.append(dom);
+      dom.contentWindow.addEventListener('DOMContentLoaded', doneFn);
+      dom.contentWindow.addEventListener('load', doneFn);
+      dom.contentWindow.addEventListener('error', reject);
+    });
+  }
+
+  /**
+   * @typedef {{title:string,href:string}} ATag
+   */
+
+  function insertBtn() {
+    $__default['default'](`
+  <div class="baseblock">
+    <div class="blockcontent">
+      <div id="wangpan-div" class="baseblock2">
+        <div class="blocktitle flex-align-center">
+          获取全部视频链接：
+          <span id="status-xr7" class="flex-align-center"></span>
+        </div>
+        <div class="blockcontent">
+          <a id="open-modal" class="res_links_a" style="cursor:pointer">获取全部视频链接</a>
+          <span>｜</span>
+          <a id="clean-all" class="res_links_a" style="cursor:pointer">清空</a>
+          <span>｜</span>
+          <a id="copy-text" class="res_links_a" style="cursor:pointer">复制内容</a>
+          <span>｜</span>
+          <a id="thunder-link" rel="noreferrer" target="_blank" class="res_links_a" style="cursor:pointer">导出迅雷链接</a>
+          <div id="url-list" style="width:100%; max-height:400px; overflow:auto;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+`).insertAfter($__default['default']('.baseblock:contains(网盘资源)'));
+    $__default['default']('#copy-text').on('click', function () {
+      copyToClipboard($__default['default']('#url-list'));
+      $__default['default'](this).text('已复制');
+      setTimeout(() => {
+        $__default['default'](this).text('复制内容');
+      }, 1000);
+    });
+    $__default['default']('#clean-all').on('click', () => {
+      getAllVideoUrlList().forEach(o => {
+        removeLocal(o.href);
+      });
+      insertLocal();
+    });
+    $__default['default']('#open-modal').on('click', function () {
+      modal({
+        title: '选择需要的链接',
+        content: insertModalForm(),
+        onOk: () => {
+          let list = [];
+          $__default['default']('#modal-form .col input:checked').each((_, el) => {
+            list.push({
+              title: $__default['default'](el).data('title'),
+              href: $__default['default'](el).attr('name')
+            });
+          });
+          insertResult(list);
+        }
+      });
+    });
+    $__default['default']('#thunder-link').attr('href', () => {
+      const map = getLocal();
+      const list = getAllVideoUrlList();
+      const tasks = [];
+      const taskGroupName = $__default['default']('#detailname a').text();
+      list.forEach(item => {
+        if (map[item.href]) {
+          tasks.push({
+            url: map[item.href].url,
+            baseName: `${item.title}.mp4`
+          });
+        }
+      });
+      const params = {
+        taskGroupName,
+        tasks
+      };
+      const baseURL = 'https://ironkinoko.github.io/agefans-enhance/thunder.html';
+      const url = new URL(baseURL);
+      url.searchParams.append('params', JSON.stringify(params));
+      return url.toString();
+    });
+  }
+  /**
+   * @return {ATag[]}
+   */
+
+
+  function getAllVideoUrlList() {
+    const $aTagList = $__default['default']('.movurl:visible li a');
+    const aTags = [];
+    $aTagList.each(function (index, aTag) {
+      aTags.push({
+        title: aTag.textContent,
+        href: aTag.dataset.href
+      });
+    });
+    return aTags;
+  }
+
+  function insertModalForm() {
+    const list = getAllVideoUrlList();
+    let $dom = $__default['default'](`
+  <div id="modal-form">
+    <div class="k-alert k-alert-info">
+      <span class="k-alert-icon">
+        <svg viewBox="64 64 896 896" focusable="false" data-icon="info-circle" width="1em" height="1em" fill="currentColor" aria-hidden="true">
+          <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm32 664c0 4.4-3.6 8-8 8h-48c-4.4 0-8-3.6-8-8V456c0-4.4 3.6-8 8-8h48c4.4 0 8 3.6 8 8v272zm-32-344a48.01 48.01 0 010-96 48.01 48.01 0 010 96z"></path>
+        </svg>
+      </span>
+      <div class="k-alert-content">
+        <div class="k-alert-message">如果在1-2分钟内调用超过70多次，会被限流影响正常观看视频</div>
+      </div>
+    </div>
+    <label class="k-checkbox">
+      <input id="all-check" type="checkbox" checked/>全选
+    </label>
+    <ul class="row">
+      ${list.map(aTag => `
+        <li class="col">
+          <label class="k-checkbox"><input type="checkbox" name="${aTag.href}" data-title="${aTag.title}" checked />${aTag.title}</label>
+        </li>`).join('')}
+    </ul>
+  </div>
+  `);
+    $dom.find('.row .col input').on('change', () => {
+      const length = list.length;
+      const checkedLength = $dom.find('.row .col input:checked').length;
+      $dom.find('.k-checkbox #all-check').prop('checked', length === checkedLength);
+    });
+    $dom.find('.k-checkbox #all-check').on('change', e => {
+      $dom.find('.row .col input').prop('checked', e.currentTarget.checked);
+    });
+    return $dom;
+  }
+
+  function genUrlItem(title, content = '加载中...') {
+    const contentHTML = content.startsWith('http') ? `<a href="${content}" download>${content}</a>` : content;
+    return `<div>
+  <div style="white-space: nowrap;">[${title}]</div>
+  <div class="url" data-status='0' style="word-break:break-all; word-wrap:break-word;">
+    ${contentHTML}
+  </div>
+</div>`;
+  }
+
+  const loadingIcon = `
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin-right:4px;" width="1em" height="1em" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+  <circle cx="50" cy="50" fill="none" stroke="#5699d2" stroke-width="10" r="40" stroke-dasharray="164.93361431346415 56.97787143782138">
+    <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="0.6s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform>
+  </circle>
+</svg>`;
+  /**
+   * @param {ATag[]} list
+   */
+
+  async function insertResult(list) {
+    const $parent = $__default['default']('#url-list');
+    $parent.empty();
+    $__default['default']('#status-xr7').hide().fadeIn(300).html(`${loadingIcon}<div>更新cookie中...</div>`);
+    await updateCookie();
+    $__default['default']('#status-xr7').text('更新完成').delay(1500).fadeOut(300);
+    list.forEach(item => {
+      let $dom = $__default['default'](genUrlItem(item.title)).appendTo($parent);
+      let $msg = $dom.find('.url');
+
+      async function _getUrl() {
+        try {
+          const vurl = await getVurl(item.href);
+          saveLocal(item.href, vurl);
+          $msg.html(`<a href="${vurl}" download>${vurl}</a>`);
+          $msg.data('status', '1');
+        } catch (error) {
+          console.error(error);
+          $msg.empty();
+          $msg.data('status', '2');
+
+          if (error instanceof AGEfansError) {
+            $__default['default'](`<span>${error.message}</span>`).appendTo($msg);
+          } else {
+            $__default['default'](`<a style="cursor:pointer">加载错误，请重试</a>`).appendTo($msg).on('click', async () => {
+              // 失败需要重试获取cookie
+              await updateCookie();
+
+              _getUrl();
+            });
+          }
+        }
+      }
+
+      _getUrl();
+    });
+  }
+
+  const PLAY_URL_KEY = 'play-url-key';
+  /**
+   * @return {Record<string,{url:string}>}
+   */
+
+  function getLocal() {
+    return JSON.parse(window.localStorage.getItem(PLAY_URL_KEY) || '{}');
+  }
+
+  function saveLocal(href, url) {
+    const map = getLocal();
+    map[href] = {
+      url
+    };
+    window.localStorage.setItem(PLAY_URL_KEY, JSON.stringify(map));
+  }
+  function removeLocal(href) {
+    const map = getLocal();
+    delete map[href];
+    window.localStorage.setItem(PLAY_URL_KEY, JSON.stringify(map));
+  }
+
+  function insertLocal() {
+    const map = getLocal();
+    const list = getAllVideoUrlList();
+    const $parent = $__default['default']('#url-list');
+    $parent.empty();
+    $__default['default'](list.map(item => {
+      if (map[item.href]) {
+        return genUrlItem(item.title, map[item.href].url);
+      } else {
+        return '';
+      }
+    }).join('')).appendTo($parent);
+  }
+
+  class AGEfansError extends Error {
+    constructor(message) {
+      super(message);
+      this.name = 'AGEfans Enhance Exception';
+    }
+
+  }
+
+  async function getVurl(href) {
+    const res = await fetch(getPlayUrl(href), {
+      referrerPolicy: 'strict-origin-when-cross-origin'
+    });
+    const text = await res.text();
+
+    if (text.includes('ipchk')) {
+      throw new AGEfansError(`你被限流了，请5分钟后重试（${text}）`);
+    }
+
+    if (text.includes('timeout')) {
+      throw new AGEfansError(`Cookie过期，请刷新页面重试（${text}）`);
+    }
+
+    const json = JSON.parse(text);
+    return parseToURL(json.vurl);
+  }
+
+  async function getVurlWithLocal(href) {
+    const map = getLocal();
+
+    if (map[href]) {
+      return map[href].url;
+    }
+
+    await updateCookie(href);
+    const vurl = await getVurl(href);
+    saveLocal(href, vurl);
+    return vurl;
+  }
+  function initGetAllVideoURL() {
+    insertBtn();
+    insertLocal();
+  }
 
   function replacePlayer$1() {
     const dom = document.getElementById('age_playfram');
@@ -1431,25 +1450,26 @@ userAgent: ${navigator.userAgent}
 
   function showCurrentLink(vurl) {
     const decodeVurl = parseToURL(vurl);
+    const isSteaming = decodeVurl.includes('.m3u8');
 
-    if ($('#current-link').length) {
-      $('#current-link').text(decodeVurl);
-      $('#current-link').attr('href', decodeVurl);
+    if ($__default['default']('#current-link').length) {
+      $__default['default']('#current-link').text(decodeVurl);
+      $__default['default']('#current-link').attr('href', decodeVurl);
       return;
     }
 
-    $(`
+    $__default['default'](`
   <div class="baseblock">
     <div class="blockcontent">
       <div id="wangpan-div" class="baseblock2">
-        <div class="blocktitle">本集链接：</div>
+        <div class="blocktitle">本集链接：${isSteaming ? '(流媒体视频暂时不支持下载)' : ''}</div>
         <div class="blockcontent">
           <a class="res_links" id="current-link" download rel="noreferrer" href="${decodeVurl}">${decodeVurl}</a>
         </div>
       </div>
     </div>
   </div>
-`).insertBefore($('.baseblock:contains(网盘资源)'));
+`).insertBefore($__default['default']('.baseblock:contains(网盘资源)'));
   }
 
   function gotoPrevPart() {
@@ -1469,7 +1489,7 @@ userAgent: ${navigator.userAgent}
   }
 
   function getActivedom() {
-    return $("li a[style*='color: rgb(238, 0, 0)']");
+    return $__default['default']("li a[style*='color: rgb(238, 0, 0)']");
   } // switch part retry count
 
 
@@ -1583,7 +1603,7 @@ userAgent: ${navigator.userAgent}
     });
     window.addEventListener('popstate', () => {
       const href = location.pathname + location.search;
-      const $dom = $(`[data-href='${href}']`);
+      const $dom = $__default['default'](`[data-href='${href}']`);
 
       if ($dom.length) {
         switchPart(href, $dom, false);
@@ -1594,11 +1614,11 @@ userAgent: ${navigator.userAgent}
   }
 
   function replaceHref() {
-    $('.movurl:visible li a').each(function () {
-      const href = $(this).attr('href');
-      $(this).removeAttr('href').attr('data-href', href).css('cursor', 'pointer').on('click', e => {
+    $__default['default']('.movurl:visible li a').each(function () {
+      const href = $__default['default'](this).attr('href');
+      $__default['default'](this).removeAttr('href').attr('data-href', href).css('cursor', 'pointer').on('click', e => {
         e.preventDefault();
-        switchPart(href, $(this));
+        switchPart(href, $__default['default'](this));
       });
     });
   }
@@ -1616,7 +1636,7 @@ userAgent: ${navigator.userAgent}
   }
 
   function removeCpraid() {
-    $('#cpraid').remove();
+    $__default['default']('#cpraid').remove();
   }
 
   function playModule$1() {
@@ -1630,7 +1650,7 @@ userAgent: ${navigator.userAgent}
 
   function agefans() {
     if (self !== parent) return;
-    $('body').addClass('agefans-wrapper');
+    $__default['default']('body').addClass('agefans-wrapper');
 
     historyModule(); // log page to history
 
@@ -1649,7 +1669,7 @@ userAgent: ${navigator.userAgent}
   let player;
 
   function replacePlayer() {
-    const vurl = $('#playbox').data('vid');
+    const vurl = $__default['default']('#playbox').data('vid');
     player = new KPlayer('.bofang iframe');
     player.src = vurl.split('$')[0];
   }
@@ -1658,7 +1678,7 @@ userAgent: ${navigator.userAgent}
     let directionRight = true;
     const re = /\/v\/\d+-(\d+)/;
     let prevID;
-    Array.from($('.movurls a')).forEach(a => {
+    Array.from($__default['default']('.movurls a')).forEach(a => {
       if (re.test(a.href)) {
         const [, id] = a.href.match(re);
         if (prevID) directionRight = +prevID < +id;
@@ -1667,9 +1687,9 @@ userAgent: ${navigator.userAgent}
     });
 
     if (directionRight) {
-      $('.movurls .sel').next().find('a')[0].click();
+      $__default['default']('.movurls .sel').next().find('a')[0].click();
     } else {
-      $('.movurls .sel').prev().find('a')[0].click();
+      $__default['default']('.movurls .sel').prev().find('a')[0].click();
     }
   }
 
@@ -1686,7 +1706,7 @@ userAgent: ${navigator.userAgent}
   n(css,{});
 
   function yhdm() {
-    $('body').addClass('yhdm-wrapper');
+    $__default['default']('body').addClass('yhdm-wrapper');
 
     if (window.location.pathname.includes('/v/')) {
       playModule();
@@ -1701,4 +1721,4 @@ userAgent: ${navigator.userAgent}
     yhdm();
   }
 
-}());
+}($, Plyr, Hls));

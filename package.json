@@ -1,12 +1,12 @@
 {
   "name": "agefans",
-  "version": "1.8.8",
+  "version": "1.9.0",
   "description": "增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能",
   "main": "index.user.js",
   "scripts": {
     "dev": "rollup -c -w --environment NODE_ENV:development",
     "build": "rollup -c --environment NODE_ENV:production",
-    "lint": "eslint --fix --ext js .",
+    "lint": "eslint --fix --ext js src",
     "prepare": "husky install",
     "deploy": "gh-pages -d dist"
   },
@@ -47,16 +47,18 @@
     "eslint": "^7.24.0",
     "gh-pages": "^3.1.0",
     "husky": "^6.0.0",
-    "jquery": "^1.12.4",
     "lint-staged": "^11.0.0",
-    "plyr": "^3.6.5",
     "prettier": "^2.3.0",
     "rollup": "^2.56.0",
     "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-styles": "^3.14.1",
     "sass": "^1.32.13"
   },
-  "dependencies": {},
+  "dependencies": {
+    "hls.js": "^1.0.10",
+    "plyr": "^3.6.5",
+    "jquery": "^1.12.4"
+  },
   "browserslist": [
     "chrome >= 68"
   ]
