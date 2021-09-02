@@ -1,3 +1,4 @@
+import $ from 'jquery'
 import './modal.scss'
 export function modal({ title, content, onClose, onOk }) {
   const store = $('body').css(['width', 'overflow'])

@@ -1,3 +1,8 @@
+/**
+ * @param {string} url
+ * @param {number} [count=0]
+ * @return {string}
+ */
 export default function parseToURL(url, count = 0) {
   if (count > 4) throw new Error('url解析失败')
   try {

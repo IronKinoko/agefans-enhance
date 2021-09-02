@@ -1,4 +1,7 @@
 import './index.scss'
+import $ from 'jquery'
+import Plyr from 'plyr'
+import Hls from 'hls.js'
 import {
   errorHTML,
   issueBody,
@@ -430,7 +433,14 @@ class KPlayer {
    * @param {string} src
    */
   set src(src) {
-    this.$video.attr('src', src)
+    if (src.includes('.m3u8')) {
+      if (!Hls.isSupported()) throw new Error('不支持播放 hls 文件')
+      const hls = new Hls()
+      hls.loadSource(src)
+      hls.attachMedia(this.$video[0])
+    } else {
+      this.$video.attr('src', src)
+    }
   }
   get src() {
     return this.$video.attr('src')

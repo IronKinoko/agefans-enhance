@@ -1,3 +1,4 @@
+import $ from 'jquery'
 import './history.scss'
 class History {
   constructor() {

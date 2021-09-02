@@ -2197,6 +2197,11 @@ hex-color-regex@^1.1.0:
   resolved "https://registry.npm.taobao.org/hex-color-regex/download/hex-color-regex-1.1.0.tgz#4c06fccb4602fe2602b3c93df82d7e7dbf1a8a8e"
   integrity sha1-TAb8y0YC/iYCs8k9+C1+fb8aio4=
 
+hls.js@^1.0.10:
+  version "1.0.10"
+  resolved "https://registry.nlark.com/hls.js/download/hls.js-1.0.10.tgz#2626c19e0a32904c1915a842c591f9b0a9f5066b"
+  integrity sha1-JibBngoykEwZFahCxZH5sKn1Bms=
+
 hsl-regex@^1.0.0:
   version "1.0.0"
   resolved "https://registry.nlark.com/hsl-regex/download/hsl-regex-1.0.0.tgz#d49330c789ed819e276a4c0d272dffa30b18fe6e"

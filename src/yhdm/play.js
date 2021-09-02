@@ -1,3 +1,4 @@
+import $ from 'jquery'
 import { KPlayer } from '../player'
 
 /** @type {KPlayer} */

@@ -1,8 +1,9 @@
+import $ from 'jquery'
 import { copyToClipboard } from '../utils/copy'
 import { modal } from '../utils/modal'
-import { getPlayUrl, updateCookie } from './playURL'
-import './getAllVideoURL.scss'
 import parseToURL from '../utils/parseToURL'
+import './getAllVideoURL.scss'
+import { getPlayUrl, updateCookie } from './playURL'
 /**
  * @typedef {{title:string,href:string}} ATag
  */

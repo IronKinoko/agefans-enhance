@@ -2,6 +2,7 @@ import './index.scss'
 import { detailModule } from './detail'
 import { historyModule } from './history'
 import { playModule } from './play'
+import $ from 'jquery'
 
 export function agefans() {
   if (self !== parent) return

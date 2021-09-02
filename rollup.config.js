@@ -13,7 +13,13 @@ export default defineConfig({
     entryFileNames: 'index.user.js',
     format: 'iife',
     banner: genUserScriptInfo(pkg),
+    globals: {
+      'hls.js': 'Hls',
+      'jquery': '$',
+      'plyr': 'Plyr',
+    },
   },
+  external: ['hls.js', 'jquery', 'plyr'],
   plugins: [
     babel({ babelHelpers: 'bundled' }),
     styles(),

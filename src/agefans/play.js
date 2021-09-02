@@ -1,13 +1,14 @@
-import { his, parseTime } from './history'
+import $ from 'jquery'
+import { addReferrerMeta, KPlayer } from '../player'
+import { Message } from '../utils/message'
+import parseToURL from '../utils/parseToURL'
 import {
   getVurlWithLocal,
   initGetAllVideoURL,
   removeLocal,
   saveLocal,
 } from './getAllVideoURL'
-import { KPlayer, addReferrerMeta } from '../player'
-import { Message } from '../utils/message'
-import parseToURL from '../utils/parseToURL'
+import { his, parseTime } from './history'
 
 function replacePlayer() {
   const dom = document.getElementById('age_playfram')
@@ -40,6 +41,7 @@ function replacePlayer() {
 
 function showCurrentLink(vurl) {
   const decodeVurl = parseToURL(vurl)
+  const isSteaming = decodeVurl.includes('.m3u8')
 
   if ($('#current-link').length) {
     $('#current-link').text(decodeVurl)
@@ -50,7 +52,9 @@ function showCurrentLink(vurl) {
   <div class="baseblock">
     <div class="blockcontent">
       <div id="wangpan-div" class="baseblock2">
-        <div class="blocktitle">本集链接：</div>
+        <div class="blocktitle">本集链接：${
+          isSteaming ? '(流媒体视频暂时不支持下载)' : ''
+        }</div>
         <div class="blockcontent">
           <a class="res_links" id="current-link" download rel="noreferrer" href="${decodeVurl}">${decodeVurl}</a>
         </div>

@@ -10,8 +10,6 @@
     "sourceType": "module"
   },
   "globals": {
-    "$": "readonly",
-    "Plyr": "readonly",
     "GM_getResourceText": "readonly",
     "GM_addStyle": "readonly"
   },
