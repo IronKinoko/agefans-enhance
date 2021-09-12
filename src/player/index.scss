@@ -39,6 +39,29 @@
     justify-content: center;
   }
 
+  #k-player-header {
+    transform: translateY(0);
+    transition: transform 0.3s;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 8px;
+    text-align: right;
+    .k-player-question-icon {
+      font-size: 24px;
+      width: 1em;
+      height: 1em;
+      color: white;
+      cursor: pointer;
+    }
+  }
+  .plyr--hide-controls {
+    #k-player-header {
+      transform: translateY(-100%);
+    }
+  }
+
   .error-info {
     text-align: center;
     padding: 24px;

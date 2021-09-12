@@ -15,15 +15,15 @@ export default defineConfig({
     banner: genUserScriptInfo(pkg),
     globals: {
       'hls.js': 'Hls',
-      'jquery': '$',
-      'plyr': 'Plyr',
+      jquery: '$',
+      plyr: 'Plyr',
     },
   },
   external: ['hls.js', 'jquery', 'plyr'],
   plugins: [
     babel({ babelHelpers: 'bundled' }),
     styles(),
-    nodeResolve(),
+    nodeResolve({ browser: true }),
     replace({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       'process.env.APP_VERSION': JSON.stringify(pkg.version),

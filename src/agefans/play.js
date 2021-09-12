@@ -191,7 +191,7 @@ function addListener() {
     } else {
       updateTime(player.currentTime + duration)
     }
-    location.reload()
+    window.location.reload()
   })
 
   window.addEventListener('popstate', () => {
@@ -201,7 +201,7 @@ function addListener() {
     if ($dom.length) {
       switchPart(href, $dom, false)
     } else {
-      location.reload()
+      window.location.reload()
     }
   })
 }
@@ -235,11 +235,32 @@ function removeCpraid() {
   $('#cpraid').remove()
 }
 
+function useOriginPlayer() {
+  const message = new Message('#ageframediv')
+  message.info('脚本功能已暂时禁用，使用原生播放器观看', 3000)
+
+  const $dom = $(`<span>启用脚本</span>`)
+    .css({ color: '#60b8cc', cursor: 'pointer' })
+    .on('click', () => {
+      window.sessionStorage.removeItem('stop-use')
+      window.location.reload()
+    })
+  $('#wangpan-div .blocktitle')
+    .css({ display: 'flex', justifyContent: 'space-between' })
+    .append($dom)
+}
+
 export function playModule() {
+  removeCpraid()
+
+  if (window.sessionStorage.getItem('stop-use') === '1') {
+    useOriginPlayer()
+    return
+  }
+
   his.logHistory()
   initPlayPageStyle()
   replaceHref()
   replacePlayer()
-  removeCpraid()
   initGetAllVideoURL()
 }

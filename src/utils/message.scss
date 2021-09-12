@@ -15,5 +15,9 @@
     overflow: hidden;
     box-sizing: border-box;
     margin-top: 4px;
+    &:hover {
+      background: rgba(97, 96, 96, 0.45);
+      transition: all 0.3s;
+    }
   }
 }

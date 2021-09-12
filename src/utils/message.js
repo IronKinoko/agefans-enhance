@@ -9,7 +9,8 @@ export class Message {
   info(text, duration = 1500) {
     this.$message.empty()
     return new Promise((resolve) => {
-      $(`<div class="k-player-message-item">${text}</div>`)
+      $(`<div class="k-player-message-item"></div>`)
+        .append(text)
         .hide()
         .appendTo(this.$message)
         .fadeIn(150)

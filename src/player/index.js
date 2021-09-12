@@ -35,7 +35,7 @@ class KPlayer {
     const $error = $(errorHTML)
     const $video = $('<video id="k-player" />')
     const $progress = $(progressHTML)
-
+    const $header = $('<div id="k-player-header"/>')
     $wrapper.append($video)
 
     this.plyr = new Plyr('#k-player', {
@@ -112,9 +112,14 @@ class KPlayer {
     this.$error = $error
     this.$video = $video
     this.$progress = $progress
+    this.$header = $header
     this.$videoWrapper = $wrapper.find('.plyr')
 
-    this.$videoWrapper.append($loading).append($error).append($progress)
+    this.$videoWrapper
+      .append($loading)
+      .append($error)
+      .append($progress)
+      .append($header)
 
     this.message = new Message(this.$videoWrapper)
     this.eventMap = {}
@@ -123,6 +128,7 @@ class KPlayer {
 
     this.statusSessionKey = 'k-player-status'
 
+    this._injectQuestion()
     this._injectNext()
     this._injectSreen()
     this._initEvent()
@@ -191,6 +197,16 @@ class KPlayer {
             })
           window.sessionStorage.removeItem(countKey)
         }
+      } else {
+        const $dom = $(
+          '<div>视频播放失败，点击此处暂时关闭脚本功能，使用原生播放器观看</div>'
+        ).css('cursor', 'pointer')
+        $dom.on('click', () => {
+          this.message.destroy()
+          window.sessionStorage.setItem('stop-use', '1')
+          window.location.reload()
+        })
+        this.message.info($dom, 10000)
       }
     })
     this.on('pause', () => {
@@ -386,6 +402,14 @@ class KPlayer {
     })
   }
 
+  /** @private */
+  _injectQuestion() {
+    $(`<svg class="k-player-question-icon"><use xlink:href="#question"/></svg>`)
+      .appendTo(this.$header)
+      .on('click', () => {
+        showInfo()
+      })
+  }
   /** @private */
   _injectNext() {
     $($('#plyr__next').html())
