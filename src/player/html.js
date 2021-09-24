@@ -133,6 +133,59 @@ export const errorHTML = `
   </div>
 </div>`
 
+export const speedList = [0.5, 0.75, 1, 1.25, 1.5, 2, 4]
+export const speedHTML = `
+<div id="k-speed" class="plyr__controls__item k-popover">
+  <span id="k-speed-text">倍速</span>
+  <div class="k-popover-overlay">
+    <div class="k-popover-content">
+      <ul class="k-menu">
+        ${[...speedList]
+          .reverse()
+          .map(
+            (speed) =>
+              `<li class="k-menu-item k-speed-item" data-speed="${speed}">${speed}x</li>`
+          )
+          .join('')}
+      </ul>
+    </div>
+  </div>
+</div>
+`
+
+export const settingsHTML = `
+<div id="k-settings" class="plyr__controls__item k-popover">
+  <button type="button" class="plyr__control">
+    <svg><use href="#plyr-settings" /></svg>
+    <span class="plyr__tooltip">设置</span>
+  </button>
+  <div class="k-popover-overlay">
+    <div class="k-popover-content">
+      <ul class="k-settings-list">
+        <li>
+          <label class="k-settings-item">
+            <input type="checkbox" name="autoNext" />
+            自动下一集
+          </label>
+        </li>
+        <li>
+          <label class="k-settings-item">
+            <input type="checkbox" name="continuePlay" />
+            记忆播放位置
+          </label>
+        </li>
+        <li>
+          <label class="k-settings-item">
+            <input type="checkbox" name="showProgress" />
+            显示底部进度条
+          </label>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+`
+
 export const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>

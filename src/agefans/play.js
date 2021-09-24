@@ -164,7 +164,9 @@ function addListener() {
   })
 
   player.on('ended', () => {
-    gotoNextPart()
+    if (player.localConfig.autoNext) {
+      gotoNextPart()
+    }
   })
 
   player.on('prev', () => {
@@ -172,7 +174,9 @@ function addListener() {
   })
 
   player.plyr.once('canplay', () => {
-    videoJumpHistoryPosition()
+    if (player.localConfig.continuePlay) {
+      videoJumpHistoryPosition()
+    }
   })
 
   player.on('error', () => {
@@ -237,7 +241,7 @@ function removeCpraid() {
 
 function useOriginPlayer() {
   const message = new Message('#ageframediv')
-  message.info('脚本功能已暂时禁用，使用原生播放器观看', 3000)
+  message.info('脚本功能已暂时禁用，使用原生播放器观看，右下角可启动脚本', 3000)
 
   const $dom = $(`<span>启用脚本</span>`)
     .css({ color: '#60b8cc', cursor: 'pointer' })

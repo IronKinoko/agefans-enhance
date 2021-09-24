@@ -8,6 +8,9 @@ import {
   loadingHTML,
   scriptInfo,
   progressHTML,
+  speedHTML,
+  speedList,
+  settingsHTML,
 } from './html'
 import { debounce } from '../utils/debounce'
 import { modal } from '../utils/modal'
@@ -15,7 +18,6 @@ import { genIssueURL } from '../utils/genIssueURL'
 import { Message } from '../utils/message'
 import keybind from '../utils/keybind'
 
-const speedList = [0.5, 0.75, 1, 1.25, 1.5, 2, 4]
 const MediaErrorMessage = {
   1: '你中止了媒体播放',
   2: '一个网络错误导致媒体下载中途失败',
@@ -49,10 +51,11 @@ class KPlayer {
         'duration', // The full duration of the media
         'mute', // Toggle mute
         'volume', // Volume control
-        'settings', // Settings menu
+        // 'settings', // Settings menu
         'pip', // Picture-in-picture (currently Safari only)
         'fullscreen', // Toggle fullscreen
       ],
+      storage: false,
       seekTime: 5,
       speed: { options: speedList },
       i18n: {
@@ -107,6 +110,27 @@ class KPlayer {
       ...opts,
     })
 
+    this.localConfigKey = 'kplayer'
+    this.statusSessionKey = 'k-player-status'
+
+    /**
+     * @type {{speed:number,continuePlay:boolean,autoNext:boolean,showProgress:boolean}}
+     */
+    this.localConfig = {
+      speed: 1,
+      continuePlay: true,
+      autoNext: true,
+      showProgress: true,
+    }
+    try {
+      this.localConfig = Object.assign(
+        this.localConfig,
+        JSON.parse(window.localStorage.getItem(this.localConfigKey))
+      )
+    } catch (error) {
+      /** empty */
+    }
+
     this.$wrapper = $wrapper
     this.$loading = $loading
     this.$error = $error
@@ -126,8 +150,8 @@ class KPlayer {
     this.isWideScreen = false
     this.wideScreenBodyStyles = {}
 
-    this.statusSessionKey = 'k-player-status'
-
+    this._injectSettings()
+    this._injectSpeed()
     this._injectQuestion()
     this._injectNext()
     this._injectSreen()
@@ -317,12 +341,11 @@ class KPlayer {
             this._toggleFullscreen(false)
             break
           case 'z':
-            this.plyr.speed = 1
-            this.message.info(`视频速度：${1}`)
+            this.speed = 1
             break
           case 'x':
           case 'c': {
-            let idx = speedList.indexOf(this.plyr.speed)
+            let idx = speedList.indexOf(this.speed)
 
             const newIdx =
               key === 'x'
@@ -330,8 +353,7 @@ class KPlayer {
                 : Math.min(speedList.length - 1, idx + 1)
             if (newIdx === idx) break
             const speed = speedList[newIdx]
-            this.message.info(`视频速度：${speed}`)
-            this.plyr.speed = speed
+            this.speed = speed
             break
           }
 
@@ -400,6 +422,74 @@ class KPlayer {
     fnList.forEach((fn) => {
       fn(this, params)
     })
+  }
+
+  /** @private */
+  _injectSettings() {
+    this.$settings = $(settingsHTML)
+
+    this.$settings
+      .find('[name=autoNext]')
+      .prop('checked', this.localConfig.autoNext)
+      .on('change', (e) => {
+        const checked = e.target.checked
+        this.configSaveToLocal('autoNext', checked)
+      })
+
+    this.$settings
+      .find('[name=showProgress]')
+      .prop('checked', this.localConfig.showProgress)
+      .on('change', (e) => {
+        const checked = e.target.checked
+        this.configSaveToLocal('showProgress', checked)
+        if (checked) {
+          this.$progress.css('display', '')
+        } else {
+          this.$progress.css('display', 'none')
+        }
+      })
+    if (!this.localConfig.showProgress) {
+      this.$progress.css('display', 'none')
+    }
+
+    this.$settings
+      .find('[name=continuePlay]')
+      .prop('checked', this.localConfig.continuePlay)
+      .on('change', (e) => {
+        const checked = e.target.checked
+        this.configSaveToLocal('continuePlay', checked)
+      })
+    this.$settings.insertAfter('.plyr__controls__item.plyr__volume')
+  }
+
+  configSaveToLocal(key, value) {
+    this.localConfig[key] = value
+    window.localStorage.setItem(
+      this.localConfigKey,
+      JSON.stringify(this.localConfig)
+    )
+  }
+
+  /** @private */
+  _injectSpeed() {
+    this.$speed = $(speedHTML)
+    const speedItems = this.$speed.find('.k-speed-item')
+    const localSpeed = this.localConfig.speed
+    speedItems.each((_, el) => {
+      const speed = +el.dataset.speed
+
+      if (speed === localSpeed) {
+        el.classList.add('k-menu-active')
+      }
+      $(el).on('click', () => {
+        this.speed = speed
+      })
+    })
+    this.plyr.speed = localSpeed
+    this.$speed
+      .find('#k-speed-text')
+      .text(localSpeed === 1 ? '倍速' : localSpeed + 'x')
+    this.$speed.insertBefore('.plyr__controls__item.plyr__volume')
   }
 
   /** @private */
@@ -475,6 +565,24 @@ class KPlayer {
   }
   get currentTime() {
     return this.plyr.currentTime
+  }
+
+  get speed() {
+    return this.plyr.speed
+  }
+  set speed(speed) {
+    this.plyr.speed = speed
+    const speedItems = this.$speed.find('.k-speed-item')
+    speedItems.each((_, el) => {
+      if (speed === +el.dataset.speed) {
+        el.classList.add('k-menu-active')
+      } else {
+        el.classList.remove('k-menu-active')
+      }
+    })
+    this.$speed.find('#k-speed-text').text(speed === 1 ? '倍速' : speed + 'x')
+    this.message.info(`视频速度：${speed}`)
+    this.configSaveToLocal('speed', speed)
   }
 
   showError(text) {
