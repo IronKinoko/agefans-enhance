@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.10.0
+// @version      1.11.0
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @include      https://www.agefans.net/*
@@ -213,7 +213,7 @@
     renderHistoryList();
   }
 
-  var css$4 = "#k-player-wrapper {\n  position: relative;\n  width: 100%;\n  height: 100%;\n  background: #000;\n  overflow: hidden;\n}\n#k-player-wrapper.k-player-widescreen {\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 100;\n}\n#k-player-wrapper .k-player-contianer {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper #k-player-loading,\n#k-player-wrapper #k-player-error {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  font-size: 88px;\n  color: white;\n  pointer-events: none;\n  background: black;\n}\n#k-player-wrapper .k-player-center {\n  width: 100%;\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n}\n#k-player-wrapper #k-player-header {\n  transform: translateY(0);\n  transition: transform 0.3s;\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  padding: 8px;\n  text-align: right;\n}\n#k-player-wrapper #k-player-header .k-player-question-icon {\n  font-size: 24px;\n  width: 1em;\n  height: 1em;\n  color: white;\n  cursor: pointer;\n}\n#k-player-wrapper .plyr--hide-controls #k-player-header {\n  transform: translateY(-100%);\n}\n#k-player-wrapper .error-info {\n  text-align: center;\n  padding: 24px;\n  font-size: 18px;\n}\n#k-player-wrapper .plyr {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper video {\n  display: block;\n}\n#k-player-wrapper .plyr__next svg {\n  transform: scale(1.7);\n}\n#k-player-wrapper .plyr__widescreen svg {\n  transform: scale(1.3);\n}\n#k-player-wrapper .plyr--hide-cursor {\n  cursor: none;\n}\n#k-player-wrapper .plyr__control span:not(.plyr__tooltip) {\n  color: inherit;\n}\n#k-player-wrapper .plyr--hide-controls .k-player-progress {\n  opacity: 1;\n  transition: opacity 0.3s ease-in 0.2s;\n}\n#k-player-wrapper .k-player-fullscreen .k-player-progress {\n  display: none;\n}\n#k-player-wrapper .k-player-progress {\n  opacity: 0;\n  transition: opacity 0.2s ease-out;\n  height: 2px;\n  width: 100%;\n  position: absolute;\n  bottom: 0;\n}\n#k-player-wrapper .k-player-progress .k-player-progress-current {\n  position: absolute;\n  left: 0;\n  top: 0;\n  height: 100%;\n  z-index: 2;\n  background-color: #23ade5;\n}\n#k-player-wrapper .k-player-progress .k-player-progress-buffer {\n  position: absolute;\n  left: 0;\n  top: 0;\n  z-index: 1;\n  height: 100%;\n  background-color: var(--plyr-video-progress-buffered-background, rgba(255, 255, 255, 0.25));\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item:first-child {\n  margin-right: 0;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container {\n  position: absolute;\n  top: 15px;\n  left: 10px;\n  right: 10px;\n  --plyr-range-track-height: 2px;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container .plyr__progress input[type=range]::-webkit-slider-thumb {\n  transform: scale(0);\n  transition: transform 0.2s ease;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover {\n  --plyr-range-track-height: 4px;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover .plyr__progress input[type=range] {\n  cursor: pointer;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover .plyr__progress input[type=range]::-webkit-slider-thumb {\n  transform: scale(1);\n}\n#k-player-wrapper .plyr__controls .plyr__volume {\n  margin-left: auto;\n}\n\n.lds-spinner {\n  color: official;\n  display: inline-block;\n  position: relative;\n  width: 80px;\n  height: 80px;\n}\n\n.lds-spinner div {\n  transform-origin: 40px 40px;\n  animation: lds-spinner 1.2s linear infinite;\n}\n\n.lds-spinner div:after {\n  content: \" \";\n  display: block;\n  position: absolute;\n  top: 3px;\n  left: 37px;\n  width: 6px;\n  height: 18px;\n  border-radius: 20%;\n  background: #fff;\n}\n\n.lds-spinner div:nth-child(1) {\n  transform: rotate(0deg);\n  animation-delay: -1.1s;\n}\n\n.lds-spinner div:nth-child(2) {\n  transform: rotate(30deg);\n  animation-delay: -1s;\n}\n\n.lds-spinner div:nth-child(3) {\n  transform: rotate(60deg);\n  animation-delay: -0.9s;\n}\n\n.lds-spinner div:nth-child(4) {\n  transform: rotate(90deg);\n  animation-delay: -0.8s;\n}\n\n.lds-spinner div:nth-child(5) {\n  transform: rotate(120deg);\n  animation-delay: -0.7s;\n}\n\n.lds-spinner div:nth-child(6) {\n  transform: rotate(150deg);\n  animation-delay: -0.6s;\n}\n\n.lds-spinner div:nth-child(7) {\n  transform: rotate(180deg);\n  animation-delay: -0.5s;\n}\n\n.lds-spinner div:nth-child(8) {\n  transform: rotate(210deg);\n  animation-delay: -0.4s;\n}\n\n.lds-spinner div:nth-child(9) {\n  transform: rotate(240deg);\n  animation-delay: -0.3s;\n}\n\n.lds-spinner div:nth-child(10) {\n  transform: rotate(270deg);\n  animation-delay: -0.2s;\n}\n\n.lds-spinner div:nth-child(11) {\n  transform: rotate(300deg);\n  animation-delay: -0.1s;\n}\n\n.lds-spinner div:nth-child(12) {\n  transform: rotate(330deg);\n  animation-delay: 0s;\n}\n\n@keyframes lds-spinner {\n  0% {\n    opacity: 1;\n  }\n  100% {\n    opacity: 0;\n  }\n}\n.script-info {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  width: 100%;\n}\n.script-info * {\n  box-sizing: border-box;\n}\n.script-info tbody tr td:first-child {\n  white-space: nowrap;\n  width: 77px;\n}\n.script-info td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n}\n.script-info .info-title {\n  font-weight: 600;\n  padding-top: 24px;\n}\n.script-info a {\n  color: #1890ff;\n  padding: 4px 8px;\n  border-radius: 4px;\n  text-decoration: none;\n}\n.script-info a:hover {\n  text-decoration: underline;\n  background-color: #f1f1f1;\n}\n.script-info .shortcuts-wrap {\n  display: flex;\n  width: 100%;\n  margin: -8px;\n}\n.script-info .shortcuts-table {\n  flex: 1;\n}\n.script-info .key {\n  display: inline-block;\n  position: relative;\n  background: #333;\n  text-align: center;\n  color: #eee;\n  border-radius: 4px;\n  padding: 2px 0;\n  width: 56px;\n  box-sizing: border-box;\n  border: 1px solid #444;\n  box-shadow: 0 2px 0 1px #222;\n  border-bottom-color: #555;\n  user-select: none;\n}\n.script-info .carousel {\n  position: relative;\n  display: flex;\n  flex-wrap: nowrap;\n  overflow: hidden;\n}\n.script-info .carousel span {\n  display: block;\n  width: 100%;\n  height: 100%;\n  flex-basis: 100%;\n  flex-shrink: 0;\n  animation: carousel-3 6s infinite alternate;\n}\n\n@keyframes carousel-3 {\n  0% {\n    transform: translateX(0);\n  }\n  20% {\n    transform: translateX(0);\n  }\n  40% {\n    transform: translateX(-100%);\n  }\n  60% {\n    transform: translateX(-100%);\n  }\n  80% {\n    transform: translateX(-200%);\n  }\n  100% {\n    transform: translateX(-200%);\n  }\n}";
+  var css$4 = "#k-player-wrapper {\n  position: relative;\n  width: 100%;\n  height: 100%;\n  background: #000;\n  overflow: hidden;\n}\n#k-player-wrapper.k-player-widescreen {\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 100;\n}\n#k-player-wrapper .k-player-contianer {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper #k-player-loading,\n#k-player-wrapper #k-player-error {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  font-size: 88px;\n  color: white;\n  pointer-events: none;\n  background: black;\n}\n#k-player-wrapper .k-player-center {\n  width: 100%;\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n}\n#k-player-wrapper #k-player-header {\n  transform: translateY(0);\n  transition: transform 0.3s;\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  padding: 8px;\n  text-align: right;\n}\n#k-player-wrapper #k-player-header .k-player-question-icon {\n  font-size: 24px;\n  width: 1em;\n  height: 1em;\n  color: white;\n  cursor: pointer;\n}\n#k-player-wrapper .plyr--hide-controls #k-player-header {\n  transform: translateY(-100%);\n}\n#k-player-wrapper .error-info {\n  text-align: center;\n  padding: 24px;\n  font-size: 18px;\n}\n#k-player-wrapper .plyr {\n  width: 100%;\n  height: 100%;\n}\n#k-player-wrapper video {\n  display: block;\n}\n#k-player-wrapper .plyr__next svg {\n  transform: scale(1.7);\n}\n#k-player-wrapper .plyr__widescreen svg {\n  transform: scale(1.3);\n}\n#k-player-wrapper .plyr--hide-cursor {\n  cursor: none;\n}\n#k-player-wrapper .plyr__control span:not(.plyr__tooltip) {\n  color: inherit;\n}\n#k-player-wrapper .plyr--hide-controls .k-player-progress {\n  opacity: 1;\n  transition: opacity 0.3s ease-in 0.2s;\n}\n#k-player-wrapper .k-player-fullscreen .k-player-progress {\n  display: none;\n}\n#k-player-wrapper .k-player-progress {\n  opacity: 0;\n  transition: opacity 0.2s ease-out;\n  height: 2px;\n  width: 100%;\n  position: absolute;\n  bottom: 0;\n}\n#k-player-wrapper .k-player-progress .k-player-progress-current {\n  position: absolute;\n  left: 0;\n  top: 0;\n  height: 100%;\n  z-index: 2;\n  background-color: #23ade5;\n}\n#k-player-wrapper .k-player-progress .k-player-progress-buffer {\n  position: absolute;\n  left: 0;\n  top: 0;\n  z-index: 1;\n  height: 100%;\n  background-color: var(--plyr-video-progress-buffered-background, rgba(255, 255, 255, 0.25));\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item:first-child {\n  margin-right: 0;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container {\n  position: absolute;\n  top: 15px;\n  left: 10px;\n  right: 10px;\n  --plyr-range-track-height: 2px;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container .plyr__progress input[type=range]::-webkit-slider-thumb {\n  transform: scale(0);\n  transition: transform 0.2s ease;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover {\n  --plyr-range-track-height: 4px;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover .plyr__progress input[type=range] {\n  cursor: pointer;\n}\n#k-player-wrapper .plyr__controls .plyr__controls__item.plyr__progress__container:hover .plyr__progress input[type=range]::-webkit-slider-thumb {\n  transform: scale(1);\n}\n#k-player-wrapper .plyr__controls #k-speed {\n  width: 60px;\n  margin-left: auto;\n}\n\n.lds-spinner {\n  color: official;\n  display: inline-block;\n  position: relative;\n  width: 80px;\n  height: 80px;\n}\n\n.lds-spinner div {\n  transform-origin: 40px 40px;\n  animation: lds-spinner 1.2s linear infinite;\n}\n\n.lds-spinner div:after {\n  content: \" \";\n  display: block;\n  position: absolute;\n  top: 3px;\n  left: 37px;\n  width: 6px;\n  height: 18px;\n  border-radius: 20%;\n  background: #fff;\n}\n\n.lds-spinner div:nth-child(1) {\n  transform: rotate(0deg);\n  animation-delay: -1.1s;\n}\n\n.lds-spinner div:nth-child(2) {\n  transform: rotate(30deg);\n  animation-delay: -1s;\n}\n\n.lds-spinner div:nth-child(3) {\n  transform: rotate(60deg);\n  animation-delay: -0.9s;\n}\n\n.lds-spinner div:nth-child(4) {\n  transform: rotate(90deg);\n  animation-delay: -0.8s;\n}\n\n.lds-spinner div:nth-child(5) {\n  transform: rotate(120deg);\n  animation-delay: -0.7s;\n}\n\n.lds-spinner div:nth-child(6) {\n  transform: rotate(150deg);\n  animation-delay: -0.6s;\n}\n\n.lds-spinner div:nth-child(7) {\n  transform: rotate(180deg);\n  animation-delay: -0.5s;\n}\n\n.lds-spinner div:nth-child(8) {\n  transform: rotate(210deg);\n  animation-delay: -0.4s;\n}\n\n.lds-spinner div:nth-child(9) {\n  transform: rotate(240deg);\n  animation-delay: -0.3s;\n}\n\n.lds-spinner div:nth-child(10) {\n  transform: rotate(270deg);\n  animation-delay: -0.2s;\n}\n\n.lds-spinner div:nth-child(11) {\n  transform: rotate(300deg);\n  animation-delay: -0.1s;\n}\n\n.lds-spinner div:nth-child(12) {\n  transform: rotate(330deg);\n  animation-delay: 0s;\n}\n\n@keyframes lds-spinner {\n  0% {\n    opacity: 1;\n  }\n  100% {\n    opacity: 0;\n  }\n}\n.script-info {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  width: 100%;\n}\n.script-info * {\n  box-sizing: border-box;\n}\n.script-info tbody tr td:first-child {\n  white-space: nowrap;\n  width: 77px;\n}\n.script-info td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n}\n.script-info .info-title {\n  font-weight: 600;\n  padding-top: 24px;\n}\n.script-info a {\n  color: #1890ff;\n  padding: 4px 8px;\n  border-radius: 4px;\n  text-decoration: none;\n}\n.script-info a:hover {\n  text-decoration: underline;\n  background-color: #f1f1f1;\n}\n.script-info .shortcuts-wrap {\n  display: flex;\n  width: 100%;\n  margin: -8px;\n}\n.script-info .shortcuts-table {\n  flex: 1;\n}\n.script-info .key {\n  display: inline-block;\n  position: relative;\n  background: #333;\n  text-align: center;\n  color: #eee;\n  border-radius: 4px;\n  padding: 2px 0;\n  width: 56px;\n  box-sizing: border-box;\n  border: 1px solid #444;\n  box-shadow: 0 2px 0 1px #222;\n  border-bottom-color: #555;\n  user-select: none;\n}\n.script-info .carousel {\n  position: relative;\n  display: flex;\n  flex-wrap: nowrap;\n  overflow: hidden;\n}\n.script-info .carousel span {\n  display: block;\n  width: 100%;\n  height: 100%;\n  flex-basis: 100%;\n  flex-shrink: 0;\n  animation: carousel-3 6s infinite alternate;\n}\n\n@keyframes carousel-3 {\n  0% {\n    transform: translateX(0);\n  }\n  20% {\n    transform: translateX(0);\n  }\n  40% {\n    transform: translateX(-100%);\n  }\n  60% {\n    transform: translateX(-100%);\n  }\n  80% {\n    transform: translateX(-200%);\n  }\n  100% {\n    transform: translateX(-200%);\n  }\n}\n.k-popover {\n  position: relative;\n  display: inline-block;\n}\n.k-popover-overlay {\n  position: absolute;\n  display: none;\n  bottom: 100%;\n  left: 50%;\n  transform: translateX(-50%);\n  z-index: 100;\n  padding-bottom: 30px;\n}\n.k-popover-content {\n  background: rgba(255, 255, 255, 0.9);\n  border-radius: 4px;\n  overflow: hidden;\n}\n.k-popover:hover .k-popover-overlay {\n  display: block;\n}\n\n.k-menu {\n  list-style: none;\n  margin: 0;\n  padding: 8px 8px;\n}\n.k-menu-item {\n  padding: 0 8px;\n  line-height: 36px;\n  height: 36px;\n  cursor: pointer;\n  width: 100%;\n  color: #4a5464;\n  border-radius: 4px;\n  transition: all 0.3s;\n}\n.k-menu-item:hover {\n  color: #00b3ff;\n}\n\n.k-menu-item.k-menu-active {\n  color: white;\n  background-color: #00b3ff;\n}\n\n.k-settings-list {\n  list-style: none;\n  margin: 0;\n  padding: 8px 8px;\n  text-align: left;\n}\n\n.k-settings-item {\n  width: 100%;\n  white-space: nowrap;\n  color: #4a5464;\n  display: flex;\n  align-items: center;\n}\n.k-settings-item input {\n  margin-right: 4px;\n}";
   n(css$4,{});
 
   const icons = `
@@ -346,10 +346,55 @@ aria-hidden="true"
     <div>视频加载失败</div><div class="error-info"></div>
   </div>
 </div>`;
+  const speedList = [0.5, 0.75, 1, 1.25, 1.5, 2, 4];
+  const speedHTML = `
+<div id="k-speed" class="plyr__controls__item k-popover">
+  <span id="k-speed-text">倍速</span>
+  <div class="k-popover-overlay">
+    <div class="k-popover-content">
+      <ul class="k-menu">
+        ${[...speedList].reverse().map(speed => `<li class="k-menu-item k-speed-item" data-speed="${speed}">${speed}x</li>`).join('')}
+      </ul>
+    </div>
+  </div>
+</div>
+`;
+  const settingsHTML = `
+<div id="k-settings" class="plyr__controls__item k-popover">
+  <button type="button" class="plyr__control">
+    <svg><use href="#plyr-settings" /></svg>
+    <span class="plyr__tooltip">设置</span>
+  </button>
+  <div class="k-popover-overlay">
+    <div class="k-popover-content">
+      <ul class="k-settings-list">
+        <li>
+          <label class="k-settings-item">
+            <input type="checkbox" name="autoNext" />
+            自动下一集
+          </label>
+        </li>
+        <li>
+          <label class="k-settings-item">
+            <input type="checkbox" name="continuePlay" />
+            记忆播放位置
+          </label>
+        </li>
+        <li>
+          <label class="k-settings-item">
+            <input type="checkbox" name="showProgress" />
+            显示底部进度条
+          </label>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+`;
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.10.0"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.11.0"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -435,7 +480,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.10.0"}
+脚本版本: ${"1.11.0"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -616,7 +661,6 @@ userAgent: ${navigator.userAgent}
     });
   }
 
-  const speedList = [0.5, 0.75, 1, 1.25, 1.5, 2, 4];
   const MediaErrorMessage = {
     1: '你中止了媒体播放',
     2: '一个网络错误导致媒体下载中途失败',
@@ -651,10 +695,11 @@ userAgent: ${navigator.userAgent}
         'duration', // The full duration of the media
         'mute', // Toggle mute
         'volume', // Volume control
-        'settings', // Settings menu
+        // 'settings', // Settings menu
         'pip', // Picture-in-picture (currently Safari only)
         'fullscreen' // Toggle fullscreen
         ],
+        storage: false,
         seekTime: 5,
         speed: {
           options: speedList
@@ -710,6 +755,25 @@ userAgent: ${navigator.userAgent}
         },
         ...opts
       });
+      this.localConfigKey = 'kplayer';
+      this.statusSessionKey = 'k-player-status';
+      /**
+       * @type {{speed:number,continuePlay:boolean,autoNext:boolean,showProgress:boolean}}
+       */
+
+      this.localConfig = {
+        speed: 1,
+        continuePlay: true,
+        autoNext: true,
+        showProgress: true
+      };
+
+      try {
+        this.localConfig = Object.assign(this.localConfig, JSON.parse(window.localStorage.getItem(this.localConfigKey)));
+      } catch (error) {
+        /** empty */
+      }
+
       this.$wrapper = $wrapper;
       this.$loading = $loading;
       this.$error = $error;
@@ -722,7 +786,10 @@ userAgent: ${navigator.userAgent}
       this.eventMap = {};
       this.isWideScreen = false;
       this.wideScreenBodyStyles = {};
-      this.statusSessionKey = 'k-player-status';
+
+      this._injectSettings();
+
+      this._injectSpeed();
 
       this._injectQuestion();
 
@@ -886,19 +953,17 @@ userAgent: ${navigator.userAgent}
             break;
 
           case 'z':
-            this.plyr.speed = 1;
-            this.message.info(`视频速度：${1}`);
+            this.speed = 1;
             break;
 
           case 'x':
           case 'c':
             {
-              let idx = speedList.indexOf(this.plyr.speed);
+              let idx = speedList.indexOf(this.speed);
               const newIdx = key === 'x' ? Math.max(0, idx - 1) : Math.min(speedList.length - 1, idx + 1);
               if (newIdx === idx) break;
               const speed = speedList[newIdx];
-              this.message.info(`视频速度：${speed}`);
-              this.plyr.speed = speed;
+              this.speed = speed;
               break;
             }
         }
@@ -953,6 +1018,63 @@ userAgent: ${navigator.userAgent}
       fnList.forEach(fn => {
         fn(this, params);
       });
+    }
+    /** @private */
+
+
+    _injectSettings() {
+      this.$settings = $__default['default'](settingsHTML);
+      this.$settings.find('[name=autoNext]').prop('checked', this.localConfig.autoNext).on('change', e => {
+        const checked = e.target.checked;
+        this.configSaveToLocal('autoNext', checked);
+      });
+      this.$settings.find('[name=showProgress]').prop('checked', this.localConfig.showProgress).on('change', e => {
+        const checked = e.target.checked;
+        this.configSaveToLocal('showProgress', checked);
+
+        if (checked) {
+          this.$progress.css('display', '');
+        } else {
+          this.$progress.css('display', 'none');
+        }
+      });
+
+      if (!this.localConfig.showProgress) {
+        this.$progress.css('display', 'none');
+      }
+
+      this.$settings.find('[name=continuePlay]').prop('checked', this.localConfig.continuePlay).on('change', e => {
+        const checked = e.target.checked;
+        this.configSaveToLocal('continuePlay', checked);
+      });
+      this.$settings.insertAfter('.plyr__controls__item.plyr__volume');
+    }
+
+    configSaveToLocal(key, value) {
+      this.localConfig[key] = value;
+      window.localStorage.setItem(this.localConfigKey, JSON.stringify(this.localConfig));
+    }
+    /** @private */
+
+
+    _injectSpeed() {
+      this.$speed = $__default['default'](speedHTML);
+      const speedItems = this.$speed.find('.k-speed-item');
+      const localSpeed = this.localConfig.speed;
+      speedItems.each((_, el) => {
+        const speed = +el.dataset.speed;
+
+        if (speed === localSpeed) {
+          el.classList.add('k-menu-active');
+        }
+
+        $__default['default'](el).on('click', () => {
+          this.speed = speed;
+        });
+      });
+      this.plyr.speed = localSpeed;
+      this.$speed.find('#k-speed-text').text(localSpeed === 1 ? '倍速' : localSpeed + 'x');
+      this.$speed.insertBefore('.plyr__controls__item.plyr__volume');
     }
     /** @private */
 
@@ -1026,6 +1148,25 @@ userAgent: ${navigator.userAgent}
 
     get currentTime() {
       return this.plyr.currentTime;
+    }
+
+    get speed() {
+      return this.plyr.speed;
+    }
+
+    set speed(speed) {
+      this.plyr.speed = speed;
+      const speedItems = this.$speed.find('.k-speed-item');
+      speedItems.each((_, el) => {
+        if (speed === +el.dataset.speed) {
+          el.classList.add('k-menu-active');
+        } else {
+          el.classList.remove('k-menu-active');
+        }
+      });
+      this.$speed.find('#k-speed-text').text(speed === 1 ? '倍速' : speed + 'x');
+      this.message.info(`视频速度：${speed}`);
+      this.configSaveToLocal('speed', speed);
     }
 
     showError(text) {
@@ -1600,13 +1741,17 @@ userAgent: ${navigator.userAgent}
       gotoNextPart$1();
     });
     player$1.on('ended', () => {
-      gotoNextPart$1();
+      if (player$1.localConfig.autoNext) {
+        gotoNextPart$1();
+      }
     });
     player$1.on('prev', () => {
       gotoPrevPart();
     });
     player$1.plyr.once('canplay', () => {
-      videoJumpHistoryPosition();
+      if (player$1.localConfig.continuePlay) {
+        videoJumpHistoryPosition();
+      }
     });
     player$1.on('error', () => {
       removeLocal(getActivedom().data('href'));
@@ -1665,7 +1810,7 @@ userAgent: ${navigator.userAgent}
 
   function useOriginPlayer() {
     const message = new Message('#ageframediv');
-    message.info('脚本功能已暂时禁用，使用原生播放器观看', 3000);
+    message.info('脚本功能已暂时禁用，使用原生播放器观看，右下角可启动脚本', 3000);
     const $dom = $__default['default'](`<span>启用脚本</span>`).css({
       color: '#60b8cc',
       cursor: 'pointer'
