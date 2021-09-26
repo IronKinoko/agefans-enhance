@@ -5,6 +5,13 @@
   background: #000;
   overflow: hidden;
 
+  --k-player-background-highlight: rgba(95, 95, 95, 0.65);
+  --k-player-background: rgba(0, 0, 0, 0.65);
+  --k-player-color: white;
+
+  --plyr-tooltip-background: var(--k-player-background);
+  --plyr-tooltip-color: var(--k-player-color);
+
   &.k-player-widescreen {
     position: fixed;
     left: 0;
@@ -340,7 +347,7 @@
     padding-bottom: 30px;
   }
   &-content {
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--k-player-background);
     border-radius: 4px;
     overflow: hidden;
   }
@@ -352,25 +359,25 @@
 .k-menu {
   list-style: none;
   margin: 0;
-  padding: 8px 8px;
+  padding: 0;
+  border-radius: 4px;
+  overflow: hidden;
   &-item {
-    padding: 0 8px;
+    padding: 0 16px;
     line-height: 36px;
     height: 36px;
     cursor: pointer;
     width: 100%;
-    color: #4a5464;
-    border-radius: 4px;
+    color: white;
     transition: all 0.3s;
 
     &:hover {
-      color: #00b3ff;
+      background: var(--k-player-background-highlight);
     }
   }
 }
 .k-menu-item.k-menu-active {
-  color: white;
-  background-color: #00b3ff;
+  color: #1890ff;
 }
 
 .k-settings-list {
@@ -382,7 +389,7 @@
 .k-settings-item {
   width: 100%;
   white-space: nowrap;
-  color: #4a5464;
+  color: white;
   display: flex;
   align-items: center;
   input {

@@ -157,7 +157,6 @@ export const settingsHTML = `
 <div id="k-settings" class="plyr__controls__item k-popover">
   <button type="button" class="plyr__control">
     <svg><use href="#plyr-settings" /></svg>
-    <span class="plyr__tooltip">设置</span>
   </button>
   <div class="k-popover-overlay">
     <div class="k-popover-content">

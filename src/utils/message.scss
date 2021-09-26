@@ -7,7 +7,7 @@
     display: block;
     width: max-content;
     padding: 8px 16px;
-    background: rgba(0, 0, 0, 0.45);
+    background: var(--k-player-background);
     border-radius: 4px;
     color: white;
     font-size: 14px;
@@ -16,7 +16,7 @@
     box-sizing: border-box;
     margin-top: 4px;
     &:hover {
-      background: rgba(97, 96, 96, 0.45);
+      background: var(--k-player-background-highlight);
       transition: all 0.3s;
     }
   }
