@@ -1,9 +1,17 @@
-import { playModule } from './play'
 import './index.scss'
-import $ from 'jquery'
+import { playModule as yhdmSo } from './yhdm.so'
+import { playModule as yhdmpCc } from './yhdmp.cc'
+import { playModule as imomoeLive } from './imomoe.live'
+
 export function yhdm() {
-  $('body').addClass('yhdm-wrapper')
-  if (window.location.pathname.includes('/v/')) {
-    playModule()
+  const href = window.location.href
+  if (href.includes('yhdm.so') || href.includes('yinghuacd.com')) {
+    yhdmSo()
+  }
+  if (href.includes('yhdmp.cc')) {
+    yhdmpCc()
+  }
+  if (href.includes('imomoe.live')) {
+    imomoeLive()
   }
 }

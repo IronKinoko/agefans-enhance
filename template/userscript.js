@@ -9,6 +9,9 @@ export function genUserScriptInfo(pkg) {
 // @include      https://www.agefans.cc/*
 // @include      https://www.agefans.vip/*
 // @include      http://www.yhdm.so/v/*
+// @include      http://www.yinghuacd.com/v/*
+// @include      https://www.yhdmp.cc/vp/*
+// @include      http://www.imomoe.live/player/*
 // @resource     plyrCSS https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.css
 // @require      https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js
 // @require      https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.js

@@ -42,7 +42,7 @@ function insertBtn() {
     getAllVideoUrlList().forEach((o) => {
       removeLocal(o.href)
     })
-    insertLocal()
+    showLocalURL()
   })
   $('#open-modal').on('click', function () {
     modal({
@@ -213,14 +213,23 @@ async function insertResult(list) {
 
 const PLAY_URL_KEY = 'play-url-key'
 /**
- * @return {Record<string,{url:string}>}
+ * @param {string} [href]
+ * @return {Record<string,{url:string}> | string | null}
  */
-function getLocal() {
-  return JSON.parse(window.localStorage.getItem(PLAY_URL_KEY) || '{}')
+function getLocal(href) {
+  const map = JSON.parse(window.localStorage.getItem(PLAY_URL_KEY) || '{}')
+  if (href) {
+    const item = map[href]
+    if (!item?.time || Date.now() - item.time > 24 * 60 * 60 * 1000) {
+      return null
+    }
+    return item.url
+  }
+  return map
 }
 export function saveLocal(href, url) {
   const map = getLocal()
-  map[href] = { url }
+  map[href] = { url, time: Date.now() }
   window.localStorage.setItem(PLAY_URL_KEY, JSON.stringify(map))
 }
 
@@ -230,16 +239,16 @@ export function removeLocal(href) {
   window.localStorage.setItem(PLAY_URL_KEY, JSON.stringify(map))
 }
 
-function insertLocal() {
-  const map = getLocal()
+export function showLocalURL() {
   const list = getAllVideoUrlList()
   const $parent = $('#url-list')
   $parent.empty()
   $(
     list
       .map((item) => {
-        if (map[item.href]) {
-          return genUrlItem(item.title, map[item.href].url)
+        const vurl = getLocal(item.href)
+        if (vurl) {
+          return genUrlItem(item.title, vurl)
         } else {
           return ''
         }
@@ -271,18 +280,18 @@ async function getVurl(href) {
   return parseToURL(json.vurl)
 }
 export async function getVurlWithLocal(href) {
-  const map = getLocal()
-  if (map[href]) {
-    return map[href].url
+  let vurl = getLocal(href)
+  if (vurl) {
+    return vurl
   }
 
   await updateCookie(href)
-  const vurl = await getVurl(href)
+  vurl = await getVurl(href)
   saveLocal(href, vurl)
   return vurl
 }
 
 export function initGetAllVideoURL() {
   insertBtn()
-  insertLocal()
+  showLocalURL()
 }

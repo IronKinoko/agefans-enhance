@@ -5,6 +5,7 @@ import parseToURL from '../utils/parseToURL'
 import {
   getVurlWithLocal,
   initGetAllVideoURL,
+  showLocalURL,
   removeLocal,
   saveLocal,
 } from './getAllVideoURL'
@@ -116,6 +117,7 @@ async function switchPart(href, $dom, push = true) {
     document.title = title
 
     showCurrentLink(vurl)
+    showLocalURL()
     his.logHistory()
     retryCount = 0
     switchLoading = false
@@ -233,6 +235,7 @@ function initPlayer(vurl) {
   player.src = vurl
 
   saveLocal(getActivedom().data('href'), vurl)
+  showLocalURL()
 }
 
 function removeCpraid() {

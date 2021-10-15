@@ -1,5 +1,5 @@
 import $ from 'jquery'
-import { KPlayer } from '../player'
+import { KPlayer } from '../../player'
 
 /** @type {KPlayer} */
 let player
@@ -9,7 +9,7 @@ function replacePlayer() {
   player.src = vurl.split('$')[0]
 }
 
-function gotoNextPart() {
+function switchPart(next) {
   let directionRight = true
   const re = /\/v\/\d+-(\d+)/
   let prevID
@@ -21,17 +21,19 @@ function gotoNextPart() {
     }
   })
 
-  if (directionRight) {
-    $('.movurls .sel').next().find('a')[0].click()
-  } else {
-    $('.movurls .sel').prev().find('a')[0].click()
-  }
+  let direction = ['prev', 'next']
+  if (!next) direction.reverse()
+  if (!directionRight) direction.reverse()
+
+  $('.movurls .sel')[direction[1]]().find('a')[0]?.click()
 }
 
 function initEvent() {
-  player.on('next', gotoNextPart)
+  player.on('prev', () => switchPart(false))
+  player.on('next', () => switchPart(true))
 }
 export function playModule() {
+  $('body').addClass('yhdm-wrapper')
   replacePlayer()
   initEvent()
 }
