@@ -1,13 +1,16 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.11.1
+// @version      1.12.0
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @include      https://www.agefans.net/*
 // @include      https://www.agefans.cc/*
 // @include      https://www.agefans.vip/*
 // @include      http://www.yhdm.so/v/*
+// @include      http://www.yinghuacd.com/v/*
+// @include      https://www.yhdmp.cc/vp/*
+// @include      http://www.imomoe.live/player/*
 // @resource     plyrCSS https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.css
 // @require      https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js
 // @require      https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.js
@@ -393,7 +396,7 @@ aria-hidden="true"
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.11.1"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.12.0"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -479,7 +482,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.11.1"}
+脚本版本: ${"1.12.0"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -1352,7 +1355,7 @@ userAgent: ${navigator.userAgent}
       getAllVideoUrlList().forEach(o => {
         removeLocal(o.href);
       });
-      insertLocal();
+      showLocalURL();
     });
     $__default['default']('#open-modal').on('click', function () {
       modal({
@@ -1506,17 +1509,31 @@ userAgent: ${navigator.userAgent}
 
   const PLAY_URL_KEY = 'play-url-key';
   /**
-   * @return {Record<string,{url:string}>}
+   * @param {string} [href]
+   * @return {Record<string,{url:string}> | string | null}
    */
 
-  function getLocal() {
-    return JSON.parse(window.localStorage.getItem(PLAY_URL_KEY) || '{}');
+  function getLocal(href) {
+    const map = JSON.parse(window.localStorage.getItem(PLAY_URL_KEY) || '{}');
+
+    if (href) {
+      const item = map[href];
+
+      if (!(item !== null && item !== void 0 && item.time) || Date.now() - item.time > 24 * 60 * 60 * 1000) {
+        return null;
+      }
+
+      return item.url;
+    }
+
+    return map;
   }
 
   function saveLocal(href, url) {
     const map = getLocal();
     map[href] = {
-      url
+      url,
+      time: Date.now()
     };
     window.localStorage.setItem(PLAY_URL_KEY, JSON.stringify(map));
   }
@@ -1525,15 +1542,15 @@ userAgent: ${navigator.userAgent}
     delete map[href];
     window.localStorage.setItem(PLAY_URL_KEY, JSON.stringify(map));
   }
-
-  function insertLocal() {
-    const map = getLocal();
+  function showLocalURL() {
     const list = getAllVideoUrlList();
     const $parent = $__default['default']('#url-list');
     $parent.empty();
     $__default['default'](list.map(item => {
-      if (map[item.href]) {
-        return genUrlItem(item.title, map[item.href].url);
+      const vurl = getLocal(item.href);
+
+      if (vurl) {
+        return genUrlItem(item.title, vurl);
       } else {
         return '';
       }
@@ -1567,23 +1584,23 @@ userAgent: ${navigator.userAgent}
   }
 
   async function getVurlWithLocal(href) {
-    const map = getLocal();
+    let vurl = getLocal(href);
 
-    if (map[href]) {
-      return map[href].url;
+    if (vurl) {
+      return vurl;
     }
 
     await updateCookie(href);
-    const vurl = await getVurl(href);
+    vurl = await getVurl(href);
     saveLocal(href, vurl);
     return vurl;
   }
   function initGetAllVideoURL() {
     insertBtn();
-    insertLocal();
+    showLocalURL();
   }
 
-  function replacePlayer$1() {
+  function replacePlayer$3() {
     const dom = document.getElementById('age_playfram');
 
     const fn = () => {
@@ -1637,22 +1654,22 @@ userAgent: ${navigator.userAgent}
   }
 
   function gotoPrevPart() {
-    const dom = getActivedom().parent().prev().find('a');
+    const dom = getActivedom$2().parent().prev().find('a');
 
     if (dom.length) {
-      switchPart(dom.data('href'), dom);
+      switchPart$3(dom.data('href'), dom);
     }
   }
 
-  function gotoNextPart$1() {
-    const dom = getActivedom().parent().next().find('a');
+  function gotoNextPart() {
+    const dom = getActivedom$2().parent().next().find('a');
 
     if (dom.length) {
-      switchPart(dom.data('href'), dom);
+      switchPart$3(dom.data('href'), dom);
     }
   }
 
-  function getActivedom() {
+  function getActivedom$2() {
     return $__default['default']("li a[style*='color: rgb(238, 0, 0)']");
   } // switch part retry count
 
@@ -1666,18 +1683,18 @@ userAgent: ${navigator.userAgent}
    * @param {boolean} [push]
    */
 
-  async function switchPart(href, $dom, push = true) {
+  async function switchPart$3(href, $dom, push = true) {
     try {
       if (switchLoading === true) return;
       switchLoading = true;
       retryCount++;
-      push && player$1.message.info(`即将播放${$dom.text()}`);
+      push && player$3.message.info(`即将播放${$dom.text()}`);
       const vurl = await getVurlWithLocal(href);
-      push && player$1.message.destroy();
-      const speed = player$1.plyr.speed;
-      player$1.src = vurl;
-      player$1.plyr.speed = speed;
-      const $active = getActivedom();
+      push && player$3.message.destroy();
+      const speed = player$3.plyr.speed;
+      player$3.src = vurl;
+      player$3.plyr.speed = speed;
+      const $active = getActivedom$2();
       $active.css({
         color: '',
         border: ''
@@ -1690,6 +1707,7 @@ userAgent: ${navigator.userAgent}
       push && history.pushState({}, title, href);
       document.title = title;
       showCurrentLink(vurl);
+      showLocalURL();
       his.logHistory();
       retryCount = 0;
       switchLoading = false;
@@ -1700,7 +1718,7 @@ userAgent: ${navigator.userAgent}
         console.error(error);
         window.location.href = href;
       } else {
-        switchPart(href, $dom, push);
+        switchPart$3(href, $dom, push);
       }
     }
   }
@@ -1730,41 +1748,41 @@ userAgent: ${navigator.userAgent}
     if (!id) return;
 
     if (((_his$get = his.get(id)) === null || _his$get === void 0 ? void 0 : _his$get.time) > 3) {
-      player$1.currentTime = his.get(id).time;
-      player$1.message.info(`已自动跳转至历史播放位置 ${parseTime(his.get(id).time)}`);
+      player$3.currentTime = his.get(id).time;
+      player$3.message.info(`已自动跳转至历史播放位置 ${parseTime(his.get(id).time)}`);
     }
   }
 
   function addListener() {
-    player$1.on('next', () => {
-      gotoNextPart$1();
+    player$3.on('next', () => {
+      gotoNextPart();
     });
-    player$1.on('ended', () => {
-      if (player$1.localConfig.autoNext) {
-        gotoNextPart$1();
+    player$3.on('ended', () => {
+      if (player$3.localConfig.autoNext) {
+        gotoNextPart();
       }
     });
-    player$1.on('prev', () => {
+    player$3.on('prev', () => {
       gotoPrevPart();
     });
-    player$1.plyr.once('canplay', () => {
-      if (player$1.localConfig.continuePlay) {
+    player$3.plyr.once('canplay', () => {
+      if (player$3.localConfig.continuePlay) {
         videoJumpHistoryPosition();
       }
     });
-    player$1.on('error', () => {
-      removeLocal(getActivedom().data('href'));
+    player$3.on('error', () => {
+      removeLocal(getActivedom$2().data('href'));
     });
-    player$1.on('timeupdate', () => {
-      if (Math.floor(player$1.currentTime) % 3 === 0) {
-        updateTime(player$1.currentTime);
+    player$3.on('timeupdate', () => {
+      if (Math.floor(player$3.currentTime) % 3 === 0) {
+        updateTime(player$3.currentTime);
       }
     });
-    player$1.on('skiperror', (_, duration) => {
+    player$3.on('skiperror', (_, duration) => {
       if (duration === 0) {
         updateTime(0);
       } else {
-        updateTime(player$1.currentTime + duration);
+        updateTime(player$3.currentTime + duration);
       }
 
       window.location.reload();
@@ -1774,7 +1792,7 @@ userAgent: ${navigator.userAgent}
       const $dom = $__default['default'](`[data-href='${href}']`);
 
       if ($dom.length) {
-        switchPart(href, $dom, false);
+        switchPart$3(href, $dom, false);
       } else {
         window.location.reload();
       }
@@ -1786,21 +1804,22 @@ userAgent: ${navigator.userAgent}
       const href = $__default['default'](this).attr('href');
       $__default['default'](this).removeAttr('href').attr('data-href', href).css('cursor', 'pointer').on('click', e => {
         e.preventDefault();
-        switchPart(href, $__default['default'](this));
+        switchPart$3(href, $__default['default'](this));
       });
     });
   }
   /** @type {KPlayer} */
 
 
-  let player$1;
+  let player$3;
 
   function initPlayer(vurl) {
-    player$1 = new KPlayer('#age_playfram');
+    player$3 = new KPlayer('#age_playfram');
     showCurrentLink(vurl);
     addListener();
-    player$1.src = vurl;
-    saveLocal(getActivedom().data('href'), vurl);
+    player$3.src = vurl;
+    saveLocal(getActivedom$2().data('href'), vurl);
+    showLocalURL();
   }
 
   function removeCpraid() {
@@ -1823,7 +1842,7 @@ userAgent: ${navigator.userAgent}
     }).append($dom);
   }
 
-  function playModule$1() {
+  function playModule$3() {
     removeCpraid();
 
     if (window.sessionStorage.getItem('stop-use') === '1') {
@@ -1834,7 +1853,7 @@ userAgent: ${navigator.userAgent}
     his.logHistory();
     initPlayPageStyle();
     replaceHref();
-    replacePlayer$1();
+    replacePlayer$3();
     initGetAllVideoURL();
   }
 
@@ -1845,7 +1864,7 @@ userAgent: ${navigator.userAgent}
     historyModule(); // log page to history
 
     if (location.pathname.startsWith('/play')) {
-      playModule$1();
+      playModule$3();
     } // in detail pages show view history
 
 
@@ -1854,17 +1873,22 @@ userAgent: ${navigator.userAgent}
     }
   }
 
+  var css = ".yhdm-wrapper {\n  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;\n}\n.yhdm-wrapper .play,\n.yhdm-wrapper #playbox,\n.yhdm-wrapper .bofang,\n.yhdm-wrapper .pp .player {\n  height: 540px;\n}";
+  n(css,{});
+
   /** @type {KPlayer} */
 
-  let player;
+  let player$2;
 
-  function replacePlayer() {
+  function replacePlayer$2() {
     const vurl = $__default['default']('#playbox').data('vid');
-    player = new KPlayer('.bofang iframe');
-    player.src = vurl.split('$')[0];
+    player$2 = new KPlayer('.bofang iframe');
+    player$2.src = vurl.split('$')[0];
   }
 
-  function gotoNextPart() {
+  function switchPart$2(next) {
+    var _$$direction$1$find$;
+
     let directionRight = true;
     const re = /\/v\/\d+-(\d+)/;
     let prevID;
@@ -1875,39 +1899,144 @@ userAgent: ${navigator.userAgent}
         prevID = id;
       }
     });
+    let direction = ['prev', 'next'];
+    if (!next) direction.reverse();
+    if (!directionRight) direction.reverse();
+    (_$$direction$1$find$ = $__default['default']('.movurls .sel')[direction[1]]().find('a')[0]) === null || _$$direction$1$find$ === void 0 ? void 0 : _$$direction$1$find$.click();
+  }
 
-    if (directionRight) {
-      $__default['default']('.movurls .sel').next().find('a')[0].click();
-    } else {
-      $__default['default']('.movurls .sel').prev().find('a')[0].click();
-    }
+  function initEvent$2() {
+    player$2.on('prev', () => switchPart$2(false));
+    player$2.on('next', () => switchPart$2(true));
+  }
+
+  function playModule$2() {
+    $__default['default']('body').addClass('yhdm-wrapper');
+    replacePlayer$2();
+    initEvent$2();
+  }
+
+  /** @type {KPlayer} */
+
+  let player$1;
+
+  function replacePlayer$1() {
+    const dom = document.getElementById('yh_playfram');
+
+    const fn = () => {
+      if (!dom.src) return;
+      let url = new URL(dom.src);
+      let videoURL = url.searchParams.get('url');
+
+      if (videoURL) {
+        player$1 = new KPlayer('#yh_playfram');
+        player$1.src = parseToURL(videoURL);
+        initEvent$1();
+        mutationOb.disconnect();
+      }
+    };
+
+    const mutationOb = new MutationObserver(fn);
+    mutationOb.observe(dom, {
+      attributes: true
+    });
+    fn();
+  }
+
+  function switchPart$1(next) {
+    var _getActivedom$parent$;
+
+    (_getActivedom$parent$ = getActivedom$1().parent()[next ? 'next' : 'prev']().find('a')[0]) === null || _getActivedom$parent$ === void 0 ? void 0 : _getActivedom$parent$.click();
+  }
+
+  function getActivedom$1() {
+    return $__default['default'](".movurl:visible li a[style*='color: rgb(255, 255, 255)']");
+  }
+
+  function initEvent$1() {
+    player$1.on('prev', () => switchPart$1(false));
+    player$1.on('next', () => switchPart$1(true));
+  }
+
+  function playModule$1() {
+    $__default['default']('body').addClass('yhdm-wrapper');
+    $__default['default']('#ipchk_getplay').remove();
+    $__default['default']('.fullscn').remove();
+    replacePlayer$1();
+  }
+
+  /** @type {KPlayer} */
+
+  let player;
+
+  function replacePlayer() {
+    const dom = document.getElementById('play2');
+
+    const fn = () => {
+      if (!dom.src) return;
+      let url = new URL(dom.src);
+      let videoURL = url.searchParams.get('vid');
+
+      if (videoURL) {
+        player = new KPlayer('#play2');
+        player.src = parseToURL(videoURL);
+        initEvent();
+        mutationOb.disconnect();
+      }
+    };
+
+    const mutationOb = new MutationObserver(fn);
+    mutationOb.observe(dom, {
+      attributes: true
+    });
+    fn();
+  }
+
+  function switchPart(next) {
+    var _getActivedom$parent$;
+
+    (_getActivedom$parent$ = getActivedom().parent()[next ? 'next' : 'prev']().find('a')[0]) === null || _getActivedom$parent$ === void 0 ? void 0 : _getActivedom$parent$.click();
+  }
+
+  function getActivedom() {
+    return $__default['default'](`.movurls:visible li a[href='${location.pathname}']`);
   }
 
   function initEvent() {
-    player.on('next', gotoNextPart);
+    player.on('prev', () => switchPart(false));
+    player.on('next', () => switchPart(true));
   }
 
   function playModule() {
+    $__default['default']('body').addClass('yhdm-wrapper');
+    $__default['default']('#adl').remove();
+    $__default['default']('#adr').remove();
+    $__default['default']('#adv').remove();
+    $__default['default']('.fullscn').remove();
     replacePlayer();
-    initEvent();
   }
 
-  var css = ".yhdm-wrapper {\n  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;\n}\n.yhdm-wrapper .play,\n.yhdm-wrapper #playbox,\n.yhdm-wrapper .bofang {\n  height: 540px;\n}";
-  n(css,{});
-
   function yhdm() {
-    $__default['default']('body').addClass('yhdm-wrapper');
+    const href = window.location.href;
 
-    if (window.location.pathname.includes('/v/')) {
+    if (href.includes('yhdm.so') || href.includes('yinghuacd.com')) {
+      playModule$2();
+    }
+
+    if (href.includes('yhdmp.cc')) {
+      playModule$1();
+    }
+
+    if (href.includes('imomoe.live')) {
       playModule();
     }
   }
 
-  if (window.location.href.includes('agefans')) {
-    agefans();
-  }
+  if (self === parent) {
+    if (window.location.href.includes('agefans')) {
+      agefans();
+    }
 
-  if (window.location.href.includes('yhdm')) {
     yhdm();
   }
 
