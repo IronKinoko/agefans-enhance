@@ -175,7 +175,7 @@ class KPlayer {
     const status = window.sessionStorage.getItem(this.statusSessionKey)
     if (status) {
       window.sessionStorage.removeItem(this.statusSessionKey)
-      this._toggleFullscreen(JSON.parse(status))
+      this._toggleWidescreen(JSON.parse(status))
     }
   }
 
@@ -339,11 +339,11 @@ class KPlayer {
             break
           case 'w':
             if (this.plyr.fullscreen.active) break
-            this._toggleFullscreen()
+            this._toggleWidescreen()
             break
           case 'Escape':
             if (this.plyr.fullscreen.active || !this.isWideScreen) break
-            this._toggleFullscreen(false)
+            this._toggleWidescreen(false)
             break
           case 'z':
             this.speed = 1
@@ -519,12 +519,12 @@ class KPlayer {
     $($('#plyr__widescreen').html())
       .insertBefore('[data-plyr="fullscreen"]')
       .on('click', () => {
-        this._toggleFullscreen()
+        this._toggleWidescreen()
       })
   }
 
   /** @private */
-  _toggleFullscreen(bool = !this.isWideScreen) {
+  _toggleWidescreen(bool = !this.isWideScreen) {
     if (this.isWideScreen === bool) return
     this.isWideScreen = bool
 
