@@ -250,6 +250,11 @@ class KPlayer {
         .find('.k-player-progress-buffer')
         .css('width', this.plyr.buffered * 100 + '%')
     })
+    this.on('ended', () => {
+      if (this.localConfig.autoNext) {
+        this.trigger('next')
+      }
+    })
 
     keybind(
       [

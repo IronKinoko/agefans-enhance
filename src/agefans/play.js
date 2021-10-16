@@ -165,12 +165,6 @@ function addListener() {
     gotoNextPart()
   })
 
-  player.on('ended', () => {
-    if (player.localConfig.autoNext) {
-      gotoNextPart()
-    }
-  })
-
   player.on('prev', () => {
     gotoPrevPart()
   })
