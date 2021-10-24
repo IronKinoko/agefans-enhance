@@ -1,7 +1,10 @@
 import $ from 'jquery'
 import './modal.scss'
 export function modal({ title, content, onClose, onOk }) {
-  const store = $('body').css(['width', 'overflow'])
+  const store = {
+    width: document.body.style.width,
+    overflow: document.body.style.overflow,
+  }
 
   const ID = Math.random().toString(16).slice(2)
   $(`
