@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.12.0
+// @version      1.12.1
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @include      https://www.agefans.net/*
@@ -396,7 +396,7 @@ aria-hidden="true"
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.12.0"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.12.1"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -482,7 +482,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.12.0"}
+脚本版本: ${"1.12.1"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -518,7 +518,10 @@ userAgent: ${navigator.userAgent}
     onClose,
     onOk
   }) {
-    const store = $__default['default']('body').css(['width', 'overflow']);
+    const store = {
+      width: document.body.style.width,
+      overflow: document.body.style.overflow
+    };
     const ID = Math.random().toString(16).slice(2);
     $__default['default'](`
 <div class="k-modal" role="dialog" id="${ID}">
@@ -821,7 +824,7 @@ userAgent: ${navigator.userAgent}
       if (status) {
         window.sessionStorage.removeItem(this.statusSessionKey);
 
-        this._toggleFullscreen(JSON.parse(status));
+        this._toggleWidescreen(JSON.parse(status));
       }
     }
     /** @private */
@@ -880,6 +883,11 @@ userAgent: ${navigator.userAgent}
       this.on('timeupdate', () => {
         this.$progress.find('.k-player-progress-current').css('width', this.currentTime / this.plyr.duration * 100 + '%');
         this.$progress.find('.k-player-progress-buffer').css('width', this.plyr.buffered * 100 + '%');
+      });
+      this.on('ended', () => {
+        if (this.localConfig.autoNext) {
+          this.trigger('next');
+        }
       });
       keybind([// 进退 30s
       'shift+ArrowLeft', 'shift+ArrowRight', // 进退 60s
@@ -943,14 +951,14 @@ userAgent: ${navigator.userAgent}
           case 'w':
             if (this.plyr.fullscreen.active) break;
 
-            this._toggleFullscreen();
+            this._toggleWidescreen();
 
             break;
 
           case 'Escape':
             if (this.plyr.fullscreen.active || !this.isWideScreen) break;
 
-            this._toggleFullscreen(false);
+            this._toggleWidescreen(false);
 
             break;
 
@@ -1099,13 +1107,13 @@ userAgent: ${navigator.userAgent}
 
     _injectSreen() {
       $__default['default']($__default['default']('#plyr__widescreen').html()).insertBefore('[data-plyr="fullscreen"]').on('click', () => {
-        this._toggleFullscreen();
+        this._toggleWidescreen();
       });
     }
     /** @private */
 
 
-    _toggleFullscreen(bool = !this.isWideScreen) {
+    _toggleWidescreen(bool = !this.isWideScreen) {
       if (this.isWideScreen === bool) return;
       this.isWideScreen = bool;
       window.sessionStorage.setItem(this.statusSessionKey, JSON.stringify(this.isWideScreen));
@@ -1756,11 +1764,6 @@ userAgent: ${navigator.userAgent}
   function addListener() {
     player$3.on('next', () => {
       gotoNextPart();
-    });
-    player$3.on('ended', () => {
-      if (player$3.localConfig.autoNext) {
-        gotoNextPart();
-      }
     });
     player$3.on('prev', () => {
       gotoPrevPart();
