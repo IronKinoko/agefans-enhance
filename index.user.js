@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.12.2
+// @version      1.13.0
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @include      https://www.agefans.*
@@ -394,7 +394,7 @@ aria-hidden="true"
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.12.2"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.13.0"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -480,7 +480,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.12.2"}
+脚本版本: ${"1.13.0"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -686,6 +686,26 @@ userAgent: ${navigator.userAgent}
       const $progress = $__default['default'](progressHTML);
       const $header = $__default['default']('<div id="k-player-header"/>');
       $wrapper.append($video);
+      this.localConfigKey = 'kplayer';
+      this.statusSessionKey = 'k-player-status';
+      /**
+       * @type {{speed:number,continuePlay:boolean,autoNext:boolean,showProgress:boolean,volume:number}}
+       */
+
+      this.localConfig = {
+        speed: 1,
+        continuePlay: true,
+        autoNext: true,
+        showProgress: true,
+        volume: 1
+      };
+
+      try {
+        this.localConfig = Object.assign(this.localConfig, JSON.parse(window.localStorage.getItem(this.localConfigKey)));
+      } catch (error) {
+        /** empty */
+      }
+
       this.plyr = new Plyr__default['default']('#k-player', {
         autoplay: true,
         keyboard: {
@@ -704,6 +724,7 @@ userAgent: ${navigator.userAgent}
         ],
         storage: false,
         seekTime: 5,
+        volume: this.localConfig.volume,
         speed: {
           options: speedList
         },
@@ -758,25 +779,6 @@ userAgent: ${navigator.userAgent}
         },
         ...opts
       });
-      this.localConfigKey = 'kplayer';
-      this.statusSessionKey = 'k-player-status';
-      /**
-       * @type {{speed:number,continuePlay:boolean,autoNext:boolean,showProgress:boolean}}
-       */
-
-      this.localConfig = {
-        speed: 1,
-        continuePlay: true,
-        autoNext: true,
-        showProgress: true
-      };
-
-      try {
-        this.localConfig = Object.assign(this.localConfig, JSON.parse(window.localStorage.getItem(this.localConfigKey)));
-      } catch (error) {
-        /** empty */
-      }
-
       this.$wrapper = $wrapper;
       this.$loading = $loading;
       this.$error = $error;
@@ -877,6 +879,9 @@ userAgent: ${navigator.userAgent}
       });
       this.on('exitfullscreen', () => {
         this.$videoWrapper.removeClass('k-player-fullscreen');
+      });
+      this.on('volumechange', () => {
+        this.configSaveToLocal('volume', this.plyr.volume);
       });
       this.on('timeupdate', () => {
         this.$progress.find('.k-player-progress-current').css('width', this.currentTime / this.plyr.duration * 100 + '%');
