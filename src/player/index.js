@@ -40,6 +40,28 @@ class KPlayer {
     const $header = $('<div id="k-player-header"/>')
     $wrapper.append($video)
 
+    this.localConfigKey = 'kplayer'
+    this.statusSessionKey = 'k-player-status'
+
+    /**
+     * @type {{speed:number,continuePlay:boolean,autoNext:boolean,showProgress:boolean,volume:number}}
+     */
+    this.localConfig = {
+      speed: 1,
+      continuePlay: true,
+      autoNext: true,
+      showProgress: true,
+      volume: 1,
+    }
+    try {
+      this.localConfig = Object.assign(
+        this.localConfig,
+        JSON.parse(window.localStorage.getItem(this.localConfigKey))
+      )
+    } catch (error) {
+      /** empty */
+    }
+
     this.plyr = new Plyr('#k-player', {
       autoplay: true,
       keyboard: { global: true },
@@ -57,6 +79,7 @@ class KPlayer {
       ],
       storage: false,
       seekTime: 5,
+      volume: this.localConfig.volume,
       speed: { options: speedList },
       i18n: {
         restart: '重播',
@@ -109,27 +132,6 @@ class KPlayer {
       },
       ...opts,
     })
-
-    this.localConfigKey = 'kplayer'
-    this.statusSessionKey = 'k-player-status'
-
-    /**
-     * @type {{speed:number,continuePlay:boolean,autoNext:boolean,showProgress:boolean}}
-     */
-    this.localConfig = {
-      speed: 1,
-      continuePlay: true,
-      autoNext: true,
-      showProgress: true,
-    }
-    try {
-      this.localConfig = Object.assign(
-        this.localConfig,
-        JSON.parse(window.localStorage.getItem(this.localConfigKey))
-      )
-    } catch (error) {
-      /** empty */
-    }
 
     this.$wrapper = $wrapper
     this.$loading = $loading
@@ -241,6 +243,9 @@ class KPlayer {
     })
     this.on('exitfullscreen', () => {
       this.$videoWrapper.removeClass('k-player-fullscreen')
+    })
+    this.on('volumechange', () => {
+      this.configSaveToLocal('volume', this.plyr.volume)
     })
     this.on('timeupdate', () => {
       this.$progress
