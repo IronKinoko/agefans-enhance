@@ -133,8 +133,7 @@ async function switchPart(href, $dom, push = true) {
 }
 
 function initPlayPageStyle() {
-  let dom = document.querySelector('.fullscn')
-  dom.remove()
+  $('.fullscn').remove()
 
   let ageframediv = document.getElementById('ageframediv')
   let { width } = ageframediv.getBoundingClientRect()

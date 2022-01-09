@@ -80,17 +80,17 @@ export function renderHistoryList() {
       let html = ''
       histories.forEach((o) => {
         html += `<a class="history-item" href="${o.href}">
-        <img
-          referrerpolicy="no-referrer"
-          src="${o.logo}"
-          alt="${o.title}"
-          title="${o.title}"
-        />
-        <div class="desc">
-          <div class="title">${o.title}</div>
-          <div class="position">${o.section} ${parseTime(o.time)}</div>
-        </div>
-      </a>
+          <img
+            referrerpolicy="no-referrer"
+            src="${o.logo}"
+            alt="${o.title}"
+            title="${o.title}"
+          />
+          <div class="desc">
+            <div class="title">${o.title}</div>
+            <div class="position">${o.section} ${parseTime(o.time)}</div>
+          </div>
+        </a>
       `
       })
       return `<div class="history-list">${

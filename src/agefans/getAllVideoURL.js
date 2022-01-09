@@ -276,8 +276,32 @@ async function getVurl(href) {
     throw new AGEfansError(`Cookie过期，请刷新页面重试（${text}）`)
   }
 
-  const json = JSON.parse(text)
-  return parseToURL(json.vurl)
+  function __qpic_chkvurl_converting(_in_vurl) {
+    const vurl = decodeURIComponent(_in_vurl)
+    const match_resl = vurl.match(
+      /^http.+\.f20\.mp4\?ptype=http\?w5=0&h5=0&state=1$/
+    )
+    return !!match_resl
+  }
+
+  const _json_obj = JSON.parse(text)
+  const _purl = _json_obj['purl']
+  const _vurl = _json_obj['vurl']
+  const _playid = _json_obj['playid']
+
+  if (__qpic_chkvurl_converting(_vurl)) {
+    throw new AGEfansError('视频转码中，请稍后再试')
+  }
+
+  if (_playid === '<play>QLIVE</play>') {
+    throw new AGEfansError('脚本不支持QLIVE模式，请使用关闭脚本使用原生播放')
+  }
+
+  let _url = _purl + _vurl
+  let url = new URL(_url, location.origin)
+  const vurl = url.searchParams.get('url')
+
+  return parseToURL(vurl)
 }
 export async function getVurlWithLocal(href) {
   let vurl = getLocal(href)

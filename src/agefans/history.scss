@@ -4,7 +4,7 @@
     border: 4px solid #303030;
 
     .history-list {
-      padding: 16px;
+      padding: 8px;
       display: flex;
       flex-wrap: wrap;
     }
@@ -29,6 +29,19 @@
         .position {
           font-size: 14px;
         }
+      }
+    }
+    @media (max-width: 480px) {
+      .history-list {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-gap: 8px;
+      }
+      .history-item {
+        width: auto;
+        margin: 0;
+        display: block;
+        min-width: 0;
       }
     }
   }

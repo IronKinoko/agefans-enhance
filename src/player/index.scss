@@ -159,6 +159,16 @@
       margin-left: auto;
     }
   }
+
+  @media (max-width: 480px) {
+    .plyr__controls {
+      padding-top: 30px;
+    }
+    [data-plyr='pip'],
+    [data-plyr='widescreen'] {
+      display: none;
+    }
+  }
 }
 
 // loading

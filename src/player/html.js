@@ -89,7 +89,7 @@ aria-hidden="true"
   <button
     class="plyr__controls__item plyr__control plyr__widescreen plyr__custom"
     type="button"
-    data-plyr="next"
+    data-plyr="widescreen"
     aria-label="widescreen"
   >
     <svg class="icon--not-pressed" focusable="false">
