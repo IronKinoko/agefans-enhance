@@ -2,7 +2,8 @@ import { agefans } from './agefans'
 import { yhdm } from './yhdm'
 
 if (self === parent) {
-  if (window.location.href.includes('agefans')) {
+  const origin = window.location.origin
+  if (origin.includes('agefans') || origin.includes('agemys')) {
     agefans()
   }
 

@@ -6,6 +6,7 @@ export function genUserScriptInfo(pkg) {
 // @description  ${pkg.description}
 // @author       IronKinoko
 // @include      https://www.agefans.*
+// @include      https://www.agemys.*
 // @include      http://www.yhdm.so/v/*
 // @include      http://www.yinghuacd.com/v/*
 // @include      https://www.yhdmp.cc/vp/*
