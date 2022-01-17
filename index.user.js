@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.14.0
+// @version      1.14.1
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @include      https://www.agefans.*
+// @include      https://www.agemys.*
 // @include      http://www.yhdm.so/v/*
 // @include      http://www.yinghuacd.com/v/*
 // @include      https://www.yhdmp.cc/vp/*
@@ -394,7 +395,7 @@ aria-hidden="true"
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.14.0"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.14.1"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -480,7 +481,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.14.0"}
+脚本版本: ${"1.14.1"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -2061,7 +2062,9 @@ userAgent: ${navigator.userAgent}
   }
 
   if (self === parent) {
-    if (window.location.href.includes('agefans')) {
+    const origin = window.location.origin;
+
+    if (origin.includes('agefans') || origin.includes('agemys')) {
       agefans();
     }
 
