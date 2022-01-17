@@ -18,7 +18,7 @@ function replacePlayer() {
     if (!dom.src) return
     let url = new URL(dom.src)
 
-    if (url.hostname.includes('agefans')) {
+    if (url.origin === location.origin) {
       let videoURL = url.searchParams.get('url')
       if (videoURL) {
         addReferrerMeta()
