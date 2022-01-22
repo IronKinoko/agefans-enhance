@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.15.0
+// @version      1.15.1
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @include      https://www.agefans.*
@@ -11,8 +11,7 @@
 // @include      https://www.yhdmp.cc/vp/*
 // @include      http://www.imomoe.live/player/*
 // @include      http://www.88dmw.com/*
-// @run-at       document-start
-// @resource     plyrCSS https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.css
+// @run-at       document-body
 // @require      https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js
 // @require      https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.js
 // @require      https://cdn.jsdelivr.net/npm/hls.js@1.0.9/dist/hls.min.js
@@ -238,7 +237,7 @@ aria-hidden="true"
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.15.0"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.15.1"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -324,7 +323,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.15.0"}
+脚本版本: ${"1.15.1"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
