@@ -28,7 +28,7 @@ const MediaErrorMessage = {
 class KPlayer {
   /**
    * Creates an instance of KPlayer.
-   * @param {stromg} selector
+   * @param {string|Element} selector
    * @param {Plyr.Options} opts
    */
   constructor(selector, opts) {

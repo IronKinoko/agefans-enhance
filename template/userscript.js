@@ -11,22 +11,14 @@ export function genUserScriptInfo(pkg) {
 // @include      http://www.yinghuacd.com/v/*
 // @include      https://www.yhdmp.cc/vp/*
 // @include      http://www.imomoe.live/player/*
+// @include      http://www.88dmw.com/*
+// @run-at       document-start
 // @resource     plyrCSS https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.css
 // @require      https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js
 // @require      https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.js
 // @require      https://cdn.jsdelivr.net/npm/hls.js@1.0.9/dist/hls.min.js
-// @grant        GM_getResourceText
-// @grant        GM_addStyle
+// @grant        none
 // @license      MIT
 // ==/UserScript==
-
-(function() {
-  'use strict';
-  try {
-    let plyrCSS = GM_getResourceText('plyrCSS')  
-    GM_addStyle(plyrCSS)
-  } catch(e) { /* empty */ }
-})();
-
 `
 }
