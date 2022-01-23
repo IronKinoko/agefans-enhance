@@ -100,7 +100,7 @@
 
     @each $bg in $k-player-tsuma-list {
       $i: index($k-player-tsuma-list, $bg);
-      &[data-bg-idx='#{$i}'] {
+      &[data-bg-idx='#{$i - 1}'] {
         background-image: $bg;
       }
     }

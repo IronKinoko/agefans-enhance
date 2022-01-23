@@ -621,9 +621,7 @@ class KPlayer {
 
   setRandomTsuma() {
     this.curentTsuma = ++this.curentTsuma % this.tsumaLength
-    this.$wrapper
-      .find('.k-player-tsuma')
-      .attr('data-bg-idx', this.curentTsuma + 1)
+    this.$wrapper.find('.k-player-tsuma').attr('data-bg-idx', this.curentTsuma)
   }
 }
 
