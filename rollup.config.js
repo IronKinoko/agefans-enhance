@@ -1,11 +1,12 @@
 import { babel } from '@rollup/plugin-babel'
-import styles from 'rollup-plugin-styles'
+import image from '@rollup/plugin-image'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
-import Copy from 'rollup-plugin-copy'
-import { genUserScriptInfo } from './template/userscript'
-import pkg from './package.json'
 import replace from '@rollup/plugin-replace'
 import { defineConfig } from 'rollup'
+import Copy from 'rollup-plugin-copy'
+import styles from 'rollup-plugin-styles'
+import pkg from './package.json'
+import { genUserScriptInfo } from './template/userscript'
 export default defineConfig({
   input: 'src/index.js',
   output: {
@@ -21,6 +22,7 @@ export default defineConfig({
   },
   external: ['hls.js', 'jquery', 'plyr'],
   plugins: [
+    image(),
     babel({ babelHelpers: 'bundled' }),
     styles(),
     nodeResolve({ browser: true }),

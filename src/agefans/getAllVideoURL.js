@@ -147,8 +147,9 @@ function insertModalForm() {
 }
 
 function genUrlItem(title, content = '加载中...') {
+  const download = [$('#detailname a').text(), title].join(' ')
   const contentHTML = content.startsWith('http')
-    ? `<a href="${content}" download>${content}</a>`
+    ? `<a href="${content}" download="${download}">${content}</a>`
     : content
 
   return `<div>
@@ -188,7 +189,8 @@ async function insertResult(list) {
       try {
         const vurl = await getVurl(item.href)
         saveLocal(item.href, vurl)
-        $msg.html(`<a href="${vurl}" download>${vurl}</a>`)
+        const download = [$('#detailname a').text(), item.title].join(' ')
+        $msg.html(`<a href="${vurl}" download="${download}">${vurl}</a>`)
         $msg.data('status', '1')
       } catch (error) {
         console.error(error)

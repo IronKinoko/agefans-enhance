@@ -11,6 +11,7 @@ import {
   speedHTML,
   speedList,
   settingsHTML,
+  pipHTML,
 } from './html'
 import { debounce } from '../utils/debounce'
 import { modal } from '../utils/modal'
@@ -20,10 +21,10 @@ import keybind from '../utils/keybind'
 
 const MediaErrorMessage = {
   1: '你中止了媒体播放',
-  2: '一个网络错误导致媒体下载中途失败',
-  3: '由于损坏问题或媒体使用了你的浏览器不支持的功能，媒体播放被中止了',
-  4: '媒体无法被加载，要么是因为服务器或网络故障，要么是因为格式不被支持',
-  5: '该媒体是加密的，我们没有解密的钥匙',
+  2: '网络错误',
+  3: '文件损坏',
+  4: '资源有问题看不了',
+  5: '资源被加密了',
 }
 class KPlayer {
   /**
@@ -35,6 +36,7 @@ class KPlayer {
     const $wrapper = $('<div id="k-player-wrapper"/>').replaceAll(selector)
     const $loading = $(loadingHTML)
     const $error = $(errorHTML)
+    const $pip = $(pipHTML)
     const $video = $('<video id="k-player" />')
     const $progress = $(progressHTML)
     const $header = $('<div id="k-player-header"/>')
@@ -139,11 +141,13 @@ class KPlayer {
     this.$video = $video
     this.$progress = $progress
     this.$header = $header
+    this.$pip = $pip
     this.$videoWrapper = $wrapper.find('.plyr')
 
     this.$videoWrapper
       .append($loading)
       .append($error)
+      .append($pip)
       .append($progress)
       .append($header)
 
@@ -151,7 +155,10 @@ class KPlayer {
     this.eventMap = {}
     this.isWideScreen = false
     this.wideScreenBodyStyles = {}
-
+    this.tsumaLength = +getComputedStyle(this.$wrapper[0])
+      .getPropertyValue('--k-player-tsuma-length')
+      .trim()
+    this.curentTsuma = -1
     this._injectSettings()
     this._injectSpeed()
     this._injectQuestion()
@@ -259,6 +266,14 @@ class KPlayer {
       if (this.localConfig.autoNext) {
         this.trigger('next')
       }
+    })
+
+    this.on('enterpictureinpicture', () => {
+      this.setRandomTsuma()
+      this.$pip.fadeIn()
+    })
+    this.on('leavepictureinpicture', () => {
+      this.$pip.fadeOut()
     })
 
     keybind(
@@ -596,11 +611,19 @@ class KPlayer {
   }
 
   showError(text) {
-    this.$error.show().find('.error-info').text(text)
+    this.setRandomTsuma()
+    this.$error.show().find('.k-player-error-info').text(text)
   }
 
   hideError() {
     this.$error.hide()
+  }
+
+  setRandomTsuma() {
+    this.curentTsuma = ++this.curentTsuma % this.tsumaLength
+    this.$wrapper
+      .find('.k-player-tsuma')
+      .attr('data-bg-idx', this.curentTsuma + 1)
   }
 }
 

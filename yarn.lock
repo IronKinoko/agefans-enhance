@@ -932,6 +932,14 @@
     "@babel/helper-module-imports" "^7.10.4"
     "@rollup/pluginutils" "^3.1.0"
 
+"@rollup/plugin-image@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.nlark.com/@rollup/plugin-image/download/@rollup/plugin-image-2.1.1.tgz?cache=0&sync_timestamp=1629773087010&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40rollup%2Fplugin-image%2Fdownload%2F%40rollup%2Fplugin-image-2.1.1.tgz#898d6b59ac0025d7971ef45640ab330cb0663b0c"
+  integrity sha1-iY1rWawAJdeXHvRWQKszDLBmOww=
+  dependencies:
+    "@rollup/pluginutils" "^3.1.0"
+    mini-svg-data-uri "^1.2.3"
+
 "@rollup/plugin-node-resolve@^13.0.0":
   version "13.0.0"
   resolved "https://registry.nlark.com/@rollup/plugin-node-resolve/download/@rollup/plugin-node-resolve-13.0.0.tgz#352f07e430ff377809ec8ec8a6fd636547162dc4"
@@ -2714,6 +2722,11 @@ mimic-fn@^2.1.0:
   version "2.1.0"
   resolved "https://registry.nlark.com/mimic-fn/download/mimic-fn-2.1.0.tgz#7ed2c2ccccaf84d3ffcb7a69b57711fc2083401b"
   integrity sha1-ftLCzMyvhNP/y3pptXcR/CCDQBs=
+
+mini-svg-data-uri@^1.2.3:
+  version "1.4.3"
+  resolved "https://registry.npmmirror.com/mini-svg-data-uri/download/mini-svg-data-uri-1.4.3.tgz#43177b2e93766ba338931a3e2a84a3dfd3a222b8"
+  integrity sha1-Qxd7LpN2a6M4kxo+KoSj39OiIrg=
 
 minimatch@^3.0.4:
   version "3.0.4"

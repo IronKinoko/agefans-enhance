@@ -44,6 +44,8 @@ function showCurrentLink(vurl) {
   const decodeVurl = parseToURL(vurl)
   const isSteaming = decodeVurl.includes('.m3u8')
 
+  const title = [$('#detailname a').text(), getActivedom().text()].join(' ')
+
   if ($('#current-link').length) {
     $('#current-link').text(decodeVurl)
     $('#current-link').attr('href', decodeVurl)
@@ -57,7 +59,7 @@ function showCurrentLink(vurl) {
           isSteaming ? '(流媒体视频暂时不支持下载)' : ''
         }</div>
         <div class="blockcontent">
-          <a class="res_links" id="current-link" download rel="noreferrer" href="${decodeVurl}">${decodeVurl}</a>
+          <a class="res_links" id="current-link" download="${title}" rel="noreferrer" href="${decodeVurl}">${decodeVurl}</a>
         </div>
       </div>
     </div>

@@ -1,5 +1,4 @@
 import $ from 'jquery'
-
 const icons = `
 <svg
 xmlns="http://www.w3.org/2000/svg"
@@ -109,6 +108,7 @@ $('body').append(icons)
 export const loadingHTML = `
 <div id="k-player-loading" style="display: none">
   <div class="k-player-center">
+    <div class="k-player-tsuma"/>
     <div class="lds-spinner">
       <div></div>
       <div></div>
@@ -129,7 +129,16 @@ export const loadingHTML = `
 export const errorHTML = `
 <div id="k-player-error" style="display: none">
   <div class="k-player-center">
-    <div>视频加载失败</div><div class="error-info"></div>
+    <div class="k-player-error-img"/>
+    <div class="k-player-tsuma"/>
+    <div class="k-player-error-info"></div>
+  </div>
+</div>`
+
+export const pipHTML = `
+<div id="k-player-pip" style="display: none">
+  <div class="k-player-center">
+    <div class="k-player-tsuma"/>
   </div>
 </div>`
 
