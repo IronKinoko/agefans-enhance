@@ -413,6 +413,21 @@ class KPlayer {
     controlsEl.addEventListener('mouseleave', () => {
       this.isHoverControls = false
     })
+
+    let timeId = null
+    $(".plyr--video input[type='range']").on('mousedown', function () {
+      clearInterval(timeId)
+      let i = 0
+      setInterval(() => {
+        $(this)
+          .removeClass()
+          .addClass(`shake-${i++ % 2}`)
+      }, 100)
+    })
+    $(".plyr--video input[type='range']").on('mouseup', function () {
+      clearInterval(timeId)
+      $(this).removeClass()
+    })
   }
 
   /** @typedef {'prev'|'next'|'enterwidescreen'|'exitwidescreen'|'skiperror'} CustomEventMap */

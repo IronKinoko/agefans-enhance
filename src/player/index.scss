@@ -32,8 +32,15 @@
       transform: scale(1);
     }
     &:active::-webkit-slider-thumb {
-      transform: scale(1.3) rotate(10deg);
+      transition: all .1s linear;
       box-shadow: none;
+    }
+    $deg: 15deg;
+    &.shake-0:active::-webkit-slider-thumb {
+      transform: scale(1.3) rotate($deg);
+    }
+    &.shake-1:active::-webkit-slider-thumb {
+      transform: scale(1.3) rotate(-$deg);
     }
   }
 
