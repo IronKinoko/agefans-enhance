@@ -1,20 +1,20 @@
-name: "Bug 报告"
+name: Bug 报告
 description: 出现什么问题了快提交给我吧，以便改进脚本体验
-labels: ["bug"]
-title: "🐛[Bug]"
+labels: [bug]
+title: 🐛[Bug]
 body:
-- type: input
-  id: url
-  attributes:
-    label: Bug 网页链接
-    description: "哪个页面出现的 Bug，把链接填写下"
-    placeholder: "请填写网页链接"
-  validations:
-    required: true
-- type: textarea
-  id: desc
-  attributes:
-    label: 简要描述下问题
-    value: 
-  validations:
-    required: false
+  - type: input
+    id: url
+    attributes:
+      label: Bug 网页链接
+      description: 哪个页面出现的 Bug，把链接填写下
+      placeholder: 请填写网页链接
+    validations:
+      required: true
+  - type: textarea
+    id: desc
+    attributes:
+      label: 简要描述下问题
+      value:
+    validations:
+      required: false
