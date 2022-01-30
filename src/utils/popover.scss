@@ -1,0 +1,17 @@
+.k-popover {
+  position: relative;
+  &-overlay {
+    position: absolute;
+    display: none;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    padding-bottom: 20px;
+  }
+  &-content {
+    background: var(--k-player-background);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+}
