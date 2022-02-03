@@ -134,12 +134,13 @@ async function switchPart(href, $dom, push = true) {
   }
 }
 
-function initPlayPageStyle() {
-  $('.fullscn').remove()
-
-  let ageframediv = document.getElementById('ageframediv')
-  let { width } = ageframediv.getBoundingClientRect()
-  ageframediv.style.height = (width / 16) * 9 + 'px'
+function resetVideoHeight() {
+  const $root = $('#ageframediv')
+  /** @type {HTMLVideoElement} */
+  const video = player.$video[0]
+  const ratio = video.videoWidth / video.videoHeight
+  const width = $root.width()
+  $root.height(width / ratio)
 }
 
 function updateTime(time = 0) {
@@ -174,6 +175,7 @@ function addListener() {
     if (player.localConfig.continuePlay) {
       videoJumpHistoryPosition()
     }
+    resetVideoHeight()
   })
 
   player.on('error', () => {
@@ -233,10 +235,6 @@ function initPlayer(vurl) {
   showLocalURL()
 }
 
-function removeCpraid() {
-  $('#cpraid').remove()
-}
-
 function useOriginPlayer() {
   const message = new Message('#ageframediv')
   message.info('脚本功能已暂时禁用，使用原生播放器观看，右下角可启动脚本', 3000)
@@ -253,7 +251,7 @@ function useOriginPlayer() {
 }
 
 export function playModule() {
-  removeCpraid()
+  $('#cpraid').remove()
 
   if (window.sessionStorage.getItem('stop-use') === '1') {
     useOriginPlayer()
@@ -261,7 +259,7 @@ export function playModule() {
   }
 
   his.logHistory()
-  initPlayPageStyle()
+  $('.fullscn').remove()
   replaceHref()
   replacePlayer()
   initGetAllVideoURL()
