@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.16.4-1
+// @version      1.16.3
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @include      https://www.agefans.*
@@ -252,7 +252,7 @@ ${[...speedList].reverse().map(speed => `<li class="k-menu-item k-speed-item" da
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.16.4-1"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.16.3"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -338,7 +338,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.16.4-1"}
+脚本版本: ${"1.16.3"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -1853,13 +1853,14 @@ userAgent: ${navigator.userAgent}
     }
   }
 
-  function initPlayPageStyle() {
-    $__default['default']('.fullscn').remove();
-    let ageframediv = document.getElementById('ageframediv');
-    let {
-      width
-    } = ageframediv.getBoundingClientRect();
-    ageframediv.style.height = width / 16 * 9 + 'px';
+  function resetVideoHeight() {
+    const $root = $__default['default']('#ageframediv');
+    /** @type {HTMLVideoElement} */
+
+    const video = player$3.$video[0];
+    const ratio = video.videoWidth / video.videoHeight;
+    const width = $root.width();
+    $root.height(width / ratio);
   }
 
   function updateTime(time = 0) {
@@ -1893,6 +1894,8 @@ userAgent: ${navigator.userAgent}
       if (player$3.localConfig.continuePlay) {
         videoJumpHistoryPosition();
       }
+
+      resetVideoHeight();
     });
     player$3.on('error', () => {
       removeLocal(getActivedom$2().data('href'));
@@ -1946,10 +1949,6 @@ userAgent: ${navigator.userAgent}
     showLocalURL();
   }
 
-  function removeCpraid() {
-    $__default['default']('#cpraid').remove();
-  }
-
   function useOriginPlayer() {
     const message = new Message('#ageframediv');
     message.info('脚本功能已暂时禁用，使用原生播放器观看，右下角可启动脚本', 3000);
@@ -1967,7 +1966,7 @@ userAgent: ${navigator.userAgent}
   }
 
   function playModule$3() {
-    removeCpraid();
+    $__default['default']('#cpraid').remove();
 
     if (window.sessionStorage.getItem('stop-use') === '1') {
       useOriginPlayer();
@@ -1975,7 +1974,7 @@ userAgent: ${navigator.userAgent}
     }
 
     his.logHistory();
-    initPlayPageStyle();
+    $__default['default']('.fullscn').remove();
     replaceHref();
     replacePlayer$3();
     initGetAllVideoURL();
