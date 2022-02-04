@@ -1,9 +1,10 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.16.3
+// @version      1.17.0
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
+// @include      https://www.age.tv/*
 // @include      https://www.agefans.*
 // @include      https://www.agemys.*
 // @include      http://www.yhdm.so/v/*
@@ -15,7 +16,8 @@
 // @require      https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js
 // @require      https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.js
 // @require      https://cdn.jsdelivr.net/npm/hls.js@1.0.9/dist/hls.min.js
-// @grant        none
+// @grant        GM_getValue
+// @grant        GM_setValue
 // @license      MIT
 // ==/UserScript==
 
@@ -252,7 +254,7 @@ ${[...speedList].reverse().map(speed => `<li class="k-menu-item k-speed-item" da
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.16.3"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.17.0"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -338,7 +340,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.16.3"}
+脚本版本: ${"1.17.0"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -522,6 +524,38 @@ userAgent: ${navigator.userAgent}
     });
   }
 
+  const session = {
+    getItem(key, defaultValue) {
+      try {
+        const value = window.sessionStorage.getItem(key);
+        if (value) return JSON.parse(value);
+        return defaultValue;
+      } catch (error) {
+        return defaultValue;
+      }
+    },
+
+    setItem(key, value) {
+      window.sessionStorage.setItem(key, JSON.stringify(value));
+    },
+
+    removeItem(key) {
+      window.sessionStorage.removeItem(key);
+    }
+
+  };
+
+  const local = {
+    getItem(key, defaultValue) {
+      return GM_getValue(key, defaultValue);
+    },
+
+    setItem(key, value) {
+      GM_setValue(key, value);
+    }
+
+  };
+
   const MediaErrorMessage = {
     1: '你中止了媒体播放',
     2: '网络错误',
@@ -560,7 +594,7 @@ userAgent: ${navigator.userAgent}
       };
 
       try {
-        this.localConfig = Object.assign(this.localConfig, JSON.parse(window.localStorage.getItem(this.localConfigKey)));
+        this.localConfig = Object.assign(this.localConfig, local.getItem(this.localConfigKey));
       } catch (error) {
         /** empty */
       }
@@ -681,12 +715,12 @@ userAgent: ${navigator.userAgent}
         const dom = document.querySelector('.plyr');
         if (!this.isHoverControls) dom.classList.add('plyr--hide-controls');
       }, 1000);
-      const status = window.sessionStorage.getItem(this.statusSessionKey);
+      const status = session.getItem(this.statusSessionKey);
 
       if (status) {
-        window.sessionStorage.removeItem(this.statusSessionKey);
+        session.removeItem(this.statusSessionKey);
 
-        this._toggleWidescreen(JSON.parse(status));
+        this._toggleWidescreen(status);
       }
     }
     /** @private */
@@ -708,7 +742,7 @@ userAgent: ${navigator.userAgent}
 
         if (code === 3) {
           const countKey = 'skip-error-retry-count' + window.location.search;
-          let skipErrorRetryCount = parseInt(window.sessionStorage.getItem(countKey) || '0');
+          let skipErrorRetryCount = parseInt(session.getItem(countKey) || '0');
 
           if (skipErrorRetryCount < 3) {
             skipErrorRetryCount++;
@@ -716,18 +750,18 @@ userAgent: ${navigator.userAgent}
             this.message.info(`视频源出现问题，第${skipErrorRetryCount}次尝试跳过${duration}s错误片段`, 4000).then(() => {
               this.trigger('skiperror', 2 * skipErrorRetryCount);
             });
-            window.sessionStorage.setItem(countKey, skipErrorRetryCount.toString());
+            session.setItem(countKey, skipErrorRetryCount.toString());
           } else {
             this.message.info(`视频源出现问题，多次尝试失败，请手动跳过错误片段`, 4000).then(() => {
               this.trigger('skiperror', 0);
             });
-            window.sessionStorage.removeItem(countKey);
+            session.removeItem(countKey);
           }
         } else {
           const $dom = $__default['default']('<div>视频播放失败，点击此处暂时关闭脚本功能，使用原生播放器观看</div>').css('cursor', 'pointer');
           $dom.on('click', () => {
             this.message.destroy();
-            window.sessionStorage.setItem('stop-use', '1');
+            session.setItem('stop-use', '1');
             window.location.reload();
           });
           this.message.info($dom, 10000);
@@ -946,7 +980,7 @@ userAgent: ${navigator.userAgent}
 
     configSaveToLocal(key, value) {
       this.localConfig[key] = value;
-      window.localStorage.setItem(this.localConfigKey, JSON.stringify(this.localConfig));
+      local.setItem(this.localConfigKey, this.localConfig);
     }
     /** @private */
 
@@ -1000,7 +1034,7 @@ userAgent: ${navigator.userAgent}
     _toggleWidescreen(bool = !this.isWideScreen) {
       if (this.isWideScreen === bool) return;
       this.isWideScreen = bool;
-      window.sessionStorage.setItem(this.statusSessionKey, JSON.stringify(this.isWideScreen));
+      session.setItem(this.statusSessionKey, this.isWideScreen);
 
       if (this.isWideScreen) {
         this.wideScreenBodyStyles = $__default['default']('body').css(['overflow']);
@@ -1167,7 +1201,7 @@ userAgent: ${navigator.userAgent}
 
   function www88dmwSetup() {
     try {
-      Object.defineProperty(window, 'devtoolsDetector', {
+      Object.defineProperty(unsafeWindow, 'devtoolsDetector', {
         writable: false,
         value: null
       });
@@ -1195,18 +1229,16 @@ userAgent: ${navigator.userAgent}
   var css$2 = ".agefans-wrapper #history {\n  background: #202020;\n  border: 4px solid #303030;\n}\n.agefans-wrapper #history .history-list {\n  padding: 8px;\n  display: flex;\n  flex-wrap: wrap;\n}\n.agefans-wrapper #history .history-item {\n  width: 115px;\n  display: inline-block;\n  margin: 4px;\n}\n.agefans-wrapper #history .history-item img {\n  width: 100%;\n  border-radius: 2px;\n}\n.agefans-wrapper #history .history-item .desc .title {\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  font-size: 14px;\n  margin: 4px 0;\n}\n.agefans-wrapper #history .history-item .desc .position {\n  font-size: 14px;\n}\n@media (max-width: 480px) {\n  .agefans-wrapper #history .history-list {\n    display: grid;\n    grid-template-columns: repeat(3, 1fr);\n    grid-gap: 8px;\n  }\n  .agefans-wrapper #history .history-item {\n    width: auto;\n    margin: 0;\n    display: block;\n    min-width: 0;\n  }\n}";
   n(css$2,{});
 
-  class History {
-    constructor() {
-      this.cacheKey = 'v-his';
-    }
+  const LOCAL_HISTORY_KEY = 'v-his';
 
+  class History {
     get his() {
-      return JSON.parse(localStorage.getItem(this.cacheKey) || '[]');
+      return local.getItem(LOCAL_HISTORY_KEY, []);
     }
 
     set his(value) {
       if (Array.isArray(value)) {
-        localStorage.setItem(this.cacheKey, JSON.stringify(value.slice(0, 100)));
+        local.setItem(LOCAL_HISTORY_KEY, value.slice(0, 100));
       }
     }
 
@@ -1421,6 +1453,7 @@ userAgent: ${navigator.userAgent}
     });
   }
 
+  const LOCAL_PLAY_URL_KEY = 'play-url-key';
   /**
    * @typedef {{title:string,href:string}} ATag
    */
@@ -1612,20 +1645,19 @@ userAgent: ${navigator.userAgent}
       _getUrl();
     });
   }
-
-  const PLAY_URL_KEY = 'play-url-key';
   /**
    * @param {string} [href]
    * @return {Record<string,{url:string}> | string | null}
    */
 
+
   function getLocal(href) {
-    const map = JSON.parse(window.localStorage.getItem(PLAY_URL_KEY) || '{}');
+    const map = session.getItem(LOCAL_PLAY_URL_KEY, {});
 
     if (href) {
       const item = map[href];
 
-      if (!(item !== null && item !== void 0 && item.time) || Date.now() - item.time > 24 * 60 * 60 * 1000) {
+      if (Date.now() - item.time > 24 * 60 * 60 * 1000) {
         return null;
       }
 
@@ -1641,12 +1673,12 @@ userAgent: ${navigator.userAgent}
       url,
       time: Date.now()
     };
-    window.localStorage.setItem(PLAY_URL_KEY, JSON.stringify(map));
+    session.setItem(LOCAL_PLAY_URL_KEY, map);
   }
   function removeLocal(href) {
     const map = getLocal();
     delete map[href];
-    window.localStorage.setItem(PLAY_URL_KEY, JSON.stringify(map));
+    session.setItem(LOCAL_PLAY_URL_KEY, map);
   }
   function showLocalURL() {
     const list = getAllVideoUrlList();
@@ -1956,7 +1988,7 @@ userAgent: ${navigator.userAgent}
       color: '#60b8cc',
       cursor: 'pointer'
     }).on('click', () => {
-      window.sessionStorage.removeItem('stop-use');
+      session.removeItem('stop-use');
       window.location.reload();
     });
     $__default['default']('#wangpan-div .blocktitle').css({
@@ -1968,7 +2000,7 @@ userAgent: ${navigator.userAgent}
   function playModule$3() {
     $__default['default']('#cpraid').remove();
 
-    if (window.sessionStorage.getItem('stop-use') === '1') {
+    if (session.getItem('stop-use') === '1') {
       useOriginPlayer();
       return;
     }
@@ -2164,7 +2196,7 @@ userAgent: ${navigator.userAgent}
   function run() {
     const origin = window.location.origin;
 
-    if (origin.includes('agefans') || origin.includes('agemys')) {
+    if (origin.includes('agefans') || origin.includes('agemys') || origin.includes('age.tv')) {
       agefans();
     }
 
@@ -2174,8 +2206,28 @@ userAgent: ${navigator.userAgent}
       www88dmw();
     }
   }
+  /**
+   * 存储地方换了，迁移一下数据。几个版本后删除
+   */
+
+
+  function migrationStorage() {
+    const mergeKey = 'agefans-local-merge';
+    const isMerged = local.getItem(mergeKey);
+    if (isMerged) return;
+    local.setItem(mergeKey, true);
+    const waitToMergeKeys = ['v-his', 'play-url-key', 'kplayer'];
+    waitToMergeKeys.forEach(key => {
+      const value = window.localStorage.getItem(key);
+
+      if (value) {
+        local.setItem(key, JSON.parse(value));
+      }
+    });
+  }
 
   if (self === parent) {
+    migrationStorage();
     setup();
     window.addEventListener('DOMContentLoaded', run);
   }
