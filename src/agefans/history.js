@@ -1,15 +1,16 @@
 import $ from 'jquery'
 import './history.scss'
+import { local } from '../utils/local'
+
+const LOCAL_HISTORY_KEY = 'v-his'
+
 class History {
-  constructor() {
-    this.cacheKey = 'v-his'
-  }
   get his() {
-    return JSON.parse(localStorage.getItem(this.cacheKey) || '[]')
+    return local.getItem(LOCAL_HISTORY_KEY, [])
   }
   set his(value) {
     if (Array.isArray(value)) {
-      localStorage.setItem(this.cacheKey, JSON.stringify(value.slice(0, 100)))
+      local.setItem(LOCAL_HISTORY_KEY, value.slice(0, 100))
     }
   }
   getAll() {

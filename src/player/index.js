@@ -17,8 +17,9 @@ import { debounce } from '../utils/debounce'
 import { modal } from '../utils/modal'
 import { genIssueURL } from '../utils/genIssueURL'
 import { Message } from '../utils/message'
-import keybind from '../utils/keybind'
-
+import { keybind } from '../utils/keybind'
+import { session } from '../utils/session'
+import { local } from '../utils/local'
 const MediaErrorMessage = {
   1: '你中止了媒体播放',
   2: '网络错误',
@@ -58,7 +59,7 @@ class KPlayer {
     try {
       this.localConfig = Object.assign(
         this.localConfig,
-        JSON.parse(window.localStorage.getItem(this.localConfigKey))
+        local.getItem(this.localConfigKey)
       )
     } catch (error) {
       /** empty */
@@ -181,10 +182,10 @@ class KPlayer {
       if (!this.isHoverControls) dom.classList.add('plyr--hide-controls')
     }, 1000)
 
-    const status = window.sessionStorage.getItem(this.statusSessionKey)
+    const status = session.getItem(this.statusSessionKey)
     if (status) {
-      window.sessionStorage.removeItem(this.statusSessionKey)
-      this._toggleWidescreen(JSON.parse(status))
+      session.removeItem(this.statusSessionKey)
+      this._toggleWidescreen(status)
     }
   }
 
@@ -204,9 +205,7 @@ class KPlayer {
       this.showError(MediaErrorMessage[code] || this.src)
       if (code === 3) {
         const countKey = 'skip-error-retry-count' + window.location.search
-        let skipErrorRetryCount = parseInt(
-          window.sessionStorage.getItem(countKey) || '0'
-        )
+        let skipErrorRetryCount = parseInt(session.getItem(countKey) || '0')
         if (skipErrorRetryCount < 3) {
           skipErrorRetryCount++
           const duration = 2 * skipErrorRetryCount
@@ -218,17 +217,14 @@ class KPlayer {
             .then(() => {
               this.trigger('skiperror', 2 * skipErrorRetryCount)
             })
-          window.sessionStorage.setItem(
-            countKey,
-            skipErrorRetryCount.toString()
-          )
+          session.setItem(countKey, skipErrorRetryCount.toString())
         } else {
           this.message
             .info(`视频源出现问题，多次尝试失败，请手动跳过错误片段`, 4000)
             .then(() => {
               this.trigger('skiperror', 0)
             })
-          window.sessionStorage.removeItem(countKey)
+          session.removeItem(countKey)
         }
       } else {
         const $dom = $(
@@ -236,7 +232,7 @@ class KPlayer {
         ).css('cursor', 'pointer')
         $dom.on('click', () => {
           this.message.destroy()
-          window.sessionStorage.setItem('stop-use', '1')
+          session.setItem('stop-use', '1')
           window.location.reload()
         })
         this.message.info($dom, 10000)
@@ -504,10 +500,7 @@ class KPlayer {
 
   configSaveToLocal(key, value) {
     this.localConfig[key] = value
-    window.localStorage.setItem(
-      this.localConfigKey,
-      JSON.stringify(this.localConfig)
-    )
+    local.setItem(this.localConfigKey, this.localConfig)
   }
 
   /** @private */
@@ -563,10 +556,7 @@ class KPlayer {
     if (this.isWideScreen === bool) return
     this.isWideScreen = bool
 
-    window.sessionStorage.setItem(
-      this.statusSessionKey,
-      JSON.stringify(this.isWideScreen)
-    )
+    session.setItem(this.statusSessionKey, this.isWideScreen)
 
     if (this.isWideScreen) {
       this.wideScreenBodyStyles = $('body').css(['overflow'])

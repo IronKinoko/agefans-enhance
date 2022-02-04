@@ -4,6 +4,9 @@ import { modal } from '../utils/modal'
 import parseToURL from '../utils/parseToURL'
 import './getAllVideoURL.scss'
 import { getPlayUrl, updateCookie } from './playURL'
+import { session } from '../utils/session'
+const LOCAL_PLAY_URL_KEY = 'play-url-key'
+
 /**
  * @typedef {{title:string,href:string}} ATag
  */
@@ -213,16 +216,15 @@ async function insertResult(list) {
   })
 }
 
-const PLAY_URL_KEY = 'play-url-key'
 /**
  * @param {string} [href]
  * @return {Record<string,{url:string}> | string | null}
  */
 function getLocal(href) {
-  const map = JSON.parse(window.localStorage.getItem(PLAY_URL_KEY) || '{}')
+  const map = session.getItem(LOCAL_PLAY_URL_KEY, {})
   if (href) {
     const item = map[href]
-    if (!item?.time || Date.now() - item.time > 24 * 60 * 60 * 1000) {
+    if (Date.now() - item.time > 24 * 60 * 60 * 1000) {
       return null
     }
     return item.url
@@ -232,13 +234,13 @@ function getLocal(href) {
 export function saveLocal(href, url) {
   const map = getLocal()
   map[href] = { url, time: Date.now() }
-  window.localStorage.setItem(PLAY_URL_KEY, JSON.stringify(map))
+  session.setItem(LOCAL_PLAY_URL_KEY, map)
 }
 
 export function removeLocal(href) {
   const map = getLocal()
   delete map[href]
-  window.localStorage.setItem(PLAY_URL_KEY, JSON.stringify(map))
+  session.setItem(LOCAL_PLAY_URL_KEY, map)
 }
 
 export function showLocalURL() {

@@ -10,8 +10,9 @@
     "sourceType": "module"
   },
   "globals": {
-    "GM_getResourceText": "readonly",
-    "GM_addStyle": "readonly"
+    "GM_setValue": "readonly",
+    "GM_getValue": "readonly",
+    "unsafeWindow": "readonly"
   },
   "rules": {}
 }

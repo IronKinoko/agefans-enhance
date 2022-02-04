@@ -10,6 +10,7 @@ import {
   saveLocal,
 } from './getAllVideoURL'
 import { his, parseTime } from './history'
+import { session } from '../utils/session'
 
 function replacePlayer() {
   const dom = document.getElementById('age_playfram')
@@ -242,7 +243,7 @@ function useOriginPlayer() {
   const $dom = $(`<span>启用脚本</span>`)
     .css({ color: '#60b8cc', cursor: 'pointer' })
     .on('click', () => {
-      window.sessionStorage.removeItem('stop-use')
+      session.removeItem('stop-use')
       window.location.reload()
     })
   $('#wangpan-div .blocktitle')
@@ -253,7 +254,7 @@ function useOriginPlayer() {
 export function playModule() {
   $('#cpraid').remove()
 
-  if (window.sessionStorage.getItem('stop-use') === '1') {
+  if (session.getItem('stop-use') === '1') {
     useOriginPlayer()
     return
   }

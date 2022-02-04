@@ -2,7 +2,7 @@ import { playModule } from './play'
 import './index.scss'
 export function www88dmwSetup() {
   try {
-    Object.defineProperty(window, 'devtoolsDetector', {
+    Object.defineProperty(unsafeWindow, 'devtoolsDetector', {
       writable: false,
       value: null,
     })

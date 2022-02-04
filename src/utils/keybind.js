@@ -5,7 +5,7 @@ const SHIFT_KEY = '~!@#$%^&*()_+{}|:"<>?' + '～！@#¥%…&*（）——+「�
  * @param {string[]} keys
  * @param {(e:KeyboardEvent,key:string)=>void} cb
  */
-export default function keybind(keys, cb) {
+export function keybind(keys, cb) {
   const ua = navigator.userAgent
   if (!ua.includes('Mac OS')) {
     keys = keys.filter((key) => !key.includes('meta'))
