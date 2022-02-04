@@ -224,16 +224,15 @@ function getLocal(href) {
   const map = session.getItem(LOCAL_PLAY_URL_KEY, {})
   if (href) {
     const item = map[href]
-    if (!item || Date.now() - item.time > 24 * 60 * 60 * 1000) {
-      return null
-    }
+    if (!item) return null
+
     return item.url
   }
   return map
 }
 export function saveLocal(href, url) {
   const map = getLocal()
-  map[href] = { url, time: Date.now() }
+  map[href] = { url }
   session.setItem(LOCAL_PLAY_URL_KEY, map)
 }
 
