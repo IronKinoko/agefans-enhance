@@ -571,10 +571,9 @@ class KPlayer {
 
     canvas.toBlob((blob) => {
       navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })])
-      this.message.info(`<div><img 
-          src="${canvas.toDataURL(blob.type)}" 
+      this.message.info(`<img src="${canvas.toDataURL(blob.type)}" 
           style="width:200px;margin-bottom:4px;border:2px solid #fff;border-radius:4px;"/>
-        <center>已复制到剪切板中</center></div>`)
+        <center>已复制到剪切板中</center>`)
     })
   }
 
