@@ -224,7 +224,7 @@ function getLocal(href) {
   const map = session.getItem(LOCAL_PLAY_URL_KEY, {})
   if (href) {
     const item = map[href]
-    if (Date.now() - item.time > 24 * 60 * 60 * 1000) {
+    if (!item || Date.now() - item.time > 24 * 60 * 60 * 1000) {
       return null
     }
     return item.url
