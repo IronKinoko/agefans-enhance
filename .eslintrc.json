@@ -12,7 +12,8 @@
   "globals": {
     "GM_setValue": "readonly",
     "GM_getValue": "readonly",
-    "unsafeWindow": "readonly"
+    "unsafeWindow": "readonly",
+    "ClipboardItem": "readonly"
   },
   "rules": {}
 }

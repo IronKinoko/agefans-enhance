@@ -69,16 +69,14 @@ class KPlayer {
       autoplay: true,
       keyboard: { global: true },
       controls: [
-        // 'play-large', // The large play button in the center
-        'play', // Play/pause playback
-        'progress', // The progress bar and scrubber for playback and buffering
-        'current-time', // The current time of playback
-        'duration', // The full duration of the media
-        'mute', // Toggle mute
-        'volume', // Volume control
-        // 'settings', // Settings menu
-        'pip', // Picture-in-picture (currently Safari only)
-        'fullscreen', // Toggle fullscreen
+        'play',
+        'progress',
+        'current-time',
+        'duration',
+        'mute',
+        'volume',
+        'pip',
+        'fullscreen',
       ],
       storage: false,
       seekTime: 5,
@@ -164,6 +162,7 @@ class KPlayer {
     this._injectSpeed()
     this._injectQuestion()
     this._injectNext()
+    this._injectSnapshot()
     this._injectSreen()
     this._initEvent()
 
@@ -541,6 +540,15 @@ class KPlayer {
         this.trigger('next')
       })
   }
+  /** @private */
+  _injectSnapshot() {
+    if (!navigator.clipboard) return
+    $($('#plyr__snapshot').html())
+      .insertBefore('[data-plyr="fullscreen"]')
+      .on('click', () => {
+        this._snapshot()
+      })
+  }
 
   /** @private */
   _injectSreen() {
@@ -549,6 +557,25 @@ class KPlayer {
       .on('click', () => {
         this._toggleWidescreen()
       })
+  }
+
+  /** @private */
+  _snapshot() {
+    const video = this.$video[0]
+    const canvas = document.createElement('canvas')
+    canvas.width = video.videoWidth
+    canvas.height = video.videoHeight
+
+    const ctx = canvas.getContext('2d')
+    ctx.drawImage(video, 0, 0)
+
+    canvas.toBlob((blob) => {
+      navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })])
+      this.message.info(`<div><img 
+          src="${canvas.toDataURL(blob.type)}" 
+          style="width:200px;margin-bottom:4px;border:2px solid #fff;border-radius:4px;"/>
+        <center>已复制到剪切板中</center></div>`)
+    })
   }
 
   /** @private */

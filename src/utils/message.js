@@ -6,11 +6,11 @@ export class Message {
     this.$message.appendTo($(selector))
   }
 
-  info(text, duration = 1500) {
+  info(message, duration = 1500) {
     this.$message.empty()
     return new Promise((resolve) => {
       $(`<div class="k-player-message-item"></div>`)
-        .append(text)
+        .append(message)
         .hide()
         .appendTo(this.$message)
         .fadeIn(150)

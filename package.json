@@ -58,7 +58,7 @@
   "dependencies": {
     "hls.js": "^1.0.10",
     "jquery": "^1.12.4",
-    "plyr": "^3.6.5"
+    "plyr": "^3.6.12"
   },
   "browserslist": [
     "chrome >= 68"
