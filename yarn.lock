@@ -2467,10 +2467,10 @@ isexe@^2.0.0:
   resolved "https://registry.npm.taobao.org/isexe/download/isexe-2.0.0.tgz"
   integrity sha1-6PvzdNxVb/iUehDcsFctYz8s+hA=
 
-jquery@^1.12.4:
-  version "1.12.4"
-  resolved "https://registry.npm.taobao.org/jquery/download/jquery-1.12.4.tgz"
-  integrity sha1-AeHfuikP5z3rp3zurLD5ui/sngw=
+jquery@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.npmmirror.com/jquery/-/jquery-3.6.0.tgz#c72a09f15c1bdce142f49dbf1170bdf8adac2470"
+  integrity sha512-JVzAR/AjBvVt2BmYhxRCSYysDsPcssdmTFnzyLEts9qNwmjmu4JTAMYubEfwVOSwpQ1I1sKKFcxhZCI2buerfw==
 
 js-tokens@^4.0.0:
   version "4.0.0"
