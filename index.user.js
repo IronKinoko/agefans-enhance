@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.18.0
+// @version      1.18.1
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -13,7 +13,7 @@
 // @include      http://www.imomoe.live/player/*
 // @include      http://www.88dmw.com/*
 // @run-at       document-body
-// @require      https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js
+// @require      https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js
 // @require      https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.js
 // @require      https://cdn.jsdelivr.net/npm/hls.js@1.0.9/dist/hls.min.js
 // @grant        GM_getValue
@@ -82,6 +82,21 @@
     });
     $target.append($content);
     return $target;
+  }
+
+  const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
+  const macKeyMap = {
+    ctrl: '⌘',
+    alt: '⌥',
+    shift: '⇧'
+  };
+  /**
+   * @param {string} key
+   */
+
+  function renderKey(key) {
+    if (isMac) return macKeyMap[key.toLowerCase()] || key;
+    return key;
   }
 
   const icons = `
@@ -184,7 +199,7 @@ aria-hidden="true"
     <svg focusable="false">
       <use xlink:href="#snapshot"></use>
     </svg>
-    <span class="plyr__tooltip">截图</span>
+    <span class="plyr__tooltip">截图(${renderKey('Ctrl')} S)</span>
   </button>
 </template>
 
@@ -274,7 +289,7 @@ ${[...speedList].reverse().map(speed => `<li class="k-menu-item k-speed-item" da
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.18.0"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.18.1"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -302,12 +317,13 @@ ${[...speedList].reverse().map(speed => `<li class="k-menu-item k-speed-item" da
             <tr><td><span class="key">F</span></td><td>全屏</td></tr>
             <tr><td><span class="key">←</span></td><td>步退5s</td></tr>
             <tr><td><span class="key">→</span></td><td>步进5s</td></tr>
-            <tr><td><span class="key">Shift+←</span></td><td>步退30s</td></tr>
-            <tr><td><span class="key">Shift+→</span></td><td>步进30s</td></tr>
-            <tr><td><span class="key">Alt+←</span></td><td>步退60s</td></tr>
-            <tr><td><span class="key">Altl+→</span></td><td>步进60s</td></tr>
-            <tr><td><span class="key">Ctrl+←</span></td><td>步退90s</td></tr>
-            <tr><td><span class="key">Ctrl+→</span></td><td>步进90s</td></tr>
+            <tr><td><span class="key">${renderKey('Shift')} ←</span></td><td>步退30s</td></tr>
+            <tr><td><span class="key">${renderKey('Shift')} →</span></td><td>步进30s</td></tr>
+            <tr><td><span class="key">${renderKey('Alt')} ←</span></td><td>步退60s</td></tr>
+            <tr><td><span class="key">${renderKey('Alt')} →</span></td><td>步进60s</td></tr>
+            <tr><td><span class="key">${renderKey('Ctrl')} ←</span></td><td>步退90s</td></tr>
+            <tr><td><span class="key">${renderKey('Ctrl')} →</span></td><td>步进90s</td></tr>
+            <tr><td><span class="key">${renderKey('Ctrl')} S</span></td><td>截图</td></tr>
           </tbody>
         </table>
         <table class="shortcuts-table">
@@ -339,6 +355,7 @@ ${[...speedList].reverse().map(speed => `<li class="k-menu-item k-speed-item" da
             <tr><td><span class="key">↑</span></td><td>音量+</td></tr>
             <tr><td><span class="key">↓</span></td><td>音量-</td></tr>
             <tr><td><span class="key">M</span></td><td>静音</td></tr>
+            <tr><td><span class="key">I</span></td><td>画中画</td></tr>
             <tr><td><span class="key">?</span></td><td>脚本信息</td></tr>
           </tbody>
         </table>
@@ -360,7 +377,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.18.0"}
+脚本版本: ${"1.18.1"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -518,12 +535,8 @@ userAgent: ${navigator.userAgent}
    */
 
   function keybind(keys, cb) {
-    const ua = navigator.userAgent;
-
-    if (!ua.includes('Mac OS')) {
-      keys = keys.filter(key => !key.includes('meta'));
-    }
-
+    const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
+    keys = keys.filter(key => !key.includes(isMac ? 'ctrl' : 'meta'));
     $__default['default'](window).on('keydown', e => {
       let keyArr = [];
       e.ctrlKey && keyArr.push('ctrl');
@@ -654,7 +667,7 @@ userAgent: ${navigator.userAgent}
           frameTitle: '标题名称： {title}',
           captions: '字幕',
           settings: '设置',
-          pip: '画中画',
+          pip: '画中画(I)',
           menuBack: '返回上级',
           speed: '倍速',
           normal: '1.0x',
@@ -815,7 +828,9 @@ userAgent: ${navigator.userAgent}
       'p', '[', '【', 'PageUp', // 切换网页全屏
       'w', // 关闭网页全屏
       'Escape', // 播放速度
-      'z', 'x', 'c'], (e, key) => {
+      'z', 'x', 'c', // 截图
+      'ctrl+s', 'meta+s', // 画中画,
+      'i'], (e, key) => {
         switch (key) {
           case 'ctrl+ArrowLeft':
           case 'meta+ArrowLeft':
@@ -894,6 +909,19 @@ userAgent: ${navigator.userAgent}
               this.speed = speed;
               break;
             }
+
+          case 'ctrl+s':
+          case 'meta+s':
+            e.preventDefault();
+            e.stopPropagation();
+
+            this._snapshot();
+
+            break;
+
+          case 'i':
+            this.plyr.pip = !this.plyr.pip;
+            break;
         }
       });
       document.querySelectorAll('.plyr__controls .plyr__control').forEach(dom => {
@@ -1063,10 +1091,9 @@ userAgent: ${navigator.userAgent}
         navigator.clipboard.write([new ClipboardItem({
           [blob.type]: blob
         })]);
-        this.message.info(`<div><img 
-          src="${canvas.toDataURL(blob.type)}" 
+        this.message.info(`<img src="${canvas.toDataURL(blob.type)}" 
           style="width:200px;margin-bottom:4px;border:2px solid #fff;border-radius:4px;"/>
-        <center>已复制到剪切板中</center></div>`);
+        <center>已复制到剪切板中</center>`);
       });
     }
     /** @private */
