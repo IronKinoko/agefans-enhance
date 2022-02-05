@@ -105,7 +105,7 @@ class KPlayer {
         frameTitle: '标题名称： {title}',
         captions: '字幕',
         settings: '设置',
-        pip: '画中画',
+        pip: '画中画(I)',
         menuBack: '返回上级',
         speed: '倍速',
         normal: '1.0x',
@@ -302,6 +302,11 @@ class KPlayer {
         'z',
         'x',
         'c',
+        // 截图
+        'ctrl+s',
+        'meta+s',
+        // 画中画,
+        'i',
       ],
       (e, key) => {
         switch (key) {
@@ -376,7 +381,15 @@ class KPlayer {
             this.speed = speed
             break
           }
-
+          case 'ctrl+s':
+          case 'meta+s':
+            e.preventDefault()
+            e.stopPropagation()
+            this._snapshot()
+            break
+          case 'i':
+            this.plyr.pip = !this.plyr.pip
+            break
           default:
             break
         }

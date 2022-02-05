@@ -6,10 +6,8 @@ const SHIFT_KEY = '~!@#$%^&*()_+{}|:"<>?' + '～！@#¥%…&*（）——+「�
  * @param {(e:KeyboardEvent,key:string)=>void} cb
  */
 export function keybind(keys, cb) {
-  const ua = navigator.userAgent
-  if (!ua.includes('Mac OS')) {
-    keys = keys.filter((key) => !key.includes('meta'))
-  }
+  const isMac = /macintosh|mac os x/i.test(navigator.userAgent)
+  keys = keys.filter((key) => !key.includes(isMac ? 'ctrl' : 'meta'))
   $(window).on('keydown', (e) => {
     let keyArr = []
 

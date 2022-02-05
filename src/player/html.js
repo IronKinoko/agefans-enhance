@@ -1,5 +1,7 @@
 import $ from 'jquery'
 import { popover } from '../utils/popover'
+import { renderKey } from '../utils/renderKey'
+
 const icons = `
 <svg
 xmlns="http://www.w3.org/2000/svg"
@@ -100,7 +102,7 @@ aria-hidden="true"
     <svg focusable="false">
       <use xlink:href="#snapshot"></use>
     </svg>
-    <span class="plyr__tooltip">截图</span>
+    <span class="plyr__tooltip">截图(${renderKey('Ctrl')} S)</span>
   </button>
 </template>
 
@@ -240,12 +242,27 @@ export const scriptInfo = (video, githubIssueURL) => `
             <tr><td><span class="key">F</span></td><td>全屏</td></tr>
             <tr><td><span class="key">←</span></td><td>步退5s</td></tr>
             <tr><td><span class="key">→</span></td><td>步进5s</td></tr>
-            <tr><td><span class="key">Shift+←</span></td><td>步退30s</td></tr>
-            <tr><td><span class="key">Shift+→</span></td><td>步进30s</td></tr>
-            <tr><td><span class="key">Alt+←</span></td><td>步退60s</td></tr>
-            <tr><td><span class="key">Altl+→</span></td><td>步进60s</td></tr>
-            <tr><td><span class="key">Ctrl+←</span></td><td>步退90s</td></tr>
-            <tr><td><span class="key">Ctrl+→</span></td><td>步进90s</td></tr>
+            <tr><td><span class="key">${renderKey(
+              'Shift'
+            )} ←</span></td><td>步退30s</td></tr>
+            <tr><td><span class="key">${renderKey(
+              'Shift'
+            )} →</span></td><td>步进30s</td></tr>
+            <tr><td><span class="key">${renderKey(
+              'Alt'
+            )} ←</span></td><td>步退60s</td></tr>
+            <tr><td><span class="key">${renderKey(
+              'Alt'
+            )} →</span></td><td>步进60s</td></tr>
+            <tr><td><span class="key">${renderKey(
+              'Ctrl'
+            )} ←</span></td><td>步退90s</td></tr>
+            <tr><td><span class="key">${renderKey(
+              'Ctrl'
+            )} →</span></td><td>步进90s</td></tr>
+            <tr><td><span class="key">${renderKey(
+              'Ctrl'
+            )} S</span></td><td>截图</td></tr>
           </tbody>
         </table>
         <table class="shortcuts-table">
@@ -277,6 +294,7 @@ export const scriptInfo = (video, githubIssueURL) => `
             <tr><td><span class="key">↑</span></td><td>音量+</td></tr>
             <tr><td><span class="key">↓</span></td><td>音量-</td></tr>
             <tr><td><span class="key">M</span></td><td>静音</td></tr>
+            <tr><td><span class="key">I</span></td><td>画中画</td></tr>
             <tr><td><span class="key">?</span></td><td>脚本信息</td></tr>
           </tbody>
         </table>
