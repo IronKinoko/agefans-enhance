@@ -426,7 +426,7 @@ class KPlayer {
     $(".plyr--video input[type='range']").on('mousedown', function () {
       clearInterval(timeId)
       let i = 0
-      setInterval(() => {
+      timeId = setInterval(() => {
         $(this)
           .removeClass()
           .addClass(`shake-${i++ % 2}`)
@@ -556,6 +556,7 @@ class KPlayer {
   /** @private */
   _injectSnapshot() {
     if (!navigator.clipboard) return
+    this.$video.attr('crossorigin', '')
     $($('#plyr__snapshot').html())
       .insertBefore('[data-plyr="fullscreen"]')
       .on('click', () => {
@@ -574,6 +575,9 @@ class KPlayer {
 
   /** @private */
   _snapshot() {
+    // 非 https 模式下，这个值是空的
+    if (!navigator.clipboard) return
+
     const video = this.$video[0]
     const canvas = document.createElement('canvas')
     canvas.width = video.videoWidth
@@ -583,10 +587,11 @@ class KPlayer {
     ctx.drawImage(video, 0, 0)
 
     canvas.toBlob((blob) => {
+      if (!blob) return
       navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })])
       this.message.info(`<img src="${canvas.toDataURL(blob.type)}" 
-          style="width:200px;margin-bottom:4px;border:2px solid #fff;border-radius:4px;"/>
-        <center>已复制到剪切板中</center>`)
+        style="width:200px;margin-bottom:4px;border:2px solid #fff;border-radius:4px;"/>
+      <center>已复制到剪切板中</center>`)
     })
   }
 

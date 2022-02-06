@@ -131,7 +131,7 @@ $('body').append(icons)
 export const loadingHTML = `
 <div id="k-player-loading" style="display: none">
   <div class="k-player-center">
-    <div class="k-player-tsuma"/>
+    <div class="k-player-tsuma"></div>
     <div class="lds-spinner">
       <div></div>
       <div></div>
@@ -152,8 +152,8 @@ export const loadingHTML = `
 export const errorHTML = `
 <div id="k-player-error" style="display: none">
   <div class="k-player-center">
-    <div class="k-player-error-img"/>
-    <div class="k-player-tsuma"/>
+    <div class="k-player-error-img"></div>
+    <div class="k-player-tsuma"></div>
     <div class="k-player-error-info"></div>
   </div>
 </div>`
@@ -161,7 +161,7 @@ export const errorHTML = `
 export const pipHTML = `
 <div id="k-player-pip" style="display: none">
   <div class="k-player-center">
-    <div class="k-player-tsuma"/>
+    <div class="k-player-tsuma"></div>
   </div>
 </div>`
 

@@ -8,8 +8,8 @@ export function genUserScriptInfo(pkg) {
 // @include      https://www.age.tv/*
 // @include      https://www.agefans.*
 // @include      https://www.agemys.*
-// @include      http://www.yhdm.so/v/*
-// @include      http://www.yinghuacd.com/v/*
+// @include      *://*.yhdm.so/*
+// @include      *://*.yinghuacd.com/*
 // @include      https://www.yhdmp.cc/vp/*
 // @include      http://www.imomoe.live/player/*
 // @include      http://www.88dmw.com/*

@@ -45,8 +45,6 @@ function migrationStorage() {
   })
 }
 
-if (self === parent) {
-  migrationStorage()
-  setup()
-  window.addEventListener('DOMContentLoaded', run)
-}
+migrationStorage()
+setup()
+window.addEventListener('DOMContentLoaded', run)

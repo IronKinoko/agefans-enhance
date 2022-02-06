@@ -1,5 +1,8 @@
 .www88dmw-wrapper {
-  .menuBoxbg{
+  .menuBoxbg {
     z-index: 999;
+  }
+  #k-player-wrapper div:not(.plyr__progress) {
+    margin: initial;
   }
 }

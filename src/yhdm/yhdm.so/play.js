@@ -4,9 +4,9 @@ import { KPlayer } from '../../player'
 /** @type {KPlayer} */
 let player
 function replacePlayer() {
-  const vurl = $('#playbox').data('vid')
-  player = new KPlayer('.bofang iframe')
-  player.src = vurl.split('$')[0]
+  const url = new URL(location.href).searchParams.get('vid').split('$')[0]
+  player = new KPlayer('#dplayer')
+  player.src = url
 }
 
 function switchPart(next) {
@@ -29,11 +29,24 @@ function switchPart(next) {
 }
 
 function initEvent() {
-  player.on('prev', () => switchPart(false))
-  player.on('next', () => switchPart(true))
+  player.on('prev', () =>
+    window.parent.postMessage('prev', { targetOrigin: '*' })
+  )
+  player.on('next', () =>
+    window.parent.postMessage('next', { targetOrigin: '*' })
+  )
 }
 export function playModule() {
   $('body').addClass('yhdm-wrapper')
-  replacePlayer()
-  initEvent()
+
+  if (location.pathname.includes('/v')) {
+    window.addEventListener('message', (e) => {
+      if (e.data === 'prev') switchPart(false)
+      if (e.data === 'next') switchPart(true)
+    })
+  }
+  if (location.search.includes('vid')) {
+    replacePlayer()
+    initEvent()
+  }
 }
