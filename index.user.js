@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.18.3
+// @version      1.18.4
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -289,7 +289,7 @@ ${[...speedList].reverse().map(speed => `<li class="k-menu-item k-speed-item" da
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.18.3"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.18.4"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -377,7 +377,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.18.3"}
+脚本版本: ${"1.18.4"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -1354,7 +1354,7 @@ userAgent: ${navigator.userAgent}
       const hisItem = {};
       hisItem.id = id;
       hisItem.title = $__default['default']('#detailname a').text();
-      hisItem.href = location.href;
+      hisItem.href = location.pathname + location.search;
       hisItem.section = $__default['default']('li a[style*="color: rgb(238, 0, 0);"]').text();
       hisItem.time = 0;
       hisItem.logo = $__default['default']('#play_poster_img').attr('src');
@@ -2327,7 +2327,23 @@ userAgent: ${navigator.userAgent}
     });
   }
 
+  function migrationHistory() {
+    const mergeKey = 'agefans-his-href-modify';
+    const isMerged = local.getItem(mergeKey);
+    if (isMerged) return;
+    local.setItem(mergeKey, true);
+    const his = local.getItem('v-his', []);
+    his.forEach(item => {
+      try {
+        const url = new URL(item.href, location.origin);
+        item.href = url.pathname + url.search; // eslint-disable-next-line no-empty
+      } catch (e) {}
+    });
+    local.setItem('v-his', his);
+  }
+
   migrationStorage();
+  migrationHistory();
   setup();
   window.addEventListener('DOMContentLoaded', run);
 
