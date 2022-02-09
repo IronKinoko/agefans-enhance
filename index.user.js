@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.18.2
+// @version      1.18.3
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -289,7 +289,7 @@ ${[...speedList].reverse().map(speed => `<li class="k-menu-item k-speed-item" da
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.18.2"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.18.3"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -377,7 +377,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.18.2"}
+脚本版本: ${"1.18.3"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -1323,17 +1323,23 @@ userAgent: ${navigator.userAgent}
     }
 
     setTime(id, time = 0) {
-      this.his.find(o => o.id === id).time = time;
+      const his = this.his;
+      his.find(o => o.id === id).time = time;
+      this.his = his;
     }
 
     log(item) {
-      this.his.unshift(item);
+      const his = this.his;
+      his.unshift(item);
+      this.his = his;
     }
 
     refresh(id, data) {
-      const index = this.his.findIndex(o => o.id === id);
-      const item = this.his.splice(index, 1)[0];
-      this.his.unshift(data || item);
+      const his = this.his;
+      const index = his.findIndex(o => o.id === id);
+      const item = his.splice(index, 1)[0];
+      his.unshift(data || item);
+      this.his = his;
     }
 
     has(id) {
@@ -1396,26 +1402,46 @@ userAgent: ${navigator.userAgent}
     });
   }
 
+  function changeHash(hash) {
+    if (hash) {
+      history.replaceState(null, '', `#${hash}`);
+    } else {
+      const url = new URL(location.href);
+      url.hash = '';
+      history.replaceState(null, '', url);
+    }
+  }
+
   function renderHistoryPage() {
     const currentDom = $__default['default']('.nav_button_current');
     $__default['default']('<div id="history"></div>').insertAfter('#container').hide();
-    $__default['default'](`<a class="nav_button">历史</a>`).appendTo('#nav').on('click', e => {
+    const $hisNavBtn = $__default['default'](`<a class="nav_button">历史</a>`).appendTo('#nav').on('click', e => {
       if ($__default['default']('#history').is(':visible')) {
         $__default['default']('#container').show();
         $__default['default']('#history').hide();
+        changeHash();
         changeActive(currentDom);
       } else {
         renderHistoryList();
         $__default['default']('#container').hide();
         $__default['default']('#history').show();
+        changeHash('/history');
         changeActive($__default['default'](e.currentTarget));
       }
-    });
+    }); // 移除默认激活的 nav 上的 href 与增加点击事件
+
     $__default['default']('.nav_button_current').on('click', e => {
       $__default['default']('#container').show();
       $__default['default']('#history').hide();
       changeActive(e.currentTarget);
+      changeHash();
     }).removeAttr('href');
+
+    if (window.location.hash === '#/history') {
+      $__default['default']('#container').hide();
+      $__default['default']('#history').show();
+      changeActive($hisNavBtn);
+    }
   }
 
   function changeActive(dom) {
