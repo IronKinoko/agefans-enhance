@@ -20,15 +20,21 @@ class History {
     return this.his.find((o) => o.id === id)
   }
   setTime(id, time = 0) {
-    this.his.find((o) => o.id === id).time = time
+    const his = this.his
+    his.find((o) => o.id === id).time = time
+    this.his = his
   }
   log(item) {
-    this.his.unshift(item)
+    const his = this.his
+    his.unshift(item)
+    this.his = his
   }
   refresh(id, data) {
-    const index = this.his.findIndex((o) => o.id === id)
-    const item = this.his.splice(index, 1)[0]
-    this.his.unshift(data || item)
+    const his = this.his
+    const index = his.findIndex((o) => o.id === id)
+    const item = his.splice(index, 1)[0]
+    his.unshift(data || item)
+    this.his = his
   }
 
   has(id) {
