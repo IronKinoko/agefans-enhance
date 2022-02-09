@@ -100,33 +100,53 @@ export function renderHistoryList() {
     })
 }
 
+function changeHash(hash) {
+  if (hash) {
+    history.replaceState(null, '', `#${hash}`)
+  } else {
+    const url = new URL(location.href)
+    url.hash = ''
+    history.replaceState(null, '', url)
+  }
+}
+
 function renderHistoryPage() {
   const currentDom = $('.nav_button_current')
 
   $('<div id="history"></div>').insertAfter('#container').hide()
 
-  $(`<a class="nav_button">历史</a>`)
+  const $hisNavBtn = $(`<a class="nav_button">历史</a>`)
     .appendTo('#nav')
     .on('click', (e) => {
       if ($('#history').is(':visible')) {
         $('#container').show()
         $('#history').hide()
+        changeHash()
         changeActive(currentDom)
       } else {
         renderHistoryList()
         $('#container').hide()
         $('#history').show()
+        changeHash('/history')
         changeActive($(e.currentTarget))
       }
     })
 
+  // 移除默认激活的 nav 上的 href 与增加点击事件
   $('.nav_button_current')
     .on('click', (e) => {
       $('#container').show()
       $('#history').hide()
       changeActive(e.currentTarget)
+      changeHash()
     })
     .removeAttr('href')
+
+  if (window.location.hash === '#/history') {
+    $('#container').hide()
+    $('#history').show()
+    changeActive($hisNavBtn)
+  }
 }
 
 function changeActive(dom) {
