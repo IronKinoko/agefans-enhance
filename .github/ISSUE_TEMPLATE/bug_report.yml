@@ -16,5 +16,6 @@ body:
     attributes:
       label: 简要描述下问题
       value:
+      placeholder: 你可以通过脚本的【?】按钮来提交issue，这样可以带上更多的内容
     validations:
       required: false
