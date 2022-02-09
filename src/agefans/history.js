@@ -48,7 +48,7 @@ class History {
     const hisItem = {}
     hisItem.id = id
     hisItem.title = $('#detailname a').text()
-    hisItem.href = location.href
+    hisItem.href = location.pathname + location.search
     hisItem.section = $('li a[style*="color: rgb(238, 0, 0);"]').text()
     hisItem.time = 0
     hisItem.logo = $('#play_poster_img').attr('src')

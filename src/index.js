@@ -45,6 +45,23 @@ function migrationStorage() {
   })
 }
 
+function migrationHistory() {
+  const mergeKey = 'agefans-his-href-modify'
+  const isMerged = local.getItem(mergeKey)
+  if (isMerged) return
+  local.setItem(mergeKey, true)
+
+  const his = local.getItem('v-his', [])
+  his.forEach((item) => {
+    try {
+      const url = new URL(item.href, location.origin)
+      item.href = url.pathname + url.search
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
+  })
+  local.setItem('v-his', his)
+}
 migrationStorage()
+migrationHistory()
 setup()
 window.addEventListener('DOMContentLoaded', run)
