@@ -1,4 +1,4 @@
-import { Cookie } from '../utils/cookie'
+import { Cookie } from '../../utils/cookie'
 
 /**
  * agefans 安全机制：

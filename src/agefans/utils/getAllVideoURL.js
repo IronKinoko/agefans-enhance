@@ -1,10 +1,11 @@
 import $ from 'jquery'
-import { copyToClipboard } from '../utils/copy'
-import { modal } from '../utils/modal'
-import parseToURL from '../utils/parseToURL'
+import { copyToClipboard } from '../../utils/copy'
+import { modal } from '../../utils/modal'
+import parseToURL from '../../utils/parseToURL'
 import './getAllVideoURL.scss'
 import { getPlayUrl, updateCookie } from './playURL'
-import { session } from '../utils/session'
+import { session } from '../../utils/session'
+import { alert } from './alert'
 const LOCAL_PLAY_URL_KEY = 'play-url-key'
 
 /**
@@ -110,16 +111,7 @@ function insertModalForm() {
 
   let $dom = $(`
   <div id="modal-form">
-    <div class="k-alert k-alert-info">
-      <span class="k-alert-icon">
-        <svg viewBox="64 64 896 896" focusable="false" data-icon="info-circle" width="1em" height="1em" fill="currentColor" aria-hidden="true">
-          <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm32 664c0 4.4-3.6 8-8 8h-48c-4.4 0-8-3.6-8-8V456c0-4.4 3.6-8 8-8h48c4.4 0 8 3.6 8 8v272zm-32-344a48.01 48.01 0 010-96 48.01 48.01 0 010 96z"></path>
-        </svg>
-      </span>
-      <div class="k-alert-content">
-        <div class="k-alert-message">如果在1-2分钟内调用超过70多次，会被限流影响正常观看视频</div>
-      </div>
-    </div>
+    ${alert('如果在1-2分钟内调用超过70多次，会被限流影响正常观看视频')}
     <label class="k-checkbox">
       <input id="all-check" type="checkbox" checked/>全选
     </label>
@@ -163,7 +155,7 @@ function genUrlItem(title, content = '加载中...') {
 </div>`
 }
 
-const loadingIcon = `
+export const loadingIcon = `
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin-right:4px;" width="1em" height="1em" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
   <circle cx="50" cy="50" fill="none" stroke="#5699d2" stroke-width="10" r="40" stroke-dasharray="164.93361431346415 56.97787143782138">
     <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="0.6s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform>

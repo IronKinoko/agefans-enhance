@@ -24,7 +24,7 @@
     color: inherit;
   }
 
-  .k-modal-mask {
+  &-mask {
     position: fixed;
     left: 0;
     right: 0;
@@ -33,7 +33,7 @@
     background: rgba(0, 0, 0, 0.45);
     cursor: pointer;
   }
-  .k-modal-wrap {
+  &-wrap {
     position: fixed;
     left: 0;
     right: 0;
@@ -50,7 +50,7 @@
       vertical-align: middle;
     }
   }
-  .k-modal-container {
+  &-container {
     margin: 20px 0;
     display: inline-block;
     vertical-align: middle;
@@ -62,7 +62,7 @@
     border-radius: 2px;
     user-select: text;
   }
-  .k-modal-header {
+  &-header {
     font-size: 16px;
     padding: 16px;
     border-bottom: 1px solid #f1f1f1;
@@ -70,7 +70,7 @@
     justify-content: space-between;
     align-items: center;
   }
-  .k-modal-close {
+  &-close {
     cursor: pointer;
     height: 55px;
     width: 55px;
@@ -89,28 +89,30 @@
       color: rgba(0, 0, 0, 0.85);
     }
   }
-  .k-modal-body {
+  &-body {
     padding: 16px;
     font-size: 14px;
   }
-  .k-modal-footer {
+  &-footer {
     padding: 10px 16px;
     font-size: 14px;
     border-top: 1px solid #f1f1f1;
     display: flex;
     justify-content: flex-end;
   }
-  .k-modal-btn {
+  &-btn {
     user-select: none;
     display: flex;
     align-items: center;
     justify-content: center;
     height: 32px;
+    line-height: 32px;
     border-radius: 2px;
     border: 1px solid #1890ff;
     background: #1890ff;
     color: white;
     min-width: 64px;
     cursor: pointer;
+    padding: 0 8px;
   }
 }

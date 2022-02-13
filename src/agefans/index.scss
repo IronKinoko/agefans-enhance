@@ -1,4 +1,11 @@
 .agefans-wrapper {
+  .loginout a {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  .loginout a + a {
+    margin-left: 8px;
+  }
   .nav_button {
     cursor: pointer;
   }

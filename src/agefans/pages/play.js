@@ -1,16 +1,18 @@
 import $ from 'jquery'
-import { addReferrerMeta, KPlayer } from '../player'
-import { Message } from '../utils/message'
-import parseToURL from '../utils/parseToURL'
+import { addReferrerMeta, KPlayer } from '../../player'
+import { Message } from '../../utils/message'
+import parseToURL from '../../utils/parseToURL'
+import { session } from '../../utils/session'
 import {
   getVurlWithLocal,
   initGetAllVideoURL,
-  showLocalURL,
   removeLocal,
   saveLocal,
-} from './getAllVideoURL'
+  showLocalURL,
+} from '../utils/getAllVideoURL'
 import { his, parseTime } from './history'
-import { session } from '../utils/session'
+import { pagePreview } from '../utils/pagePreview'
+import './play.scss'
 
 function replacePlayer() {
   const dom = document.getElementById('age_playfram')
@@ -251,10 +253,33 @@ function useOriginPlayer() {
     .append($dom)
 }
 
+async function showRelatesSeries() {
+  const info = await fetch(location.pathname.replace('play', 'detail')).then(
+    (r) => r.text()
+  )
+
+  const $series = $(info).find('li.relates_series')
+  $series.find('a').each((_, anchor) => pagePreview(anchor, anchor.href))
+
+  $(`
+  <div class="spaceblock1"></div>
+  <div id="relates-series" class="baseblock">
+    <div class="blocktitle">相关动画：</div>
+    <div class="line"></div>
+    <div class="blockcontent">
+      <ul></ul>
+    </div>
+  </div>
+`)
+    .insertAfter($('.baseblock:contains(简介：)'))
+    .find('ul')
+    .append($series)
+}
+
 export function playModule() {
   $('#cpraid').remove()
 
-  if (session.getItem('stop-use') === '1') {
+  if (session.getItem('stop-use')) {
     useOriginPlayer()
     return
   }
@@ -264,4 +289,9 @@ export function playModule() {
   replaceHref()
   replacePlayer()
   initGetAllVideoURL()
+  showRelatesSeries()
+
+  $('.ul_li_a8 > .anime_icon1 > a:nth-child(1)').each((_, anchor) =>
+    pagePreview(anchor.parentElement, anchor.href)
+  )
 }

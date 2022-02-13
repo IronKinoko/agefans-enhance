@@ -1,6 +1,6 @@
 import $ from 'jquery'
 import './modal.scss'
-export function modal({ title, content, onClose, onOk }) {
+export function modal({ title, content, onClose, onOk, okText = '确 定' }) {
   const store = {
     width: document.body.style.width,
     overflow: document.body.style.overflow,
@@ -68,7 +68,7 @@ export function modal({ title, content, onClose, onOk }) {
   if (onOk) {
     $(`#${ID} .k-modal-container`).append(`
       <div class="k-modal-footer">
-        <button class="k-modal-btn k-modal-ok">确 定</button>
+        <button class="k-modal-btn k-modal-ok">${okText}</button>
       </div>
     `)
     $(`#${ID} .k-modal-ok`).on('click', () => {

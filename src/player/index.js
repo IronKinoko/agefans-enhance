@@ -231,7 +231,7 @@ class KPlayer {
         ).css('cursor', 'pointer')
         $dom.on('click', () => {
           this.message.destroy()
-          session.setItem('stop-use', '1')
+          session.setItem('stop-use', true)
           window.location.reload()
         })
         this.message.info($dom, 10000)

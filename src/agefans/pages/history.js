@@ -1,6 +1,7 @@
 import $ from 'jquery'
 import './history.scss'
-import { local } from '../utils/local'
+import { local } from '../../utils/local'
+import { pagePreview } from '../utils/pagePreview'
 
 const LOCAL_HISTORY_KEY = 'v-his'
 
@@ -80,7 +81,9 @@ export function renderHistoryList() {
       const histories = his.getAll()
       let html = ''
       histories.forEach((o) => {
-        html += `<a class="history-item" href="${o.href}">
+        html += `<a class="history-item" href="${
+          o.href
+        }" data-detail-href="/detail/${o.id}">
           <img
             referrerpolicy="no-referrer"
             src="${o.logo}"
@@ -98,6 +101,8 @@ export function renderHistoryList() {
         html || '<center>暂无数据</center>'
       }</div>`
     })
+    .find('a')
+    .each((_, anchor) => pagePreview(anchor, anchor.dataset.detailHref))
 }
 
 function changeHash(hash) {
@@ -116,7 +121,7 @@ function renderHistoryPage() {
   $('<div id="history"></div>').insertAfter('#container').hide()
 
   const $hisNavBtn = $(`<a class="nav_button">历史</a>`)
-    .appendTo('#nav')
+    .insertBefore('#nav form')
     .on('click', (e) => {
       if ($('#history').is(':visible')) {
         $('#container').show()
