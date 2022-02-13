@@ -17,18 +17,22 @@ export function pagePreview(trigger, previewURL) {
    * @param {MouseEvent} e
    */
   function caclPosition(e) {
-    const safeArea = window.outerWidth - window.innerWidth
+    const safeArea = 16
     const offset = 20
     const width = $popover.width()
     const height = $popover.height()
     const { innerWidth, innerHeight } = window
     const { clientX, clientY } = e
 
-    const left = Math.min(clientX + offset, innerWidth - width - safeArea * 2)
+    const maxLeft = innerWidth - width - safeArea * 2
+    const maxTop = innerHeight - height - safeArea
+
+    const left = Math.min(clientX + offset, maxLeft)
     const top =
-      clientY + offset + height < innerHeight - safeArea
-        ? clientY + offset
-        : clientY - offset - height
+      // 当指针与 popover 重叠时，切换位置
+      clientX + offset > maxLeft && clientY + offset > maxTop
+        ? clientY - offset - height
+        : Math.min(clientY + offset, maxTop)
 
     $popover.css({ left, top })
   }

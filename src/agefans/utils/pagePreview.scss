@@ -7,15 +7,23 @@
       border: 1px solid rgb(64, 64, 65);
       z-index: 1000;
       display: flex;
+      border-radius: 4px;
+      overflow: hidden;
       &-center {
         display: flex;
         justify-content: center;
         align-items: center;
       }
+      .baseblock2 {
+        border: none;
+        border-left: 1px solid #404041;
+        border-radius: 0;
+      }
     }
 
     .blocktitle.detail_title1 {
       color: #e0e0e0;
+      border-bottom: 1px solid #404041;
     }
     .detail_imform_tag {
       display: inline-block;
