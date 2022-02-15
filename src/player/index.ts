@@ -20,14 +20,59 @@ import { Message } from '../utils/message'
 import { keybind } from '../utils/keybind'
 import { session } from '../utils/session'
 import { local } from '../utils/local'
-const MediaErrorMessage = {
+const MediaErrorMessage: Record<number, string> = {
   1: '你中止了媒体播放',
   2: '网络错误',
   3: '文件损坏',
   4: '资源有问题看不了',
   5: '资源被加密了',
 }
+
+type Opts = {
+  video?: HTMLVideoElement
+  eventToParentWindow?: boolean
+} & Plyr.Options
+
+type CustomEventMap =
+  | 'prev'
+  | 'next'
+  | 'enterwidescreen'
+  | 'exitwidescreen'
+  | 'skiperror'
+  | 'enterpictureinpicture'
+  | 'leavepictureinpicture'
+
 class KPlayer {
+  localConfigKey: string
+  statusSessionKey: string
+  localConfig: {
+    speed: number
+    continuePlay: boolean
+    autoNext: boolean
+    showProgress: boolean
+    volume: number
+  }
+  plyr: Plyr
+  $wrapper: JQuery<HTMLElement>
+  $loading: JQuery<HTMLElement>
+  $error: JQuery<HTMLElement>
+  $video: JQuery<HTMLVideoElement>
+  $progress: JQuery<HTMLElement>
+  $header: JQuery<HTMLElement>
+  $pip: JQuery<HTMLElement>
+  $videoWrapper: JQuery<HTMLElement>
+  message: Message
+  eventMap: Record<string, []>
+  isWideScreen: boolean
+  wideScreenBodyStyles: {}
+  tsumaLength: number
+  curentTsuma: number
+  isHoverControls: boolean
+  hideCursorDebounced: (...rest: any[]) => void
+  hideControlsDebounced: (...rest: any[]) => void
+  $settings!: JQuery<HTMLDivElement>
+  $speed!: JQuery<HTMLDivElement>
+
   /**
    * @typedef {Object} EnhanceOpts
    * @property {HTMLVideoElement} [video]
@@ -37,12 +82,14 @@ class KPlayer {
    * @param {string|Element} selector
    * @param {Plyr.Options & EnhanceOpts} [opts]
    */
-  constructor(selector, opts = {}) {
+  constructor(selector: string | Element, opts: Opts = {}) {
     const $wrapper = $('<div id="k-player-wrapper"/>').replaceAll(selector)
     const $loading = $(loadingHTML)
     const $error = $(errorHTML)
     const $pip = $(pipHTML)
-    const $video = $(opts.video ?? '<video />').attr('id', 'k-player')
+    const $video = (
+      (opts.video ? $(opts.video) : $('<video />')) as JQuery<HTMLVideoElement>
+    ).attr('id', 'k-player')
     const $progress = $(progressHTML)
     const $header = $('<div id="k-player-header"/>')
     $wrapper.append($video)
@@ -82,10 +129,10 @@ class KPlayer {
         'pip',
         'fullscreen',
       ],
-      storage: false,
+      storage: { enabled: false },
       seekTime: 5,
       volume: this.localConfig.volume,
-      speed: { options: speedList },
+      speed: { options: speedList, selected: 1 },
       i18n: {
         restart: '重播',
         rewind: '快退 {seektime}s',
@@ -176,13 +223,13 @@ class KPlayer {
     /** @private */
     this.hideCursorDebounced = debounce(() => {
       const dom = document.querySelector('.plyr')
-      dom.classList.add('plyr--hide-cursor')
+      dom?.classList.add('plyr--hide-cursor')
     }, 1000)
 
     /** @private */
     this.hideControlsDebounced = debounce(() => {
       const dom = document.querySelector('.plyr')
-      if (!this.isHoverControls) dom.classList.add('plyr--hide-controls')
+      if (!this.isHoverControls) dom?.classList.add('plyr--hide-controls')
     }, 1000)
 
     const status = session.getItem(this.statusSessionKey)
@@ -207,7 +254,7 @@ class KPlayer {
       this.plyr.play()
     })
     this.on('error', () => {
-      const code = this.plyr.media.error.code
+      const code = this.$video[0].error!.code
       this.$loading.hide()
       this.showError(MediaErrorMessage[code] || this.src)
       if (code === 3) {
@@ -405,10 +452,12 @@ class KPlayer {
     )
 
     document
-      .querySelectorAll('.plyr__controls .plyr__control')
+      .querySelectorAll<HTMLButtonElement | HTMLDivElement>(
+        '.plyr__controls .plyr__control'
+      )
       .forEach((dom) => {
         dom.addEventListener('click', (e) => {
-          e.currentTarget.blur()
+          e.currentTarget?.blur()
         })
       })
 
@@ -422,7 +471,7 @@ class KPlayer {
       }
     })
 
-    const controlsEl = document.querySelector('.plyr__controls')
+    const controlsEl = document.querySelector('.plyr__controls')!
     controlsEl.addEventListener('mouseenter', () => {
       this.isHoverControls = true
     })
@@ -430,11 +479,11 @@ class KPlayer {
       this.isHoverControls = false
     })
 
-    let timeId = null
+    let timeId: number
     $(".plyr--video input[type='range']").on('mousedown', function () {
       clearInterval(timeId)
       let i = 0
-      timeId = setInterval(() => {
+      timeId = window.setInterval(() => {
         $(this)
           .removeClass()
           .addClass(`shake-${i++ % 2}`)
@@ -446,12 +495,7 @@ class KPlayer {
     })
   }
 
-  /** @typedef {'prev'|'next'|'enterwidescreen'|'exitwidescreen'|'skiperror'} CustomEventMap */
-  /**
-   * @param {CustomEventMap | keyof Plyr.PlyrEventMap} event
-   * @param {function} callback
-   */
-  on(event, callback) {
+  on(event: CustomEventMap | keyof Plyr.PlyrEventMap, callback?: Function) {
     if (
       [
         'prev',
@@ -468,11 +512,7 @@ class KPlayer {
     }
   }
 
-  /**
-   * @param {CustomEventMap} event
-   * @param {*} [params]
-   */
-  trigger(event, params) {
+  trigger(event: CustomEventMap, params?: any) {
     const fnList = this.eventMap[event] || []
     fnList.forEach((fn) => {
       fn(this, params)
@@ -627,7 +667,7 @@ class KPlayer {
    * video src
    * @param {string} src
    */
-  set src(src) {
+  set src(src: string) {
     if (src.includes('.m3u8')) {
       if (!Hls.isSupported()) throw new Error('不支持播放 hls 文件')
       const hls = new Hls()
@@ -720,7 +760,7 @@ class KPlayer {
     evnetKeys.forEach((key) => {
       this.on(key, () => {
         /** @type {HTMLVideoElement} */
-        const video = this.$video[0]
+        const video: HTMLVideoElement = this.$video[0]
         const info = {
           width: video.videoWidth,
           height: video.videoHeight,

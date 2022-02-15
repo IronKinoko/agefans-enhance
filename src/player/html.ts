@@ -207,7 +207,7 @@ export const settingsHTML = popover(
 `
 )
 
-export const scriptInfo = (video, githubIssueURL) => `
+export const scriptInfo = (video: HTMLVideoElement, githubIssueURL: string) => `
 <table class="script-info">
   <tbody>
   <tr><td>脚本版本</td><td>${process.env.APP_VERSION}</td></tr>
