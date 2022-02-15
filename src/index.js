@@ -1,31 +1,7 @@
 import 'plyr/dist/plyr.css'
-import { www88dmw, www88dmwSetup } from './adapter/88dmw'
-import { agefans } from './adapter/agefans'
+import './adapter'
+import { runtime } from './runtime/index'
 import { local } from './utils/local'
-import { yhdm } from './adapter/yhdm'
-
-function setup() {
-  if (origin.includes('88dmw')) {
-    www88dmwSetup()
-  }
-}
-
-function run() {
-  const origin = window.location.origin
-  if (
-    origin.includes('agefans') ||
-    origin.includes('agemys') ||
-    origin.includes('age.tv')
-  ) {
-    agefans()
-  }
-
-  yhdm()
-
-  if (origin.includes('88dmw')) {
-    www88dmw()
-  }
-}
 
 /**
  * 存储地方换了，迁移一下数据。几个版本后删除
@@ -63,5 +39,5 @@ function migrationHistory() {
 }
 migrationStorage()
 migrationHistory()
-setup()
-window.addEventListener('DOMContentLoaded', run)
+
+runtime.run()

@@ -1,6 +1,8 @@
 import { playModule } from './play'
 import './index.scss'
-export function www88dmwSetup() {
+import { runtime } from '../../runtime/index'
+
+function www88dmwSetup() {
   try {
     Object.defineProperty(unsafeWindow, 'devtoolsDetector', {
       writable: false,
@@ -10,6 +12,7 @@ export function www88dmwSetup() {
     // eslint-disable-next-line no-empty
   } catch (error) {}
 }
-export function www88dmw() {
-  playModule()
-}
+
+runtime.register('88dmw', [
+  { test: '/play', setup: www88dmwSetup, run: playModule },
+])

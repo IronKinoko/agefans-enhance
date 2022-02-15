@@ -7,6 +7,7 @@ import Copy from 'rollup-plugin-copy'
 import styles from 'rollup-plugin-styles'
 import pkg from './package.json'
 import { genUserScriptInfo } from './template/userscript'
+import typescript from 'rollup-plugin-typescript2'
 export default defineConfig({
   input: 'src/index.js',
   output: {
@@ -24,6 +25,7 @@ export default defineConfig({
   plugins: [
     image(),
     babel({ babelHelpers: 'bundled' }),
+    typescript(),
     styles(),
     nodeResolve({ browser: true }),
     replace({

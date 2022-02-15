@@ -1,4 +1,5 @@
 import $ from 'jquery'
+import { runtime } from '../../runtime/index'
 import './index.scss'
 import { detailModule } from './pages/detail'
 import { historyModule } from './pages/history'
@@ -9,38 +10,26 @@ import { recommendModule } from './pages/recommend'
 import { settingModule } from './pages/setting'
 import { updateModule } from './pages/update'
 
-export function agefans() {
-  if (self !== parent) return
+runtime.register(
+  ['age.tv', 'agemys', 'agefans'],
+  [
+    {
+      test: '*',
+      run: () => {
+        $('body').addClass('agefans-wrapper')
+        if (process.env.NODE_ENV === 'development') {
+          document.cookie = 'username=admin; path=/; max-age=99999999;'
+        }
 
-  $('body').addClass('agefans-wrapper')
-  if (process.env.NODE_ENV === 'development') {
-    document.cookie = 'username=admin; path=/; max-age=99999999;'
-  }
-
-  settingModule()
-
-  historyModule()
-
-  // log page to history
-  if (location.pathname.startsWith('/play')) {
-    playModule()
-  }
-
-  // in detail pages show view history
-  if (location.pathname.startsWith('/detail')) {
-    detailModule()
-  }
-
-  if (location.pathname.startsWith('/recommend')) {
-    recommendModule()
-  }
-  if (location.pathname.startsWith('/update')) {
-    updateModule()
-  }
-  if (location.pathname.startsWith('/rank')) {
-    rankModule()
-  }
-  if (location.pathname === '/') {
-    homeModule()
-  }
-}
+        settingModule()
+        historyModule()
+      },
+    },
+    { test: '/play', run: playModule },
+    { test: '/detail', run: detailModule },
+    { test: '/recommend', run: recommendModule },
+    { test: '/update', run: updateModule },
+    { test: '/rank', run: rankModule },
+    { test: /^\/$/, run: homeModule },
+  ]
+)

@@ -39,12 +39,13 @@ function initEvent() {
 export function playModule() {
   $('body').addClass('yhdm-wrapper')
 
-  if (location.pathname.includes('/v')) {
-    window.addEventListener('message', (e) => {
-      if (e.data === 'prev') switchPart(false)
-      if (e.data === 'next') switchPart(true)
-    })
-  }
+  window.addEventListener('message', (e) => {
+    if (e.data === 'prev') switchPart(false)
+    if (e.data === 'next') switchPart(true)
+  })
+}
+
+export function playInIframeModule() {
   if (location.search.includes('vid')) {
     replacePlayer()
     initEvent()
