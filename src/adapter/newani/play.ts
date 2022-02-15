@@ -1,21 +1,8 @@
 import $ from 'jquery'
 import { KPlayer } from '../../player'
+import { queryDom } from '../../utils/queryDom'
 
 let player: KPlayer
-function queryVideoDom() {
-  return new Promise<JQuery<HTMLVideoElement>>((resolve) => {
-    let $video: JQuery<HTMLVideoElement>
-    function search() {
-      $video = $('video')
-      if ($video.length === 0) {
-        requestAnimationFrame(search)
-      } else {
-        resolve($video)
-      }
-    }
-    search()
-  })
-}
 
 function injectEvent() {
   player.on('prev', () => {
@@ -46,6 +33,6 @@ function replacePlayer(video: HTMLVideoElement) {
   fn()
 }
 export async function playModule() {
-  const $video = await queryVideoDom()
-  replacePlayer($video[0])
+  const video = await queryDom<HTMLVideoElement>('video')
+  replacePlayer(video)
 }

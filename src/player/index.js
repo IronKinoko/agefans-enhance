@@ -29,11 +29,15 @@ const MediaErrorMessage = {
 }
 class KPlayer {
   /**
+   * @typedef {Object} EnhanceOpts
+   * @property {HTMLVideoElement} [video]
+   * @property {boolean} [eventToParentWindow]
+   *
    * Creates an instance of KPlayer.
    * @param {string|Element} selector
-   * @param {Plyr.Options & {video: HTMLVideoElement}} [opts]
+   * @param {Plyr.Options & EnhanceOpts} [opts]
    */
-  constructor(selector, opts) {
+  constructor(selector, opts = {}) {
     const $wrapper = $('<div id="k-player-wrapper"/>').replaceAll(selector)
     const $loading = $(loadingHTML)
     const $error = $(errorHTML)
@@ -185,6 +189,10 @@ class KPlayer {
     if (status) {
       session.removeItem(this.statusSessionKey)
       this._toggleWidescreen(status)
+    }
+
+    if (opts.eventToParentWindow) {
+      this.eventToParentWindow()
     }
   }
 
@@ -670,6 +678,59 @@ class KPlayer {
   setRandomTsuma() {
     this.curentTsuma = ++this.curentTsuma % this.tsumaLength
     this.$wrapper.find('.k-player-tsuma').attr('data-bg-idx', this.curentTsuma)
+  }
+
+  eventToParentWindow() {
+    const evnetKeys = [
+      'prev',
+      'next',
+      'enterwidescreen',
+      'exitwidescreen',
+      'skiperror',
+      'progress',
+      'playing',
+      'play',
+      'pause',
+      'timeupdate',
+      'volumechange',
+      'seeking',
+      'seeked',
+      'ratechange',
+      'ended',
+      'enterfullscreen',
+      'exitfullscreen',
+      'captionsenabled',
+      'captionsdisabled',
+      'languagechange',
+      'controlshidden',
+      'controlsshown',
+      'ready',
+      'loadstart',
+      'loadeddata',
+      'loadedmetadata',
+      'canplay',
+      'canplaythrough',
+      'stalled',
+      'waiting',
+      'emptied',
+      'cuechange',
+      'error',
+    ]
+
+    evnetKeys.forEach((key) => {
+      this.on(key, () => {
+        /** @type {HTMLVideoElement} */
+        const video = this.$video[0]
+        const info = {
+          width: video.videoWidth,
+          height: video.videoHeight,
+          currentTime: video.currentTime,
+          src: video.src,
+          duration: video.duration,
+        }
+        window.parent.postMessage({ key, video: info }, { targetOrigin: '*' })
+      })
+    })
   }
 }
 

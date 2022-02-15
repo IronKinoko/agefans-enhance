@@ -1,12 +1,11 @@
 import $ from 'jquery'
 import { KPlayer } from '../../../player'
 
-/** @type {KPlayer} */
-let player
 function replacePlayer() {
-  const url = new URL(location.href).searchParams.get('vid').split('$')[0]
-  player = new KPlayer('#dplayer')
-  player.src = url
+  new KPlayer('#dplayer', {
+    video: $('video')[0],
+    eventToParentWindow: true,
+  })
 }
 
 function switchPart(next) {
@@ -28,26 +27,39 @@ function switchPart(next) {
   $('.movurls .sel')[direction[1]]().find('a')[0]?.click()
 }
 
-function initEvent() {
-  player.on('prev', () =>
-    window.parent.postMessage('prev', { targetOrigin: '*' })
-  )
-  player.on('next', () =>
-    window.parent.postMessage('next', { targetOrigin: '*' })
-  )
-}
 export function playModule() {
   $('body').addClass('yhdm-wrapper')
 
   window.addEventListener('message', (e) => {
-    if (e.data === 'prev') switchPart(false)
-    if (e.data === 'next') switchPart(true)
+    if (!Reflect.has(e.data, 'key')) return
+    const key = e.data.key
+    if (key === 'prev') switchPart(false)
+    if (key === 'next') switchPart(true)
+    if (key === 'enterwidescreen') {
+      $('body').css('overflow', 'hidden')
+      $('#playbox iframe').css({
+        position: 'fixed',
+        left: 0,
+        right: 0,
+        bottom: 0,
+        top: 0,
+      })
+    }
+    if (key === 'exitwidescreen') {
+      $('body').css('overflow', '')
+      $('#playbox iframe').removeAttr('style')
+    }
+  })
+
+  window.addEventListener('keydown', (e) => {
+    if (document.activeElement !== document.body) return
+    $('#playbox iframe')[0].focus()
+    if (e.key === ' ') e.preventDefault()
   })
 }
 
 export function playInIframeModule() {
   if (location.search.includes('vid')) {
     replacePlayer()
-    initEvent()
   }
 }
