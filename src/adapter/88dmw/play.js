@@ -1,6 +1,6 @@
 import $ from 'jquery'
-import { KPlayer } from '../player'
-import parseToURL from '../utils/parseToURL'
+import { KPlayer } from '../../player'
+import parseToURL from '../../utils/parseToURL'
 
 /** @type {KPlayer} */
 let player

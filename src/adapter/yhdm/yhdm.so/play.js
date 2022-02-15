@@ -1,5 +1,5 @@
 import $ from 'jquery'
-import { KPlayer } from '../../player'
+import { KPlayer } from '../../../player'
 
 /** @type {KPlayer} */
 let player

@@ -1,7 +1,7 @@
 import $ from 'jquery'
-import { local } from '../../utils/local'
-import { modal } from '../../utils/modal'
-import { session } from '../../utils/session'
+import { local } from '../../../utils/local'
+import { modal } from '../../../utils/modal'
+import { session } from '../../../utils/session'
 import { alert } from '../utils/alert'
 import './setting.scss'
 

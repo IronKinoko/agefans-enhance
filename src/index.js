@@ -1,8 +1,8 @@
 import 'plyr/dist/plyr.css'
-import { www88dmw, www88dmwSetup } from './88dmw'
-import { agefans } from './agefans'
+import { www88dmw, www88dmwSetup } from './adapter/88dmw'
+import { agefans } from './adapter/agefans'
 import { local } from './utils/local'
-import { yhdm } from './yhdm'
+import { yhdm } from './adapter/yhdm'
 
 function setup() {
   if (origin.includes('88dmw')) {

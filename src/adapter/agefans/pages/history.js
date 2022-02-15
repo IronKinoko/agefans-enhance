@@ -1,6 +1,6 @@
 import $ from 'jquery'
 import './history.scss'
-import { local } from '../../utils/local'
+import { local } from '../../../utils/local'
 import { pagePreview } from '../utils/pagePreview'
 
 const LOCAL_HISTORY_KEY = 'v-his'
