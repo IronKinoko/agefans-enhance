@@ -16,6 +16,8 @@ export function genUserScriptInfo(pkg) {
 // @include      https://new-ani.me/*
 // @include      https://danmu.4dm.cc/m3u8.php*
 // @include      http*://www.ntyou.*
+// @include      https://www.dm233.*
+// @include      https://www.olevod.com*
 // @run-at       document-body
 // @require      https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js
 // @require      https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.js

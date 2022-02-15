@@ -4,27 +4,23 @@ import { queryDom } from '../../utils/queryDom'
 
 let player: KPlayer
 
-function injectEvent() {
+function switchPart(next: boolean) {
   player.on('prev', () => {
     $('.meida-content-main-window-right-series-list-volume-active')
-      .parent()
+      [next ? 'next' : 'prev']()
       .prev()
       .find('a')[0]
       ?.click()
   })
-  player.on('next', () => {
-    $('.meida-content-main-window-right-series-list-volume-active')
-      .parent()
-      .next()
-      .find('a')[0]
-      ?.click()
-  })
+}
+function injectEvent() {
+  player.on('prev', () => switchPart(false))
+  player.on('next', () => switchPart(true))
 }
 
 function replacePlayer(video: HTMLVideoElement) {
   const fn = () => {
     if (!video.src || video.src === location.href) return
-    $(video).appendTo('body')
     player = new KPlayer('.player.meida-content-main-window-left', { video })
     injectEvent()
   }
