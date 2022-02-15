@@ -13,6 +13,7 @@ export function genUserScriptInfo(pkg) {
 // @include      https://www.yhdmp.cc/vp/*
 // @include      http://www.imomoe.live/player/*
 // @include      http://www.88dmw.com/*
+// @include      https://new-ani.me/*
 // @run-at       document-body
 // @require      https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js
 // @require      https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.js

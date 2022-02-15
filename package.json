@@ -44,6 +44,7 @@
     "@rollup/plugin-node-resolve": "^13.0.0",
     "@rollup/plugin-replace": "^2.4.2",
     "@rollup/plugin-typescript": "^8.3.0",
+    "@types/jquery": "^3.5.13",
     "core-js": "^3.12.1",
     "cross-env": "^7.0.3",
     "eslint": "^7.24.0",

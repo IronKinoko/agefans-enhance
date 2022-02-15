@@ -48,8 +48,6 @@ class Runtime {
       })
     })
 
-    console.log(setupList, runList)
-    console.log(list)
     setupList.forEach((setup) => setup())
     window.addEventListener('DOMContentLoaded', () => {
       runList.forEach((run) => run())

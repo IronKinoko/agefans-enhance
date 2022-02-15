@@ -31,14 +31,14 @@ class KPlayer {
   /**
    * Creates an instance of KPlayer.
    * @param {string|Element} selector
-   * @param {Plyr.Options} opts
+   * @param {Plyr.Options & {video: HTMLVideoElement}} [opts]
    */
   constructor(selector, opts) {
     const $wrapper = $('<div id="k-player-wrapper"/>').replaceAll(selector)
     const $loading = $(loadingHTML)
     const $error = $(errorHTML)
     const $pip = $(pipHTML)
-    const $video = $('<video id="k-player" />')
+    const $video = $(opts.video ?? '<video />').attr('id', 'k-player')
     const $progress = $(progressHTML)
     const $header = $('<div id="k-player-header"/>')
     $wrapper.append($video)
@@ -442,7 +442,6 @@ class KPlayer {
   /**
    * @param {CustomEventMap | keyof Plyr.PlyrEventMap} event
    * @param {function} callback
-   * @private
    */
   on(event, callback) {
     if (
