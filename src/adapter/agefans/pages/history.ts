@@ -2,6 +2,7 @@ import $ from 'jquery'
 import './history.scss'
 import { gm } from '../../../utils/storage'
 import { pagePreview } from '../utils/pagePreview'
+import { parseTime } from '../../../utils/parseTime'
 
 const LOCAL_HISTORY_KEY = 'v-his'
 
@@ -77,11 +78,6 @@ class History {
 }
 export const his = new History()
 
-export function parseTime(time = 0) {
-  return `${Math.floor(time / 60)
-    .toString()
-    .padStart(2, '0')}:${(time % 60).toString().padStart(2, '0')}`
-}
 export function renderHistoryList() {
   $('#history')
     .html('')

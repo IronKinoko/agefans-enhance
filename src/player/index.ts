@@ -1,25 +1,25 @@
-import './index.scss'
-import $ from 'jquery'
-import Plyr from 'plyr'
 import Hls from 'hls.js'
+import $ from 'jquery'
+import { debounce, throttle } from 'lodash-es'
+import Plyr from 'plyr'
+import { genIssueURL } from '../utils/genIssueURL'
+import { keybind } from '../utils/keybind'
+import { Message } from '../utils/message'
+import { modal } from '../utils/modal'
+import { parseTime } from '../utils/parseTime'
+import { gm, local, session } from '../utils/storage'
 import {
   errorHTML,
   issueBody,
   loadingHTML,
-  scriptInfo,
+  pipHTML,
   progressHTML,
+  scriptInfo,
+  settingsHTML,
   speedHTML,
   speedList,
-  settingsHTML,
-  pipHTML,
 } from './html'
-import { debounce } from '../utils/debounce'
-import { modal } from '../utils/modal'
-import { genIssueURL } from '../utils/genIssueURL'
-import { Message } from '../utils/message'
-import { keybind } from '../utils/keybind'
-import { session } from '../utils/storage'
-import { gm } from '../utils/storage'
+import './index.scss'
 const MediaErrorMessage: Record<number, string> = {
   1: '你中止了媒体播放',
   2: '网络错误',
@@ -41,6 +41,8 @@ type CustomEventMap =
   | 'skiperror'
   | 'enterpictureinpicture'
   | 'leavepictureinpicture'
+
+type LocalPlayTimeStore = Record<string, number>
 
 class KPlayer {
   localConfigKey: string
@@ -68,10 +70,9 @@ class KPlayer {
   tsumaLength: number
   curentTsuma: number
   isHoverControls: boolean
-  hideCursorDebounced: (...rest: any[]) => void
-  hideControlsDebounced: (...rest: any[]) => void
   $settings!: JQuery<HTMLDivElement>
   $speed!: JQuery<HTMLDivElement>
+  localPlayTimeKey: string
 
   /**
    * @typedef {Object} EnhanceOpts
@@ -96,6 +97,7 @@ class KPlayer {
 
     this.localConfigKey = 'kplayer'
     this.statusSessionKey = 'k-player-status'
+    this.localPlayTimeKey = 'k-player-play-time'
 
     /**
      * @type {{speed:number,continuePlay:boolean,autoNext:boolean,showProgress:boolean,volume:number}}
@@ -209,33 +211,21 @@ class KPlayer {
       .getPropertyValue('--k-player-tsuma-length')
       .trim()
     this.curentTsuma = -1
-    this._injectSettings()
-    this._injectSpeed()
-    this._injectQuestion()
-    this._injectNext()
-    this._injectSnapshot()
-    this._injectSreen()
-    this._initEvent()
+    this.injectSettings()
+    this.injectSpeed()
+    this.injectQuestion()
+    this.injectNext()
+    this.injectSnapshot()
+    this.injectSreen()
+    this.initEvent()
 
     /** @private */
     this.isHoverControls = false
 
-    /** @private */
-    this.hideCursorDebounced = debounce(() => {
-      const dom = document.querySelector('.plyr')
-      dom?.classList.add('plyr--hide-cursor')
-    }, 1000)
-
-    /** @private */
-    this.hideControlsDebounced = debounce(() => {
-      const dom = document.querySelector('.plyr')
-      if (!this.isHoverControls) dom?.classList.add('plyr--hide-controls')
-    }, 1000)
-
     const status = session.getItem(this.statusSessionKey)
     if (status) {
       session.removeItem(this.statusSessionKey)
-      this._toggleWidescreen(status)
+      this.toggleWidescreen(status)
     }
 
     if (opts.eventToParentWindow) {
@@ -243,8 +233,53 @@ class KPlayer {
     }
   }
 
-  /** @private */
-  _initEvent() {
+  setCurrentTimeLog(time?: number) {
+    const store = local.getItem<LocalPlayTimeStore>(this.localPlayTimeKey, {})
+    store[this.playTimeStoreKey] = Math.floor(time ?? this.plyr.currentTime)
+    local.setItem(this.localPlayTimeKey, store)
+  }
+  setCurrentTimeLogThrottled = throttle(() => {
+    this.setCurrentTimeLog()
+  }, 3000)
+
+  getCurrentTimeLog(): number | undefined {
+    const store = local.getItem<LocalPlayTimeStore>(this.localPlayTimeKey, {})
+    return store[this.playTimeStoreKey]
+  }
+
+  get playTimeStoreKey() {
+    if (this.src.startsWith('blob')) {
+      return location.origin + location.pathname + location.search
+    } else {
+      return this.src
+    }
+  }
+
+  hideControlsDebounced = debounce(() => {
+    const dom = document.querySelector('.plyr')
+    if (!this.isHoverControls) dom?.classList.add('plyr--hide-controls')
+  }, 1000)
+
+  hideCursorDebounced = debounce(() => {
+    const dom = document.querySelector('.plyr')
+    dom?.classList.add('plyr--hide-cursor')
+  }, 1000)
+
+  private isJumped = false
+
+  jumpToLogTime = throttle(() => {
+    if (this.isJumped) return
+    if (this.currentTime < 3) {
+      this.isJumped = true
+      const logTime = this.getCurrentTimeLog()
+      if (logTime) {
+        this.message.info(`已自动跳转至历史播放位置 ${parseTime(logTime)}`)
+        this.currentTime = logTime
+      }
+    }
+  }, 1000)
+
+  private initEvent() {
     this.on('loadstart', () => {
       this.$loading.show()
       this.hideError()
@@ -252,8 +287,13 @@ class KPlayer {
     this.on('canplay', () => {
       this.$loading.hide()
       this.plyr.play()
+      if (this.localConfig.continuePlay) {
+        this.jumpToLogTime()
+      }
     })
     this.on('error', () => {
+      this.setCurrentTimeLog(0)
+
       const code = this.$video[0].error!.code
       this.$loading.hide()
       this.showError(MediaErrorMessage[code] || this.src)
@@ -305,6 +345,8 @@ class KPlayer {
       this.configSaveToLocal('volume', this.plyr.volume)
     })
     this.on('timeupdate', () => {
+      this.setCurrentTimeLogThrottled()
+
       this.$progress
         .find('.k-player-progress-current')
         .css('width', (this.currentTime / this.plyr.duration) * 100 + '%')
@@ -414,11 +456,11 @@ class KPlayer {
             break
           case 'w':
             if (this.plyr.fullscreen.active) break
-            this._toggleWidescreen()
+            this.toggleWidescreen()
             break
           case 'Escape':
             if (this.plyr.fullscreen.active || !this.isWideScreen) break
-            this._toggleWidescreen(false)
+            this.toggleWidescreen(false)
             break
           case 'z':
             this.speed = 1
@@ -440,7 +482,7 @@ class KPlayer {
           case 'meta+s':
             e.preventDefault()
             e.stopPropagation()
-            this._snapshot()
+            this.snapshot()
             break
           case 'i':
             this.plyr.pip = !this.plyr.pip
@@ -451,15 +493,13 @@ class KPlayer {
       }
     )
 
-    // document
-    //   .querySelectorAll<HTMLDivElement>(
-    //     '.plyr__controls .plyr__control'
-    //   )
-    //   .forEach((dom) => {
-    //     dom.addEventListener('click', (e) => {
-    //       e.currentTarget?.blur()
-    //     })
-    //   })
+    document
+      .querySelectorAll<HTMLDivElement>('.plyr__controls .plyr__control')
+      .forEach((dom) => {
+        dom.addEventListener('click', (e) =>
+          (e.currentTarget as HTMLDivElement).blur()
+        )
+      })
 
     const playerEl = document.querySelector('.plyr')!
     playerEl.addEventListener('mousemove', () => {
@@ -522,8 +562,7 @@ class KPlayer {
     })
   }
 
-  /** @private */
-  _injectSettings() {
+  private injectSettings() {
     this.$settings = $(settingsHTML) as JQuery<HTMLDivElement>
 
     this.$settings
@@ -568,8 +607,7 @@ class KPlayer {
     gm.setItem(this.localConfigKey, this.localConfig)
   }
 
-  /** @private */
-  _injectSpeed() {
+  private injectSpeed() {
     this.$speed = $(speedHTML) as JQuery<HTMLDivElement>
     const speedItems = this.$speed.find('.k-speed-item')
     const localSpeed = this.localConfig.speed
@@ -590,44 +628,39 @@ class KPlayer {
     this.$speed.insertBefore('.plyr__controls__item.plyr__volume')
   }
 
-  /** @private */
-  _injectQuestion() {
+  private injectQuestion() {
     $(`<svg class="k-player-question-icon"><use xlink:href="#question"/></svg>`)
       .appendTo(this.$header)
       .on('click', () => {
         showInfo()
       })
   }
-  /** @private */
-  _injectNext() {
+  private injectNext() {
     $($('#plyr__next').html())
       .insertBefore('.plyr__controls__item.plyr__progress__container')
       .on('click', () => {
         this.trigger('next')
       })
   }
-  /** @private */
-  _injectSnapshot() {
+  private injectSnapshot() {
     if (!navigator.clipboard) return
     this.$video.attr('crossorigin', '')
     $($('#plyr__snapshot').html())
       .insertBefore('[data-plyr="fullscreen"]')
       .on('click', () => {
-        this._snapshot()
+        this.snapshot()
       })
   }
 
-  /** @private */
-  _injectSreen() {
+  private injectSreen() {
     $($('#plyr__widescreen').html())
       .insertBefore('[data-plyr="fullscreen"]')
       .on('click', () => {
-        this._toggleWidescreen()
+        this.toggleWidescreen()
       })
   }
 
-  /** @private */
-  _snapshot() {
+  private snapshot() {
     // 非 https 模式下，这个值是空的
     if (!navigator.clipboard) return
 
@@ -648,8 +681,7 @@ class KPlayer {
     })
   }
 
-  /** @private */
-  _toggleWidescreen(bool = !this.isWideScreen) {
+  private toggleWidescreen(bool = !this.isWideScreen) {
     if (this.isWideScreen === bool) return
     this.isWideScreen = bool
 
@@ -669,11 +701,8 @@ class KPlayer {
     this.trigger(this.isWideScreen ? 'enterwidescreen' : 'exitwidescreen')
   }
 
-  /**
-   * video src
-   * @param {string} src
-   */
   set src(src: string) {
+    this.isJumped = false
     if (src.includes('.m3u8')) {
       if (!Hls.isSupported()) throw new Error('不支持播放 hls 文件')
       const hls = new Hls()
@@ -721,12 +750,12 @@ class KPlayer {
     this.$error.hide()
   }
 
-  setRandomTsuma() {
+  private setRandomTsuma() {
     this.curentTsuma = ++this.curentTsuma % this.tsumaLength
     this.$wrapper.find('.k-player-tsuma').attr('data-bg-idx', this.curentTsuma)
   }
 
-  eventToParentWindow() {
+  private eventToParentWindow() {
     const evnetKeys = [
       'prev',
       'next',

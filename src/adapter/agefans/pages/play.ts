@@ -10,9 +10,11 @@ import {
   saveLocal,
   showLocalURL,
 } from '../utils/getAllVideoURL'
-import { his, parseTime } from './history'
+import { his } from './history'
 import { pagePreview } from '../utils/pagePreview'
 import './play.scss'
+
+let player: KPlayer
 
 function replacePlayer() {
   const dom = document.querySelector<HTMLIFrameElement>('#age_playfram')!
@@ -157,17 +159,6 @@ function updateTime(time = 0) {
   his.setTime(id, Math.floor(time))
 }
 
-function videoJumpHistoryPosition() {
-  const id = location.pathname.match(/\/play\/(\d*)/)?.[1]
-  if (!id) return
-
-  if (his.get(id)?.time! > 3) {
-    player.currentTime = his.get(id)!.time
-    player.message.info(
-      `已自动跳转至历史播放位置 ${parseTime(his.get(id)!.time)}`
-    )
-  }
-}
 
 function addListener() {
   player.on('next', () => {
@@ -179,9 +170,6 @@ function addListener() {
   })
 
   player.plyr.once('canplay', () => {
-    if (player.localConfig.continuePlay) {
-      videoJumpHistoryPosition()
-    }
     resetVideoHeight()
   })
 
@@ -230,7 +218,7 @@ function replaceHref() {
   })
 }
 
-let player: KPlayer
+
 function initPlayer(vurl: string) {
   player = new KPlayer('#age_playfram')
   showCurrentLink(vurl)
