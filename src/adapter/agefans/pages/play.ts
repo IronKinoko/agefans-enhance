@@ -13,6 +13,7 @@ import {
 import { his } from './history'
 import { pagePreview } from '../utils/pagePreview'
 import './play.scss'
+import { throttle } from 'lodash-es'
 
 let player: KPlayer
 
@@ -159,7 +160,6 @@ function updateTime(time = 0) {
   his.setTime(id, Math.floor(time))
 }
 
-
 function addListener() {
   player.on('next', () => {
     gotoNextPart()
@@ -177,10 +177,12 @@ function addListener() {
     removeLocal(getActivedom().data('href'))
   })
 
+  const update = throttle(() => {
+    updateTime(player.currentTime)
+  }, 1000)
+  
   player.on('timeupdate', () => {
-    if (Math.floor(player.currentTime) % 3 === 0) {
-      updateTime(player.currentTime)
-    }
+    update()
   })
 
   player.on('skiperror', (_, duration) => {
@@ -217,7 +219,6 @@ function replaceHref() {
       })
   })
 }
-
 
 function initPlayer(vurl: string) {
   player = new KPlayer('#age_playfram')

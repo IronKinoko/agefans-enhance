@@ -86,8 +86,8 @@ export function renderHistoryList() {
       const histories = his.getAll()
       let html = ''
       histories.forEach((o) => {
-        html += `<a class="history-item" href="${
-          o.href
+        html += `<a class="history-item" href="${o.href}" data-id="${
+          o.id
         }" data-detail-href="/detail/${o.id}">
           <img
             referrerpolicy="no-referrer"
@@ -120,6 +120,32 @@ function changeHash(hash?: string) {
   }
 }
 
+function refreshHistoryList() {
+  const list = his.getAll()
+  const $doms = $('#history .history-item')
+  if (list.length !== $doms.length) return renderHistoryList()
+
+  list.forEach((item) => {
+    const $dom = $(`#history a[data-id='${item.id}']`)
+    $dom.attr('href', item.href)
+    $dom.find('.title').text(item.title)
+    $dom.find('.position').text(`${item.section} ${parseTime(item.time)}`)
+  })
+}
+
+const { startRefresh, stopRefresh } = (function () {
+  let time: number | undefined
+
+  return {
+    startRefresh: () => {
+      clearInterval(time)
+      time = window.setInterval(refreshHistoryList, 1000)
+    },
+    stopRefresh: () => {
+      clearInterval(time)
+    },
+  }
+})()
 function renderHistoryPage() {
   const currentDom = $('.nav_button_current')
 
@@ -131,12 +157,14 @@ function renderHistoryPage() {
       if ($('#history').is(':visible')) {
         $('#container').show()
         $('#history').hide()
+        stopRefresh()
         changeHash()
         changeActive(currentDom)
       } else {
-        renderHistoryList()
+        refreshHistoryList()
         $('#container').hide()
         $('#history').show()
+        startRefresh()
         changeHash('/history')
         changeActive($(e.currentTarget))
       }
@@ -147,6 +175,7 @@ function renderHistoryPage() {
     .on('click', (e) => {
       $('#container').show()
       $('#history').hide()
+      stopRefresh()
       changeActive(e.currentTarget)
       changeHash()
     })
@@ -155,6 +184,7 @@ function renderHistoryPage() {
   if (window.location.hash === '#/history') {
     $('#container').hide()
     $('#history').show()
+    startRefresh()
     changeActive($hisNavBtn)
   }
 }
