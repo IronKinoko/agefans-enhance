@@ -272,7 +272,7 @@ class KPlayer {
     if (this.currentTime < 3) {
       this.isJumped = true
       const logTime = this.getCurrentTimeLog()
-      if (logTime) {
+      if (logTime && this.plyr.duration - logTime > 10) {
         this.message.info(`已自动跳转至历史播放位置 ${parseTime(logTime)}`)
         this.currentTime = logTime
       }
