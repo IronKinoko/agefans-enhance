@@ -1,6 +1,6 @@
 import $ from 'jquery'
 import './history.scss'
-import { local } from '../../../utils/local'
+import { gm } from '../../../utils/storage'
 import { pagePreview } from '../utils/pagePreview'
 
 const LOCAL_HISTORY_KEY = 'v-his'
@@ -16,11 +16,11 @@ export interface HistoryItem {
 
 class History {
   get his() {
-    return local.getItem<HistoryItem[]>(LOCAL_HISTORY_KEY, [])
+    return gm.getItem<HistoryItem[]>(LOCAL_HISTORY_KEY, [])
   }
   set his(value) {
     if (Array.isArray(value)) {
-      local.setItem(LOCAL_HISTORY_KEY, value.slice(0, 100))
+      gm.setItem(LOCAL_HISTORY_KEY, value.slice(0, 100))
     }
   }
   getAll(): HistoryItem[] {

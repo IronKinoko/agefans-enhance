@@ -2,7 +2,7 @@ import $ from 'jquery'
 import { addReferrerMeta, KPlayer } from '../../../player'
 import { Message } from '../../../utils/message'
 import parseToURL from '../../../utils/parseToURL'
-import { session } from '../../../utils/session'
+import { session } from '../../../utils/storage'
 import {
   getVurlWithLocal,
   initGetAllVideoURL,

@@ -18,8 +18,8 @@ import { modal } from '../utils/modal'
 import { genIssueURL } from '../utils/genIssueURL'
 import { Message } from '../utils/message'
 import { keybind } from '../utils/keybind'
-import { session } from '../utils/session'
-import { local } from '../utils/local'
+import { session } from '../utils/storage'
+import { gm } from '../utils/storage'
 const MediaErrorMessage: Record<number, string> = {
   1: '你中止了媒体播放',
   2: '网络错误',
@@ -110,7 +110,7 @@ class KPlayer {
     try {
       this.localConfig = Object.assign(
         this.localConfig,
-        local.getItem(this.localConfigKey)
+        gm.getItem(this.localConfigKey)
       )
     } catch (error) {
       /** empty */
@@ -565,7 +565,7 @@ class KPlayer {
     value: KPlayer['localConfig'][T]
   ) {
     this.localConfig[key] = value
-    local.setItem(this.localConfigKey, this.localConfig)
+    gm.setItem(this.localConfigKey, this.localConfig)
   }
 
   /** @private */

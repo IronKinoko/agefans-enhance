@@ -1,6 +1,6 @@
 import $ from 'jquery'
 import './pagePreview.scss'
-import { session } from '../../../utils/session'
+import { session } from '../../../utils/storage'
 import { loadingIcon } from './getAllVideoURL'
 import { getSetting } from '../pages/setting'
 

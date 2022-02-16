@@ -4,7 +4,7 @@ import { modal } from '../../../utils/modal'
 import parseToURL from '../../../utils/parseToURL'
 import './getAllVideoURL.scss'
 import { getPlayUrl, updateCookie } from './playURL'
-import { session } from '../../../utils/session'
+import { session } from '../../../utils/storage'
 import { alert } from './alert'
 const LOCAL_PLAY_URL_KEY = 'play-url-key'
 

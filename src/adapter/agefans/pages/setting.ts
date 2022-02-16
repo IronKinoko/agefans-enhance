@@ -1,7 +1,7 @@
 import $ from 'jquery'
-import { local } from '../../../utils/local'
+import { gm } from '../../../utils/storage'
 import { modal } from '../../../utils/modal'
-import { session } from '../../../utils/session'
+import { session } from '../../../utils/storage'
 import { alert } from '../utils/alert'
 import './setting.scss'
 
@@ -12,23 +12,23 @@ const defaultSetting = {
 }
 type Setting = typeof defaultSetting
 function ensureDefaultSetting() {
-  let setting = local.getItem(LOCAL_SETTING_KEY, defaultSetting)
+  let setting = gm.getItem(LOCAL_SETTING_KEY, defaultSetting)
 
   setting = Object.assign({}, defaultSetting, setting)
 
-  local.setItem(LOCAL_SETTING_KEY, setting)
+  gm.setItem(LOCAL_SETTING_KEY, setting)
 }
 
 function setSetting<T extends keyof Setting>(key: T, value: Setting[T]) {
-  const setting = local.getItem<Setting>(LOCAL_SETTING_KEY)!
+  const setting = gm.getItem<Setting>(LOCAL_SETTING_KEY)!
   setting[key] = value
-  local.setItem(LOCAL_SETTING_KEY, setting)
+  gm.setItem(LOCAL_SETTING_KEY, setting)
 }
 
 export function getSetting(): Setting
 export function getSetting<T extends keyof Setting>(key: T): Setting[T]
 export function getSetting(key?: keyof Setting) {
-  const setting = local.getItem<Setting>(LOCAL_SETTING_KEY)!
+  const setting = gm.getItem<Setting>(LOCAL_SETTING_KEY)!
   if (key) return setting[key]
   return setting
 }
