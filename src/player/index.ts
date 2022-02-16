@@ -814,7 +814,7 @@ export function addReferrerMeta(content: 'same-origin' | 'no-referrer') {
     $('head').append(`<meta name="referrer" content="${content}">`)
   } else {
     const $meta = $('meta[name=referrer]')
-    $meta.attr(`content', '${content}`)
+    $meta.attr('content', content)
   }
 }
 
