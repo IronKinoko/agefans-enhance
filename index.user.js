@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @version      1.20.1
+// @version      1.20.2
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1754,7 +1754,7 @@ ${[...speedList]
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.20.1"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.20.2"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -1844,7 +1844,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.20.1"}
+脚本版本: ${"1.20.2"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -2067,7 +2067,7 @@ userAgent: ${navigator.userAgent}
           if (this.currentTime < 3) {
               this.isJumped = true;
               const logTime = this.getCurrentTimeLog();
-              if (logTime) {
+              if (logTime && this.plyr.duration - logTime > 10) {
                   this.message.info(`已自动跳转至历史播放位置 ${parseTime(logTime)}`);
                   this.currentTime = logTime;
               }
