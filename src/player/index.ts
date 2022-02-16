@@ -240,7 +240,7 @@ class KPlayer {
   }
   setCurrentTimeLogThrottled = throttle(() => {
     this.setCurrentTimeLog()
-  }, 3000)
+  }, 1000)
 
   getCurrentTimeLog(): number | undefined {
     const store = local.getItem<LocalPlayTimeStore>(this.localPlayTimeKey, {})
@@ -809,12 +809,12 @@ class KPlayer {
   }
 }
 
-export function addReferrerMeta() {
+export function addReferrerMeta(content: 'same-origin' | 'no-referrer') {
   if ($('meta[name=referrer]').length === 0) {
-    $('head').append('<meta name="referrer" content="same-origin">')
+    $('head').append(`<meta name="referrer" content="${content}">`)
   } else {
     const $meta = $('meta[name=referrer]')
-    $meta.attr('content', 'same-origin')
+    $meta.attr(`content', '${content}`)
   }
 }
 

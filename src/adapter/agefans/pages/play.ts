@@ -26,7 +26,7 @@ function replacePlayer() {
     if (url.origin === location.origin) {
       let videoURL = url.searchParams.get('url')
       if (videoURL) {
-        addReferrerMeta()
+        addReferrerMeta('same-origin')
         initPlayer(parseToURL(videoURL))
         mutationOb.disconnect()
       }
