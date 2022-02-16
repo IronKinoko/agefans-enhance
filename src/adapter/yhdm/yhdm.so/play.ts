@@ -3,18 +3,18 @@ import { KPlayer } from '../../../player'
 
 function replacePlayer() {
   new KPlayer('#dplayer', {
-    video: $('video')[0],
+    video: $('video')[0] as HTMLVideoElement,
     eventToParentWindow: true,
   })
 }
 
-function switchPart(next) {
+function switchPart(next: boolean) {
   let directionRight = true
   const re = /\/v\/\d+-(\d+)/
-  let prevID
-  Array.from($('.movurls a')).forEach((a) => {
+  let prevID: string
+  Array.from($<HTMLAnchorElement>('.movurls a')).forEach((a) => {
     if (re.test(a.href)) {
-      const [, id] = a.href.match(re)
+      const [, id] = a.href.match(re)!
       if (prevID) directionRight = +prevID < +id
       prevID = id
     }
@@ -24,7 +24,7 @@ function switchPart(next) {
   if (!next) direction.reverse()
   if (!directionRight) direction.reverse()
 
-  $('.movurls .sel')[direction[1]]().find('a')[0]?.click()
+  $('.movurls .sel')[direction[1] as 'prev' | 'next']().find('a')[0]?.click()
 }
 
 export function playModule() {

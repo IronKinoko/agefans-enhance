@@ -62,7 +62,7 @@ class KPlayer {
   $pip: JQuery<HTMLElement>
   $videoWrapper: JQuery<HTMLElement>
   message: Message
-  eventMap: Record<string, []>
+  eventMap: Record<string, ((player: KPlayer, params?: any) => void)[]>
   isWideScreen: boolean
   wideScreenBodyStyles: {}
   tsumaLength: number
@@ -451,17 +451,17 @@ class KPlayer {
       }
     )
 
-    document
-      .querySelectorAll<HTMLButtonElement | HTMLDivElement>(
-        '.plyr__controls .plyr__control'
-      )
-      .forEach((dom) => {
-        dom.addEventListener('click', (e) => {
-          e.currentTarget?.blur()
-        })
-      })
+    // document
+    //   .querySelectorAll<HTMLDivElement>(
+    //     '.plyr__controls .plyr__control'
+    //   )
+    //   .forEach((dom) => {
+    //     dom.addEventListener('click', (e) => {
+    //       e.currentTarget?.blur()
+    //     })
+    //   })
 
-    const playerEl = document.querySelector('.plyr')
+    const playerEl = document.querySelector('.plyr')!
     playerEl.addEventListener('mousemove', () => {
       playerEl.classList.remove('plyr--hide-cursor')
       this.hideCursorDebounced()
@@ -495,7 +495,10 @@ class KPlayer {
     })
   }
 
-  on(event: CustomEventMap | keyof Plyr.PlyrEventMap, callback?: Function) {
+  on(
+    event: CustomEventMap | keyof Plyr.PlyrEventMap,
+    callback: (...args: any[]) => void
+  ) {
     if (
       [
         'prev',
@@ -508,7 +511,7 @@ class KPlayer {
       if (!this.eventMap[event]) this.eventMap[event] = []
       this.eventMap[event].push(callback)
     } else {
-      this.plyr.on(event, callback)
+      this.plyr.on(event as keyof Plyr.PlyrEventMap, callback)
     }
   }
 
@@ -521,13 +524,13 @@ class KPlayer {
 
   /** @private */
   _injectSettings() {
-    this.$settings = $(settingsHTML)
+    this.$settings = $(settingsHTML) as JQuery<HTMLDivElement>
 
     this.$settings
       .find('[name=autoNext]')
       .prop('checked', this.localConfig.autoNext)
       .on('change', (e) => {
-        const checked = e.target.checked
+        const checked = (e.target as HTMLInputElement).checked
         this.configSaveToLocal('autoNext', checked)
       })
 
@@ -535,7 +538,7 @@ class KPlayer {
       .find('[name=showProgress]')
       .prop('checked', this.localConfig.showProgress)
       .on('change', (e) => {
-        const checked = e.target.checked
+        const checked = (e.target as HTMLInputElement).checked
         this.configSaveToLocal('showProgress', checked)
         if (checked) {
           this.$progress.css('display', '')
@@ -551,24 +554,27 @@ class KPlayer {
       .find('[name=continuePlay]')
       .prop('checked', this.localConfig.continuePlay)
       .on('change', (e) => {
-        const checked = e.target.checked
+        const checked = (e.target as HTMLInputElement).checked
         this.configSaveToLocal('continuePlay', checked)
       })
     this.$settings.insertAfter('.plyr__controls__item.plyr__volume')
   }
 
-  configSaveToLocal(key, value) {
+  configSaveToLocal<T extends keyof KPlayer['localConfig']>(
+    key: T,
+    value: KPlayer['localConfig'][T]
+  ) {
     this.localConfig[key] = value
     local.setItem(this.localConfigKey, this.localConfig)
   }
 
   /** @private */
   _injectSpeed() {
-    this.$speed = $(speedHTML)
+    this.$speed = $(speedHTML) as JQuery<HTMLDivElement>
     const speedItems = this.$speed.find('.k-speed-item')
     const localSpeed = this.localConfig.speed
     speedItems.each((_, el) => {
-      const speed = +el.dataset.speed
+      const speed = +el.dataset.speed!
 
       if (speed === localSpeed) {
         el.classList.add('k-menu-active')
@@ -630,7 +636,7 @@ class KPlayer {
     canvas.width = video.videoWidth
     canvas.height = video.videoHeight
 
-    const ctx = canvas.getContext('2d')
+    const ctx = canvas.getContext('2d')!
     ctx.drawImage(video, 0, 0)
 
     canvas.toBlob((blob) => {
@@ -678,7 +684,7 @@ class KPlayer {
     }
   }
   get src() {
-    return this.$video.attr('src')
+    return this.$video.attr('src')!
   }
 
   set currentTime(value) {
@@ -695,7 +701,7 @@ class KPlayer {
     this.plyr.speed = speed
     const speedItems = this.$speed.find('.k-speed-item')
     speedItems.each((_, el) => {
-      if (speed === +el.dataset.speed) {
+      if (speed === +el.dataset.speed!) {
         el.classList.add('k-menu-active')
       } else {
         el.classList.remove('k-menu-active')
@@ -706,7 +712,7 @@ class KPlayer {
     this.configSaveToLocal('speed', speed)
   }
 
-  showError(text) {
+  showError(text: string) {
     this.setRandomTsuma()
     this.$error.show().find('.k-player-error-info').text(text)
   }
@@ -755,7 +761,7 @@ class KPlayer {
       'emptied',
       'cuechange',
       'error',
-    ]
+    ] as const
 
     evnetKeys.forEach((key) => {
       this.on(key, () => {
@@ -784,7 +790,7 @@ export function addReferrerMeta() {
 }
 
 export function showInfo() {
-  const video = $('#k-player')[0]
+  const video = $('#k-player')[0] as HTMLVideoElement
   const githubIssueURL = genIssueURL({
     title: '🐛[Bug]',
     body: issueBody(video?.src),

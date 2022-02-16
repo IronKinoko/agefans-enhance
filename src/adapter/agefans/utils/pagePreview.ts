@@ -4,23 +4,23 @@ import { session } from '../../../utils/session'
 import { loadingIcon } from './getAllVideoURL'
 import { getSetting } from '../pages/setting'
 
-export function pagePreview(trigger, previewURL) {
+export function pagePreview(
+  trigger: string | JQuery | HTMLElement,
+  previewURL: string
+) {
   if (!getSetting('usePreview')) return
 
   const $popover = $(
     `<div class='page-preview' style="display:none">
        <div class="page-preview-center">${loadingIcon}加载中...</div>
      </div>`
-  ).appendTo($(trigger))
+  ).appendTo($(trigger as any))
 
-  /**
-   * @param {MouseEvent} e
-   */
-  function caclPosition(e) {
+  function caclPosition(e: JQuery.MouseEventBase) {
     const safeArea = 16
     const offset = 20
-    const width = $popover.width()
-    const height = $popover.height()
+    const width = $popover.width() || 0
+    const height = $popover.height() || 0
     const { innerWidth, innerHeight } = window
     const { clientX, clientY } = e
 
@@ -38,8 +38,8 @@ export function pagePreview(trigger, previewURL) {
   }
 
   let isLoaded = false
-  let timeId = null
-  $(trigger)
+  let timeId: number | undefined
+  $(trigger as any)
     .addClass('page-preview-trigger')
     .on('mouseenter', (e) => {
       $popover.show()
@@ -48,11 +48,14 @@ export function pagePreview(trigger, previewURL) {
 
       if (isLoaded) return
       clearTimeout(timeId)
-      timeId = setTimeout(async () => {
+      timeId = window.setTimeout(async () => {
         if (isLoaded) return
         isLoaded = true
 
-        let { img, info } = session.getItem(previewURL, {})
+        let { img, info } = session.getItem<{ img: string; info: string }>(
+          previewURL,
+          { img: '', info: '' }
+        )
         if (!info) {
           const $root = $(await fetch(previewURL).then((r) => r.text()))
           img = $root
@@ -63,15 +66,15 @@ export function pagePreview(trigger, previewURL) {
               height: 356,
             })
             .prop('outerHTML')
-          info = $root
+          const $info = $root
             .find('#container > div.div_left > div:nth-child(2) > div > div')
             .width(256)
 
-          info
+          $info
             .find('.blocktitle.detail_title1')
             .text($root.find('.detail_imform_name').text())
 
-          info = info.prop('outerHTML')
+          info = $info.prop('outerHTML')
           session.setItem(previewURL, { img, info })
         }
 

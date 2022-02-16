@@ -5,32 +5,41 @@ import { pagePreview } from '../utils/pagePreview'
 
 const LOCAL_HISTORY_KEY = 'v-his'
 
+export interface HistoryItem {
+  id: string
+  title: string
+  href: string
+  section: string
+  time: number
+  logo: string
+}
+
 class History {
   get his() {
-    return local.getItem(LOCAL_HISTORY_KEY, [])
+    return local.getItem<HistoryItem[]>(LOCAL_HISTORY_KEY, [])
   }
   set his(value) {
     if (Array.isArray(value)) {
       local.setItem(LOCAL_HISTORY_KEY, value.slice(0, 100))
     }
   }
-  getAll() {
+  getAll(): HistoryItem[] {
     return this.his
   }
-  get(id) {
+  get(id: string): HistoryItem | undefined {
     return this.his.find((o) => o.id === id)
   }
-  setTime(id, time = 0) {
+  setTime(id: string, time = 0) {
     const his = this.his
-    his.find((o) => o.id === id).time = time
+    his.find((o) => o.id === id)!.time = time
     this.his = his
   }
-  log(item) {
+  log(item: HistoryItem) {
     const his = this.his
     his.unshift(item)
     this.his = his
   }
-  refresh(id, data) {
+  refresh(id: string, data?: HistoryItem) {
     const his = this.his
     const index = his.findIndex((o) => o.id === id)
     const item = his.splice(index, 1)[0]
@@ -38,7 +47,7 @@ class History {
     this.his = his
   }
 
-  has(id) {
+  has(id: string) {
     return Boolean(this.his.find((o) => o.id === id))
   }
 
@@ -46,16 +55,16 @@ class History {
     const id = location.pathname.match(/\/play\/(\d*)/)?.[1]
     if (!id) return
 
-    const hisItem = {}
+    const hisItem = {} as HistoryItem
     hisItem.id = id
     hisItem.title = $('#detailname a').text()
     hisItem.href = location.pathname + location.search
     hisItem.section = $('li a[style*="color: rgb(238, 0, 0);"]').text()
     hisItem.time = 0
-    hisItem.logo = $('#play_poster_img').attr('src')
+    hisItem.logo = $('#play_poster_img').attr('src')!
 
     if (this.has(id)) {
-      const oldItem = this.get(id)
+      const oldItem = this.get(id)!
       if (oldItem.href !== hisItem.href) {
         this.refresh(id, hisItem)
       } else {
@@ -102,10 +111,10 @@ export function renderHistoryList() {
       }</div>`
     })
     .find('a')
-    .each((_, anchor) => pagePreview(anchor, anchor.dataset.detailHref))
+    .each((_, anchor) => pagePreview(anchor, anchor.dataset.detailHref!))
 }
 
-function changeHash(hash) {
+function changeHash(hash?: string) {
   if (hash) {
     history.replaceState(null, '', `#${hash}`)
   } else {
@@ -154,7 +163,7 @@ function renderHistoryPage() {
   }
 }
 
-function changeActive(dom) {
+function changeActive(dom: HTMLElement | JQuery<HTMLElement>) {
   $('.nav_button_current').removeClass('nav_button_current')
   $(dom).addClass('nav_button_current')
 }

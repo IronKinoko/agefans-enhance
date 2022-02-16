@@ -1,11 +1,11 @@
 import $ from 'jquery'
 import './popover.scss'
-export function popover(target, content) {
+export function popover(target: string, content: string) {
   const $target = $(target)
   const $content = $(
     `<div class="k-popover-overlay"><div class="k-popover-content">${content}</div></div>`
   )
-  let timeID = null
+  let timeID: number | undefined
   $target.addClass('k-popover')
   $target.on('mouseenter', () => {
     clearTimeout(timeID)
@@ -13,7 +13,7 @@ export function popover(target, content) {
   })
   $target.on('mouseleave', () => {
     clearTimeout(timeID)
-    timeID = setTimeout(() => {
+    timeID = window.setTimeout(() => {
       $content.fadeOut('fast')
     }, 100)
   })

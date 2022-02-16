@@ -1,4 +1,4 @@
-export function genIssueURL({ title, body }) {
+export function genIssueURL({ title, body }: { title: string; body: string }) {
   const url = new URL(
     `https://github.com/IronKinoko/agefans-enhance/issues/new`
   )

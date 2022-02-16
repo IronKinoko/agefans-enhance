@@ -10,6 +10,7 @@ const LOCAL_SETTING_KEY = 'agefans-setting'
 const defaultSetting = {
   usePreview: true,
 }
+type Setting = typeof defaultSetting
 function ensureDefaultSetting() {
   let setting = local.getItem(LOCAL_SETTING_KEY, defaultSetting)
 
@@ -18,21 +19,16 @@ function ensureDefaultSetting() {
   local.setItem(LOCAL_SETTING_KEY, setting)
 }
 
-/**
- * @param {keyof defaultSetting} key
- * @param {*} value
- */
-function setSetting(key, value) {
-  const setting = local.getItem(LOCAL_SETTING_KEY)
+function setSetting<T extends keyof Setting>(key: T, value: Setting[T]) {
+  const setting = local.getItem<Setting>(LOCAL_SETTING_KEY)!
   setting[key] = value
   local.setItem(LOCAL_SETTING_KEY, setting)
 }
 
-/**
- * @param {keyof defaultSetting} [key]
- */
-export function getSetting(key) {
-  const setting = local.getItem(LOCAL_SETTING_KEY)
+export function getSetting(): Setting
+export function getSetting<T extends keyof Setting>(key: T): Setting[T]
+export function getSetting(key?: keyof Setting) {
+  const setting = local.getItem<Setting>(LOCAL_SETTING_KEY)!
   if (key) return setting[key]
   return setting
 }

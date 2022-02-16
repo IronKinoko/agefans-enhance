@@ -2,17 +2,16 @@ import $ from 'jquery'
 import { KPlayer } from '../../../player'
 import parseToURL from '../../../utils/parseToURL'
 
-/** @type {KPlayer} */
-let player
+let player: KPlayer
 
 function replacePlayer() {
-  const dom = document.getElementById('yh_playfram')
+  const dom = document.querySelector<HTMLIFrameElement>('#play2')!
   const fn = () => {
     if (!dom.src) return
     let url = new URL(dom.src)
-    let videoURL = url.searchParams.get('url')
+    let videoURL = url.searchParams.get('vid')
     if (videoURL) {
-      player = new KPlayer('#yh_playfram')
+      player = new KPlayer('#play2')
       player.src = parseToURL(videoURL)
       initEvent()
       mutationOb.disconnect()
@@ -24,21 +23,22 @@ function replacePlayer() {
   fn()
 }
 
-function switchPart(next) {
+function switchPart(next: boolean) {
   getActivedom().parent()[next ? 'next' : 'prev']().find('a')[0]?.click()
 }
 function getActivedom() {
-  return $(".movurl:visible li a[style*='color: rgb(255, 255, 255)']")
+  return $(`.movurls:visible li a[href='${location.pathname}']`)
 }
 
 function initEvent() {
   player.on('prev', () => switchPart(false))
   player.on('next', () => switchPart(true))
 }
-
 export function playModule() {
   $('body').addClass('yhdm-wrapper')
-  $('#ipchk_getplay').remove()
+  $('#adl').remove()
+  $('#adr').remove()
+  $('#adv').remove()
   $('.fullscn').remove()
   replacePlayer()
 }

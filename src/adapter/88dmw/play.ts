@@ -2,11 +2,12 @@ import $ from 'jquery'
 import { KPlayer } from '../../player'
 import parseToURL from '../../utils/parseToURL'
 
-/** @type {KPlayer} */
-let player
+let player: KPlayer
 
 function replacePlayer() {
-  const dom = document.querySelector('#playleft iframe[allowfullscreen="true"]')
+  const dom = document.querySelector<HTMLIFrameElement>(
+    '#playleft iframe[allowfullscreen="true"]'
+  )!
   const fn = () => {
     if (!dom.src) return
     let url = new URL(dom.src)
@@ -25,8 +26,8 @@ function replacePlayer() {
 }
 
 function initEvent() {
-  player.on('prev', () => window.MacPlayer.GoPreUrl())
-  player.on('next', () => window.MacPlayer.GoNextUrl())
+  player.on('prev', () => unsafeWindow.MacPlayer.GoPreUrl())
+  player.on('next', () => unsafeWindow.MacPlayer.GoNextUrl())
 }
 
 export function playModule() {

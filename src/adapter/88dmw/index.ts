@@ -8,7 +8,7 @@ function www88dmwSetup() {
       writable: false,
       value: null,
     })
-    document.oncontextmenu = undefined
+    document.oncontextmenu = null
     // eslint-disable-next-line no-empty
   } catch (error) {}
 }

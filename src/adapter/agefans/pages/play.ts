@@ -15,7 +15,7 @@ import { pagePreview } from '../utils/pagePreview'
 import './play.scss'
 
 function replacePlayer() {
-  const dom = document.getElementById('age_playfram')
+  const dom = document.querySelector<HTMLIFrameElement>('#age_playfram')!
 
   const fn = () => {
     if (!dom.src) return
@@ -43,7 +43,7 @@ function replacePlayer() {
   fn()
 }
 
-function showCurrentLink(vurl) {
+function showCurrentLink(vurl: string | URL) {
   const decodeVurl = parseToURL(vurl)
   const isSteaming = decodeVurl.includes('.m3u8')
 
@@ -99,7 +99,11 @@ let switchLoading = false
  * @param {JQuery<HTMLAnchorElement>} $dom
  * @param {boolean} [push]
  */
-async function switchPart(href, $dom, push = true) {
+async function switchPart(
+  href: string,
+  $dom: JQuery<HTMLElement>,
+  push = true
+) {
   try {
     if (switchLoading === true) return
     switchLoading = true
@@ -130,7 +134,7 @@ async function switchPart(href, $dom, push = true) {
     switchLoading = false
     if (retryCount > 3) {
       console.error(error)
-      window.location.href = href
+      window.location.href = href.toString()
     } else {
       switchPart(href, $dom, push)
     }
@@ -142,7 +146,7 @@ function resetVideoHeight() {
   /** @type {HTMLVideoElement} */
   const video = player.$video[0]
   const ratio = video.videoWidth / video.videoHeight
-  const width = $root.width()
+  const width = $root.width()!
   $root.height(width / ratio)
 }
 
@@ -157,10 +161,10 @@ function videoJumpHistoryPosition() {
   const id = location.pathname.match(/\/play\/(\d*)/)?.[1]
   if (!id) return
 
-  if (his.get(id)?.time > 3) {
-    player.currentTime = his.get(id).time
+  if (his.get(id)?.time! > 3) {
+    player.currentTime = his.get(id)!.time
     player.message.info(
-      `已自动跳转至历史播放位置 ${parseTime(his.get(id).time)}`
+      `已自动跳转至历史播放位置 ${parseTime(his.get(id)!.time)}`
     )
   }
 }
@@ -214,7 +218,7 @@ function addListener() {
 
 function replaceHref() {
   $('.movurl:visible li a').each(function () {
-    const href = $(this).attr('href')
+    const href = $(this).attr('href')!
     $(this)
       .removeAttr('href')
       .attr('data-href', href)
@@ -226,9 +230,8 @@ function replaceHref() {
   })
 }
 
-/** @type {KPlayer} */
-let player
-function initPlayer(vurl) {
+let player: KPlayer
+function initPlayer(vurl: string) {
   player = new KPlayer('#age_playfram')
   showCurrentLink(vurl)
   addListener()
@@ -291,7 +294,7 @@ export function playModule() {
   initGetAllVideoURL()
   showRelatesSeries()
 
-  $('.ul_li_a8 > .anime_icon1 > a:nth-child(1)').each((_, anchor) =>
-    pagePreview(anchor.parentElement, anchor.href)
+  $<HTMLAnchorElement>('.ul_li_a8 > .anime_icon1 > a:nth-child(1)').each(
+    (_, anchor) => pagePreview(anchor.parentElement!, anchor.href)
   )
 }

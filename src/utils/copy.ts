@@ -1,5 +1,5 @@
 import $ from 'jquery'
-export function copyToClipboard(element) {
+export function copyToClipboard(element: JQuery | HTMLElement) {
   var $temp = $('<textarea>')
   $('body').append($temp)
   $temp.val($(element).text()).trigger('select')

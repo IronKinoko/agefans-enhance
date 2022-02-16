@@ -14,7 +14,7 @@ import { Cookie } from '../../../utils/cookie'
 /**
  * 获取视频链接的请求地址
  */
-export function getPlayUrl(_url) {
+export function getPlayUrl(_url: string) {
   const _rand = Math.random()
   var _getplay_url =
     _url.replace(
@@ -38,9 +38,9 @@ export function getPlayUrl(_url) {
  *
  * 这个方法实现了 t1 k1 t2 k2 全部刷新
  */
-export function updateCookie(href) {
+export function updateCookie(href?: string) {
   href = href ? location.origin + href : location.href
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     const doneFn = () => {
       resolve()
       dom.remove()
@@ -48,11 +48,11 @@ export function updateCookie(href) {
     // DOMContentLoaded is faster than load
     const dom = document.createElement('iframe')
     dom.style.display = 'none'
-    dom.src = href
+    dom.src = href!
     document.body.append(dom)
-    dom.contentWindow.addEventListener('DOMContentLoaded', doneFn)
-    dom.contentWindow.addEventListener('load', doneFn)
-    dom.contentWindow.addEventListener('error', reject)
+    dom.contentWindow?.addEventListener('DOMContentLoaded', doneFn)
+    dom.contentWindow?.addEventListener('load', doneFn)
+    dom.contentWindow?.addEventListener('error', reject)
   })
 }
 

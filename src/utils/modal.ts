@@ -1,6 +1,15 @@
 import $ from 'jquery'
 import './modal.scss'
-export function modal({ title, content, onClose, onOk, okText = '确 定' }) {
+
+export interface ModalOpts {
+  title: string | JQuery
+  content: string | JQuery
+  onClose?: () => void
+  onOk?: () => void
+  okText?: string
+}
+export function modal(opts: ModalOpts) {
+  const { title, content, onClose, onOk, okText = '确 定' } = opts
   const store = {
     width: document.body.style.width,
     overflow: document.body.style.overflow,
@@ -53,11 +62,11 @@ export function modal({ title, content, onClose, onOk, okText = '确 定' }) {
     reset()
   }
   function handleOk() {
-    onOk()
+    onOk?.()
     reset()
   }
 
-  function fn(e) {
+  function fn(e: KeyboardEvent) {
     if (['Escape', '?', '？'].includes(e.key)) {
       handleClose()
     }

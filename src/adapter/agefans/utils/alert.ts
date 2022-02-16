@@ -1,4 +1,4 @@
-export function alert(html) {
+export function alert(html: string) {
   return `<div class="k-alert k-alert-info">
   <span class="k-alert-icon">
     <svg viewBox="64 64 896 896" focusable="false" data-icon="info-circle" width="1em" height="1em" fill="currentColor" aria-hidden="true">

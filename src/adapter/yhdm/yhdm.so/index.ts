@@ -1,6 +1,5 @@
 import { runtime } from '../../../runtime/index'
-
-import { playModule, playInIframeModule } from './play'
+import { playInIframeModule, playModule } from './play'
 
 runtime.register(
   ['yhdm.so', 'yinghuacd.com'],

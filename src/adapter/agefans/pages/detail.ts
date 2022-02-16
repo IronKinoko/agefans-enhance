@@ -7,7 +7,7 @@ function renderHistroyStyle() {
 export function detailModule() {
   renderHistroyStyle()
 
-  $('.div_left li > a:nth-child(1), .ul_li_a4 li > a:nth-child(1)').each(
-    (_, anchor) => pagePreview(anchor.parentNode, anchor.href)
-  )
+  $<HTMLAnchorElement>(
+    '.div_left li > a:nth-child(1), .ul_li_a4 li > a:nth-child(1)'
+  ).each((_, anchor) => pagePreview(anchor.parentElement!, anchor.href))
 }

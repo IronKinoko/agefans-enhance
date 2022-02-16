@@ -9,7 +9,7 @@ import pkg from './package.json'
 import { genUserScriptInfo } from './template/userscript'
 import typescript from 'rollup-plugin-typescript2'
 export default defineConfig({
-  input: 'src/index.js',
+  input: 'src/index.ts',
   output: {
     dir: 'dist',
     entryFileNames: 'index.user.js',

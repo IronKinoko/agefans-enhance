@@ -1,11 +1,10 @@
 import $ from 'jquery'
 const SHIFT_KEY = '~!@#$%^&*()_+{}|:"<>?' + '～！@#¥%…&*（）——+「」｜：“《》？'
 
-/**
- * @param {string[]} keys
- * @param {(e:KeyboardEvent,key:string)=>void} cb
- */
-export function keybind(keys, cb) {
+export function keybind(
+  keys: string[],
+  cb: (e: KeyboardEvent, key: string) => void
+) {
   const isMac = /macintosh|mac os x/i.test(navigator.userAgent)
   keys = keys.filter((key) => !key.includes(isMac ? 'ctrl' : 'meta'))
   $(window).on('keydown', (e) => {
@@ -25,7 +24,7 @@ export function keybind(keys, cb) {
     const key = keyArr.join('+')
 
     if (keys.includes(key)) {
-      cb(e, key)
+      cb(e.originalEvent!, key)
     }
   })
 }

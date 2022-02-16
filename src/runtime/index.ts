@@ -1,9 +1,8 @@
-type FN = () => void
 interface RegisterOpts {
   runInIframe?: boolean
   test: string | RegExp | (string | RegExp)[]
-  setup?: FN
-  run: FN
+  setup?: Function
+  run: Function
 }
 
 interface RegisteredItem {
@@ -28,8 +27,8 @@ class Runtime {
   }
 
   run() {
-    let setupList: FN[] = []
-    let runList: FN[] = []
+    let setupList: Function[] = []
+    let runList: Function[] = []
 
     const list = this.list.filter(({ domains }) =>
       domains.some(createTest(location.origin))

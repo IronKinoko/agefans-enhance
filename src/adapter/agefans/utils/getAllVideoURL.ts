@@ -8,10 +8,8 @@ import { session } from '../../../utils/session'
 import { alert } from './alert'
 const LOCAL_PLAY_URL_KEY = 'play-url-key'
 
-/**
- * @typedef {{title:string,href:string}} ATag
- */
-
+type ATag = { title: string; href: string }
+type LocalItem = { url: string }
 function insertBtn() {
   $(`
   <div class="baseblock">
@@ -53,11 +51,11 @@ function insertBtn() {
       title: '选择需要的链接',
       content: insertModalForm(),
       onOk: () => {
-        let list = []
+        let list: { title: string; href: string }[] = []
         $('#modal-form .col input:checked').each((_, el) => {
           list.push({
             title: $(el).data('title'),
-            href: $(el).attr('name'),
+            href: $(el).attr('name')!,
           })
         })
         insertResult(list)
@@ -67,7 +65,7 @@ function insertBtn() {
   $('#thunder-link').attr('href', () => {
     const map = getLocal()
     const list = getAllVideoUrlList()
-    const tasks = []
+    const tasks: { url: string; baseName: string }[] = []
     const taskGroupName = $('#detailname a').text()
     list.forEach((item) => {
       if (map[item.href]) {
@@ -90,16 +88,13 @@ function insertBtn() {
   })
 }
 
-/**
- * @return {ATag[]}
- */
 function getAllVideoUrlList() {
   const $aTagList = $('.movurl:visible li a')
-  const aTags = []
+  const aTags: ATag[] = []
   $aTagList.each(function (index, aTag) {
     aTags.push({
-      title: aTag.textContent,
-      href: aTag.dataset.href,
+      title: aTag.textContent!,
+      href: aTag.dataset.href!,
     })
   })
 
@@ -136,12 +131,14 @@ function insertModalForm() {
       .prop('checked', length === checkedLength)
   })
   $dom.find('.k-checkbox #all-check').on('change', (e) => {
-    $dom.find('.row .col input').prop('checked', e.currentTarget.checked)
+    $dom
+      .find('.row .col input')
+      .prop('checked', (e.currentTarget as HTMLInputElement).checked)
   })
   return $dom
 }
 
-function genUrlItem(title, content = '加载中...') {
+function genUrlItem(title: string, content = '加载中...') {
   const download = [$('#detailname a').text(), title].join(' ')
   const contentHTML = content.startsWith('http')
     ? `<a href="${content}" download="${download}">${content}</a>`
@@ -162,10 +159,7 @@ export const loadingIcon = `
   </circle>
 </svg>`
 
-/**
- * @param {ATag[]} list
- */
-async function insertResult(list) {
+async function insertResult(list: ATag[]) {
   const $parent = $('#url-list')
   $parent.empty()
 
@@ -208,12 +202,10 @@ async function insertResult(list) {
   })
 }
 
-/**
- * @param {string} [href]
- * @return {Record<string,{url:string}> | string | null}
- */
-function getLocal(href) {
-  const map = session.getItem(LOCAL_PLAY_URL_KEY, {})
+function getLocal(): Record<string, LocalItem>
+function getLocal(href: string): string | null
+function getLocal(href?: string): Record<string, LocalItem> | string | null {
+  const map = session.getItem<Record<string, LocalItem>>(LOCAL_PLAY_URL_KEY, {})
   if (href) {
     const item = map[href]
     if (!item) return null
@@ -222,13 +214,13 @@ function getLocal(href) {
   }
   return map
 }
-export function saveLocal(href, url) {
+export function saveLocal(href: string, url: string) {
   const map = getLocal()
   map[href] = { url }
   session.setItem(LOCAL_PLAY_URL_KEY, map)
 }
 
-export function removeLocal(href) {
+export function removeLocal(href: string) {
   const map = getLocal()
   delete map[href]
   session.setItem(LOCAL_PLAY_URL_KEY, map)
@@ -253,12 +245,12 @@ export function showLocalURL() {
 }
 
 class AGEfansError extends Error {
-  constructor(message) {
+  constructor(message: string) {
     super(message)
     this.name = 'AGEfans Enhance Exception'
   }
 }
-async function getVurl(href) {
+async function getVurl(href: string) {
   const res = await fetch(getPlayUrl(href), {
     referrerPolicy: 'strict-origin-when-cross-origin',
   })
@@ -271,7 +263,7 @@ async function getVurl(href) {
     throw new AGEfansError(`Cookie过期，请刷新页面重试（${text}）`)
   }
 
-  function __qpic_chkvurl_converting(_in_vurl) {
+  function __qpic_chkvurl_converting(_in_vurl: string) {
     const vurl = decodeURIComponent(_in_vurl)
     const match_resl = vurl.match(
       /^http.+\.f20\.mp4\?ptype=http\?w5=0&h5=0&state=1$/
@@ -294,11 +286,11 @@ async function getVurl(href) {
 
   let _url = _purl + _vurl
   let url = new URL(_url, location.origin)
-  const vurl = url.searchParams.get('url')
+  const vurl = url.searchParams.get('url')!
 
   return parseToURL(vurl)
 }
-export async function getVurlWithLocal(href) {
+export async function getVurlWithLocal(href: string) {
   let vurl = getLocal(href)
   if (vurl) {
     return vurl
