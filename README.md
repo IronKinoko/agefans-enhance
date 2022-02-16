@@ -1,6 +1,6 @@
 # agefans enhance
 
-增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
+增强 agefans 播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 
 **请使用 <kbd>?</kbd> 键查看脚本信息与快捷键**
 
@@ -10,12 +10,12 @@
 
 ## 安装
 
-[Greasy Fork链接，点击安装](https://greasyfork.org/zh-CN/scripts/424023-agefans-enhance)
+[Greasy Fork 链接，点击安装](https://greasyfork.org/zh-CN/scripts/424023-agefans-enhance)
 
 ## 特性
 
 - 防止打开`devtools`时自动跳转主页（见下面注意事项）
-- 调整播放器外边框,改成16/9隐藏黑条
+- 调整播放器外边框,改成 16/9 隐藏黑条
 - 网页全屏时隐藏滚动条
 - 获取当前页面全部视频
 - 迅雷合并下载视频
@@ -32,6 +32,22 @@
 
 - 暂无，欢迎提交意见（[issue](https://github.com/IronKinoko/agefans-enhance/issues)）
 
+## 网站适配列表
+
+- https://www.age.tv/*
+- https://www.agefans.*
+- https://www.agemys.*
+- \*://\*.yhdm.so/\*
+- \*://\*.yinghuacd.com/\*
+- https://www.yhdmp.cc/vp/*
+- http://www.imomoe.live/player/*
+- http://www.88dmw.com/*
+- https://new-ani.me/*
+- https://danmu.4dm.cc/m3u8.php*
+- http*://www.ntyou.*
+- https://www.dm233.*
+- https://www.olevod.com*
+
 ## 注意事项
 
 ### agefans 防止打开`devtools`时自动跳转主页
@@ -41,7 +57,7 @@
 在首页打开控制台，输入下面这段代码
 
 ```javascript
-document.cookie="username=admin; path=/;max-age=9000000"
+document.cookie = 'username=admin; path=/;max-age=9000000'
 ```
 
 ## 常见问题
@@ -56,4 +72,4 @@ document.cookie="username=admin; path=/;max-age=9000000"
 
 目前这种情况大多数是因为`agefans`本身提供的资源就有问题。可以尝试暂时关闭脚本，测试链接是否正常。
 
-如果关闭脚本后能正常观看，欢迎提交issue给我。（按 <kbd>?</kbd> 键选择提交issue）
+如果关闭脚本后能正常观看，欢迎提交 issue 给我。（按 <kbd>?</kbd> 键选择提交 issue）
