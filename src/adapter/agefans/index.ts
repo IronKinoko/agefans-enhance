@@ -10,9 +10,9 @@ import { recommendModule } from './pages/recommend'
 import { settingModule } from './pages/setting'
 import { updateModule } from './pages/update'
 
-runtime.register(
-  ['age.tv', 'agemys', 'agefans'],
-  [
+runtime.register({
+  domains: ['age.tv', 'agemys', 'agefans'],
+  opts: [
     {
       test: '*',
       run: () => {
@@ -31,5 +31,5 @@ runtime.register(
     { test: '/update', run: updateModule },
     { test: '/rank', run: rankModule },
     { test: /^\/$/, run: homeModule },
-  ]
-)
+  ],
+})

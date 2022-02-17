@@ -1,4 +1,4 @@
 import { runtime } from '../../../runtime/index'
 import { playModule } from './play'
 
-runtime.register(['yhdmp.cc'], [{ test: '/vp', run: playModule }])
+runtime.register({ domains: ['yhdmp.cc'], opts: [{ test: '/vp', run: playModule }] })

@@ -18,11 +18,7 @@ function createTest(target: string) {
 }
 class Runtime {
   private list: RegisteredItem[] = []
-  register(
-    domains: string | RegExp | (string | RegExp)[],
-    opts: RegisterOpts[]
-  ) {
-    domains = [domains].flat()
+  register({ domains, opts }: RegisteredItem) {
     this.list.push({ domains, opts })
   }
 

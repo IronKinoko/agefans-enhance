@@ -13,6 +13,7 @@ function www88dmwSetup() {
   } catch (error) {}
 }
 
-runtime.register('88dmw', [
-  { test: '/play', setup: www88dmwSetup, run: playModule },
-])
+runtime.register({
+  domains: ['88dmw'],
+  opts: [{ test: '/play', setup: www88dmwSetup, run: playModule }],
+})

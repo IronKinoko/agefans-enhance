@@ -1,4 +1,7 @@
 import { runtime } from '../../runtime'
 import { playModule } from './play'
 
-runtime.register(['.ntyou.'], [{ test: '/play', run: playModule }])
+runtime.register({
+  domains: ['.ntyou.'],
+  opts: [{ test: '/play', run: playModule }],
+})
