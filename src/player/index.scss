@@ -217,14 +217,21 @@
         --plyr-range-track-height: 4px;
       }
     }
+    .plyr__controls__item.plyr__time--duration.plyr__time {
+      margin-right: auto;
+    }
 
-    #k-speed {
-      width: 60px;
+    .k-text-btn {
+      display: inline-block;
+      padding: 0 16px;
       text-align: center;
-      margin-left: auto;
       &-text {
         line-height: 32px;
       }
+    }
+    .k-text-btn + .k-text-btn {
+      margin-left: 8px;
+      padding-left: 0;
     }
   }
 
@@ -388,6 +395,7 @@
     height: 36px;
     cursor: pointer;
     width: 100%;
+    white-space: nowrap;
     color: white;
     transition: all 0.3s;
     text-align: center;
@@ -417,7 +425,7 @@
       margin-top: 8px;
     }
     input {
-      margin-right: 4px;
+      margin: 0 4px 0 0;
     }
   }
 }

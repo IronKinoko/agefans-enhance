@@ -1,12 +1,13 @@
+import $ from 'jquery'
 export function queryDom<T extends Element>(selector: string) {
   return new Promise<T>((resolve) => {
-    let video: T | null
+    let dom: JQuery<T>
     function search() {
-      video = document.querySelector<T>(selector)
-      if (video === null) {
+      dom = $<T>(selector)
+      if (dom.length === 0) {
         requestAnimationFrame(search)
       } else {
-        resolve(video)
+        resolve(dom[0])
       }
     }
     search()

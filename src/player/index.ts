@@ -2,6 +2,7 @@ import Hls from 'hls.js'
 import $ from 'jquery'
 import { debounce, throttle } from 'lodash-es'
 import Plyr from 'plyr'
+import { runtime } from '../runtime'
 import { genIssueURL } from '../utils/genIssueURL'
 import { keybind } from '../utils/keybind'
 import { Message } from '../utils/message'
@@ -15,6 +16,7 @@ import {
   pipHTML,
   progressHTML,
   scriptInfo,
+  searchActionsHTML,
   settingsHTML,
   speedHTML,
   speedList,
@@ -53,6 +55,7 @@ class KPlayer {
     autoNext: boolean
     showProgress: boolean
     volume: number
+    showSearchActions: boolean
   }
   plyr: Plyr
   $wrapper: JQuery<HTMLElement>
@@ -73,6 +76,7 @@ class KPlayer {
   $settings!: JQuery<HTMLDivElement>
   $speed!: JQuery<HTMLDivElement>
   localPlayTimeKey: string
+  $searchActions!: JQuery<HTMLElement>
 
   /**
    * @typedef {Object} EnhanceOpts
@@ -99,24 +103,18 @@ class KPlayer {
     this.statusSessionKey = 'k-player-status'
     this.localPlayTimeKey = 'k-player-play-time'
 
-    /**
-     * @type {{speed:number,continuePlay:boolean,autoNext:boolean,showProgress:boolean,volume:number}}
-     */
     this.localConfig = {
       speed: 1,
       continuePlay: true,
       autoNext: true,
       showProgress: true,
       volume: 1,
+      showSearchActions: true,
     }
-    try {
-      this.localConfig = Object.assign(
-        this.localConfig,
-        gm.getItem(this.localConfigKey)
-      )
-    } catch (error) {
-      /** empty */
-    }
+    this.localConfig = Object.assign(
+      this.localConfig,
+      gm.getItem(this.localConfigKey)
+    )
 
     this.plyr = new Plyr('#k-player', {
       autoplay: true,
@@ -218,6 +216,8 @@ class KPlayer {
     this.injectSnapshot()
     this.injectSreen()
     this.initEvent()
+
+    this.injectSearchActions()
 
     /** @private */
     this.isHoverControls = false
@@ -566,6 +566,15 @@ class KPlayer {
     this.$settings = $(settingsHTML) as JQuery<HTMLDivElement>
 
     this.$settings
+      .find('[name=showSearchActions]')
+      .prop('checked', this.localConfig.showSearchActions)
+      .on('change', (e) => {
+        const checked = (e.target as HTMLInputElement).checked
+        this.configSaveToLocal('showSearchActions', checked)
+        this.$searchActions.toggle(checked)
+      })
+
+    this.$settings
       .find('[name=autoNext]')
       .prop('checked', this.localConfig.autoNext)
       .on('change', (e) => {
@@ -579,11 +588,7 @@ class KPlayer {
       .on('change', (e) => {
         const checked = (e.target as HTMLInputElement).checked
         this.configSaveToLocal('showProgress', checked)
-        if (checked) {
-          this.$progress.css('display', '')
-        } else {
-          this.$progress.css('display', 'none')
-        }
+        this.$progress.toggle(checked)
       })
     if (!this.localConfig.showProgress) {
       this.$progress.css('display', 'none')
@@ -658,6 +663,23 @@ class KPlayer {
       .on('click', () => {
         this.toggleWidescreen()
       })
+  }
+
+  private async injectSearchActions() {
+    if (!this.localConfig.showSearchActions) return
+
+    this.$searchActions = $(searchActionsHTML)
+    const actions = await runtime.getSearchActions()
+    if (actions.length === 0) return
+
+    this.$searchActions.find('.k-menu').append(
+      actions.map(({ name, search }) => {
+        return $<HTMLLIElement>(
+          `<li class="k-menu-item k-speed-item">${name}</li>`
+        ).on('click', search)
+      })
+    )
+    this.$searchActions.insertBefore(this.$speed)
   }
 
   private snapshot() {
@@ -803,7 +825,7 @@ class KPlayer {
           src: video.src,
           duration: video.duration,
         }
-        window.parent.postMessage({ key, video: info }, { targetOrigin: '*' })
+        window.parent.postMessage({ key, video: info }, '*')
       })
     })
   }

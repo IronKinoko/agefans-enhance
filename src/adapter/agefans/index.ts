@@ -32,4 +32,9 @@ runtime.register({
     { test: '/rank', run: rankModule },
     { test: /^\/$/, run: homeModule },
   ],
+  search: {
+    name: 'agefans',
+    search: (name) => `https://www.agemys.com/search?query=${name}&page=1`,
+    getSearchName: () => $('#detailname a').text(),
+  },
 })

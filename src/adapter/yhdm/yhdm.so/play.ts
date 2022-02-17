@@ -49,6 +49,18 @@ export function playModule() {
       $('body').css('overflow', '')
       $('#playbox iframe').removeAttr('style')
     }
+
+    if (key === 'getSearchName') {
+      const iframe = $<HTMLIFrameElement>('#playbox iframe')[0]
+
+      iframe.contentWindow?.postMessage(
+        { key: 'getSearchName', name: $('.gohome.l > h1 > a').text() },
+        '*'
+      )
+    }
+    if (key === 'openLink') {
+      window.open(e.data.url)
+    }
   })
 
   window.addEventListener('keydown', (e) => {

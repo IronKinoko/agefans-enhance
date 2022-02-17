@@ -8,6 +8,12 @@ interface RegisterOpts {
 interface RegisteredItem {
   domains: (string | RegExp)[]
   opts: RegisterOpts[]
+  search?: {
+    name: string
+    search: (name: string) => string | void
+    getSearchName?: () => Promise<string> | string
+    disabledInIframe?: boolean
+  }
 }
 
 function createTest(target: string) {
@@ -18,29 +24,71 @@ function createTest(target: string) {
 }
 class Runtime {
   private list: RegisteredItem[] = []
-  register({ domains, opts }: RegisteredItem) {
-    this.list.push({ domains, opts })
+  register(item: RegisteredItem) {
+    this.list.push(item)
   }
+
+  async getSearchActions() {
+    const isInIframe = parent !== self
+    const searchs = this.list
+      .map((o) => o.search)
+      .filter(Boolean)
+      .filter((o) => !(isInIframe && o!.disabledInIframe)) as NonNullable<
+      RegisteredItem['search']
+    >[]
+
+    const register = this.getActiveRegister()
+    if (!register.search?.getSearchName) return []
+    let name = await register.search.getSearchName()
+    if (!name) return []
+
+    name = name
+      .replace(/第.季/, '')
+      .replace(/[<>《》''‘’""“”\[\]]/g, '')
+      .trim()
+    return searchs
+      .filter((search) => search !== register.search)
+      .map((search) => ({
+        name: search.name,
+        search: () => {
+          const url = search.search(encodeURIComponent(name!))
+          if (!url) return
+          if (isInIframe) parent.postMessage({ key: 'openLink', url }, '*')
+          else window.open(url)
+        },
+      }))
+  }
+
+  private getActiveRegister() {
+    const registers = this.list.filter(({ domains }) =>
+      domains.some(createTest(location.origin))
+    )
+
+    if (registers.length !== 1) throw new Error('激活的域名应该就一个')
+    return registers[0]
+  }
+
+  private getActiveOpts() {
+    const register = this.getActiveRegister()
+    return register.opts.filter(({ test }) => {
+      const testArr = [test].flat()
+      return testArr.some(createTest(location.pathname + location.search))
+    })
+  }
+
+  getCurrentAction() {}
 
   run() {
     let setupList: Function[] = []
     let runList: Function[] = []
 
-    const list = this.list.filter(({ domains }) =>
-      domains.some(createTest(location.origin))
-    )
-    list.forEach(({ opts }) => {
-      opts = opts.filter(({ test }) => {
-        const testArr = [test].flat()
-        return testArr.some(createTest(location.pathname + location.search))
-      })
+    const opts = this.getActiveOpts()
 
-      opts.forEach(({ run, runInIframe, setup }) => {
-        if (runInIframe || parent === self) {
-          setup && setupList.push(setup)
-          runList.push(run)
-        }
-      })
+    opts.forEach(({ run, runInIframe, setup }) => {
+      if (runInIframe || parent === self) {
+        setup && setupList.push(setup)
+        runList.push(run)
+      }
     })
 
     setupList.forEach((setup) => setup())

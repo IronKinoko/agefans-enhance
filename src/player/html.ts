@@ -168,8 +168,8 @@ export const pipHTML = `
 export const speedList = [0.5, 0.75, 1, 1.25, 1.5, 2, 4]
 export const speedHTML = popover(
   `
-<div id="k-speed" class="plyr__controls__item k-popover">
-  <span id="k-speed-text">倍速</span>
+<div id="k-speed" class="plyr__controls__item k-popover k-text-btn">
+  <span id="k-speed-text" class="k-text-btn-text">倍速</span>
 </div>
 `,
   `<ul class="k-menu">
@@ -192,6 +192,10 @@ export const settingsHTML = popover(
   `
 <div class="k-settings-list">
   <label class="k-settings-item">
+    <input type="checkbox" name="showSearchActions" />
+    显示拓展搜索
+  </label>
+  <label class="k-settings-item">
     <input type="checkbox" name="autoNext" />
     自动下一集
   </label>
@@ -205,6 +209,15 @@ export const settingsHTML = popover(
   </label>
 </div>
 `
+)
+
+export const searchActionsHTML = popover(
+  `
+<div id="k-speed" class="plyr__controls__item k-popover k-text-btn">
+  <span id="k-speed-text" class="k-text-btn-text">友链</span>
+</div>
+`,
+  `<ul class="k-menu"></ul>`
 )
 
 export const scriptInfo = (video: HTMLVideoElement, githubIssueURL: string) => `

@@ -1,6 +1,8 @@
 import { playModule } from './play'
 import './index.scss'
 import { runtime } from '../../runtime/index'
+import { searchAction } from './search'
+import $ from 'jquery'
 
 function www88dmwSetup() {
   try {
@@ -16,4 +18,10 @@ function www88dmwSetup() {
 runtime.register({
   domains: ['88dmw'],
   opts: [{ test: '/play', setup: www88dmwSetup, run: playModule }],
+  search: {
+    name: '动漫岛',
+    search: searchAction,
+    getSearchName: () => $('.play_menu a:last').text(),
+    disabledInIframe: true,
+  },
 })
