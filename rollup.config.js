@@ -6,7 +6,7 @@ import Copy from 'rollup-plugin-copy'
 import styles from 'rollup-plugin-styles'
 import pkg from './package.json'
 import { genUserScriptInfo } from './template/userscript'
-import typescript from '@rollup/plugin-typescript';
+import typescript from '@rollup/plugin-typescript'
 
 const globals = {
   'hls.js': 'Hls',
@@ -33,13 +33,11 @@ export default defineConfig({
       'process.env.APP_VERSION': JSON.stringify(pkg.version),
       preventAssignment: true,
     }),
-    Copy({
-      targets: [
-        {
-          src: ['README.md', 'package.json', 'LICENSE', 'website/*'],
-          dest: 'dist',
-        },
-      ],
-    }),
-  ],
+    process.env.NODE_ENV === 'production' &&
+      Copy({
+        targets: [
+          { src: ['README.md', 'package.json', 'LICENSE'], dest: 'dist' },
+        ],
+      }),
+  ].filter(Boolean),
 })

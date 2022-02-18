@@ -4,6 +4,7 @@ import { pagePreview } from '../utils/pagePreview'
 import { parseTime } from '../../../utils/parseTime'
 
 const LOCAL_HISTORY_KEY = 'v-his'
+const MAX_HISTORY_LENGTH = 100
 
 export interface HistoryItem {
   id: string
@@ -20,7 +21,7 @@ class History {
   }
   set his(value) {
     if (Array.isArray(value)) {
-      gm.setItem(LOCAL_HISTORY_KEY, value.slice(0, 100))
+      gm.setItem(LOCAL_HISTORY_KEY, value.slice(0, MAX_HISTORY_LENGTH))
     }
   }
   getAll(): HistoryItem[] {

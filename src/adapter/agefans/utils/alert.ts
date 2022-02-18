@@ -1,3 +1,5 @@
+import './alert.scss'
+
 export function alert(html: string) {
   return `<div class="k-alert k-alert-info">
   <span class="k-alert-icon">

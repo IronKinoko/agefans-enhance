@@ -78,7 +78,6 @@ export function pagePreview(
         }
 
         $popover.empty().append(img, info)
-
         caclPosition(e)
       }, 100)
     })

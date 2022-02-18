@@ -7,12 +7,12 @@ import {
   initGetAllVideoURL,
   removeLocal,
   saveLocal,
-  showLocalURL,
 } from '../utils/getAllVideoURL'
 import { his } from './history'
 import { pagePreview } from '../utils/pagePreview'
 import './play.scss'
 import { throttle } from 'lodash-es'
+import { ageBlock } from '../utils/ageBlock'
 
 let player: KPlayer
 
@@ -47,7 +47,6 @@ function replacePlayer() {
 
 function showCurrentLink(vurl: string | URL) {
   const decodeVurl = parseToURL(vurl)
-  const isSteaming = decodeVurl.includes('.m3u8')
 
   const title = [$('#detailname a').text(), getActivedom().text()].join(' ')
 
@@ -56,20 +55,13 @@ function showCurrentLink(vurl: string | URL) {
     $('#current-link').attr('href', decodeVurl)
     return
   }
-  $(`
-  <div class="baseblock">
-    <div class="blockcontent">
-      <div id="wangpan-div" class="baseblock2">
-        <div class="blocktitle">本集链接：${
-          isSteaming ? '(流媒体视频暂时不支持下载)' : ''
-        }</div>
-        <div class="blockcontent">
-          <a class="res_links" id="current-link" download="${title}" rel="noreferrer" href="${decodeVurl}">${decodeVurl}</a>
-        </div>
-      </div>
-    </div>
-  </div>
-`).insertBefore($('.baseblock:contains(网盘资源)'))
+
+  $(
+    ageBlock({
+      title: '本集链接：',
+      content: `<a class="res_links" id="current-link" download="${title}" rel="noreferrer" href="${decodeVurl}">${decodeVurl}</a>`,
+    })
+  ).insertBefore($('.baseblock:contains(网盘资源)'))
 }
 
 function gotoPrevPart() {
@@ -128,7 +120,6 @@ async function switchPart(
     document.title = title
 
     showCurrentLink(vurl)
-    showLocalURL()
     his.logHistory()
     retryCount = 0
     switchLoading = false
@@ -226,7 +217,6 @@ function initPlayer(vurl: string) {
   player.src = vurl
 
   saveLocal(getActivedom().data('href'), vurl)
-  showLocalURL()
 }
 
 function useOriginPlayer() {
@@ -252,17 +242,8 @@ async function showRelatesSeries() {
   const $series = $(info).find('li.relates_series')
   $series.find('a').each((_, anchor) => pagePreview(anchor, anchor.href))
 
-  $(`
-  <div class="spaceblock1"></div>
-  <div id="relates-series" class="baseblock">
-    <div class="blocktitle">相关动画：</div>
-    <div class="line"></div>
-    <div class="blockcontent">
-      <ul></ul>
-    </div>
-  </div>
-`)
-    .insertAfter($('.baseblock:contains(简介：)'))
+  $(ageBlock({ title: '相关动画：', content: '<ul id="relates-series"></ul>' }))
+    .insertAfter('.baseblock:contains(种子资源)')
     .find('ul')
     .append($series)
 }

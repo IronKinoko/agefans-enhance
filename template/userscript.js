@@ -2,7 +2,7 @@ export function genUserScriptInfo(pkg) {
   return `// ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
-// @icon         https://www.google.com/s2/favicons?sz=64&domain=agemys.com
+// @icon         https://www.agemys.com/favicon.ico
 // @version      ${pkg.version}
 // @description  ${pkg.description}
 // @author       IronKinoko
