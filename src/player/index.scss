@@ -204,6 +204,7 @@
   }
 
   .plyr__controls {
+    z-index: 20;
     .plyr__controls__item:first-child {
       margin-right: 0;
     }
