@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import './message.scss'
 export class Message {
   $message: JQuery<HTMLDivElement>

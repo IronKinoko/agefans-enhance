@@ -1,6 +1,5 @@
 import { KPlayer } from '../../player'
 import { queryDom } from '../../utils/queryDom'
-import $ from 'jquery'
 
 function switchPart(next: boolean) {
   $('.eplist-eppic li[style]')[next ? 'next' : 'prev']().find('a')[0]?.click()

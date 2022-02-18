@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import { gm } from '../../../utils/storage'
 import { modal } from '../../../utils/modal'
 import { session } from '../../../utils/storage'

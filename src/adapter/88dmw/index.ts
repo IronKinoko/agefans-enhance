@@ -2,7 +2,6 @@ import { playModule } from './play'
 import './index.scss'
 import { runtime } from '../../runtime/index'
 import { searchAction } from './search'
-import $ from 'jquery'
 
 function www88dmwSetup() {
   try {

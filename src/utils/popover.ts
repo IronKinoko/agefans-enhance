@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import './popover.scss'
 export function popover(target: string, content: string) {
   const $target = $(target)

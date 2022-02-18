@@ -1,5 +1,3 @@
-import $ from 'jquery'
-
 export function searchAction(name: string) {
   const $form = $<HTMLFormElement>(`
   <form action="http://www.88dmw.com/index.php?m=vod-search" method="post">

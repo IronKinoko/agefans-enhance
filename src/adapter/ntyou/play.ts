@@ -1,5 +1,3 @@
-import $ from 'jquery'
-
 function switchPart(next: boolean) {
   $('.active-play').parent()[next ? 'next' : 'prev']().find('a')[0]?.click()
 }

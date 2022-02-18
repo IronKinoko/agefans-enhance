@@ -64,6 +64,6 @@
     "plyr": "^3.6.12"
   },
   "browserslist": [
-    "chrome >= 68"
+    "last 1 chrome version"
   ]
 }

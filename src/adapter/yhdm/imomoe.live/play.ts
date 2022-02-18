@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import { KPlayer } from '../../../player'
 import parseToURL from '../../../utils/parseToURL'
 

@@ -1,4 +1,3 @@
-import $ from 'jquery'
 export function queryDom<T extends Element>(selector: string) {
   return new Promise<T>((resolve) => {
     let dom: JQuery<T>

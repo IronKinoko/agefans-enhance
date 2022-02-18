@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import { addReferrerMeta, KPlayer } from '../../../player'
 import { Message } from '../../../utils/message'
 import parseToURL from '../../../utils/parseToURL'
@@ -180,7 +179,7 @@ function addListener() {
   const update = throttle(() => {
     updateTime(player.currentTime)
   }, 1000)
-  
+
   player.on('timeupdate', () => {
     update()
   })

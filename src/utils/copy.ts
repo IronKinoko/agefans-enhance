@@ -1,4 +1,3 @@
-import $ from 'jquery'
 export function copyToClipboard(element: JQuery | HTMLElement) {
   var $temp = $('<textarea>')
   $('body').append($temp)

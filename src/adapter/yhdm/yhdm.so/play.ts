@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import { KPlayer } from '../../../player'
 
 function replacePlayer() {

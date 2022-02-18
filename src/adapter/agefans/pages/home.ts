@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import { pagePreview } from '../utils/pagePreview'
 
 export function homeModule() {

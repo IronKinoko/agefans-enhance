@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import { copyToClipboard } from '../../../utils/copy'
 import { modal } from '../../../utils/modal'
 import parseToURL from '../../../utils/parseToURL'

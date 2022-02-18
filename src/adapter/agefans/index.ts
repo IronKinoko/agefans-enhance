@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import { runtime } from '../../runtime/index'
 import './index.scss'
 import { detailModule } from './pages/detail'

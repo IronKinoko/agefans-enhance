@@ -1,6 +1,5 @@
 import { runtime } from '../../../runtime/index'
 import { playModule } from './play'
-import $ from 'jquery'
 
 runtime.register({
   domains: ['yhdmp.cc'],

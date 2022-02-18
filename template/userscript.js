@@ -23,9 +23,17 @@ export function genUserScriptInfo(pkg) {
 // @require      https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js
 // @require      https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.js
 // @require      https://cdn.jsdelivr.net/npm/hls.js@1.0.9/dist/hls.min.js
+// @resource     plyrCSS https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.css
+// @grant        GM_getResourceText
+// @grant        GM_addStyle
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @license      MIT
 // ==/UserScript==
+
+(function() {
+    let plyrCSS = GM_getResourceText('plyrCSS')  
+    GM_addStyle(plyrCSS)
+})();
 `
 }

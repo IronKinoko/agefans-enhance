@@ -1,5 +1,4 @@
 import { KPlayer } from '../../player'
-import $ from 'jquery'
 
 function switchPart(next: boolean) {
   $(`.play_but.bline a:contains(${next ? '下集' : '上集'})`)[0]?.click()

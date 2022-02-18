@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import './modal.scss'
 
 export interface ModalOpts {

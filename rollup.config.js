@@ -1,4 +1,3 @@
-import { babel } from '@rollup/plugin-babel'
 import image from '@rollup/plugin-image'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import replace from '@rollup/plugin-replace'
@@ -8,6 +7,7 @@ import styles from 'rollup-plugin-styles'
 import pkg from './package.json'
 import { genUserScriptInfo } from './template/userscript'
 import typescript from 'rollup-plugin-typescript2'
+
 export default defineConfig({
   input: 'src/index.ts',
   output: {
@@ -17,14 +17,12 @@ export default defineConfig({
     banner: genUserScriptInfo(pkg),
     globals: {
       'hls.js': 'Hls',
-      jquery: '$',
       plyr: 'Plyr',
     },
   },
-  external: ['hls.js', 'jquery', 'plyr'],
+  external: ['hls.js', 'plyr'],
   plugins: [
     image(),
-    babel({ babelHelpers: 'bundled' }),
     typescript(),
     styles(),
     nodeResolve({ browser: true }),

@@ -1,6 +1,6 @@
 import { runtime } from '../../../runtime/index'
 import { playInIframeModule, playModule } from './play'
-import $ from 'jquery'
+
 import { queryDom } from '../../../utils/queryDom'
 
 runtime.register({

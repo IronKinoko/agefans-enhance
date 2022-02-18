@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import './history.scss'
 import { gm } from '../../../utils/storage'
 import { pagePreview } from '../utils/pagePreview'

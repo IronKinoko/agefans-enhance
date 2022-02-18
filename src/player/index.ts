@@ -1,5 +1,5 @@
 import Hls from 'hls.js'
-import $ from 'jquery'
+
 import { debounce, throttle } from 'lodash-es'
 import Plyr from 'plyr'
 import { runtime } from '../runtime'

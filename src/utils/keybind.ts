@@ -1,4 +1,3 @@
-import $ from 'jquery'
 const SHIFT_KEY = '~!@#$%^&*()_+{}|:"<>?' + '～！@#¥%…&*（）——+「」｜：“《》？'
 
 export function keybind(

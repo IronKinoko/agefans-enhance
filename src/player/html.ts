@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import { popover } from '../utils/popover'
 import { renderKey } from '../utils/renderKey'
 

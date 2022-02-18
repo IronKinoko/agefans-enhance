@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import './pagePreview.scss'
 import { session } from '../../../utils/storage'
 import { loadingIcon } from './getAllVideoURL'

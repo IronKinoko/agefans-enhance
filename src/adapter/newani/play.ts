@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import { KPlayer } from '../../player'
 import { queryDom } from '../../utils/queryDom'
 

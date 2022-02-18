@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import { pagePreview } from '../utils/pagePreview'
 function renderHistroyStyle() {
   $('<style/>').html(`.movurl li a:visited { color: red; }`).appendTo('head')
