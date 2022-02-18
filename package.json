@@ -1,27 +1,8 @@
 {
   "name": "agefans",
-  "version": "1.21.1",
+  "version": "1.21.2",
   "description": "增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能",
   "main": "index.user.js",
-  "scripts": {
-    "dev": "rollup -c -w --environment NODE_ENV:development",
-    "build": "rollup -c --environment NODE_ENV:production",
-    "lint": "eslint --fix --ext js src",
-    "prepare": "husky install",
-    "deploy": "gh-pages -d dist"
-  },
-  "lint-staged": {
-    "src/**/*.{js,sass}": [
-      "prettier -c -w",
-      "eslint --fix"
-    ]
-  },
-  "prettier": {
-    "singleQuote": true,
-    "semi": false,
-    "tabWidth": 2,
-    "trailingComma": "es5"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/IronKinoko/agefans-enhance.git"
@@ -36,13 +17,18 @@
     "url": "https://github.com/IronKinoko/agefans-enhance/issues"
   },
   "homepage": "https://github.com/IronKinoko/agefans-enhance#readme",
+  "scripts": {
+    "dev": "rollup -c -w --environment NODE_ENV:development",
+    "build": "rollup -c --environment NODE_ENV:production",
+    "lint": "tsc --noEmit",
+    "prepare": "husky install",
+    "deploy": "gh-pages -d dist"
+  },
   "devDependencies": {
-    "@babel/core": "^7.14.2",
-    "@babel/preset-env": "^7.14.2",
-    "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-image": "^2.1.1",
     "@rollup/plugin-node-resolve": "^13.0.0",
     "@rollup/plugin-replace": "^2.4.2",
+    "@rollup/plugin-typescript": "^8.3.0",
     "@types/jquery": "^3.5.13",
     "@types/lodash-es": "^4.17.6",
     "eslint": "^7.24.0",
@@ -53,7 +39,6 @@
     "rollup": "^2.56.0",
     "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-styles": "^3.14.1",
-    "rollup-plugin-typescript2": "^0.31.2",
     "sass": "^1.32.13",
     "typescript": "^4.5.5"
   },
@@ -64,6 +49,17 @@
     "plyr": "^3.6.12"
   },
   "browserslist": [
-    "chrome >= 68"
-  ]
+    "last 1 chrome version"
+  ],
+  "lint-staged": {
+    "src/**/*.{js,ts,sass}": [
+      "prettier -c -w"
+    ]
+  },
+  "prettier": {
+    "singleQuote": true,
+    "semi": false,
+    "tabWidth": 2,
+    "trailingComma": "es5"
+  }
 }
