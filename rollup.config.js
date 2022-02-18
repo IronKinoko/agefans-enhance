@@ -6,7 +6,12 @@ import Copy from 'rollup-plugin-copy'
 import styles from 'rollup-plugin-styles'
 import pkg from './package.json'
 import { genUserScriptInfo } from './template/userscript'
-import typescript from 'rollup-plugin-typescript2'
+import typescript from '@rollup/plugin-typescript';
+
+const globals = {
+  'hls.js': 'Hls',
+  plyr: 'Plyr',
+}
 
 export default defineConfig({
   input: 'src/index.ts',
@@ -15,17 +20,14 @@ export default defineConfig({
     entryFileNames: 'index.user.js',
     format: 'iife',
     banner: genUserScriptInfo(pkg),
-    globals: {
-      'hls.js': 'Hls',
-      plyr: 'Plyr',
-    },
+    globals,
   },
-  external: ['hls.js', 'plyr'],
+  external: Object.keys(globals),
   plugins: [
-    image(),
     typescript(),
+    image(),
     styles(),
-    nodeResolve({ browser: true }),
+    nodeResolve({ browser: true, extensions: ['.js', '.ts'] }),
     replace({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       'process.env.APP_VERSION': JSON.stringify(pkg.version),
