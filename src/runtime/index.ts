@@ -71,7 +71,7 @@ class Runtime {
   private getActiveOpts() {
     const register = this.getActiveRegister()
     return register.opts.filter(({ test }) => {
-      const testArr = [test].flat()
+      const testArr = Array.isArray(test) ? test : [test]
       return testArr.some(createTest(location.pathname + location.search))
     })
   }

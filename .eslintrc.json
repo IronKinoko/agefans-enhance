@@ -13,7 +13,8 @@
     "GM_setValue": "readonly",
     "GM_getValue": "readonly",
     "unsafeWindow": "readonly",
-    "ClipboardItem": "readonly"
+    "ClipboardItem": "readonly",
+    "$": "readonly"
   },
   "rules": {}
 }

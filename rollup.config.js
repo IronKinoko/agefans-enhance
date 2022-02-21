@@ -13,6 +13,8 @@ const globals = {
   plyr: 'Plyr',
 }
 
+const isDev = process.env.NODE_ENV === 'development'
+
 export default defineConfig({
   input: 'src/index.ts',
   output: {
@@ -24,7 +26,9 @@ export default defineConfig({
   },
   external: Object.keys(globals),
   plugins: [
-    typescript(),
+    typescript({
+      target: isDev ? 'ESNext' : 'ES2017',
+    }),
     image(),
     styles(),
     nodeResolve({ browser: true, extensions: ['.js', '.ts'] }),
@@ -33,7 +37,7 @@ export default defineConfig({
       'process.env.APP_VERSION': JSON.stringify(pkg.version),
       preventAssignment: true,
     }),
-    process.env.NODE_ENV === 'production' &&
+    !isDev &&
       Copy({
         targets: [
           { src: ['README.md', 'package.json', 'LICENSE'], dest: 'dist' },
