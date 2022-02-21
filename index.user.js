@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.21.2
+// @version      1.21.3
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -49,18 +49,21 @@
             : test.test(target);
     }
     class Runtime {
-        list = [];
+        constructor() {
+            this.list = [];
+        }
         register(item) {
             this.list.push(item);
         }
         async getSearchActions() {
+            var _a;
             const isInIframe = parent !== self;
             const searchs = this.list
                 .map((o) => o.search)
                 .filter(Boolean)
                 .filter((o) => !(isInIframe && o.disabledInIframe));
             const register = this.getActiveRegister();
-            if (!register.search?.getSearchName)
+            if (!((_a = register.search) === null || _a === void 0 ? void 0 : _a.getSearchName))
                 return [];
             let name = await register.search.getSearchName();
             if (!name)
@@ -93,7 +96,7 @@
         getActiveOpts() {
             const register = this.getActiveRegister();
             return register.opts.filter(({ test }) => {
-                const testArr = [test].flat();
+                const testArr = Array.isArray(test) ? test : [test];
                 return testArr.some(createTest(location.pathname + location.search));
             });
         }
@@ -241,6 +244,7 @@
     function updateCookie(href) {
         href = href ? location.origin + href : location.href;
         return new Promise((resolve, reject) => {
+            var _a, _b, _c;
             const doneFn = () => {
                 resolve();
                 dom.remove();
@@ -250,9 +254,9 @@
             dom.style.display = 'none';
             dom.src = href;
             document.body.append(dom);
-            dom.contentWindow?.addEventListener('DOMContentLoaded', doneFn);
-            dom.contentWindow?.addEventListener('load', doneFn);
-            dom.contentWindow?.addEventListener('error', reject);
+            (_a = dom.contentWindow) === null || _a === void 0 ? void 0 : _a.addEventListener('DOMContentLoaded', doneFn);
+            (_b = dom.contentWindow) === null || _b === void 0 ? void 0 : _b.addEventListener('load', doneFn);
+            (_c = dom.contentWindow) === null || _c === void 0 ? void 0 : _c.addEventListener('error', reject);
         });
     }
 
@@ -398,11 +402,11 @@
             window.removeEventListener('keydown', fn, { capture: true });
         }
         function handleClose() {
-            onClose?.();
+            onClose === null || onClose === void 0 ? void 0 : onClose();
             reset();
         }
         function handleOk() {
-            onOk?.();
+            onOk === null || onOk === void 0 ? void 0 : onOk();
             reset();
         }
         function fn(e) {
@@ -616,7 +620,8 @@
             return Boolean(this.his.find((o) => o.id === id));
         }
         logHistory() {
-            const id = location.pathname.match(/\/play\/(\d*)/)?.[1];
+            var _a;
+            const id = (_a = location.pathname.match(/\/play\/(\d*)/)) === null || _a === void 0 ? void 0 : _a[1];
             if (!id)
                 return;
             const hisItem = {};
@@ -1335,7 +1340,6 @@
     n(css$5,{});
 
     class Message {
-        $message;
         constructor(selector) {
             this.$message = $('<div id="k-player-message">');
             this.$message.appendTo($(selector));
@@ -1598,7 +1602,7 @@ ${[...speedList]
     const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.21.2"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.21.3"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -1688,7 +1692,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.21.2"}
+脚本版本: ${"1.21.3"}
 `;
     const progressHTML = `
 <div class="k-player-progress">
@@ -1708,29 +1712,6 @@ userAgent: ${navigator.userAgent}
         5: '资源被加密了',
     };
     class KPlayer {
-        localConfigKey;
-        statusSessionKey;
-        localConfig;
-        plyr;
-        $wrapper;
-        $loading;
-        $error;
-        $video;
-        $progress;
-        $header;
-        $pip;
-        $videoWrapper;
-        message;
-        eventMap;
-        isWideScreen;
-        wideScreenBodyStyles;
-        tsumaLength;
-        curentTsuma;
-        isHoverControls;
-        $settings;
-        $speed;
-        localPlayTimeKey;
-        $searchActions;
         /**
          * @typedef {Object} EnhanceOpts
          * @property {HTMLVideoElement} [video]
@@ -1741,6 +1722,31 @@ userAgent: ${navigator.userAgent}
          * @param {Plyr.Options & EnhanceOpts} [opts]
          */
         constructor(selector, opts = {}) {
+            this.setCurrentTimeLogThrottled = throttle(() => {
+                this.setCurrentTimeLog();
+            }, 1000);
+            this.hideControlsDebounced = debounce(() => {
+                const dom = document.querySelector('.plyr');
+                if (!this.isHoverControls)
+                    dom === null || dom === void 0 ? void 0 : dom.classList.add('plyr--hide-controls');
+            }, 1000);
+            this.hideCursorDebounced = debounce(() => {
+                const dom = document.querySelector('.plyr');
+                dom === null || dom === void 0 ? void 0 : dom.classList.add('plyr--hide-cursor');
+            }, 1000);
+            this.isJumped = false;
+            this.jumpToLogTime = throttle(() => {
+                if (this.isJumped)
+                    return;
+                if (this.currentTime < 3) {
+                    this.isJumped = true;
+                    const logTime = this.getCurrentTimeLog();
+                    if (logTime && this.plyr.duration - logTime > 10) {
+                        this.message.info(`已自动跳转至历史播放位置 ${parseTime(logTime)}`);
+                        this.currentTime = logTime;
+                    }
+                }
+            }, 1000);
             const $wrapper = $('<div id="k-player-wrapper"/>').replaceAll(selector);
             const $loading = $(loadingHTML);
             const $error = $(errorHTML);
@@ -1761,10 +1767,7 @@ userAgent: ${navigator.userAgent}
                 showSearchActions: true,
             };
             this.localConfig = Object.assign(this.localConfig, gm.getItem(this.localConfigKey));
-            this.plyr = new Plyr__default['default']('#k-player', {
-                autoplay: true,
-                keyboard: { global: true },
-                controls: [
+            this.plyr = new Plyr__default['default']('#k-player', Object.assign({ autoplay: true, keyboard: { global: true }, controls: [
                     'play',
                     'progress',
                     'current-time',
@@ -1773,12 +1776,7 @@ userAgent: ${navigator.userAgent}
                     'volume',
                     'pip',
                     'fullscreen',
-                ],
-                storage: { enabled: false },
-                seekTime: 5,
-                volume: this.localConfig.volume,
-                speed: { options: speedList, selected: 1 },
-                i18n: {
+                ], storage: { enabled: false }, seekTime: 5, volume: this.localConfig.volume, speed: { options: speedList, selected: 1 }, i18n: {
                     restart: '重播',
                     rewind: '快退 {seektime}s',
                     play: '播放(空格键)',
@@ -1822,13 +1820,10 @@ userAgent: ${navigator.userAgent}
                         576: 'SD',
                         480: 'SD',
                     },
-                },
-                tooltips: {
+                }, tooltips: {
                     controls: true,
                     seek: true,
-                },
-                ...opts,
-            });
+                } }, opts));
             this.$wrapper = $wrapper;
             this.$loading = $loading;
             this.$error = $error;
@@ -1872,12 +1867,9 @@ userAgent: ${navigator.userAgent}
         }
         setCurrentTimeLog(time) {
             const store = local.getItem(this.localPlayTimeKey, {});
-            store[this.playTimeStoreKey] = Math.floor(time ?? this.plyr.currentTime);
+            store[this.playTimeStoreKey] = Math.floor(time !== null && time !== void 0 ? time : this.plyr.currentTime);
             local.setItem(this.localPlayTimeKey, store);
         }
-        setCurrentTimeLogThrottled = throttle(() => {
-            this.setCurrentTimeLog();
-        }, 1000);
         getCurrentTimeLog() {
             const store = local.getItem(this.localPlayTimeKey, {});
             return store[this.playTimeStoreKey];
@@ -1890,28 +1882,6 @@ userAgent: ${navigator.userAgent}
                 return this.src;
             }
         }
-        hideControlsDebounced = debounce(() => {
-            const dom = document.querySelector('.plyr');
-            if (!this.isHoverControls)
-                dom?.classList.add('plyr--hide-controls');
-        }, 1000);
-        hideCursorDebounced = debounce(() => {
-            const dom = document.querySelector('.plyr');
-            dom?.classList.add('plyr--hide-cursor');
-        }, 1000);
-        isJumped = false;
-        jumpToLogTime = throttle(() => {
-            if (this.isJumped)
-                return;
-            if (this.currentTime < 3) {
-                this.isJumped = true;
-                const logTime = this.getCurrentTimeLog();
-                if (logTime && this.plyr.duration - logTime > 10) {
-                    this.message.info(`已自动跳转至历史播放位置 ${parseTime(logTime)}`);
-                    this.currentTime = logTime;
-                }
-            }
-        }, 1000);
         initEvent() {
             this.on('loadstart', () => {
                 this.$loading.show();
@@ -2424,7 +2394,7 @@ userAgent: ${navigator.userAgent}
         const video = $('#k-player')[0];
         const githubIssueURL = genIssueURL({
             title: '🐛[Bug]',
-            body: issueBody(video?.src),
+            body: issueBody(video === null || video === void 0 ? void 0 : video.src),
         });
         modal({
             title: '脚本信息',
@@ -2547,7 +2517,8 @@ userAgent: ${navigator.userAgent}
         $root.height(width / ratio);
     }
     function updateTime(time = 0) {
-        const id = location.pathname.match(/\/play\/(\d*)/)?.[1];
+        var _a;
+        const id = (_a = location.pathname.match(/\/play\/(\d*)/)) === null || _a === void 0 ? void 0 : _a[1];
         if (!id)
             return;
         his.setTime(id, Math.floor(time));
@@ -2774,7 +2745,8 @@ userAgent: ${navigator.userAgent}
         fn();
     }
     function switchPart$6(next) {
-        getActivedom$1().parent()[next ? 'next' : 'prev']().find('a')[0]?.click();
+        var _a;
+        (_a = getActivedom$1().parent()[next ? 'next' : 'prev']().find('a')[0]) === null || _a === void 0 ? void 0 : _a.click();
     }
     function getActivedom$1() {
         return $(`.movurls:visible li a[href='${location.pathname}']`);
@@ -2804,6 +2776,7 @@ userAgent: ${navigator.userAgent}
         });
     }
     function switchPart$5(next) {
+        var _a;
         let directionRight = true;
         const re = /\/v\/\d+-(\d+)/;
         let prevID;
@@ -2820,11 +2793,12 @@ userAgent: ${navigator.userAgent}
             direction.reverse();
         if (!directionRight)
             direction.reverse();
-        $('.movurls .sel')[direction[1]]().find('a')[0]?.click();
+        (_a = $('.movurls .sel')[direction[1]]().find('a')[0]) === null || _a === void 0 ? void 0 : _a.click();
     }
     function playModule$6() {
         $('body').addClass('yhdm-wrapper');
         window.addEventListener('message', (e) => {
+            var _a;
             if (!Reflect.has(e.data, 'key'))
                 return;
             const key = e.data.key;
@@ -2848,7 +2822,7 @@ userAgent: ${navigator.userAgent}
             }
             if (key === 'getSearchName') {
                 const iframe = $('#playbox iframe')[0];
-                iframe.contentWindow?.postMessage({ key: 'getSearchName', name: $('.gohome.l > h1 > a').text() }, '*');
+                (_a = iframe.contentWindow) === null || _a === void 0 ? void 0 : _a.postMessage({ key: 'getSearchName', name: $('.gohome.l > h1 > a').text() }, '*');
             }
             if (key === 'openLink') {
                 window.open(e.data.url);
@@ -2910,7 +2884,8 @@ userAgent: ${navigator.userAgent}
         fn();
     }
     function switchPart$4(next) {
-        getActivedom().parent()[next ? 'next' : 'prev']().find('a')[0]?.click();
+        var _a;
+        (_a = getActivedom().parent()[next ? 'next' : 'prev']().find('a')[0]) === null || _a === void 0 ? void 0 : _a.click();
     }
     function getActivedom() {
         return $(".movurl:visible li a[style*='color: rgb(255, 255, 255)']");
@@ -2955,10 +2930,10 @@ userAgent: ${navigator.userAgent}
     let player;
     function switchPart$3(next) {
         player.on('prev', () => {
-            $('.meida-content-main-window-right-series-list-volume-active')[next ? 'next' : 'prev']()
+            var _a;
+            (_a = $('.meida-content-main-window-right-series-list-volume-active')[next ? 'next' : 'prev']()
                 .prev()
-                .find('a')[0]
-                ?.click();
+                .find('a')[0]) === null || _a === void 0 ? void 0 : _a.click();
         });
     }
     function injectEvent() {
@@ -2998,7 +2973,8 @@ userAgent: ${navigator.userAgent}
     });
 
     function switchPart$2(next) {
-        $('.active-play').parent()[next ? 'next' : 'prev']().find('a')[0]?.click();
+        var _a;
+        (_a = $('.active-play').parent()[next ? 'next' : 'prev']().find('a')[0]) === null || _a === void 0 ? void 0 : _a.click();
     }
     const iframeSelector = '#playleft iframe';
     function playModule$2() {
@@ -3049,7 +3025,8 @@ userAgent: ${navigator.userAgent}
     });
 
     function switchPart$1(next) {
-        $('.eplist-eppic li[style]')[next ? 'next' : 'prev']().find('a')[0]?.click();
+        var _a;
+        (_a = $('.eplist-eppic li[style]')[next ? 'next' : 'prev']().find('a')[0]) === null || _a === void 0 ? void 0 : _a.click();
     }
     async function playModule$1() {
         const iframe = await queryDom('#id_main_playiframe');
@@ -3081,7 +3058,8 @@ userAgent: ${navigator.userAgent}
     });
 
     function switchPart(next) {
-        $(`.play_but.bline a:contains(${next ? '下集' : '上集'})`)[0]?.click();
+        var _a;
+        (_a = $(`.play_but.bline a:contains(${next ? '下集' : '上集'})`)[0]) === null || _a === void 0 ? void 0 : _a.click();
     }
     function playModule() {
         const url = unsafeWindow.MacPlayer.PlayUrl;
