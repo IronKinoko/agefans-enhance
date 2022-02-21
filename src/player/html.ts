@@ -86,20 +86,6 @@ aria-hidden="true"
   </button>
 </template>
 
-<template id="plyr__snapshot">
-  <button
-    class="plyr__controls__item plyr__control plyr__snapshot plyr__custom"
-    type="button"
-    data-plyr="snapshot"
-    aria-label="snapshot"
-  >
-    <svg focusable="false">
-      <use xlink:href="#snapshot"></use>
-    </svg>
-    <span class="plyr__tooltip">截图(${renderKey('Ctrl')} S)</span>
-  </button>
-</template>
-
 <template id="plyr__widescreen">
   <button
     class="plyr__controls__item plyr__control plyr__widescreen plyr__custom"
@@ -267,9 +253,6 @@ export const scriptInfo = (video: HTMLVideoElement, githubIssueURL: string) => `
             <tr><td><span class="key">${renderKey(
               'Ctrl'
             )} →</span></td><td>步进90s</td></tr>
-            <tr><td><span class="key">${renderKey(
-              'Ctrl'
-            )} S</span></td><td>截图</td></tr>
           </tbody>
         </table>
         <table class="shortcuts-table">
