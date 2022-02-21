@@ -213,7 +213,6 @@ class KPlayer {
     this.injectSpeed()
     this.injectQuestion()
     this.injectNext()
-    this.injectSnapshot()
     this.injectSreen()
     this.initEvent()
 
@@ -478,12 +477,6 @@ class KPlayer {
             this.speed = speed
             break
           }
-          case 'ctrl+s':
-          case 'meta+s':
-            e.preventDefault()
-            e.stopPropagation()
-            this.snapshot()
-            break
           case 'i':
             this.plyr.pip = !this.plyr.pip
             break
@@ -647,15 +640,6 @@ class KPlayer {
         this.trigger('next')
       })
   }
-  private injectSnapshot() {
-    if (!navigator.clipboard) return
-    this.$video.attr('crossorigin', '')
-    $($('#plyr__snapshot').html())
-      .insertBefore('[data-plyr="fullscreen"]')
-      .on('click', () => {
-        this.snapshot()
-      })
-  }
 
   private injectSreen() {
     $($('#plyr__widescreen').html())
@@ -680,27 +664,6 @@ class KPlayer {
       })
     )
     this.$searchActions.insertBefore(this.$speed)
-  }
-
-  private snapshot() {
-    // 非 https 模式下，这个值是空的
-    if (!navigator.clipboard) return
-
-    const video = this.$video[0]
-    const canvas = document.createElement('canvas')
-    canvas.width = video.videoWidth
-    canvas.height = video.videoHeight
-
-    const ctx = canvas.getContext('2d')!
-    ctx.drawImage(video, 0, 0)
-
-    canvas.toBlob((blob) => {
-      if (!blob) return
-      navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })])
-      this.message.info(`<img src="${canvas.toDataURL(blob.type)}" 
-        style="width:200px;margin-bottom:4px;border:2px solid #fff;border-radius:4px;"/>
-      <center>已复制到剪切板中</center>`)
-    })
   }
 
   private toggleWidescreen(bool = !this.isWideScreen) {
