@@ -1,7 +1,6 @@
 name: Bug 报告
 description: 出现什么问题了快提交给我吧，以便改进脚本体验
 labels: [bug]
-title: 🐛
 body:
   - type: input
     id: url

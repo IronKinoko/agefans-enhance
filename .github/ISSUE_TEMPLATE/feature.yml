@@ -1,7 +1,6 @@
 name: 新功能/意见/建议
 description: 有什么好的建议快提给我吧
 labels: [feature]
-title: 🚀
 body:
   - type: textarea
     id: desc
