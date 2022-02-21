@@ -1,0 +1,12 @@
+name: 新功能/意见/建议
+description: 有什么好的建议快提给我吧
+labels: [enhancement]
+title: 🚀[enhancement]
+body:
+  - type: textarea
+    id: desc
+    attributes:
+      label: 简要描述下需要的功能、意见或建议
+      value:
+    validations:
+      required: true
