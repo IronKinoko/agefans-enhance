@@ -82,6 +82,15 @@
     font-size: 18px;
   }
 
+  #k-player-danmaku * {
+    font-size: 25px;
+    font-family: SimHei, 'Microsoft JhengHei', Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    text-shadow: rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px,
+      rgb(0 0 0) 0px -1px 1px, rgb(0 0 0) -1px 0px 1px;
+    line-height: 1.4;
+  }
+  #k-player-danmaku,
   #k-player-pip {
     position: absolute;
     left: 0;

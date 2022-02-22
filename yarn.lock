@@ -730,6 +730,11 @@ custom-event-polyfill@^1.0.7:
   resolved "https://registry.npm.taobao.org/custom-event-polyfill/download/custom-event-polyfill-1.0.7.tgz"
   integrity sha1-m8mT3dqTfBowzNM1YUxsWMT4eu4=
 
+danmaku@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.npmmirror.com/danmaku/-/danmaku-2.0.2.tgz#d922626f63d5d603f3a3368fb00fb2cba39b344a"
+  integrity sha512-T47ogGMptC72SyndhGJv2dje+oE+entU3zNUF2qpNlnzzYsCuVFkW7K6/92/CuNFvQwaj9LklAwdm2Tg+XLtEw==
+
 debug@^4.0.1, debug@^4.1.1, debug@^4.3.1:
   version "4.3.1"
   resolved "https://registry.npm.taobao.org/debug/download/debug-4.3.1.tgz?cache=0&sync_timestamp=1607566533140&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fdebug%2Fdownload%2Fdebug-4.3.1.tgz"

@@ -1,5 +1,4 @@
 import Hls from 'hls.js'
-
 import { debounce, throttle } from 'lodash-es'
 import Plyr from 'plyr'
 import { runtime } from '../runtime'
@@ -22,6 +21,8 @@ import {
   speedList,
 } from './html'
 import './index.scss'
+import { injectDanmaku } from './danmaku'
+
 const MediaErrorMessage: Record<number, string> = {
   1: '你中止了媒体播放',
   2: '网络错误',
@@ -77,6 +78,7 @@ class KPlayer {
   $speed!: JQuery<HTMLDivElement>
   localPlayTimeKey: string
   $searchActions!: JQuery<HTMLElement>
+  $danmaku: JQuery<HTMLElement>
 
   /**
    * @typedef {Object} EnhanceOpts
@@ -97,6 +99,7 @@ class KPlayer {
     ).attr('id', 'k-player')
     const $progress = $(progressHTML)
     const $header = $('<div id="k-player-header"/>')
+    const $danmaku = $('<div id="k-player-danmaku"></div>')
     $wrapper.append($video)
 
     this.localConfigKey = 'kplayer'
@@ -192,6 +195,7 @@ class KPlayer {
     this.$progress = $progress
     this.$header = $header
     this.$pip = $pip
+    this.$danmaku = $danmaku
     this.$videoWrapper = $wrapper.find('.plyr')
 
     this.$videoWrapper
@@ -200,6 +204,7 @@ class KPlayer {
       .append($pip)
       .append($progress)
       .append($header)
+      .append($danmaku)
 
     this.message = new Message(this.$videoWrapper)
     this.eventMap = {}
@@ -217,6 +222,8 @@ class KPlayer {
     this.initEvent()
 
     this.injectSearchActions()
+
+    injectDanmaku.bind(this)()
 
     /** @private */
     this.isHoverControls = false

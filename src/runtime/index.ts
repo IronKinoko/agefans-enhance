@@ -38,14 +38,11 @@ class Runtime {
     >[]
 
     const register = this.getActiveRegister()
-    if (!register.search?.getSearchName) return []
-    let name = await register.search.getSearchName()
-    if (!name) return []
 
-    name = name
-      .replace(/第.季/, '')
-      .replace(/[<>《》''‘’""“”\[\]]/g, '')
-      .trim()
+    const info = await this.getCurrentVideoNameAndEpisode()
+    if (!info?.name) return []
+    let name = info.name
+
     return searchs
       .filter((search) => search !== register.search)
       .map((search) => ({
@@ -57,6 +54,20 @@ class Runtime {
           else window.open(url)
         },
       }))
+  }
+
+  async getCurrentVideoNameAndEpisode() {
+    const register = this.getActiveRegister()
+    if (!register.search?.getSearchName) return
+    let rawName = await register.search.getSearchName()
+    if (!rawName) return
+
+    let name = rawName
+      .replace(/第.季/, '')
+      .replace(/[<>《》''‘’""“”\[\]]/g, '')
+      .trim()
+
+    return { name, rawName }
   }
 
   private getActiveRegister() {
@@ -75,8 +86,6 @@ class Runtime {
       return testArr.some(createTest(location.pathname + location.search))
     })
   }
-
-  getCurrentAction() {}
 
   run() {
     let setupList: Function[] = []
