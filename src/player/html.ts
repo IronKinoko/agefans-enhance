@@ -193,8 +193,8 @@ export const settingsHTML = popover(
 
 export const searchActionsHTML = popover(
   `
-<div id="k-speed" class="plyr__controls__item k-popover k-text-btn">
-  <span id="k-speed-text" class="k-text-btn-text">友链</span>
+<div class="plyr__controls__item k-popover k-text-btn">
+  <span class="k-text-btn-text">友链</span>
 </div>
 `,
   `<ul class="k-menu"></ul>`
@@ -319,22 +319,28 @@ export const progressHTML = `
 `
 
 export const danmakuHTML = popover(
-  `<div>弹幕</div>`,
+  `<div class="plyr__controls__item k-popover k-text-btn">
+  <span class="k-text-btn-text">弹幕</span>
+</div>`,
   `
+
 <div id="k-player-danmaku-search-form">
   <label>
-    搜索番剧名称
+    <span>搜索番剧名称</span>
     <input type="text" id="animeName" />
   </label>
-
+  <div style="min-height:24px; padding-top:4px">
+    <span id="tips"></span>
+  </div>
   <label>
-    番剧名称
+    <span>番剧名称</span>
     <select id="animes"></select>
   </label>
   <label>
-    章节
+    <span>章节</span>
     <select id="episodes"></select>
   </label>
 </div>
+
 `
 )

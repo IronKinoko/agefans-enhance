@@ -18,8 +18,6 @@ export function request(opts: Opts) {
     url = u.toString()
   }
 
-  console.log(url, method, params)
-
   return new Promise<any>((resolve, reject) => {
     GM_xmlhttpRequest({
       url,

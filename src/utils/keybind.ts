@@ -7,6 +7,8 @@ export function keybind(
   const isMac = /macintosh|mac os x/i.test(navigator.userAgent)
   keys = keys.filter((key) => !key.includes(isMac ? 'ctrl' : 'meta'))
   $(window).on('keydown', (e) => {
+    if (document.activeElement?.tagName === 'INPUT') return
+
     let keyArr = []
 
     e.ctrlKey && keyArr.push('ctrl')

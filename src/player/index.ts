@@ -227,7 +227,7 @@ class KPlayer {
 
     this.injectSearchActions()
 
-    injectDanmaku.bind(this)()
+    injectDanmaku.call(this)
 
     /** @private */
     this.isHoverControls = false
@@ -438,6 +438,7 @@ class KPlayer {
               'shift+ArrowRight': 30,
               'alt+ArrowRight': 60,
             }[key]
+            this.message.destroy()
             if (e.key === 'ArrowLeft') {
               this.currentTime = Math.max(0, this.currentTime - time)
               this.message.info(`步退${time}s`)
@@ -733,6 +734,7 @@ class KPlayer {
       }
     })
     this.$speed.find('#k-speed-text').text(speed === 1 ? '倍速' : speed + 'x')
+    this.message.destroy()
     this.message.info(`视频速度：${speed}`)
     this.configSaveToLocal('speed', speed)
   }

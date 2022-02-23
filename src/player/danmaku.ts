@@ -36,6 +36,17 @@ function createStorage(storageKey: string) {
 const storageAnimeName = createStorage('k-player-danmaku-anime-name')
 const storageEpisodeName = createStorage('k-player-danmaku-episode-name')
 
+function createLock() {
+  let prev: any
+  return function check(deps: any) {
+    if (prev === deps) return true
+    prev = deps
+    return false
+  }
+}
+const episodeIdLock = createLock()
+const searchAnimeLock = createLock()
+
 function convert32ToHex(color: string) {
   return '#' + parseInt(color).toString(16)
 }
@@ -45,16 +56,18 @@ async function getComments(episodeId: number | string): Promise<Comment[]> {
     url: `https://api.acplay.net/api/v2/comment/${episodeId}?withRelated=true&chConvert=1`,
   })
 
-  return res.comments.map((o) => {
-    const [time, type, color] = o.p.split(',')
+  return res.comments
+    .map((o) => {
+      const [time, type, color] = o.p.split(',')
 
-    return {
-      mode: ({ 1: 'rtl', 4: 'bottom', 5: 'top' } as const)[type] || 'rtl',
-      text: o.m,
-      time: parseFloat(time),
-      style: { color: convert32ToHex(color) },
-    }
-  })
+      return {
+        mode: ({ 1: 'rtl', 4: 'bottom', 5: 'top' } as const)[type] || 'rtl',
+        text: o.m,
+        time: parseFloat(time),
+        style: { color: convert32ToHex(color) },
+      }
+    })
+    .sort((a, b) => a.time - b.time)
 }
 
 async function searchAnimeWithEpisode(
@@ -71,35 +84,62 @@ async function searchAnimeWithEpisode(
 
 export async function injectDanmaku(this: KPlayer) {
   const videoInfo = await runtime.getCurrentVideoNameAndEpisode()
-  if (!videoInfo) return null
+  if (!videoInfo) return
 
   const $animeName = this.$danmaku.find('#animeName')
   const $animes = this.$danmaku.find('#animes')
   const $episodes = this.$danmaku.find('#episodes')
+  const $tips = this.$danmaku.find('#tips')
+
   let core: Danmaku
 
-  let defaultSearchName = storageAnimeName(videoInfo.rawName) || videoInfo.name
+  const showTips = (message: string) => {
+    $tips.text(message).fadeIn('fast').delay(1500).fadeOut('fast')
+  }
 
-  const start = async (episodeId: number | string) => {
+  const start = async (episodeId: string) => {
     core?.destroy()
-    const comments = await getComments(episodeId)
+    if (episodeIdLock(episodeId)) return
+
+    let comments = await getComments(episodeId)
+
+    // 24 分钟 3000 弹幕，按比例缩放
+    const maxLength = Math.round((3000 / (24 * 60)) * this.$video[0].duration)
+    // 均分
+    if (comments.length > maxLength) {
+      let ratio = comments.length / maxLength
+
+      comments = [...new Array(maxLength)].map(
+        (_, i) => comments[Math.floor(i * ratio)]
+      )
+    }
     core = new Danmaku({
       container: this.$danmakuContainer[0],
       media: this.$video[0],
       comments,
     })
+
+    this.message.info(`番剧：${$animes.find(':selected').text()}`, 2000)
+    this.message.info(`章节：${$episodes.find(':selected').text()}`, 2000)
+    this.message.info(`已加载 ${comments.length} 条弹幕`, 2000)
   }
 
   const searchDanmaku = async (name: string) => {
-    if (!name || name.length < 2)
-      return this.message.info('请输入番剧名称，且不少于2个字')
+    if (!name || name.length < 2) return showTips('番剧名称不少于2个字')
+    if (searchAnimeLock(name)) return
+
     let animes = await searchAnimeWithEpisode(name)
+    if (animes.length === 0) return showTips('未搜索到番剧')
     updateAnimes(animes)
     findEpisode(animes)
   }
 
   const findEpisode = async (animes: Anime[]) => {
-    const anime = animes.find((anime) => anime.animeTitle === videoInfo.rawName)
+    const anime = animes.find(
+      (anime) =>
+        anime.animeTitle ===
+        (storageAnimeName(videoInfo.rawName) || videoInfo.rawName)
+    )
 
     if (anime) {
       let episodeName = videoInfo.episode
@@ -119,7 +159,9 @@ export async function injectDanmaku(this: KPlayer) {
         )
       }
       if (episode) {
-        updateEpisodes(anime)
+        $animeName.val(anime.animeTitle)
+        $animes.val(anime.animeId)
+        $animes.trigger('change')
         $episodes.val(episode.episodeId)
         $episodes.trigger('change')
         return
@@ -139,6 +181,7 @@ export async function injectDanmaku(this: KPlayer) {
       const animes: Anime[] = $animes.data('animes')
       const anime = animes.find((anime) => String(anime.animeId) === animeId)
       if (!anime) return
+      storageAnimeName(videoInfo.rawName, anime.animeTitle)
       updateEpisodes(anime)
     })
     $episodes.on('change', (e) => {
@@ -171,6 +214,7 @@ export async function injectDanmaku(this: KPlayer) {
     $animes.data('animes', animes)
     $animes.html(html)
     updateEpisodes(animes[0])
+    showTips(`找到 ${animes.length} 部番剧`)
   }
 
   // 更新 episode select
@@ -183,14 +227,13 @@ export async function injectDanmaku(this: KPlayer) {
       ''
     )
 
-    storageAnimeName(videoInfo.rawName, anime.animeTitle)
     $episodes.data('anime', anime)
     $episodes.html(html)
 
-    $episodes.val(episodes[0].episodeId)
-    $episodes.trigger('change')
+    $episodes.val('')
   }
 
+  let defaultSearchName = storageAnimeName(videoInfo.rawName) || videoInfo.name
   initEvents(defaultSearchName)
   searchDanmaku(defaultSearchName)
 }
