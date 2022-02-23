@@ -43,7 +43,7 @@
     "typescript": "^4.5.5"
   },
   "dependencies": {
-    "danmaku": "^2.0.2",
+    "@ironkinoko/danmaku": "^1.0.0",
     "hls.js": "^1.0.10",
     "jquery": "^3.6.0",
     "lodash-es": "^4.17.21",

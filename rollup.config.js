@@ -11,7 +11,7 @@ import typescript from '@rollup/plugin-typescript'
 const globals = {
   'hls.js': 'Hls',
   plyr: 'Plyr',
-  danmaku: 'Danmaku',
+  '@ironkinoko/danmaku': 'Danmaku',
 }
 
 const isDev = process.env.NODE_ENV === 'development'
