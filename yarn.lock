@@ -59,6 +59,11 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
+"@ironkinoko/danmaku@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@ironkinoko/danmaku/-/danmaku-1.0.0.tgz#9e50dfaf97b3f06281915666b4a975e9d0753958"
+  integrity sha512-cKkjldDOf4bn5aGkfzP39VqkcqQ0IxOUDuFdO1A9Cfd4M0RFCMxxSD0dVGODEOQex3ul1Z8cLCS6g54qNBf7CQ==
+
 "@nodelib/fs.scandir@2.1.4":
   version "2.1.4"
   resolved "https://registry.nlark.com/@nodelib/fs.scandir/download/@nodelib/fs.scandir-2.1.4.tgz"
@@ -729,11 +734,6 @@ custom-event-polyfill@^1.0.7:
   version "1.0.7"
   resolved "https://registry.npm.taobao.org/custom-event-polyfill/download/custom-event-polyfill-1.0.7.tgz"
   integrity sha1-m8mT3dqTfBowzNM1YUxsWMT4eu4=
-
-danmaku@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.npmmirror.com/danmaku/-/danmaku-2.0.2.tgz#d922626f63d5d603f3a3368fb00fb2cba39b344a"
-  integrity sha512-T47ogGMptC72SyndhGJv2dje+oE+entU3zNUF2qpNlnzzYsCuVFkW7K6/92/CuNFvQwaj9LklAwdm2Tg+XLtEw==
 
 debug@^4.0.1, debug@^4.1.1, debug@^4.3.1:
   version "4.3.1"
