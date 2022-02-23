@@ -317,3 +317,24 @@ export const progressHTML = `
   <div class="k-player-progress-buffer"></div>
 </div>
 `
+
+export const danmakuHTML = popover(
+  `<div>弹幕</div>`,
+  `
+<div id="k-player-danmaku-search-form">
+  <label>
+    搜索番剧名称
+    <input type="text" id="animeName" />
+  </label>
+
+  <label>
+    番剧名称
+    <select id="animes"></select>
+  </label>
+  <label>
+    章节
+    <select id="episodes"></select>
+  </label>
+</div>
+`
+)

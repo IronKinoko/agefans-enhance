@@ -12,6 +12,7 @@ interface RegisteredItem {
     name: string
     search: (name: string) => string | void
     getSearchName?: () => Promise<string> | string
+    getEpisode?: () => Promise<string> | string
     disabledInIframe?: boolean
   }
 }
@@ -60,6 +61,7 @@ class Runtime {
     const register = this.getActiveRegister()
     if (!register.search?.getSearchName) return
     let rawName = await register.search.getSearchName()
+    let episode = (await register.search.getEpisode?.()) || ''
     if (!rawName) return
 
     let name = rawName
@@ -67,7 +69,9 @@ class Runtime {
       .replace(/[<>《》''‘’""“”\[\]]/g, '')
       .trim()
 
-    return { name, rawName }
+    episode = episode.replace(/[第集]/g, '')
+
+    return { name, rawName, episode }
   }
 
   private getActiveRegister() {

@@ -9,6 +9,7 @@ import { modal } from '../utils/modal'
 import { parseTime } from '../utils/parseTime'
 import { gm, local, session } from '../utils/storage'
 import {
+  danmakuHTML,
   errorHTML,
   issueBody,
   loadingHTML,
@@ -78,6 +79,7 @@ class KPlayer {
   $speed!: JQuery<HTMLDivElement>
   localPlayTimeKey: string
   $searchActions!: JQuery<HTMLElement>
+  $danmakuContainer: JQuery<HTMLElement>
   $danmaku: JQuery<HTMLElement>
 
   /**
@@ -99,7 +101,7 @@ class KPlayer {
     ).attr('id', 'k-player')
     const $progress = $(progressHTML)
     const $header = $('<div id="k-player-header"/>')
-    const $danmaku = $('<div id="k-player-danmaku"></div>')
+    const $danmakuContainer = $('<div id="k-player-danmaku"></div>')
     $wrapper.append($video)
 
     this.localConfigKey = 'kplayer'
@@ -195,7 +197,9 @@ class KPlayer {
     this.$progress = $progress
     this.$header = $header
     this.$pip = $pip
-    this.$danmaku = $danmaku
+    this.$danmakuContainer = $danmakuContainer
+    this.$danmaku = danmakuHTML
+
     this.$videoWrapper = $wrapper.find('.plyr')
 
     this.$videoWrapper
@@ -204,7 +208,7 @@ class KPlayer {
       .append($pip)
       .append($progress)
       .append($header)
-      .append($danmaku)
+      .append($danmakuContainer)
 
     this.message = new Message(this.$videoWrapper)
     this.eventMap = {}

@@ -252,6 +252,28 @@
       display: none;
     }
   }
+
+  #k-player-danmaku-search-form {
+    width: 200px;
+    padding: 16px;
+    > * {
+      box-sizing: border-box;
+      text-align: left;
+    }
+
+    input,
+    select {
+      display: block;
+      margin-top: 4px;
+      width: 100%;
+    }
+    label {
+      display: block;
+    }
+    label + label {
+      margin-top: 8px;
+    }
+  }
 }
 
 // loading
