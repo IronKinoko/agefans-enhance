@@ -45,18 +45,19 @@ type CustomEventMap =
   | 'leavepictureinpicture'
 
 type LocalPlayTimeStore = Record<string, number>
+export interface LocalConfig {
+  speed: number
+  continuePlay: boolean
+  autoNext: boolean
+  showProgress: boolean
+  volume: number
+  showSearchActions: boolean
+}
 
 export class KPlayer {
   localConfigKey: string
   statusSessionKey: string
-  localConfig: {
-    speed: number
-    continuePlay: boolean
-    autoNext: boolean
-    showProgress: boolean
-    volume: number
-    showSearchActions: boolean
-  }
+  localConfig: LocalConfig
   plyr: Plyr
   $wrapper: JQuery<HTMLElement>
   $loading: JQuery<HTMLElement>
@@ -521,8 +522,14 @@ export class KPlayer {
       this.isHoverControls = false
     })
 
+    this.initInputEvent()
+  }
+
+  initInputEvent() {
     let timeId: number
-    $(".plyr--video input[type='range']").on('mousedown', function () {
+    const $dom = $("#k-player-wrapper input[type='range']")
+    $dom.off('mousedown').off('mouseup')
+    $dom.on('mousedown', function () {
       clearInterval(timeId)
       let i = 0
       timeId = window.setInterval(() => {
@@ -531,7 +538,7 @@ export class KPlayer {
           .addClass(`shake-${i++ % 2}`)
       }, 100)
     })
-    $(".plyr--video input[type='range']").on('mouseup', function () {
+    $dom.on('mouseup', function () {
       clearInterval(timeId)
       $(this).removeClass()
     })

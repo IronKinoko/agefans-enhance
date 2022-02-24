@@ -8,6 +8,7 @@
   &s {
     display: flex;
     position: relative;
+    border-bottom: 1px solid rgba($color: white, $alpha: 0.2);
     &-wrapper {
       text-align: left;
       * {
@@ -16,12 +17,13 @@
     }
   }
 
+
   &-indicator {
     position: absolute;
     width: 0;
     height: 1px;
     left: 0;
-    bottom: 0;
+    bottom: -1px;
     background-color: var(--k-player-primary-color);
     transition: all 0.3s;
   }

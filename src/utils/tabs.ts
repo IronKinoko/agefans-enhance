@@ -25,7 +25,8 @@ export function tabs(opts: Tab[]) {
   const $indicator = $root.find('.k-tab-indicator')
 
   $root.find('.k-tab').on('click', (e) => {
-    const $tab = $(e.target)
+    $root.find('.k-tab').removeClass('active')
+    const $tab = $(e.target).addClass('active')
     const idx = parseInt($tab.attr('data-idx') as string)
     $root.find('.k-tabs-panes').css('transform', `translateX(-${idx * 100}%)`)
 

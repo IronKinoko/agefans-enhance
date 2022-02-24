@@ -30,20 +30,19 @@ const $danmakuOverlay = tabs([
         <input type="checkbox" name="showDanmaku" />
         显示弹幕
       </label>
-      <label class="k-settings-item">
-        <input type="checkbox" name="opacity" />
-        透明度
+      <label class="k-settings-item" style="flex-direction:column;align-items:flex-start;">
+        <div>透明度</div>
+        <input type="range" name="opacity" step="0.01" min="0" max="1" />
       </label>
     </div>
     `,
   },
 ])
 $danmakuOverlay.attr('id', 'k-player-danmaku-overlay')
-export const $danmaku = popover(
-  `<div class="plyr__controls__item k-popover k-text-btn">
-  <span class="k-text-btn-text">弹幕</span>
-</div>`,
-  $danmakuOverlay
-)
+export const $danmakuBtn =
+  $(`<div class="plyr__controls__item k-popover k-text-btn">
+<span class="k-text-btn-text">弹幕</span>
+</div>`)
+export const $danmaku = popover($danmakuBtn, $danmakuOverlay)
 
 export const $danmakuContainer = $('<div id="k-player-danmaku"></div>')
