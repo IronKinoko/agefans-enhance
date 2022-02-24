@@ -1,0 +1,41 @@
+.k-tab {
+  flex: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  text-align: center;
+  padding: 8px 16px;
+
+  &s {
+    display: flex;
+    position: relative;
+    border-bottom: 1px solid rgba($color: white, $alpha: 0.2);
+    &-wrapper {
+      text-align: left;
+      * {
+        box-sizing: border-box;
+      }
+    }
+  }
+
+
+  &-indicator {
+    position: absolute;
+    width: 0;
+    height: 1px;
+    left: 0;
+    bottom: -1px;
+    background-color: var(--k-player-primary-color);
+    transition: all 0.3s;
+  }
+
+  &s-panes {
+    display: flex;
+    flex-wrap: nowrap;
+    transition: all 0.3s;
+  }
+
+  &-pane {
+    flex: 0 0 100%;
+    padding: 8px;
+  }
+}

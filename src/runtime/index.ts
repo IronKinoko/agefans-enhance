@@ -12,6 +12,7 @@ interface RegisteredItem {
     name: string
     search: (name: string) => string | void
     getSearchName?: () => Promise<string> | string
+    getEpisode?: () => Promise<string> | string
     disabledInIframe?: boolean
   }
 }
@@ -38,14 +39,11 @@ class Runtime {
     >[]
 
     const register = this.getActiveRegister()
-    if (!register.search?.getSearchName) return []
-    let name = await register.search.getSearchName()
-    if (!name) return []
 
-    name = name
-      .replace(/第.季/, '')
-      .replace(/[<>《》''‘’""“”\[\]]/g, '')
-      .trim()
+    const info = await this.getCurrentVideoNameAndEpisode()
+    if (!info?.name) return []
+    let name = info.name
+
     return searchs
       .filter((search) => search !== register.search)
       .map((search) => ({
@@ -57,6 +55,23 @@ class Runtime {
           else window.open(url)
         },
       }))
+  }
+
+  async getCurrentVideoNameAndEpisode() {
+    const register = this.getActiveRegister()
+    if (!register.search?.getSearchName) return
+    let rawName = await register.search.getSearchName()
+    let episode = (await register.search.getEpisode?.()) || ''
+    if (!rawName) return
+
+    let name = rawName
+      .replace(/第.季/, '')
+      .replace(/[<>《》''‘’""“”\[\]]/g, '')
+      .trim()
+
+    episode = episode.replace(/[第集]/g, '')
+
+    return { name, rawName, episode }
   }
 
   private getActiveRegister() {
@@ -75,8 +90,6 @@ class Runtime {
       return testArr.some(createTest(location.pathname + location.search))
     })
   }
-
-  getCurrentAction() {}
 
   run() {
     let setupList: Function[] = []

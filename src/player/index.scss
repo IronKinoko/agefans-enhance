@@ -6,9 +6,6 @@
   overflow: hidden;
   font-size: 14px;
 
-  --k-player-background-highlight: rgba(95, 95, 95, 0.65);
-  --k-player-background: rgba(0, 0, 0, 0.65);
-  --k-player-color: white;
   --k-player-error-background: url(./assets/NachoNeko.png);
 
   $k-player-tsuma-list: url(./assets/NachoNeko1.png),
@@ -22,6 +19,7 @@
     center/contain;
   --plyr-range-thumb-width: 18px;
   --plyr-range-thumb-height: 18px;
+  --plyr-color-main: var(--k-player-primary-color);
 
   .plyr--full-ui.plyr--video input[type='range'] {
     cursor: pointer;
@@ -311,7 +309,7 @@
   }
 
   a {
-    color: #1890ff;
+    color: var(--k-player-primary-color);
     padding: 4px 8px;
     border-radius: 4px;
     text-decoration: none;
@@ -378,52 +376,5 @@
   }
   100% {
     transform: translateX(-200%);
-  }
-}
-
-.k-menu {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border-radius: 4px;
-  overflow: hidden;
-  &-item {
-    padding: 0 16px;
-    line-height: 36px;
-    height: 36px;
-    cursor: pointer;
-    width: 100%;
-    white-space: nowrap;
-    color: white;
-    transition: all 0.3s;
-    text-align: center;
-
-    &:hover {
-      background: var(--k-player-background-highlight);
-    }
-  }
-}
-.k-menu-item.k-menu-active {
-  color: #1890ff;
-}
-
-.k-settings {
-  &-list {
-    margin: 0;
-    padding: 8px;
-    text-align: left;
-  }
-  &-item {
-    width: 100%;
-    white-space: nowrap;
-    color: white;
-    display: flex;
-    align-items: center;
-    & + & {
-      margin-top: 8px;
-    }
-    input {
-      margin: 0 4px 0 0;
-    }
   }
 }

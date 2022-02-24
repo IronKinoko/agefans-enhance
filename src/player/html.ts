@@ -193,8 +193,8 @@ export const settingsHTML = popover(
 
 export const searchActionsHTML = popover(
   `
-<div id="k-speed" class="plyr__controls__item k-popover k-text-btn">
-  <span id="k-speed-text" class="k-text-btn-text">友链</span>
+<div class="plyr__controls__item k-popover k-text-btn">
+  <span class="k-text-btn-text">友链</span>
 </div>
 `,
   `<ul class="k-menu"></ul>`
@@ -253,7 +253,8 @@ export const scriptInfo = (video: HTMLVideoElement, githubIssueURL: string) => `
             <tr><td><span class="key">${renderKey(
               'Ctrl'
             )} →</span></td><td>步进90s</td></tr>
-          </tbody>
+            <tr><td><span class="key">D</span></td><td>弹幕开关</td></tr>
+            </tbody>
         </table>
         <table class="shortcuts-table">
           <tbody>

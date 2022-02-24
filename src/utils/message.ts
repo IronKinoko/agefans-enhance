@@ -6,16 +6,15 @@ export class Message {
     this.$message.appendTo($(selector as any))
   }
 
-  info(message: JQuery | string, duration = 1500) {
-    this.$message.empty()
+  info(message: JQuery | string, ms = 1500) {
     return new Promise<void>((resolve) => {
       $(`<div class="k-player-message-item"></div>`)
         .append(message)
         .hide()
         .appendTo(this.$message)
-        .fadeIn(150)
-        .delay(duration)
-        .fadeOut(150, function () {
+        .show(150)
+        .delay(ms)
+        .hide(150, function () {
           $(this).remove()
           resolve()
         })
