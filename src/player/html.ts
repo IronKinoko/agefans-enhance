@@ -1,5 +1,6 @@
 import { popover } from '../utils/popover'
 import { renderKey } from '../utils/renderKey'
+import { tabs } from '../utils/tabs'
 
 const icons = `
 <svg
@@ -318,29 +319,36 @@ export const progressHTML = `
 </div>
 `
 
+const $danmakuOverlay = tabs([
+  {
+    name: '搜索',
+    content: `<div id="k-player-danmaku-search-form">
+      <label>
+        <span>搜索番剧名称</span>
+        <input type="text" id="animeName" />
+      </label>
+      <div style="min-height:24px; padding-top:4px">
+        <span id="tips"></span>
+      </div>
+      <label>
+        <span>番剧名称</span>
+        <select id="animes"></select>
+      </label>
+      <label>
+        <span>章节</span>
+        <select id="episodes"></select>
+      </label>
+    </div>`,
+  },
+  {
+    name: '设置',
+    content: `启用`,
+  },
+])
+$danmakuOverlay.attr('id', 'k-player-danmaku-overlay')
 export const danmakuHTML = popover(
   `<div class="plyr__controls__item k-popover k-text-btn">
   <span class="k-text-btn-text">弹幕</span>
 </div>`,
-  `
-
-<div id="k-player-danmaku-search-form">
-  <label>
-    <span>搜索番剧名称</span>
-    <input type="text" id="animeName" />
-  </label>
-  <div style="min-height:24px; padding-top:4px">
-    <span id="tips"></span>
-  </div>
-  <label>
-    <span>番剧名称</span>
-    <select id="animes"></select>
-  </label>
-  <label>
-    <span>章节</span>
-    <select id="episodes"></select>
-  </label>
-</div>
-
-`
+  $danmakuOverlay
 )

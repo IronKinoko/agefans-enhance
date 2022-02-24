@@ -1,3 +1,9 @@
+:root {
+  --k-player-background-highlight: rgba(95, 95, 95, 0.65);
+  --k-player-background: rgba(0, 0, 0, 0.65);
+  --k-player-color: white;
+  --k-player-primary-color: #00b3ff;
+}
 #k-player-wrapper {
   position: relative;
   width: 100%;
@@ -6,9 +12,6 @@
   overflow: hidden;
   font-size: 14px;
 
-  --k-player-background-highlight: rgba(95, 95, 95, 0.65);
-  --k-player-background: rgba(0, 0, 0, 0.65);
-  --k-player-color: white;
   --k-player-error-background: url(./assets/NachoNeko.png);
 
   $k-player-tsuma-list: url(./assets/NachoNeko1.png),
@@ -22,6 +25,7 @@
     center/contain;
   --plyr-range-thumb-width: 18px;
   --plyr-range-thumb-height: 18px;
+  --plyr-color-main: var(--k-player-primary-color);
 
   .plyr--full-ui.plyr--video input[type='range'] {
     cursor: pointer;
@@ -253,9 +257,10 @@
     }
   }
 
-  #k-player-danmaku-search-form {
+  #k-player-danmaku-overlay {
     width: 200px;
-    padding: 8px 16px 16px;
+  }
+  #k-player-danmaku-search-form {
     > * {
       font-size: 14px;
       box-sizing: border-box;
@@ -346,7 +351,7 @@
   }
 
   a {
-    color: #1890ff;
+    color: var(--k-player-primary-color);
     padding: 4px 8px;
     border-radius: 4px;
     text-decoration: none;
@@ -439,7 +444,7 @@
   }
 }
 .k-menu-item.k-menu-active {
-  color: #1890ff;
+  color: var(--k-player-primary-color);
 }
 
 .k-settings {
