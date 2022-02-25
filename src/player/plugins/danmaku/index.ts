@@ -55,7 +55,7 @@ const stop = () => {
 const start = () => {
   core = new Danmaku({
     container: $danmakuContainer[0],
-    media: player.$video[0],
+    media: player.media,
     comments: adjustCommentCount(comments),
   })
   core.speed = 130
@@ -66,7 +66,7 @@ const adjustCommentCount = (comments?: Comment[]) => {
   let ret: Comment[] = comments
 
   // 24 分钟 3000 弹幕，按比例缩放
-  const maxLength = Math.round((3000 / (24 * 60)) * player.$video[0].duration)
+  const maxLength = Math.round((3000 / (24 * 60)) * player.media.duration)
   // 均分
   if (comments.length > maxLength) {
     let ratio = comments.length / maxLength
@@ -175,7 +175,7 @@ const initEvents = (name: string) => {
     if (animes) findEpisode(animes)
   })
 
-  mutationOb.observe(player.$video[0], { attributeFilter: ['src'] })
+  mutationOb.observe(player.media, { attributeFilter: ['src'] })
 
   // 绑定快捷键
   keybind(['d'], () => switchDanmaku())

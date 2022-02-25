@@ -302,7 +302,7 @@ export class KPlayer {
     this.on('error', () => {
       this.setCurrentTimeLog(0)
 
-      const code = this.$video[0].error!.code
+      const code = this.media.error!.code
       this.$loading.hide()
       this.showError(MediaErrorMessage[code] || this.src)
       if (code === 3) {
@@ -702,24 +702,30 @@ export class KPlayer {
     this.trigger(this.isWideScreen ? 'enterwidescreen' : 'exitwidescreen')
   }
 
+  get media() {
+    return this.$video[0]
+  }
+
   set src(src: string) {
     this.isJumped = false
     if (src.includes('.m3u8')) {
       if (!Hls.isSupported()) throw new Error('不支持播放 hls 文件')
       const hls = new Hls()
       hls.loadSource(src)
-      hls.attachMedia(this.$video[0])
+      hls.attachMedia(this.media)
     } else {
       this.$video.attr('src', src)
     }
   }
+
   get src() {
-    return this.$video.attr('src')!
+    return this.media.src
   }
 
   set currentTime(value) {
     this.plyr.currentTime = value
   }
+
   get currentTime() {
     return this.plyr.currentTime
   }
@@ -727,6 +733,7 @@ export class KPlayer {
   get speed() {
     return this.plyr.speed
   }
+
   set speed(speed) {
     this.plyr.speed = speed
     const speedItems = this.$speed.find('.k-speed-item')
@@ -796,8 +803,7 @@ export class KPlayer {
 
     evnetKeys.forEach((key) => {
       this.on(key, () => {
-        /** @type {HTMLVideoElement} */
-        const video: HTMLVideoElement = this.$video[0]
+        const video = this.media
         const info = {
           width: video.videoWidth,
           height: video.videoHeight,

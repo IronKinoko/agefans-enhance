@@ -137,7 +137,7 @@ async function switchPart(
 function resetVideoHeight() {
   const $root = $('#ageframediv')
   /** @type {HTMLVideoElement} */
-  const video = player.$video[0]
+  const video = player.media
   const ratio = video.videoWidth / video.videoHeight
   const width = $root.width()!
   $root.height(width / ratio)
