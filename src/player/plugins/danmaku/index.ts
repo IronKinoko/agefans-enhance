@@ -16,6 +16,7 @@ import {
 declare module '../..' {
   interface LocalConfig {
     showDanmaku?: boolean
+    opacity?: number
   }
 }
 
@@ -194,7 +195,9 @@ const initEvents = (name: string) => {
     const opacity = parseFloat($opacity.val() as string)
     $opacity.css('--value', parseFloat($opacity.val() as string) * 100 + '%')
     $danmakuContainer.css({ opacity })
+    player.configSaveToLocal('opacity', opacity)
   }
+  $opacity.val(player.localConfig.opacity || 0.8)
   setOpacityStyle()
   $opacity.on('input', setOpacityStyle)
 }
