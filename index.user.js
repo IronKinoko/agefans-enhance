@@ -2,8 +2,8 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.22.0
-// @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、显示视频源、获取当前页面全部视频等功能
+// @version      1.22.1
+// @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
 // @include      https://www.agefans.*
@@ -1601,7 +1601,7 @@ ${[...speedList]
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.22.0"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.22.1"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -1691,7 +1691,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.22.0"}
+脚本版本: ${"1.22.1"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -1898,7 +1898,7 @@ userAgent: ${navigator.userAgent}
           });
           this.on('error', () => {
               this.setCurrentTimeLog(0);
-              const code = this.$video[0].error.code;
+              const code = this.media.error.code;
               this.$loading.hide();
               this.showError(MediaErrorMessage[code] || this.src);
               if (code === 3) {
@@ -2251,6 +2251,9 @@ userAgent: ${navigator.userAgent}
           }
           this.trigger(this.isWideScreen ? 'enterwidescreen' : 'exitwidescreen');
       }
+      get media() {
+          return this.$video[0];
+      }
       set src(src) {
           this.isJumped = false;
           if (src.includes('.m3u8')) {
@@ -2258,14 +2261,14 @@ userAgent: ${navigator.userAgent}
                   throw new Error('不支持播放 hls 文件');
               const hls = new Hls__default['default']();
               hls.loadSource(src);
-              hls.attachMedia(this.$video[0]);
+              hls.attachMedia(this.media);
           }
           else {
               this.$video.attr('src', src);
           }
       }
       get src() {
-          return this.$video.attr('src');
+          return this.media.src;
       }
       set currentTime(value) {
           this.plyr.currentTime = value;
@@ -2341,8 +2344,7 @@ userAgent: ${navigator.userAgent}
           ];
           evnetKeys.forEach((key) => {
               this.on(key, () => {
-                  /** @type {HTMLVideoElement} */
-                  const video = this.$video[0];
+                  const video = this.media;
                   const info = {
                       width: video.videoWidth,
                       height: video.videoHeight,
@@ -2583,7 +2585,7 @@ userAgent: ${navigator.userAgent}
   const start = () => {
       core = new Danmaku__default['default']({
           container: $danmakuContainer[0],
-          media: player$5.$video[0],
+          media: player$5.media,
           comments: adjustCommentCount(comments),
       });
       core.speed = 130;
@@ -2593,7 +2595,7 @@ userAgent: ${navigator.userAgent}
           return;
       let ret = comments;
       // 24 分钟 3000 弹幕，按比例缩放
-      const maxLength = Math.round((3000 / (24 * 60)) * player$5.$video[0].duration);
+      const maxLength = Math.round((3000 / (24 * 60)) * player$5.media.duration);
       // 均分
       if (comments.length > maxLength) {
           let ratio = comments.length / maxLength;
@@ -2685,7 +2687,7 @@ userAgent: ${navigator.userAgent}
           if (animes)
               findEpisode(animes);
       });
-      mutationOb.observe(player$5.$video[0], { attributeFilter: ['src'] });
+      mutationOb.observe(player$5.media, { attributeFilter: ['src'] });
       // 绑定快捷键
       keybind(['d'], () => switchDanmaku());
       $showDanmaku
@@ -2700,7 +2702,9 @@ userAgent: ${navigator.userAgent}
           const opacity = parseFloat($opacity.val());
           $opacity.css('--value', parseFloat($opacity.val()) * 100 + '%');
           $danmakuContainer.css({ opacity });
+          player$5.configSaveToLocal('opacity', opacity);
       };
+      $opacity.val(player$5.localConfig.opacity || 0.8);
       setOpacityStyle();
       $opacity.on('input', setOpacityStyle);
   };
@@ -2867,7 +2871,7 @@ userAgent: ${navigator.userAgent}
   function resetVideoHeight() {
       const $root = $('#ageframediv');
       /** @type {HTMLVideoElement} */
-      const video = player$4.$video[0];
+      const video = player$4.media;
       const ratio = video.videoWidth / video.videoHeight;
       const width = $root.width();
       $root.height(width / ratio);
