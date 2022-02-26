@@ -1,15 +1,15 @@
 import Danmaku, { Comment } from '@ironkinoko/danmaku'
-import { defaultConfig, KPlayer } from '../../Kplayer'
 import { runtime } from '../../../runtime'
 import { keybind } from '../../../utils/keybind'
+import { defaultConfig, KPlayer } from '../../Kplayer'
 import { getComments, searchAnimeWithEpisode } from './apis'
 import { $danmaku, $danmakuContainer, $pbp } from './html'
 import './index.scss'
 import { createProgressBarPower } from './progressBarPower'
 import { Anime, Episode } from './types'
 import {
+  addRangeListener,
   episodeIdLock,
-  rangePercent,
   searchAnimeLock,
   storageAnimeName,
   storageEpisodeName,
@@ -20,6 +20,7 @@ interface DanmakuConfig {
   opacity: number
   showPbp: boolean
   danmakuSpeed: number
+  danmakuDensity: number
 }
 declare module '../../KPlayer' {
   interface LocalConfig extends DanmakuConfig {}
@@ -51,6 +52,7 @@ const $showDanmaku = $danmaku.find<HTMLInputElement>("[name='showDanmaku']")
 const $showPbp = $danmaku.find<HTMLInputElement>("[name='showPbp']")
 const $opacity = $danmaku.find("[name='opacity']")
 const $danmakuSpeed = $danmaku.find("[name='danmakuSpeed']")
+const $danmakuDensity = $danmaku.find("[name='danmakuDensity']")
 
 let core: Danmaku | undefined
 let comments: Comment[] | undefined
@@ -69,22 +71,23 @@ const stop = () => {
 }
 
 const start = () => {
-  if (player.localConfig.showDanmaku) {
-    core = new Danmaku({
-      container: $danmakuContainer[0],
-      media: player.media,
-      comments: adjustCommentCount(comments),
-    })
-    core.speed = baseDanmkuSpeed * player.localConfig.danmakuSpeed
-  }
+  function run() {
+    if (!player.media.duration) return requestAnimationFrame(run)
 
-  if (player.localConfig.showPbp) {
-    function waitDuration() {
-      if (!player.media.duration) return requestAnimationFrame(waitDuration)
+    if (player.localConfig.showDanmaku) {
+      core = new Danmaku({
+        container: $danmakuContainer[0],
+        media: player.media,
+        comments: adjustCommentCount(comments),
+      })
+      core.speed = baseDanmkuSpeed * player.localConfig.danmakuSpeed
+    }
+
+    if (player.localConfig.showPbp) {
       createProgressBarPower(player.media.duration, comments!)
     }
-    requestAnimationFrame(waitDuration)
   }
+  requestAnimationFrame(run)
 }
 
 const adjustCommentCount = (comments?: Comment[]) => {
@@ -92,7 +95,11 @@ const adjustCommentCount = (comments?: Comment[]) => {
   let ret: Comment[] = comments
 
   // 24 分钟 3000 弹幕，按比例缩放
-  const maxLength = Math.round((3000 / (24 * 60)) * player.media.duration)
+  const maxLength = Math.round(
+    (3000 / (24 * 60)) *
+      player.media.duration *
+      player.localConfig.danmakuDensity
+  )
   // 均分
   if (comments.length > maxLength) {
     let ratio = comments.length / maxLength
@@ -101,6 +108,7 @@ const adjustCommentCount = (comments?: Comment[]) => {
       (_, i) => comments![Math.floor(i * ratio)]
     )
   }
+
   return ret
 }
 
@@ -231,26 +239,33 @@ const initEvents = (name: string) => {
   // 重新绑定 input 效果
   player.initInputEvent()
 
-  // 绑定 Opacity 效果
-  const setOpacityStyle = () => {
-    const opacity = parseFloat($opacity.val() as string)
-    $opacity.css('--value', opacity * 100 + '%')
-    $danmakuContainer.css({ opacity })
-    player.configSaveToLocal('opacity', opacity)
-  }
+  addRangeListener({
+    $dom: $opacity,
+    name: 'opacity',
+    onInput: (v) => {
+      $danmakuContainer.css({ opacity: v })
+    },
+    player,
+  })
 
-  $opacity.val(player.localConfig.opacity || 0.8)
-  setOpacityStyle()
-  $opacity.on('input', setOpacityStyle)
+  addRangeListener({
+    $dom: $danmakuSpeed,
+    name: 'danmakuSpeed',
+    onInput: (v) => {
+      if (core) core.speed = baseDanmkuSpeed * v
+    },
+    player,
+  })
 
-  const setDanmakuSpeedStyle = () => {
-    const scale = parseFloat($danmakuSpeed.val() as string)
-    player.configSaveToLocal('danmakuSpeed', scale)
-    if (core) core.speed = baseDanmkuSpeed * scale
-    $danmakuSpeed.css('--value', rangePercent(0.5, scale, 1.5) + '%')
-  }
-  $danmakuSpeed.on('input', setDanmakuSpeedStyle)
-  setDanmakuSpeedStyle()
+  addRangeListener({
+    $dom: $danmakuDensity,
+    name: 'danmakuDensity',
+    onChange: () => {
+      stop()
+      autoStart()
+    },
+    player,
+  })
 }
 
 function switchDanmaku(bool?: boolean) {
