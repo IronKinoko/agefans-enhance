@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.22.2
+// @version      1.22.3
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1605,7 +1605,7 @@ ${[...speedList]
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.22.2"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.22.3"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -1695,7 +1695,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.22.2"}
+脚本版本: ${"1.22.3"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -1713,6 +1713,15 @@ userAgent: ${navigator.userAgent}
       3: '文件损坏',
       4: '资源有问题看不了',
       5: '资源被加密了',
+  };
+  const defaultConfig = {
+      speed: 1,
+      continuePlay: true,
+      autoNext: true,
+      showProgress: true,
+      volume: 1,
+      showSearchActions: true,
+      autoplay: true,
   };
   class KPlayer {
       /**
@@ -1761,16 +1770,7 @@ userAgent: ${navigator.userAgent}
           this.localConfigKey = 'kplayer';
           this.statusSessionKey = 'k-player-status';
           this.localPlayTimeKey = 'k-player-play-time';
-          this.localConfig = {
-              speed: 1,
-              continuePlay: true,
-              autoNext: true,
-              showProgress: true,
-              volume: 1,
-              showSearchActions: true,
-              autoplay: true,
-          };
-          this.localConfig = Object.assign(this.localConfig, gm.getItem(this.localConfigKey));
+          this.localConfig = Object.assign({}, defaultConfig, gm.getItem(this.localConfigKey));
           this.plyr = new Plyr__default['default']('#k-player', Object.assign({ autoplay: this.localConfig.autoplay, keyboard: { global: true }, controls: [
                   'play',
                   'progress',
@@ -2462,6 +2462,30 @@ userAgent: ${navigator.userAgent}
   function convert32ToHex(color) {
       return '#' + parseInt(color).toString(16);
   }
+  function rangePercent(min, input, max) {
+      input = Math.min(max, Math.max(min, input));
+      return ((input - min) / (max - min)) * 100;
+  }
+  function addRangeListener(opts) {
+      const { $dom, name, onInput, player, onChange } = opts;
+      const $valueDom = $('<span></span>');
+      $valueDom.insertAfter($dom);
+      const min = parseFloat($dom.attr('min'));
+      const max = parseFloat($dom.attr('max'));
+      const setStyle = () => {
+          const value = parseFloat($dom.val());
+          player.configSaveToLocal(name, value);
+          onInput === null || onInput === void 0 ? void 0 : onInput(value);
+          $valueDom.text(value.toFixed(2));
+          $dom.css('--value', rangePercent(min, value, max) + '%');
+      };
+      $dom.val(player.localConfig[name]);
+      $dom.on('input', setStyle);
+      $dom.on('change', () => {
+          onChange === null || onChange === void 0 ? void 0 : onChange(parseFloat($dom.val()));
+      });
+      setStyle();
+  }
 
   // https://api.acplay.net/swagger/ui/index#/
   async function getComments(episodeId) {
@@ -2559,9 +2583,17 @@ userAgent: ${navigator.userAgent}
         <input type="checkbox" name="showPbp" />
         显示高能进度条
       </label>
-      <label class="k-settings-item" style="flex-direction:column;align-items:flex-start;">
-        <div>透明度</div>
+      <label class="k-settings-item" style="gap:8px;">
+        <div>透明度&#12288;</div>
         <input type="range" name="opacity" step="0.01" min="0" max="1" />
+      </label>
+      <label class="k-settings-item" style="gap:8px;">
+        <div>弹幕速度</div>
+        <input type="range" name="danmakuSpeed" step="0.01" min="0.5" max="1.5" />
+      </label>
+      <label class="k-settings-item" style="gap:8px;">
+        <div>弹幕密度</div>
+        <input type="range" name="danmakuDensity" step="0.01" min="0.5" max="2" />
       </label>
     </div>
     `,
@@ -2647,6 +2679,12 @@ userAgent: ${navigator.userAgent}
       $('.plyr__controls__item.plyr__progress__container .plyr__progress').append($pbp);
   }
 
+  Object.assign(defaultConfig, {
+      showDanmaku: false,
+      opacity: 0.6,
+      showPbp: false,
+      danmakuSpeed: 1,
+  });
   var State;
   (function (State) {
       State[State["unSearched"] = 0] = "unSearched";
@@ -2654,6 +2692,7 @@ userAgent: ${navigator.userAgent}
       State[State["findEpisode"] = 2] = "findEpisode";
       State[State["getComments"] = 3] = "getComments";
   })(State || (State = {}));
+  const baseDanmkuSpeed = 130;
   let state = State.unSearched;
   const $animeName = $danmaku.find('#animeName');
   const $animes = $danmaku.find('#animes');
@@ -2662,6 +2701,8 @@ userAgent: ${navigator.userAgent}
   const $showDanmaku = $danmaku.find("[name='showDanmaku']");
   const $showPbp = $danmaku.find("[name='showPbp']");
   const $opacity = $danmaku.find("[name='opacity']");
+  const $danmakuSpeed = $danmaku.find("[name='danmakuSpeed']");
+  const $danmakuDensity = $danmaku.find("[name='danmakuDensity']");
   let core;
   let comments;
   let player$5;
@@ -2674,25 +2715,31 @@ userAgent: ${navigator.userAgent}
       core = undefined;
   };
   const start = () => {
-      core = new Danmaku__default['default']({
-          container: $danmakuContainer[0],
-          media: player$5.media,
-          comments: adjustCommentCount(comments),
-      });
-      core.speed = 130;
-      function waitDuration() {
+      function run() {
           if (!player$5.media.duration)
-              return requestAnimationFrame(waitDuration);
-          createProgressBarPower(player$5.media.duration, comments);
+              return requestAnimationFrame(run);
+          if (player$5.localConfig.showDanmaku) {
+              core = new Danmaku__default['default']({
+                  container: $danmakuContainer[0],
+                  media: player$5.media,
+                  comments: adjustCommentCount(comments),
+              });
+              core.speed = baseDanmkuSpeed * player$5.localConfig.danmakuSpeed;
+          }
+          if (player$5.localConfig.showPbp) {
+              createProgressBarPower(player$5.media.duration, comments);
+          }
       }
-      requestAnimationFrame(waitDuration);
+      requestAnimationFrame(run);
   };
   const adjustCommentCount = (comments) => {
       if (!comments)
           return;
       let ret = comments;
       // 24 分钟 3000 弹幕，按比例缩放
-      const maxLength = Math.round((3000 / (24 * 60)) * player$5.media.duration);
+      const maxLength = Math.round((3000 / (24 * 60)) *
+          player$5.media.duration *
+          player$5.localConfig.danmakuDensity);
       // 均分
       if (comments.length > maxLength) {
           let ratio = comments.length / maxLength;
@@ -2701,8 +2748,6 @@ userAgent: ${navigator.userAgent}
       return ret;
   };
   const loadEpisode = async (episodeId) => {
-      if (!player$5.localConfig.showDanmaku)
-          return;
       if (episodeIdLock(episodeId))
           return;
       stop();
@@ -2770,6 +2815,7 @@ userAgent: ${navigator.userAgent}
       });
       $episodes.on('change', (e) => {
           const episodeId = $(e.target).val();
+          storageAnimeName(videoInfo.rawName, $episodes.data('anime').animeTitle);
           storageEpisodeName(`${videoInfo.rawName}.${videoInfo.episode}`, episodeId);
           loadEpisode(episodeId);
       });
@@ -2780,9 +2826,8 @@ userAgent: ${navigator.userAgent}
       const mutationOb = new MutationObserver(async () => {
           searchAnimeLock(Math.random());
           Object.assign(videoInfo, await runtime.getCurrentVideoNameAndEpisode());
-          const animes = $animes.data('animes');
-          if (animes)
-              findEpisode(animes);
+          state = State.searched;
+          autoStart();
       });
       mutationOb.observe(player$5.media, { attributeFilter: ['src'] });
       // 绑定快捷键
@@ -2797,6 +2842,8 @@ userAgent: ${navigator.userAgent}
           const chekced = e.target.checked;
           $pbp.toggle(chekced);
           player$5.configSaveToLocal('showPbp', chekced);
+          if (chekced)
+              autoStart();
       });
       $pbp.toggle(player$5.localConfig.showPbp || false);
       const $pbpPlayed = $pbp.find('#k-player-pbp-played-path');
@@ -2805,16 +2852,32 @@ userAgent: ${navigator.userAgent}
       });
       // 重新绑定 input 效果
       player$5.initInputEvent();
-      // 绑定 Opacity 效果
-      const setOpacityStyle = () => {
-          const opacity = parseFloat($opacity.val());
-          $opacity.css('--value', parseFloat($opacity.val()) * 100 + '%');
-          $danmakuContainer.css({ opacity });
-          player$5.configSaveToLocal('opacity', opacity);
-      };
-      $opacity.val(player$5.localConfig.opacity || 0.8);
-      setOpacityStyle();
-      $opacity.on('input', setOpacityStyle);
+      addRangeListener({
+          $dom: $opacity,
+          name: 'opacity',
+          onInput: (v) => {
+              $danmakuContainer.css({ opacity: v });
+          },
+          player: player$5,
+      });
+      addRangeListener({
+          $dom: $danmakuSpeed,
+          name: 'danmakuSpeed',
+          onInput: (v) => {
+              if (core)
+                  core.speed = baseDanmkuSpeed * v;
+          },
+          player: player$5,
+      });
+      addRangeListener({
+          $dom: $danmakuDensity,
+          name: 'danmakuDensity',
+          onChange: () => {
+              stop();
+              autoStart();
+          },
+          player: player$5,
+      });
   };
   function switchDanmaku(bool) {
       bool !== null && bool !== void 0 ? bool : (bool = !player$5.localConfig.showDanmaku);
@@ -2846,6 +2909,8 @@ userAgent: ${navigator.userAgent}
       $episodes.val('');
   };
   function autoStart() {
+      if (!(player$5.localConfig.showDanmaku || player$5.localConfig.showPbp))
+          return;
       switch (state) {
           case State.unSearched:
               searchAnime();
@@ -2871,8 +2936,7 @@ userAgent: ${navigator.userAgent}
       $danmaku.insertBefore(player$5.$speed);
       let defaultSearchName = storageAnimeName(videoInfo.rawName) || videoInfo.name;
       initEvents(defaultSearchName);
-      if (player$5.localConfig.showDanmaku)
-          searchAnime();
+      autoStart();
   }
 
   KPlayer.register(setup);
