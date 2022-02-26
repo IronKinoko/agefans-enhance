@@ -9,6 +9,7 @@ import { createProgressBarPower } from './progressBarPower'
 import { Anime, Episode } from './types'
 import {
   episodeIdLock,
+  rangePercent,
   searchAnimeLock,
   storageAnimeName,
   storageEpisodeName,
@@ -18,6 +19,7 @@ interface DanmakuConfig {
   showDanmaku: boolean
   opacity: number
   showPbp: boolean
+  danmakuSpeed: number
 }
 declare module '../../KPlayer' {
   interface LocalConfig extends DanmakuConfig {}
@@ -27,6 +29,7 @@ Object.assign(defaultConfig, {
   showDanmaku: false,
   opacity: 0.6,
   showPbp: false,
+  danmakuSpeed: 1,
 })
 
 enum State {
@@ -36,6 +39,7 @@ enum State {
   getComments,
 }
 
+const baseDanmkuSpeed = 130
 let state = State.unSearched
 
 const $animeName = $danmaku.find('#animeName')
@@ -46,6 +50,7 @@ const $tips = $danmaku.find('#tips')
 const $showDanmaku = $danmaku.find<HTMLInputElement>("[name='showDanmaku']")
 const $showPbp = $danmaku.find<HTMLInputElement>("[name='showPbp']")
 const $opacity = $danmaku.find("[name='opacity']")
+const $danmakuSpeed = $danmaku.find("[name='danmakuSpeed']")
 
 let core: Danmaku | undefined
 let comments: Comment[] | undefined
@@ -70,7 +75,7 @@ const start = () => {
       media: player.media,
       comments: adjustCommentCount(comments),
     })
-    core.speed = 130
+    core.speed = baseDanmkuSpeed * player.localConfig.danmakuSpeed
   }
 
   if (player.localConfig.showPbp) {
@@ -229,13 +234,23 @@ const initEvents = (name: string) => {
   // 绑定 Opacity 效果
   const setOpacityStyle = () => {
     const opacity = parseFloat($opacity.val() as string)
-    $opacity.css('--value', parseFloat($opacity.val() as string) * 100 + '%')
+    $opacity.css('--value', opacity * 100 + '%')
     $danmakuContainer.css({ opacity })
     player.configSaveToLocal('opacity', opacity)
   }
+
   $opacity.val(player.localConfig.opacity || 0.8)
   setOpacityStyle()
   $opacity.on('input', setOpacityStyle)
+
+  const setDanmakuSpeedStyle = () => {
+    const scale = parseFloat($danmakuSpeed.val() as string)
+    player.configSaveToLocal('danmakuSpeed', scale)
+    if (core) core.speed = baseDanmkuSpeed * scale
+    $danmakuSpeed.css('--value', rangePercent(0.5, scale, 1.5) + '%')
+  }
+  $danmakuSpeed.on('input', setDanmakuSpeedStyle)
+  setDanmakuSpeedStyle()
 }
 
 function switchDanmaku(bool?: boolean) {

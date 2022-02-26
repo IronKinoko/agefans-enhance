@@ -29,3 +29,9 @@ export const searchAnimeLock = createLock()
 export function convert32ToHex(color: string) {
   return '#' + parseInt(color).toString(16)
 }
+
+export function rangePercent(min: number, input: number, max: number) {
+  input = Math.min(max, Math.max(min, input))
+
+  return ((input - min) / (max - min)) * 100
+}

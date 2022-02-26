@@ -38,6 +38,10 @@ const $danmakuOverlay = tabs([
         <div>透明度</div>
         <input type="range" name="opacity" step="0.01" min="0" max="1" />
       </label>
+      <label class="k-settings-item" style="flex-direction:column;align-items:flex-start;">
+        <div>弹幕速度</div>
+        <input type="range" name="danmakuSpeed" step="0.01" min="0.5" max="1.5" />
+      </label>
     </div>
     `,
   },
