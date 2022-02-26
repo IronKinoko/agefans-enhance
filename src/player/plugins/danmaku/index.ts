@@ -1,5 +1,5 @@
 import Danmaku, { Comment } from '@ironkinoko/danmaku'
-import { KPlayer } from '../..'
+import { defaultConfig, KPlayer } from '../..'
 import { runtime } from '../../../runtime'
 import { keybind } from '../../../utils/keybind'
 import { getComments, searchAnimeWithEpisode } from './apis'
@@ -15,13 +15,19 @@ import {
 } from './utils'
 
 interface DanmakuConfig {
-  showDanmaku?: boolean
-  opacity?: number
-  showPbp?: boolean
+  showDanmaku: boolean
+  opacity: number
+  showPbp: boolean
 }
 declare module '../..' {
   interface LocalConfig extends DanmakuConfig {}
 }
+
+Object.assign(defaultConfig, {
+  showDanmaku: false,
+  opacity: 0.6,
+  showPbp: false,
+})
 
 enum State {
   unSearched,

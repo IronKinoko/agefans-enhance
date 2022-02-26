@@ -55,6 +55,16 @@ export interface LocalConfig {
   autoplay: boolean
 }
 
+export const defaultConfig = {
+  speed: 1,
+  continuePlay: true,
+  autoNext: true,
+  showProgress: true,
+  volume: 1,
+  showSearchActions: true,
+  autoplay: true,
+} as LocalConfig
+
 export class KPlayer {
   localConfigKey: string
   statusSessionKey: string
@@ -106,17 +116,9 @@ export class KPlayer {
     this.statusSessionKey = 'k-player-status'
     this.localPlayTimeKey = 'k-player-play-time'
 
-    this.localConfig = {
-      speed: 1,
-      continuePlay: true,
-      autoNext: true,
-      showProgress: true,
-      volume: 1,
-      showSearchActions: true,
-      autoplay: true,
-    }
     this.localConfig = Object.assign(
-      this.localConfig,
+      {},
+      defaultConfig,
       gm.getItem(this.localConfigKey)
     )
 
