@@ -1,5 +1,5 @@
 import Danmaku, { Comment } from '@ironkinoko/danmaku'
-import { defaultConfig, KPlayer } from '../..'
+import { defaultConfig, KPlayer } from '../../Kplayer'
 import { runtime } from '../../../runtime'
 import { keybind } from '../../../utils/keybind'
 import { getComments, searchAnimeWithEpisode } from './apis'
@@ -19,7 +19,7 @@ interface DanmakuConfig {
   opacity: number
   showPbp: boolean
 }
-declare module '../..' {
+declare module '../../KPlayer' {
   interface LocalConfig extends DanmakuConfig {}
 }
 
