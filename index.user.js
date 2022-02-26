@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.22.1
+// @version      1.22.2
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1580,6 +1580,10 @@ ${[...speedList]
     显示拓展搜索
   </label>
   <label class="k-settings-item">
+    <input type="checkbox" name="autoplay" />
+    自动播放
+  </label>
+  <label class="k-settings-item">
     <input type="checkbox" name="autoNext" />
     自动下一集
   </label>
@@ -1601,7 +1605,7 @@ ${[...speedList]
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.22.1"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.22.2"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -1691,7 +1695,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.22.1"}
+脚本版本: ${"1.22.2"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -1764,9 +1768,10 @@ userAgent: ${navigator.userAgent}
               showProgress: true,
               volume: 1,
               showSearchActions: true,
+              autoplay: true,
           };
           this.localConfig = Object.assign(this.localConfig, gm.getItem(this.localConfigKey));
-          this.plyr = new Plyr__default['default']('#k-player', Object.assign({ autoplay: true, keyboard: { global: true }, controls: [
+          this.plyr = new Plyr__default['default']('#k-player', Object.assign({ autoplay: this.localConfig.autoplay, keyboard: { global: true }, controls: [
                   'play',
                   'progress',
                   'current-time',
@@ -1891,7 +1896,9 @@ userAgent: ${navigator.userAgent}
           });
           this.on('canplay', () => {
               this.$loading.hide();
-              this.plyr.play();
+              if (this.localConfig.autoplay) {
+                  this.plyr.play();
+              }
               if (this.localConfig.continuePlay) {
                   this.jumpToLogTime();
               }
@@ -1949,7 +1956,7 @@ userAgent: ${navigator.userAgent}
               this.setCurrentTimeLogThrottled();
               this.$progress
                   .find('.k-player-progress-current')
-                  .css('width', (this.currentTime / this.plyr.duration) * 100 + '%');
+                  .css('width', (this.currentTime / this.plyr.duration || 0) * 100 + '%');
               this.$progress
                   .find('.k-player-progress-buffer')
                   .css('width', this.plyr.buffered * 100 + '%');
@@ -2168,6 +2175,14 @@ userAgent: ${navigator.userAgent}
           if (!this.localConfig.showProgress) {
               this.$progress.css('display', 'none');
           }
+          this.$settings
+              .find('[name=autoplay]')
+              .prop('checked', this.localConfig.autoplay)
+              .on('change', (e) => {
+              const checked = e.target.checked;
+              this.configSaveToLocal('autoplay', checked);
+              this.plyr.autoplay = checked;
+          });
           this.$settings
               .find('[name=continuePlay]')
               .prop('checked', this.localConfig.continuePlay)
@@ -2448,6 +2463,7 @@ userAgent: ${navigator.userAgent}
       return '#' + parseInt(color).toString(16);
   }
 
+  // https://api.acplay.net/swagger/ui/index#/
   async function getComments(episodeId) {
       const res = await request({
           url: `https://api.acplay.net/api/v2/comment/${episodeId}?withRelated=true&chConvert=1`,
@@ -2539,6 +2555,10 @@ userAgent: ${navigator.userAgent}
         <input type="checkbox" name="showDanmaku" />
         显示弹幕
       </label>
+      <label class="k-settings-item">
+        <input type="checkbox" name="showPbp" />
+        显示高能进度条
+      </label>
       <label class="k-settings-item" style="flex-direction:column;align-items:flex-start;">
         <div>透明度</div>
         <input type="range" name="opacity" step="0.01" min="0" max="1" />
@@ -2553,9 +2573,79 @@ userAgent: ${navigator.userAgent}
 </div>`);
   const $danmaku = popover($danmakuBtn, $danmakuOverlay);
   const $danmakuContainer = $('<div id="k-player-danmaku"></div>');
+  const $pbp = $(`
+<svg
+  viewBox="0 0 1000 100"
+  preserveAspectRatio="none"
+  id="k-player-pbp"
+>
+  <defs>
+    <clipPath id="k-player-pbp-curve-path" clipPathUnits="userSpaceOnUse">
+      <path d=""></path>
+    </clipPath>
+  </defs>
 
-  var css$3 = "#k-player-danmaku {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  pointer-events: none;\n}\n#k-player-danmaku * {\n  font-size: 25px;\n  font-family: SimHei, \"Microsoft JhengHei\", Arial, Helvetica, sans-serif;\n  font-weight: bold;\n  text-shadow: black 1px 0px 1px, black 0px 1px 1px, black 0px -1px 1px, black -1px 0px 1px;\n  line-height: 1.3;\n}\n#k-player-danmaku-overlay {\n  width: 200px;\n}\n#k-player-danmaku-search-form > * {\n  font-size: 14px;\n  box-sizing: border-box;\n  text-align: left;\n}\n#k-player-danmaku-search-form input,\n#k-player-danmaku-search-form select {\n  display: block;\n  margin-top: 4px;\n  width: 100%;\n}\n#k-player-danmaku-search-form label {\n  display: block;\n}\n#k-player-danmaku-search-form label * {\n  line-height: 1.4;\n}\n#k-player-danmaku-search-form label + label {\n  margin-top: 8px;\n}\n#k-player-danmaku-setting-form {\n  padding: 0;\n}";
+  <g
+    fill-opacity="0.2"
+    clip-path="url(#k-player-pbp-curve-path)"
+    hover-bind="1"
+  >
+    <rect x="0" y="0" width="100%" height="100%" fill="rgb(255,255,255)"></rect>
+    <rect id="k-player-pbp-played-path" x="0" y="0" width="0" height="100%" fill="currentColor"></rect>
+  </g>
+</svg>
+`);
+
+  var css$3 = "#k-player-danmaku {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  pointer-events: none;\n}\n#k-player-danmaku * {\n  font-size: 25px;\n  font-family: SimHei, \"Microsoft JhengHei\", Arial, Helvetica, sans-serif;\n  font-weight: bold;\n  text-shadow: black 1px 0px 1px, black 0px 1px 1px, black 0px -1px 1px, black -1px 0px 1px;\n  line-height: 1.3;\n}\n#k-player-danmaku-overlay {\n  width: 200px;\n}\n#k-player-danmaku-search-form > * {\n  font-size: 14px;\n  box-sizing: border-box;\n  text-align: left;\n}\n#k-player-danmaku-search-form input,\n#k-player-danmaku-search-form select {\n  display: block;\n  margin-top: 4px;\n  width: 100%;\n}\n#k-player-danmaku-search-form label {\n  display: block;\n}\n#k-player-danmaku-search-form label * {\n  line-height: 1.4;\n}\n#k-player-danmaku-search-form label + label {\n  margin-top: 8px;\n}\n#k-player-danmaku-setting-form {\n  padding: 0;\n}\n\n#k-player-pbp {\n  position: absolute;\n  top: -17px;\n  height: 28px;\n  -webkit-appearance: none;\n  left: 0;\n  position: absolute;\n  margin-left: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  margin-right: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  width: calc(100% + var(--plyr-range-thumb-height, 13px));\n  pointer-events: none;\n}\n\n#k-player-pbp-played-path {\n  color: var(--k-player-primary-color);\n}\n\n.plyr__controls__item.plyr__progress__container:hover #k-player-pbp {\n  top: -18px;\n}";
   n(css$3,{});
+
+  /**
+   * 逻辑源自 bilibili 高能进度条 svg path 规则
+   */
+  function createProgressBarPower(duration, comments) {
+      const data = comments.map((cmt) => cmt.time);
+      // svg总长度
+      const svgMaxLength = 1000;
+      // 分成 size 份
+      const size = 100;
+      // svg步长
+      const stepLength = svgMaxLength / size;
+      // 每份时间多长
+      const stepTime = duration / size;
+      const counts = [];
+      let i = 0, j = 0;
+      // 统计的每份基础时间里弹幕数量
+      while (i++ <= size) {
+          const base = stepTime * i;
+          let count = 0;
+          while (data[j++] < base) {
+              count++;
+          }
+          counts.push(count);
+      }
+      // 为了美观，100 高度的 svg，底部 20 预留显示出来，其他从 80 开始算
+      let start = 'M 0 100, L ';
+      let end = ' 1000.0 80.0 L 1000 100 Z';
+      // 巅峰弹幕数量
+      const maxCount = Math.max(Math.max(...counts), 1);
+      const points = [];
+      counts.forEach((count, i) => {
+          const x = i * stepLength;
+          const y = (1 - count / maxCount) * 80;
+          // 做一份相同的数据，让曲线在两侧顺滑变化
+          if (i !== 0)
+              points.push({ x: (x - stepLength / 2).toFixed(2), y: y.toFixed(2) });
+          if (i !== counts.length - 1)
+              points.push({ x: x.toFixed(2), y: y.toFixed(2) });
+      });
+      for (let i = 0; i < points.length;) {
+          const p1 = points[i++]; // data point
+          const p2 = points[i++]; // mid point
+          start += `${p1.x} ${p1.y} C ${p2.x} ${p1.y}, ${p2.x} ${p2.y},`;
+      }
+      $pbp.find('path').attr('d', start + end);
+      $('.plyr__controls__item.plyr__progress__container .plyr__progress').append($pbp);
+  }
 
   var State;
   (function (State) {
@@ -2570,6 +2660,7 @@ userAgent: ${navigator.userAgent}
   const $episodes = $danmaku.find('#episodes');
   const $tips = $danmaku.find('#tips');
   const $showDanmaku = $danmaku.find("[name='showDanmaku']");
+  const $showPbp = $danmaku.find("[name='showPbp']");
   const $opacity = $danmaku.find("[name='opacity']");
   let core;
   let comments;
@@ -2589,6 +2680,12 @@ userAgent: ${navigator.userAgent}
           comments: adjustCommentCount(comments),
       });
       core.speed = 130;
+      function waitDuration() {
+          if (!player$5.media.duration)
+              return requestAnimationFrame(waitDuration);
+          createProgressBarPower(player$5.media.duration, comments);
+      }
+      requestAnimationFrame(waitDuration);
   };
   const adjustCommentCount = (comments) => {
       if (!comments)
@@ -2694,6 +2791,17 @@ userAgent: ${navigator.userAgent}
           .prop('checked', player$5.localConfig.showDanmaku)
           .on('change', (e) => {
           switchDanmaku(e.target.checked);
+      });
+      // 绑定 pbp 相关事件
+      $showPbp.prop('checked', player$5.localConfig.showPbp).on('change', (e) => {
+          const chekced = e.target.checked;
+          $pbp.toggle(chekced);
+          player$5.configSaveToLocal('showPbp', chekced);
+      });
+      $pbp.toggle(player$5.localConfig.showPbp || false);
+      const $pbpPlayed = $pbp.find('#k-player-pbp-played-path');
+      player$5.on('timeupdate', () => {
+          $pbpPlayed.attr('width', (player$5.currentTime / player$5.plyr.duration || 0) * 100 + '%');
       });
       // 重新绑定 input 效果
       player$5.initInputEvent();
