@@ -52,6 +52,7 @@ export interface LocalConfig {
   showProgress: boolean
   volume: number
   showSearchActions: boolean
+  autoplay: boolean
 }
 
 export class KPlayer {
@@ -112,6 +113,7 @@ export class KPlayer {
       showProgress: true,
       volume: 1,
       showSearchActions: true,
+      autoplay: true,
     }
     this.localConfig = Object.assign(
       this.localConfig,
@@ -119,7 +121,7 @@ export class KPlayer {
     )
 
     this.plyr = new Plyr('#k-player', {
-      autoplay: true,
+      autoplay: this.localConfig.autoplay,
       keyboard: { global: true },
       controls: [
         'play',
@@ -294,7 +296,9 @@ export class KPlayer {
     })
     this.on('canplay', () => {
       this.$loading.hide()
-      this.plyr.play()
+      if (this.localConfig.autoplay) {
+        this.plyr.play()
+      }
       if (this.localConfig.continuePlay) {
         this.jumpToLogTime()
       }
@@ -357,7 +361,7 @@ export class KPlayer {
 
       this.$progress
         .find('.k-player-progress-current')
-        .css('width', (this.currentTime / this.plyr.duration) * 100 + '%')
+        .css('width', (this.currentTime / this.plyr.duration || 0) * 100 + '%')
       this.$progress
         .find('.k-player-progress-buffer')
         .css('width', this.plyr.buffered * 100 + '%')
@@ -575,39 +579,47 @@ export class KPlayer {
     this.$settings = $(settingsHTML) as JQuery<HTMLDivElement>
 
     this.$settings
-      .find('[name=showSearchActions]')
+      .find<HTMLInputElement>('[name=showSearchActions]')
       .prop('checked', this.localConfig.showSearchActions)
       .on('change', (e) => {
-        const checked = (e.target as HTMLInputElement).checked
+        const checked = e.target.checked
         this.configSaveToLocal('showSearchActions', checked)
         this.$searchActions.toggle(checked)
       })
 
     this.$settings
-      .find('[name=autoNext]')
+      .find<HTMLInputElement>('[name=autoNext]')
       .prop('checked', this.localConfig.autoNext)
       .on('change', (e) => {
-        const checked = (e.target as HTMLInputElement).checked
+        const checked = e.target.checked
         this.configSaveToLocal('autoNext', checked)
       })
 
     this.$settings
-      .find('[name=showProgress]')
+      .find<HTMLInputElement>('[name=showProgress]')
       .prop('checked', this.localConfig.showProgress)
       .on('change', (e) => {
-        const checked = (e.target as HTMLInputElement).checked
+        const checked = e.target.checked
         this.configSaveToLocal('showProgress', checked)
         this.$progress.toggle(checked)
       })
     if (!this.localConfig.showProgress) {
       this.$progress.css('display', 'none')
     }
+    this.$settings
+      .find<HTMLInputElement>('[name=autoplay]')
+      .prop('checked', this.localConfig.autoplay)
+      .on('change', (e) => {
+        const checked = e.target.checked
+        this.configSaveToLocal('autoplay', checked)
+        this.plyr.autoplay = checked
+      })
 
     this.$settings
-      .find('[name=continuePlay]')
+      .find<HTMLInputElement>('[name=continuePlay]')
       .prop('checked', this.localConfig.continuePlay)
       .on('change', (e) => {
-        const checked = (e.target as HTMLInputElement).checked
+        const checked = e.target.checked
         this.configSaveToLocal('continuePlay', checked)
       })
     this.$settings.insertAfter('.plyr__controls__item.plyr__volume')

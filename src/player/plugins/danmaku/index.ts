@@ -3,8 +3,9 @@ import { KPlayer } from '../..'
 import { runtime } from '../../../runtime'
 import { keybind } from '../../../utils/keybind'
 import { getComments, searchAnimeWithEpisode } from './apis'
-import { $danmaku, $danmakuContainer } from './html'
+import { $danmaku, $danmakuContainer, $pbp } from './html'
 import './index.scss'
+import { createProgressBarPower } from './progressBarPower'
 import { Anime, Episode } from './types'
 import {
   episodeIdLock,
@@ -13,11 +14,13 @@ import {
   storageEpisodeName,
 } from './utils'
 
+interface DanmakuConfig {
+  showDanmaku?: boolean
+  opacity?: number
+  showPbp?: boolean
+}
 declare module '../..' {
-  interface LocalConfig {
-    showDanmaku?: boolean
-    opacity?: number
-  }
+  interface LocalConfig extends DanmakuConfig {}
 }
 
 enum State {
@@ -35,6 +38,7 @@ const $episodes = $danmaku.find('#episodes')
 const $tips = $danmaku.find('#tips')
 
 const $showDanmaku = $danmaku.find<HTMLInputElement>("[name='showDanmaku']")
+const $showPbp = $danmaku.find<HTMLInputElement>("[name='showPbp']")
 const $opacity = $danmaku.find("[name='opacity']")
 
 let core: Danmaku | undefined
@@ -60,6 +64,12 @@ const start = () => {
     comments: adjustCommentCount(comments),
   })
   core.speed = 130
+
+  function waitDuration() {
+    if (!player.media.duration) return requestAnimationFrame(waitDuration)
+    createProgressBarPower(player.media.duration, comments!)
+  }
+  requestAnimationFrame(waitDuration)
 }
 
 const adjustCommentCount = (comments?: Comment[]) => {
@@ -186,6 +196,21 @@ const initEvents = (name: string) => {
     .on('change', (e) => {
       switchDanmaku(e.target.checked)
     })
+
+  // 绑定 pbp 相关事件
+  $showPbp.prop('checked', player.localConfig.showPbp).on('change', (e) => {
+    const chekced = e.target.checked
+    $pbp.toggle(chekced)
+    player.configSaveToLocal('showPbp', chekced)
+  })
+  $pbp.toggle(player.localConfig.showPbp || false)
+  const $pbpPlayed = $pbp.find('#k-player-pbp-played-path')
+  player.on('timeupdate', () => {
+    $pbpPlayed.attr(
+      'width',
+      (player.currentTime / player.plyr.duration || 0) * 100 + '%'
+    )
+  })
 
   // 重新绑定 input 效果
   player.initInputEvent()

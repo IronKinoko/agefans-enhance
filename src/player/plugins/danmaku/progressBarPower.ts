@@ -1,36 +1,13 @@
 import { Comment } from '@ironkinoko/danmaku'
+import { $pbp } from './html'
 
 type Point = { x: string; y: string }
 
 /**
  * 逻辑源自 bilibili 高能进度条 svg path 规则
  */
-export function createProgressBarPower(duration: number, danmaku: Comment[]) {
-  const $dom = $(`
-<svg
-  viewBox="0 0 1000 100"
-  preserveAspectRatio="none"
-  width="100%"
-  height="100%"
->
-  <defs>
-    <clipPath id="k-player-pbp" clipPathUnits="userSpaceOnUse">
-      <path d=""></path>
-    </clipPath>
-  </defs>
-
-  <g
-    fill-opacity="0.2"
-    clip-path="url(#k-player-pbp)"
-    hover-bind="1"
-  >
-    <rect x="0" y="0" width="100%" height="100%" fill="rgb(255,255,255)"></rect>
-  </g>
-</svg>
-`)
-
-  const data = danmaku.map((cmt) => cmt.time!)
-
+export function createProgressBarPower(duration: number, comments: Comment[]) {
+  const data = comments.map((cmt) => cmt.time!)
   // svg总长度
   const svgMaxLength = 1000
   // 分成 size 份
@@ -58,7 +35,7 @@ export function createProgressBarPower(duration: number, danmaku: Comment[]) {
   let end = ' 1000.0 80.0 L 1000 100 Z'
 
   // 巅峰弹幕数量
-  const maxCount = Math.max.apply(null, counts)
+  const maxCount = Math.max(Math.max(...counts), 1)
 
   const points: Point[] = []
   counts.forEach((count, i) => {
@@ -73,10 +50,14 @@ export function createProgressBarPower(duration: number, danmaku: Comment[]) {
   })
 
   for (let i = 0; i < points.length; ) {
-    const p1 = points[i++]
-    const p2 = points[i++]
+    const p1 = points[i++] // data point
+    const p2 = points[i++] // mid point
     start += `${p1.x} ${p1.y} C ${p2.x} ${p1.y}, ${p2.x} ${p2.y},`
   }
 
-  $dom.find('path').attr('d', start + end)
+  $pbp.find('path').attr('d', start + end)
+
+  $('.plyr__controls__item.plyr__progress__container .plyr__progress').append(
+    $pbp
+  )
 }

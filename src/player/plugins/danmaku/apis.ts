@@ -3,6 +3,8 @@ import { request } from '../../../utils/request'
 import { Anime, RawComments } from './types'
 import { convert32ToHex } from './utils'
 
+// https://api.acplay.net/swagger/ui/index#/
+
 export async function getComments(
   episodeId: number | string
 ): Promise<Comment[]> {

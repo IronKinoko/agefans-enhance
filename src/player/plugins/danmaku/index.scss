@@ -47,3 +47,22 @@
     padding: 0;
   }
 }
+
+#k-player-pbp {
+  position: absolute;
+  top: -17px;
+  height: 28px;
+  -webkit-appearance: none;
+  left: 0;
+  position: absolute;
+  margin-left: calc(var(--plyr-range-thumb-height, 13px) * -0.5);
+  margin-right: calc(var(--plyr-range-thumb-height, 13px) * -0.5);
+  width: calc(100% + var(--plyr-range-thumb-height, 13px));
+  pointer-events: none;
+}
+#k-player-pbp-played-path {
+  color: var(--k-player-primary-color);
+}
+.plyr__controls__item.plyr__progress__container:hover #k-player-pbp {
+  top: -18px;
+}

@@ -176,6 +176,10 @@ export const settingsHTML = popover(
     显示拓展搜索
   </label>
   <label class="k-settings-item">
+    <input type="checkbox" name="autoplay" />
+    自动播放
+  </label>
+  <label class="k-settings-item">
     <input type="checkbox" name="autoNext" />
     自动下一集
   </label>
