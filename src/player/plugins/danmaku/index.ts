@@ -64,18 +64,22 @@ const stop = () => {
 }
 
 const start = () => {
-  core = new Danmaku({
-    container: $danmakuContainer[0],
-    media: player.media,
-    comments: adjustCommentCount(comments),
-  })
-  core.speed = 130
-
-  function waitDuration() {
-    if (!player.media.duration) return requestAnimationFrame(waitDuration)
-    createProgressBarPower(player.media.duration, comments!)
+  if (player.localConfig.showDanmaku) {
+    core = new Danmaku({
+      container: $danmakuContainer[0],
+      media: player.media,
+      comments: adjustCommentCount(comments),
+    })
+    core.speed = 130
   }
-  requestAnimationFrame(waitDuration)
+
+  if (player.localConfig.showPbp) {
+    function waitDuration() {
+      if (!player.media.duration) return requestAnimationFrame(waitDuration)
+      createProgressBarPower(player.media.duration, comments!)
+    }
+    requestAnimationFrame(waitDuration)
+  }
 }
 
 const adjustCommentCount = (comments?: Comment[]) => {
@@ -96,7 +100,6 @@ const adjustCommentCount = (comments?: Comment[]) => {
 }
 
 const loadEpisode = async (episodeId: string) => {
-  if (!player.localConfig.showDanmaku) return
   if (episodeIdLock(episodeId)) return
 
   stop()
@@ -176,6 +179,7 @@ const initEvents = (name: string) => {
   })
   $episodes.on('change', (e) => {
     const episodeId = $(e.target).val() as string
+    storageAnimeName(videoInfo.rawName, $episodes.data('anime').animeTitle)
     storageEpisodeName(`${videoInfo.rawName}.${videoInfo.episode}`, episodeId)
     loadEpisode(episodeId)
   })
@@ -188,8 +192,8 @@ const initEvents = (name: string) => {
   const mutationOb = new MutationObserver(async () => {
     searchAnimeLock(Math.random())
     Object.assign(videoInfo, await runtime.getCurrentVideoNameAndEpisode())
-    const animes = $animes.data('animes')
-    if (animes) findEpisode(animes)
+    state = State.searched
+    autoStart()
   })
 
   mutationOb.observe(player.media, { attributeFilter: ['src'] })
@@ -208,6 +212,7 @@ const initEvents = (name: string) => {
     const chekced = e.target.checked
     $pbp.toggle(chekced)
     player.configSaveToLocal('showPbp', chekced)
+    if (chekced) autoStart()
   })
   $pbp.toggle(player.localConfig.showPbp || false)
   const $pbpPlayed = $pbp.find('#k-player-pbp-played-path')
@@ -276,6 +281,8 @@ const updateEpisodes = (anime: Anime) => {
 }
 
 function autoStart() {
+  if (!(player.localConfig.showDanmaku || player.localConfig.showPbp)) return
+
   switch (state) {
     case State.unSearched:
       searchAnime()
@@ -307,5 +314,5 @@ export async function setup(_player: KPlayer) {
   let defaultSearchName = storageAnimeName(videoInfo.rawName) || videoInfo.name
   initEvents(defaultSearchName)
 
-  if (player.localConfig.showDanmaku) searchAnime()
+  autoStart()
 }
