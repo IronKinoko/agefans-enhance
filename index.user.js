@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.22.3
+// @version      1.23.0
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -48,7 +48,7 @@
 
   var e=[],t=[];function n(n,r){if(n&&"undefined"!=typeof document){var a,s=!0===r.prepend?"prepend":"append",d=!0===r.singleTag,i="string"==typeof r.container?document.querySelector(r.container):document.getElementsByTagName("head")[0];if(d){var u=e.indexOf(i);-1===u&&(u=e.push(i)-1,t[u]={}),a=t[u]&&t[u][s]?t[u][s]:t[u][s]=c();}else a=c();65279===n.charCodeAt(0)&&(n=n.substring(1)),a.styleSheet?a.styleSheet.cssText+=n:a.appendChild(document.createTextNode(n));}function c(){var e=document.createElement("style");if(e.setAttribute("type","text/css"),r.attributes)for(var t=Object.keys(r.attributes),n=0;n<t.length;n++)e.setAttribute(t[n],r.attributes[t[n]]);var a="prepend"===s?"afterbegin":"beforeend";return i.insertAdjacentElement(a,e),e}}
 
-  var css$e = ":root {\n  --k-player-background-highlight: rgba(95, 95, 95, 0.65);\n  --k-player-background: rgba(0, 0, 0, 0.65);\n  --k-player-color: white;\n  --k-player-primary-color: #00b3ff;\n}\n\n.k-menu {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  border-radius: 4px;\n  overflow: hidden;\n}\n.k-menu-item {\n  padding: 0 16px;\n  line-height: 36px;\n  height: 36px;\n  cursor: pointer;\n  width: 100%;\n  white-space: nowrap;\n  color: white;\n  transition: all 0.3s;\n  text-align: center;\n}\n.k-menu-item:hover {\n  background: var(--k-player-background-highlight);\n}\n\n.k-menu-item.k-menu-active {\n  color: var(--k-player-primary-color);\n}\n\n.k-settings-list {\n  margin: 0;\n  padding: 8px;\n  text-align: left;\n}\n.k-settings-item {\n  width: 100%;\n  white-space: nowrap;\n  color: white;\n  display: flex;\n  align-items: center;\n}\n.k-settings-item + .k-settings-item {\n  margin-top: 8px;\n}\n.k-settings-item input {\n  margin: 0 4px 0 0;\n}";
+  var css$e = ":root {\n  --k-player-background-highlight: rgba(95, 95, 95, 0.65);\n  --k-player-background: rgba(0, 0, 0, 0.65);\n  --k-player-color: white;\n  --k-player-primary-color: #00b3ff;\n}\n\n.k-menu {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  border-radius: 4px;\n  overflow: hidden;\n}\n.k-menu-item {\n  padding: 0 16px;\n  line-height: 36px;\n  height: 36px;\n  cursor: pointer;\n  width: 100%;\n  white-space: nowrap;\n  color: white;\n  transition: all 0.3s;\n  text-align: center;\n}\n.k-menu-item:hover {\n  background: var(--k-player-background-highlight);\n}\n\n.k-menu-item.k-menu-active {\n  color: var(--k-player-primary-color);\n}\n\n.k-settings-list {\n  margin: 0;\n  padding: 8px;\n  text-align: left;\n}\n.k-settings-item {\n  width: 100%;\n  white-space: nowrap;\n  color: white;\n  display: flex;\n  align-items: center;\n  gap: 8px;\n}\n.k-settings-list > .k-settings-item + .k-settings-item {\n  margin-top: 8px;\n}";
   n(css$e,{});
 
   function createTest(target) {
@@ -1605,7 +1605,7 @@ ${[...speedList]
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.22.3"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.23.0"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -1695,7 +1695,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.22.3"}
+脚本版本: ${"1.23.0"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -2468,7 +2468,7 @@ userAgent: ${navigator.userAgent}
   }
   function addRangeListener(opts) {
       const { $dom, name, onInput, player, onChange } = opts;
-      const $valueDom = $('<span></span>');
+      const $valueDom = $('<div style="width:45px;flex-shrink:0;text-align:right;white-space:nowrap;"></div>');
       $valueDom.insertAfter($dom);
       const min = parseFloat($dom.attr('min'));
       const max = parseFloat($dom.attr('max'));
@@ -2476,7 +2476,7 @@ userAgent: ${navigator.userAgent}
           const value = parseFloat($dom.val());
           player.configSaveToLocal(name, value);
           onInput === null || onInput === void 0 ? void 0 : onInput(value);
-          $valueDom.text(value.toFixed(2));
+          $valueDom.text((value * 100).toFixed(0) + '%');
           $dom.css('--value', rangePercent(min, value, max) + '%');
       };
       $dom.val(player.localConfig[name]);
@@ -2485,6 +2485,21 @@ userAgent: ${navigator.userAgent}
           onChange === null || onChange === void 0 ? void 0 : onChange(parseFloat($dom.val()));
       });
       setStyle();
+  }
+  function getCheckboxGroupValue($dom) {
+      const ret = [];
+      $dom.each((_, el) => {
+          if (el.checked)
+              ret.push(el.value);
+      });
+      return ret;
+  }
+  function setCheckboxGroupValue($dom, value) {
+      $dom.each((_, el) => {
+          if (value.includes(el.value)) {
+              el.checked = true;
+          }
+      });
   }
 
   // https://api.acplay.net/swagger/ui/index#/
@@ -2583,18 +2598,49 @@ userAgent: ${navigator.userAgent}
         <input type="checkbox" name="showPbp" />
         显示高能进度条
       </label>
-      <label class="k-settings-item" style="gap:8px;">
-        <div>透明度&#12288;</div>
+      <label class="k-settings-item">
+        <span>透明度&#12288;</span>
         <input type="range" name="opacity" step="0.01" min="0" max="1" />
       </label>
-      <label class="k-settings-item" style="gap:8px;">
-        <div>弹幕速度</div>
+      <label class="k-settings-item">
+        <span>弹幕速度</span>
         <input type="range" name="danmakuSpeed" step="0.01" min="0.5" max="1.5" />
       </label>
-      <label class="k-settings-item" style="gap:8px;">
-        <div>弹幕密度</div>
+      <label class="k-settings-item">
+        <span>弹幕密度</span>
         <input type="range" name="danmakuDensity" step="0.01" min="0.5" max="2" />
       </label>
+      <div class="k-settings-item">
+        <div>弹幕类型</div>
+        <label class="k-settings-item" title="顶部弹幕">
+          <input type="checkbox" name="danmakuMode" value="top"/>
+          <span>顶</span>
+        </label>
+        <label class="k-settings-item" title="底部弹幕">
+          <input type="checkbox" name="danmakuMode" value="bottom"/>
+          <span>底</span>
+        </label>
+        <label class="k-settings-item" title="彩色弹幕">
+          <input type="checkbox" name="danmakuMode" value="color" />
+          <span>彩</span>
+        </label>
+      </div>
+    </div>
+    `,
+      },
+      {
+          name: '过滤',
+          content: `
+    <div id="k-player-danmaku-filter-form" class="k-settings-list">
+      <input name="filter-input" placeholder="回车添加屏蔽词"/>
+
+      <div id="k-player-danmaku-filter-table">
+        <div class="ft-row" style="pointer-events:none;">
+          <div class="ft-content">内容(<span id="filter-count"></span>)</div>
+          <div class="ft-op">操作</div>
+        </div>
+        <div class="ft-body"></div>
+      </div>
     </div>
     `,
       },
@@ -2628,7 +2674,7 @@ userAgent: ${navigator.userAgent}
 </svg>
 `);
 
-  var css$3 = "#k-player-danmaku {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  pointer-events: none;\n}\n#k-player-danmaku * {\n  font-size: 25px;\n  font-family: SimHei, \"Microsoft JhengHei\", Arial, Helvetica, sans-serif;\n  font-weight: bold;\n  text-shadow: black 1px 0px 1px, black 0px 1px 1px, black 0px -1px 1px, black -1px 0px 1px;\n  line-height: 1.3;\n}\n#k-player-danmaku-overlay {\n  width: 200px;\n}\n#k-player-danmaku-search-form > * {\n  font-size: 14px;\n  box-sizing: border-box;\n  text-align: left;\n}\n#k-player-danmaku-search-form input,\n#k-player-danmaku-search-form select {\n  display: block;\n  margin-top: 4px;\n  width: 100%;\n}\n#k-player-danmaku-search-form label {\n  display: block;\n}\n#k-player-danmaku-search-form label * {\n  line-height: 1.4;\n}\n#k-player-danmaku-search-form label + label {\n  margin-top: 8px;\n}\n#k-player-danmaku-setting-form {\n  padding: 0;\n}\n\n#k-player-pbp {\n  position: absolute;\n  top: -17px;\n  height: 28px;\n  -webkit-appearance: none;\n  left: 0;\n  position: absolute;\n  margin-left: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  margin-right: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  width: calc(100% + var(--plyr-range-thumb-height, 13px));\n  pointer-events: none;\n}\n\n#k-player-pbp-played-path {\n  color: var(--k-player-primary-color);\n}\n\n.plyr__controls__item.plyr__progress__container:hover #k-player-pbp {\n  top: -18px;\n}";
+  var css$3 = "#k-player-danmaku {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  pointer-events: none;\n}\n#k-player-danmaku * {\n  font-size: 25px;\n  font-family: SimHei, \"Microsoft JhengHei\", Arial, Helvetica, sans-serif;\n  font-weight: bold;\n  text-shadow: black 1px 0px 1px, black 0px 1px 1px, black 0px -1px 1px, black -1px 0px 1px;\n  line-height: 1.3;\n}\n#k-player-danmaku-overlay {\n  width: 210px;\n}\n#k-player-danmaku-search-form > * {\n  font-size: 14px;\n  box-sizing: border-box;\n  text-align: left;\n}\n#k-player-danmaku-search-form input,\n#k-player-danmaku-search-form select {\n  display: block;\n  margin-top: 4px;\n  width: 100%;\n}\n#k-player-danmaku-search-form label {\n  display: block;\n}\n#k-player-danmaku-search-form label * {\n  line-height: 1.4;\n}\n#k-player-danmaku-search-form label + label {\n  margin-top: 8px;\n}\n#k-player-danmaku-setting-form {\n  padding: 0;\n}\n#k-player-danmaku-filter-form {\n  padding: 0;\n}\n#k-player-danmaku-filter-form input {\n  width: 100%;\n}\n#k-player-danmaku-filter-table {\n  margin-top: 8px;\n}\n#k-player-danmaku-filter-table .ft-body {\n  height: 114px;\n  overflow: auto;\n}\n#k-player-danmaku-filter-table .ft-body::-webkit-scrollbar {\n  display: none;\n}\n#k-player-danmaku-filter-table .ft-row {\n  display: flex;\n  border-radius: 4px;\n  transition: all 0.15s;\n}\n#k-player-danmaku-filter-table .ft-row:hover {\n  background: var(--k-player-background-highlight);\n}\n#k-player-danmaku-filter-table .ft-content {\n  padding: 4px 8px;\n  flex: 1px;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n#k-player-danmaku-filter-table .ft-op {\n  flex-shrink: 0;\n  padding: 4px 8px;\n}\n#k-player-danmaku-filter-table a {\n  color: white;\n  cursor: pointer;\n  transition: color 0.15s;\n}\n#k-player-danmaku-filter-table a:hover {\n  color: var(--k-player-primary-color);\n}\n\n#k-player-pbp {\n  position: absolute;\n  top: -17px;\n  height: 28px;\n  -webkit-appearance: none;\n  left: 0;\n  position: absolute;\n  margin-left: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  margin-right: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  width: calc(100% + var(--plyr-range-thumb-height, 13px));\n  pointer-events: none;\n}\n\n#k-player-pbp-played-path {\n  color: var(--k-player-primary-color);\n}\n\n.plyr__controls__item.plyr__progress__container:hover #k-player-pbp {\n  top: -18px;\n}";
   n(css$3,{});
 
   /**
@@ -2679,11 +2725,55 @@ userAgent: ${navigator.userAgent}
       $('.plyr__controls__item.plyr__progress__container .plyr__progress').append($pbp);
   }
 
+  function createFilter(player, refreshDanmaku) {
+      const $filter = $('#k-player-danmaku-filter-form');
+      const $input = $filter.find('[name="filter-input"]');
+      $input.on('keypress', (e) => {
+          if (e.key === 'Enter')
+              addFilter($input.val());
+      });
+      function refreshFilterDom() {
+          const filters = player.localConfig.danmakuFilter;
+          let html = '';
+          filters.forEach((filter, idx) => {
+              html += `<div class="ft-row">
+    <div class="ft-content">${filter}</div>
+    <div class="ft-op"><a key="delete" data-idx="${idx}">删除</a></div>
+    </div>`;
+          });
+          $filter.find('.ft-body').empty().append(html);
+          $filter.find('[key=delete]').on('click', (e) => {
+              const idx = parseInt($(e.target).attr('data-idx'));
+              deleteFilter(idx);
+          });
+          $filter.find('#filter-count').text(filters.length);
+      }
+      function deleteFilter(idx) {
+          player.localConfig.danmakuFilter.splice(idx, 1);
+          player.configSaveToLocal('danmakuFilter', player.localConfig.danmakuFilter);
+          refreshDanmaku();
+          refreshFilterDom();
+      }
+      function addFilter(text) {
+          const filters = player.localConfig.danmakuFilter;
+          $input.val('');
+          if (!text || filters.includes(text))
+              return;
+          filters.push(text);
+          player.configSaveToLocal('danmakuFilter', filters);
+          refreshFilterDom();
+          refreshDanmaku();
+      }
+      refreshFilterDom();
+  }
+
   Object.assign(defaultConfig, {
       showDanmaku: false,
       opacity: 0.6,
       showPbp: false,
       danmakuSpeed: 1,
+      danmakuMode: ['top', 'color'],
+      danmakuFilter: [],
   });
   var State;
   (function (State) {
@@ -2703,10 +2793,15 @@ userAgent: ${navigator.userAgent}
   const $opacity = $danmaku.find("[name='opacity']");
   const $danmakuSpeed = $danmaku.find("[name='danmakuSpeed']");
   const $danmakuDensity = $danmaku.find("[name='danmakuDensity']");
+  const $danmakuMode = $danmaku.find("[name='danmakuMode']");
   let core;
   let comments;
   let player$5;
   let videoInfo;
+  function refreshDanmaku() {
+      stop();
+      autoStart();
+  }
   const showTips = (message) => {
       $tips.text(message).fadeIn('fast').delay(1500).fadeOut('fast');
   };
@@ -2736,14 +2831,27 @@ userAgent: ${navigator.userAgent}
       if (!comments)
           return;
       let ret = comments;
+      // 过滤弹幕
+      ret = ret.filter((cmt) => !player$5.localConfig.danmakuFilter.some((o) => cmt.text.includes(o)));
+      // 过滤弹幕类型
+      const mode = player$5.localConfig.danmakuMode;
+      if (!mode.includes('color')) {
+          ret = ret.filter((cmt) => cmt.style.color === '#ffffff');
+      }
+      if (!mode.includes('bottom')) {
+          ret = ret.filter((cmt) => cmt.mode !== 'bottom');
+      }
+      if (!mode.includes('top')) {
+          ret = ret.filter((cmt) => cmt.mode !== 'top');
+      }
       // 24 分钟 3000 弹幕，按比例缩放
       const maxLength = Math.round((3000 / (24 * 60)) *
           player$5.media.duration *
           player$5.localConfig.danmakuDensity);
       // 均分
-      if (comments.length > maxLength) {
-          let ratio = comments.length / maxLength;
-          ret = [...new Array(maxLength)].map((_, i) => comments[Math.floor(i * ratio)]);
+      if (ret.length > maxLength) {
+          let ratio = ret.length / maxLength;
+          ret = [...new Array(maxLength)].map((_, i) => ret[Math.floor(i * ratio)]);
       }
       return ret;
   };
@@ -2872,12 +2980,18 @@ userAgent: ${navigator.userAgent}
       addRangeListener({
           $dom: $danmakuDensity,
           name: 'danmakuDensity',
-          onChange: () => {
-              stop();
-              autoStart();
-          },
+          onChange: refreshDanmaku,
           player: player$5,
       });
+      setCheckboxGroupValue($danmakuMode, player$5.localConfig.danmakuMode);
+      $danmakuMode.on('change', () => {
+          const modes = getCheckboxGroupValue($danmakuMode);
+          player$5.configSaveToLocal('danmakuMode', modes);
+          if (core) {
+              refreshDanmaku();
+          }
+      });
+      createFilter(player$5, refreshDanmaku);
   };
   function switchDanmaku(bool) {
       bool !== null && bool !== void 0 ? bool : (bool = !player$5.localConfig.showDanmaku);
