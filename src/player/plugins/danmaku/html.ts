@@ -28,7 +28,7 @@ const $danmakuOverlay = tabs([
     <div id="k-player-danmaku-setting-form" class="k-settings-list">
       <label class="k-settings-item">
         <input type="checkbox" name="showDanmaku" />
-        显示弹幕
+        显示弹幕(D)
       </label>
       <label class="k-settings-item">
         <input type="checkbox" name="showPbp" />
