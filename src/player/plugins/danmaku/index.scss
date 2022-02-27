@@ -17,7 +17,7 @@
   }
 
   &-overlay {
-    width: 200px;
+    width: 210px;
   }
 
   &-search-form {
@@ -43,7 +43,8 @@
       margin-top: 8px;
     }
   }
-  &-setting-form {
+  &-setting-form,
+  &-filter-form {
     padding: 0;
   }
 }

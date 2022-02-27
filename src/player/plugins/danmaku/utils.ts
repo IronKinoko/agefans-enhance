@@ -45,7 +45,9 @@ export function addRangeListener(opts: {
   player: KPlayer
 }) {
   const { $dom, name, onInput, player, onChange } = opts
-  const $valueDom = $('<span></span>')
+  const $valueDom = $(
+    '<div style="width:45px;flex-shrink:0;text-align:right;"></div>'
+  )
   $valueDom.insertAfter($dom)
 
   const min = parseFloat($dom.attr('min')!)
@@ -54,7 +56,7 @@ export function addRangeListener(opts: {
     const value = parseFloat($dom.val() as string)
     player.configSaveToLocal(name, value)
     onInput?.(value)
-    $valueDom.text(value.toFixed(2))
+    $valueDom.text((value * 100).toFixed(0) + '%')
     $dom.css('--value', rangePercent(min, value, max) + '%')
   }
   $dom.val(player.localConfig[name] as number)
@@ -63,4 +65,22 @@ export function addRangeListener(opts: {
     onChange?.(parseFloat($dom.val() as string))
   })
   setStyle()
+}
+
+export function getCheckboxGroupValue($dom: JQuery<HTMLInputElement>) {
+  const ret: string[] = []
+  $dom.each((_, el) => {
+    if (el.checked) ret.push(el.value)
+  })
+  return ret
+}
+export function setCheckboxGroupValue(
+  $dom: JQuery<HTMLInputElement>,
+  value: any[]
+) {
+  $dom.each((_, el) => {
+    if (value.includes(el.value)) {
+      el.checked = true
+    }
+  })
 }

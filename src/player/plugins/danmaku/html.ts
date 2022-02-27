@@ -34,18 +34,41 @@ const $danmakuOverlay = tabs([
         <input type="checkbox" name="showPbp" />
         显示高能进度条
       </label>
-      <label class="k-settings-item" style="gap:8px;">
-        <div>透明度&#12288;</div>
+      <label class="k-settings-item">
+        <span>透明度&#12288;</span>
         <input type="range" name="opacity" step="0.01" min="0" max="1" />
       </label>
-      <label class="k-settings-item" style="gap:8px;">
-        <div>弹幕速度</div>
+      <label class="k-settings-item">
+        <span>弹幕速度</span>
         <input type="range" name="danmakuSpeed" step="0.01" min="0.5" max="1.5" />
       </label>
-      <label class="k-settings-item" style="gap:8px;">
-        <div>弹幕密度</div>
+      <label class="k-settings-item">
+        <span>弹幕密度</span>
         <input type="range" name="danmakuDensity" step="0.01" min="0.5" max="2" />
       </label>
+      <div class="k-settings-item">
+        <div>弹幕类型</div>
+        <label class="k-settings-item" title="顶部弹幕">
+          <input type="checkbox" name="danmakuMode" value="top"/>
+          <span>顶</span>
+        </label>
+        <label class="k-settings-item" title="底部弹幕">
+          <input type="checkbox" name="danmakuMode" value="bottom"/>
+          <span>底</span>
+        </label>
+        <label class="k-settings-item" title="滚动弹幕">
+          <input type="checkbox" name="danmakuMode" value="rtl" />
+          <span>滚</span>
+        </label>
+      </div>
+    </div>
+    `,
+  },
+  {
+    name: '过滤',
+    content: `
+    <div id="k-player-danmaku-filter-form" class="k-settings-list">
+     
     </div>
     `,
   },

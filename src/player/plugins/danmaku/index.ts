@@ -10,7 +10,9 @@ import { Anime, Episode } from './types'
 import {
   addRangeListener,
   episodeIdLock,
+  getCheckboxGroupValue,
   searchAnimeLock,
+  setCheckboxGroupValue,
   storageAnimeName,
   storageEpisodeName,
 } from './utils'
@@ -21,6 +23,7 @@ interface DanmakuConfig {
   showPbp: boolean
   danmakuSpeed: number
   danmakuDensity: number
+  danmakuMode: NonNullable<Comment['mode']>[]
 }
 declare module '../../KPlayer' {
   interface LocalConfig extends DanmakuConfig {}
@@ -31,6 +34,7 @@ Object.assign(defaultConfig, {
   opacity: 0.6,
   showPbp: false,
   danmakuSpeed: 1,
+  danmakuMode: ['top', 'rtl'],
 })
 
 enum State {
@@ -50,9 +54,13 @@ const $tips = $danmaku.find('#tips')
 
 const $showDanmaku = $danmaku.find<HTMLInputElement>("[name='showDanmaku']")
 const $showPbp = $danmaku.find<HTMLInputElement>("[name='showPbp']")
-const $opacity = $danmaku.find("[name='opacity']")
-const $danmakuSpeed = $danmaku.find("[name='danmakuSpeed']")
-const $danmakuDensity = $danmaku.find("[name='danmakuDensity']")
+const $opacity = $danmaku.find<HTMLInputElement>("[name='opacity']")
+const $danmakuSpeed = $danmaku.find<HTMLInputElement>("[name='danmakuSpeed']")
+const $danmakuDensity = $danmaku.find<HTMLInputElement>(
+  "[name='danmakuDensity']"
+)
+
+const $danmakuMode = $danmaku.find<HTMLInputElement>("[name='danmakuMode']")
 
 let core: Danmaku | undefined
 let comments: Comment[] | undefined
@@ -93,7 +101,7 @@ const start = () => {
 const adjustCommentCount = (comments?: Comment[]) => {
   if (!comments) return
   let ret: Comment[] = comments
-
+  ret = ret.filter((cmt) => player.localConfig.danmakuMode.includes(cmt.mode!))
   // 24 分钟 3000 弹幕，按比例缩放
   const maxLength = Math.round(
     (3000 / (24 * 60)) *
@@ -101,12 +109,10 @@ const adjustCommentCount = (comments?: Comment[]) => {
       player.localConfig.danmakuDensity
   )
   // 均分
-  if (comments.length > maxLength) {
-    let ratio = comments.length / maxLength
+  if (ret.length > maxLength) {
+    let ratio = ret.length / maxLength
 
-    ret = [...new Array(maxLength)].map(
-      (_, i) => comments![Math.floor(i * ratio)]
-    )
+    ret = [...new Array(maxLength)].map((_, i) => ret![Math.floor(i * ratio)])
   }
 
   return ret
@@ -265,6 +271,19 @@ const initEvents = (name: string) => {
       autoStart()
     },
     player,
+  })
+
+  setCheckboxGroupValue($danmakuMode, player.localConfig.danmakuMode)
+  $danmakuMode.on('change', () => {
+    const modes = getCheckboxGroupValue($danmakuMode)
+    player.configSaveToLocal(
+      'danmakuMode',
+      modes as NonNullable<Comment['mode']>[]
+    )
+    if (core) {
+      stop()
+      autoStart()
+    }
   })
 }
 
