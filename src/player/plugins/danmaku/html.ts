@@ -56,9 +56,9 @@ const $danmakuOverlay = tabs([
           <input type="checkbox" name="danmakuMode" value="bottom"/>
           <span>底</span>
         </label>
-        <label class="k-settings-item" title="滚动弹幕">
-          <input type="checkbox" name="danmakuMode" value="rtl" />
-          <span>滚</span>
+        <label class="k-settings-item" title="彩色弹幕">
+          <input type="checkbox" name="danmakuMode" value="color" />
+          <span>彩</span>
         </label>
       </div>
     </div>
@@ -68,7 +68,15 @@ const $danmakuOverlay = tabs([
     name: '过滤',
     content: `
     <div id="k-player-danmaku-filter-form" class="k-settings-list">
-     
+      <input name="filter-input" placeholder="回车添加屏蔽词"/>
+
+      <div id="k-player-danmaku-filter-table">
+        <div class="ft-row" style="pointer-events:none;">
+          <div class="ft-content">内容(<span id="filter-count"></span>)</div>
+          <div class="ft-op">操作</div>
+        </div>
+        <div class="ft-body"></div>
+      </div>
     </div>
     `,
   },

@@ -46,7 +46,7 @@ export function addRangeListener(opts: {
 }) {
   const { $dom, name, onInput, player, onChange } = opts
   const $valueDom = $(
-    '<div style="width:45px;flex-shrink:0;text-align:right;"></div>'
+    '<div style="width:45px;flex-shrink:0;text-align:right;white-space:nowrap;"></div>'
   )
   $valueDom.insertAfter($dom)
 
