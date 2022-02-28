@@ -32,7 +32,7 @@
 1. `GM_xmlhttpRequest`
 
    - 脚本会请求有限的网络权限。仅用于访问弹幕查询功能需要链接到的 **api.acplay.net** 与 **chinacloudsites.cn** 第三方域名
-   - 你可以从 **脚本编辑/设置/XHR** 安全 中管理网络权限
+   - 你可以从 **脚本编辑/设置/XHR 安全** 中管理网络权限
 
 2. `GM_getResourceText`, `GM_addStyle`
 
