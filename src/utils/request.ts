@@ -22,17 +22,9 @@ export function request(opts: Opts) {
     GM_xmlhttpRequest({
       url,
       method: method || 'GET',
+      responseType: 'json',
       onload: (res: any) => {
-        try {
-          const data = JSON.parse(res.responseText)
-          console.log(data)
-
-          resolve(data)
-        } catch (error) {
-          console.log(res.responseText)
-
-          resolve(res.responseText)
-        }
+        resolve(res.response)
       },
       onerror: reject,
     })
