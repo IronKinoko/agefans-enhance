@@ -249,6 +249,8 @@ const initEvents = (name: string) => {
 
   mutationOb.observe(player.media, { attributeFilter: ['src'] })
 
+  player.initInputEvent()
+
   // 绑定快捷键
   keybind(['d'], () => switchDanmaku())
 
