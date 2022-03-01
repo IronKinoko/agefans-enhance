@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.23.1
+// @version      1.23.2
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -14,6 +14,7 @@
 // @include      http://www.imomoe.live/player/*
 // @include      http://www.88dmw.com/*
 // @include      https://new-ani.me/*
+// @include      https://bangumi.online/*
 // @include      https://danmu.4dm.cc/m3u8.php*
 // @include      http*://www.ntyou.*
 // @include      https://www.dm233.*
@@ -22,7 +23,7 @@
 // @require      https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js
 // @require      https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.js
 // @require      https://cdn.jsdelivr.net/npm/hls.js@1.0.9/dist/hls.min.js
-// @require      https://cdn.jsdelivr.net/npm/@ironkinoko/danmaku@1.0.0/dist/danmaku.min.js
+// @require      https://cdn.jsdelivr.net/npm/@ironkinoko/danmaku@1.1.1/dist/danmaku.min.js
 // @resource     plyrCSS https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.css
 // @grant        GM_getResourceText
 // @grant        GM_addStyle
@@ -1623,7 +1624,7 @@ ${[...speedList]
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.23.1"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.23.2"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -1713,7 +1714,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.23.1"}
+脚本版本: ${"1.23.2"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -1873,9 +1874,9 @@ userAgent: ${navigator.userAgent}
           this.injectQuestion();
           this.injectNext();
           this.injectSreen();
-          this.initEvent();
           this.injectSearchActions();
           KPlayer.plguinList.forEach((setup) => setup(this));
+          this.initEvent();
           /** @private */
           this.isHoverControls = false;
           const status = session.getItem(this.statusSessionKey);
@@ -2103,10 +2104,8 @@ userAgent: ${navigator.userAgent}
                       break;
               }
           });
-          document
-              .querySelectorAll('.plyr__controls .plyr__control')
-              .forEach((dom) => {
-              dom.addEventListener('click', (e) => e.currentTarget.blur());
+          $('.plyr__controls button,.plyr__controls input').on('mouseleave', (e) => {
+              e.target.blur();
           });
           const playerEl = document.querySelector('.plyr');
           playerEl.addEventListener('mousemove', () => {
@@ -2128,7 +2127,7 @@ userAgent: ${navigator.userAgent}
       initInputEvent() {
           let timeId;
           const $dom = $("#k-player-wrapper input[type='range']");
-          $dom.off('mousedown').off('mouseup');
+          $dom.trigger('mouseup').off('mousedown').off('mouseup');
           $dom.on('mousedown', function () {
               clearInterval(timeId);
               let i = 0;
@@ -2817,19 +2816,26 @@ userAgent: ${navigator.userAgent}
       $tips.text(message).fadeIn('fast').delay(1500).fadeOut('fast');
   };
   const stop = () => {
-      core === null || core === void 0 ? void 0 : core.destroy();
-      core = undefined;
+      core === null || core === void 0 ? void 0 : core.hide();
   };
   const start = () => {
       function run() {
           if (!player$5.media.duration)
               return requestAnimationFrame(run);
+          if (!comments)
+              return;
           if (player$5.localConfig.showDanmaku) {
-              core = new Danmaku__default['default']({
-                  container: $danmakuContainer[0],
-                  media: player$5.media,
-                  comments: adjustCommentCount(comments),
-              });
+              if (!core) {
+                  core = new Danmaku__default['default']({
+                      container: $danmakuContainer[0],
+                      media: player$5.media,
+                      comments: adjustCommentCount(comments),
+                  });
+              }
+              else {
+                  core.reload(adjustCommentCount(comments));
+                  core.show();
+              }
               core.speed = baseDanmkuSpeed * player$5.localConfig.danmakuSpeed;
           }
           if (player$5.localConfig.showPbp) {
@@ -2969,8 +2975,6 @@ userAgent: ${navigator.userAgent}
       player$5.on('timeupdate', () => {
           $pbpPlayed.attr('width', (player$5.currentTime / player$5.plyr.duration || 0) * 100 + '%');
       });
-      // 重新绑定 input 效果
-      player$5.initInputEvent();
       addRangeListener({
           $dom: $opacity,
           name: 'opacity',
@@ -2982,7 +2986,7 @@ userAgent: ${navigator.userAgent}
       addRangeListener({
           $dom: $danmakuSpeed,
           name: 'danmakuSpeed',
-          onInput: (v) => {
+          onChange: (v) => {
               if (core)
                   core.speed = baseDanmkuSpeed * v;
           },
@@ -3615,7 +3619,7 @@ userAgent: ${navigator.userAgent}
   }
 
   runtime.register({
-      domains: ['new-ani.me'],
+      domains: ['new-ani.me', 'bangumi.online'],
       opts: [{ test: '/watch', run: playModule$4 }],
   });
 
