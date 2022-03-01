@@ -28,11 +28,11 @@ const $danmakuOverlay = tabs([
     <div id="k-player-danmaku-setting-form" class="k-settings-list">
       <label class="k-settings-item">
         <input type="checkbox" name="showDanmaku" />
-        显示弹幕(D)
-      </label>
+        <span>显示弹幕(D)</span>
+        </label>
       <label class="k-settings-item">
         <input type="checkbox" name="showPbp" />
-        显示高能进度条
+        <span>显示高能进度条</span>
       </label>
       <label class="k-settings-item">
         <span>透明度&#12288;</span>
@@ -42,7 +42,7 @@ const $danmakuOverlay = tabs([
         <span>弹幕速度</span>
         <input type="range" name="danmakuSpeed" step="0.01" min="0.5" max="1.5" />
       </label>
-      <label class="k-settings-item">
+      <label class="k-settings-item" title="基准为 24 分钟条 3000 弹幕">
         <span>弹幕密度</span>
         <input type="range" name="danmakuDensity" step="0.01" min="0.5" max="2" />
       </label>
