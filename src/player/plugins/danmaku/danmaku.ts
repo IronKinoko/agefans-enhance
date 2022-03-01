@@ -83,20 +83,24 @@ const showTips = (message: string) => {
 }
 
 const stop = () => {
-  core?.destroy()
-  core = undefined
+  core?.hide()
 }
 
 const start = () => {
   function run() {
     if (!player.media.duration) return requestAnimationFrame(run)
-
+    if (!comments) return
     if (player.localConfig.showDanmaku) {
-      core = new Danmaku({
-        container: $danmakuContainer[0],
-        media: player.media,
-        comments: adjustCommentCount(comments),
-      })
+      if (!core) {
+        core = new Danmaku({
+          container: $danmakuContainer[0],
+          media: player.media,
+          comments: adjustCommentCount(comments),
+        })
+      } else {
+        core.reload(adjustCommentCount(comments)!)
+        core.show()
+      }
       core.speed = baseDanmkuSpeed * player.localConfig.danmakuSpeed
     }
 
@@ -270,9 +274,6 @@ const initEvents = (name: string) => {
     )
   })
 
-  // 重新绑定 input 效果
-  player.initInputEvent()
-
   addRangeListener({
     $dom: $opacity,
     name: 'opacity',
@@ -285,7 +286,7 @@ const initEvents = (name: string) => {
   addRangeListener({
     $dom: $danmakuSpeed,
     name: 'danmakuSpeed',
-    onInput: (v) => {
+    onChange: (v) => {
       if (core) core.speed = baseDanmkuSpeed * v
     },
     player,

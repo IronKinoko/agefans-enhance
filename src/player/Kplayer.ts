@@ -221,11 +221,11 @@ export class KPlayer {
     this.injectQuestion()
     this.injectNext()
     this.injectSreen()
-    this.initEvent()
-
     this.injectSearchActions()
 
     KPlayer.plguinList.forEach((setup) => setup(this))
+
+    this.initEvent()
 
     /** @private */
     this.isHoverControls = false
@@ -502,13 +502,9 @@ export class KPlayer {
       }
     )
 
-    document
-      .querySelectorAll<HTMLDivElement>('.plyr__controls .plyr__control')
-      .forEach((dom) => {
-        dom.addEventListener('click', (e) =>
-          (e.currentTarget as HTMLDivElement).blur()
-        )
-      })
+    $('.plyr__controls button,.plyr__controls input').on('mouseleave', (e) => {
+      e.target.blur()
+    })
 
     const playerEl = document.querySelector('.plyr')!
     playerEl.addEventListener('mousemove', () => {
@@ -534,7 +530,8 @@ export class KPlayer {
   initInputEvent() {
     let timeId: number
     const $dom = $("#k-player-wrapper input[type='range']")
-    $dom.off('mousedown').off('mouseup')
+
+    $dom.trigger('mouseup').off('mousedown').off('mouseup')
     $dom.on('mousedown', function () {
       clearInterval(timeId)
       let i = 0

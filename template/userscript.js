@@ -15,6 +15,7 @@ export function genUserScriptInfo(pkg) {
 // @include      http://www.imomoe.live/player/*
 // @include      http://www.88dmw.com/*
 // @include      https://new-ani.me/*
+// @include      https://bangumi.online/*
 // @include      https://danmu.4dm.cc/m3u8.php*
 // @include      http*://www.ntyou.*
 // @include      https://www.dm233.*
@@ -23,7 +24,7 @@ export function genUserScriptInfo(pkg) {
 // @require      https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js
 // @require      https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.js
 // @require      https://cdn.jsdelivr.net/npm/hls.js@1.0.9/dist/hls.min.js
-// @require      https://cdn.jsdelivr.net/npm/@ironkinoko/danmaku@1.0.0/dist/danmaku.min.js
+// @require      https://cdn.jsdelivr.net/npm/@ironkinoko/danmaku@1.1.1/dist/danmaku.min.js
 // @resource     plyrCSS https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.css
 // @grant        GM_getResourceText
 // @grant        GM_addStyle

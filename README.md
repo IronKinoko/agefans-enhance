@@ -65,6 +65,7 @@
 - http://www.imomoe.live/player/*
 - http://www.88dmw.com/*
 - https://new-ani.me/*
+- https://bangumi.online/*
 - https://danmu.4dm.cc/m3u8.php*
 - http*://www.ntyou.*
 - https://www.dm233.*
