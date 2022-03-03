@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.23.2
+// @version      1.23.3
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -23,7 +23,7 @@
 // @require      https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js
 // @require      https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.js
 // @require      https://cdn.jsdelivr.net/npm/hls.js@1.0.9/dist/hls.min.js
-// @require      https://cdn.jsdelivr.net/npm/@ironkinoko/danmaku@1.1.1/dist/danmaku.min.js
+// @require      https://cdn.jsdelivr.net/npm/@ironkinoko/danmaku@1.1.3/dist/danmaku.min.js
 // @resource     plyrCSS https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.css
 // @grant        GM_getResourceText
 // @grant        GM_addStyle
@@ -1624,7 +1624,7 @@ ${[...speedList]
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.23.2"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.23.3"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -1714,7 +1714,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.23.2"}
+脚本版本: ${"1.23.3"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -2602,11 +2602,11 @@ userAgent: ${navigator.userAgent}
     <div id="k-player-danmaku-setting-form" class="k-settings-list">
       <label class="k-settings-item">
         <input type="checkbox" name="showDanmaku" />
-        显示弹幕(D)
-      </label>
+        <span>显示弹幕(D)</span>
+        </label>
       <label class="k-settings-item">
         <input type="checkbox" name="showPbp" />
-        显示高能进度条
+        <span>显示高能进度条</span>
       </label>
       <label class="k-settings-item">
         <span>透明度&#12288;</span>
@@ -2616,7 +2616,7 @@ userAgent: ${navigator.userAgent}
         <span>弹幕速度</span>
         <input type="range" name="danmakuSpeed" step="0.01" min="0.5" max="1.5" />
       </label>
-      <label class="k-settings-item">
+      <label class="k-settings-item" title="基准为 24 分钟条 3000 弹幕">
         <span>弹幕密度</span>
         <input type="range" name="danmakuDensity" step="0.01" min="0.5" max="2" />
       </label>
@@ -2684,7 +2684,7 @@ userAgent: ${navigator.userAgent}
 </svg>
 `);
 
-  var css$3 = "#k-player-danmaku {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  pointer-events: none;\n}\n#k-player-danmaku * {\n  font-size: 25px;\n  font-family: SimHei, \"Microsoft JhengHei\", Arial, Helvetica, sans-serif;\n  font-weight: bold;\n  text-shadow: black 1px 0px 1px, black 0px 1px 1px, black 0px -1px 1px, black -1px 0px 1px;\n  line-height: 1.3;\n}\n#k-player-danmaku-overlay {\n  width: 210px;\n}\n#k-player-danmaku-search-form > * {\n  font-size: 14px;\n  box-sizing: border-box;\n  text-align: left;\n}\n#k-player-danmaku-search-form input,\n#k-player-danmaku-search-form select {\n  display: block;\n  margin-top: 4px;\n  width: 100%;\n}\n#k-player-danmaku-search-form label {\n  display: block;\n}\n#k-player-danmaku-search-form label * {\n  line-height: 1.4;\n}\n#k-player-danmaku-search-form label + label {\n  margin-top: 8px;\n}\n#k-player-danmaku-setting-form {\n  padding: 0;\n}\n#k-player-danmaku-filter-form {\n  padding: 0;\n}\n#k-player-danmaku-filter-form input {\n  width: 100%;\n}\n#k-player-danmaku-filter-table {\n  margin-top: 8px;\n}\n#k-player-danmaku-filter-table .ft-body {\n  height: 114px;\n  overflow: auto;\n}\n#k-player-danmaku-filter-table .ft-body::-webkit-scrollbar {\n  display: none;\n}\n#k-player-danmaku-filter-table .ft-row {\n  display: flex;\n  border-radius: 4px;\n  transition: all 0.15s;\n}\n#k-player-danmaku-filter-table .ft-row:hover {\n  background: var(--k-player-background-highlight);\n}\n#k-player-danmaku-filter-table .ft-content {\n  padding: 4px 8px;\n  flex: 1px;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n#k-player-danmaku-filter-table .ft-op {\n  flex-shrink: 0;\n  padding: 4px 8px;\n}\n#k-player-danmaku-filter-table a {\n  color: white;\n  cursor: pointer;\n  transition: color 0.15s;\n}\n#k-player-danmaku-filter-table a:hover {\n  color: var(--k-player-primary-color);\n}\n\n#k-player-pbp {\n  position: absolute;\n  top: -17px;\n  height: 28px;\n  -webkit-appearance: none;\n  left: 0;\n  position: absolute;\n  margin-left: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  margin-right: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  width: calc(100% + var(--plyr-range-thumb-height, 13px));\n  pointer-events: none;\n}\n\n#k-player-pbp-played-path {\n  color: var(--k-player-primary-color);\n}\n\n.plyr__controls__item.plyr__progress__container:hover #k-player-pbp {\n  top: -18px;\n}";
+  var css$3 = "#k-player-danmaku {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  pointer-events: none;\n}\n#k-player-danmaku * {\n  font-size: 25px;\n  font-family: SimHei, \"Microsoft JhengHei\", Arial, Helvetica, sans-serif;\n  font-weight: bold;\n  text-shadow: black 1px 0px 1px, black 0px 1px 1px, black 0px -1px 1px, black -1px 0px 1px;\n  line-height: 1.3;\n}\n#k-player-danmaku-overlay {\n  width: 210px;\n}\n#k-player-danmaku-search-form > * {\n  font-size: 14px;\n  box-sizing: border-box;\n  text-align: left;\n}\n#k-player-danmaku-search-form input,\n#k-player-danmaku-search-form select {\n  display: block;\n  margin-top: 4px;\n  width: 100%;\n}\n#k-player-danmaku-search-form label {\n  display: block;\n}\n#k-player-danmaku-search-form label span {\n  line-height: 1.4;\n}\n#k-player-danmaku-search-form label + label {\n  margin-top: 8px;\n}\n#k-player-danmaku-setting-form {\n  padding: 0;\n}\n#k-player-danmaku-filter-form {\n  padding: 0;\n}\n#k-player-danmaku-filter-form input {\n  width: 100%;\n}\n#k-player-danmaku-filter-table {\n  margin-top: 8px;\n}\n#k-player-danmaku-filter-table .ft-body {\n  height: 114px;\n  overflow: auto;\n}\n#k-player-danmaku-filter-table .ft-body::-webkit-scrollbar {\n  display: none;\n}\n#k-player-danmaku-filter-table .ft-row {\n  display: flex;\n  border-radius: 4px;\n  transition: all 0.15s;\n}\n#k-player-danmaku-filter-table .ft-row:hover {\n  background: var(--k-player-background-highlight);\n}\n#k-player-danmaku-filter-table .ft-content {\n  padding: 4px 8px;\n  flex: 1px;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n#k-player-danmaku-filter-table .ft-op {\n  flex-shrink: 0;\n  padding: 4px 8px;\n}\n#k-player-danmaku-filter-table a {\n  color: white;\n  cursor: pointer;\n  transition: color 0.15s;\n}\n#k-player-danmaku-filter-table a:hover {\n  color: var(--k-player-primary-color);\n}\n\n#k-player-pbp {\n  position: absolute;\n  top: -17px;\n  height: 28px;\n  -webkit-appearance: none;\n  left: 0;\n  position: absolute;\n  margin-left: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  margin-right: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  width: calc(100% + var(--plyr-range-thumb-height, 13px));\n  pointer-events: none;\n}\n\n#k-player-pbp-played-path {\n  color: var(--k-player-primary-color);\n}\n\n.plyr__controls__item.plyr__progress__container:hover #k-player-pbp {\n  top: -18px;\n}";
   n(css$3,{});
 
   /**
@@ -2955,6 +2955,7 @@ userAgent: ${navigator.userAgent}
           autoStart();
       });
       mutationOb.observe(player$5.media, { attributeFilter: ['src'] });
+      player$5.initInputEvent();
       // 绑定快捷键
       keybind(['d'], () => switchDanmaku());
       $showDanmaku
