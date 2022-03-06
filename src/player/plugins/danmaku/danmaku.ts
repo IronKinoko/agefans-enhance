@@ -220,6 +220,10 @@ const initEvents = (name: string) => {
   $animeName.on('keypress', (e) => {
     if (e.key === 'Enter') searchAnime($animeName.val() as string)
   })
+  $animeName.on('blur', (e) => {
+    searchAnime($animeName.val() as string)
+  })
+
   $animes.on('change', (e) => {
     const animeId = $(e.target).val() as string
     const animes: Anime[] = $animes.data('animes')
