@@ -59,10 +59,10 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@ironkinoko/danmaku@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.npmjs.org/@ironkinoko/danmaku/-/danmaku-1.0.1.tgz#39c96da30e54b92a2d2131e1bee0113f8b81a828"
-  integrity sha512-vaGRztqnnnutrJ5PKowNNq4RXkX0UZIIWdS/MJVk+0vzrrHOw68LpJYvgpNCwohD7Vcvw4sgV3GVvKI16CnF/w==
+"@ironkinoko/danmaku@^1.2.3":
+  version "1.2.3"
+  resolved "https://registry.npmmirror.com/@ironkinoko/danmaku/-/danmaku-1.2.3.tgz#d9e2ce6baa5a391a7f96b16f51e9ac7776ac3dd2"
+  integrity sha512-rAKHRNKy3vdp0Loby7yyDIgkOn70GOUtdL3SNt829EzsMIQh5IyyGl5LJ0NTyOAG+EuQ41v26K7tpqjlWvws5A==
 
 "@nodelib/fs.scandir@2.1.4":
   version "2.1.4"

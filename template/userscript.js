@@ -24,7 +24,7 @@ export function genUserScriptInfo(pkg) {
 // @require      https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js
 // @require      https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.js
 // @require      https://cdn.jsdelivr.net/npm/hls.js@1.0.9/dist/hls.min.js
-// @require      https://cdn.jsdelivr.net/npm/@ironkinoko/danmaku@1.1.3/dist/danmaku.min.js
+// @require      https://cdn.jsdelivr.net/npm/@ironkinoko/danmaku@1.2.3/dist/danmaku.umd.min.js
 // @resource     plyrCSS https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.css
 // @grant        GM_getResourceText
 // @grant        GM_addStyle
