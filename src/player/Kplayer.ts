@@ -22,6 +22,51 @@ import {
 } from './html'
 import './index.scss'
 
+const i18n = {
+  restart: '重播',
+  rewind: '快退 {seektime}s',
+  play: '播放(空格键)',
+  pause: '暂停(空格键)',
+  fastForward: '快进 {seektime}s',
+  seek: 'Seek',
+  seekLabel: '{currentTime} / {duration}',
+  played: '已播放',
+  buffered: '已缓冲',
+  currentTime: '当前时间',
+  duration: '片长',
+  volume: '音量',
+  mute: '静音(M)',
+  unmute: '取消静音(M)',
+  enableCaptions: '显示字幕',
+  disableCaptions: '隐藏字幕',
+  download: '下载',
+  enterFullscreen: '进入全屏(F)',
+  exitFullscreen: '退出全屏(F)',
+  frameTitle: '标题名称： {title}',
+  captions: '字幕',
+  settings: '设置',
+  pip: '画中画(I)',
+  menuBack: '返回上级',
+  speed: '倍速',
+  normal: '1.0x',
+  quality: '分辨率',
+  loop: '循环',
+  start: '开始',
+  end: '结束',
+  all: '全部',
+  reset: '重置',
+  disabled: '禁用',
+  enabled: '启用',
+  advertisement: '广告',
+  qualityBadge: {
+    2160: '4K',
+    1440: 'HD',
+    1080: 'HD',
+    720: 'HD',
+    576: 'SD',
+    480: 'SD',
+  },
+}
 const MediaErrorMessage: Record<number, string> = {
   1: '你中止了媒体播放',
   2: '网络错误',
@@ -101,16 +146,16 @@ export class KPlayer {
    * @param {Plyr.Options & EnhanceOpts} [opts]
    */
   constructor(selector: string | Element, opts: Opts = {}) {
-    const $wrapper = $('<div id="k-player-wrapper"/>').replaceAll(selector)
-    const $loading = $(loadingHTML)
-    const $error = $(errorHTML)
-    const $pip = $(pipHTML)
-    const $video = (
+    this.$wrapper = $('<div id="k-player-wrapper"/>').replaceAll(selector)
+    this.$loading = $(loadingHTML)
+    this.$error = $(errorHTML)
+    this.$pip = $(pipHTML)
+    this.$video = (
       (opts.video ? $(opts.video) : $('<video />')) as JQuery<HTMLVideoElement>
     ).attr('id', 'k-player')
-    const $progress = $(progressHTML)
-    const $header = $('<div id="k-player-header"/>')
-    $wrapper.append($video)
+    this.$progress = $(progressHTML)
+    this.$header = $('<div id="k-player-header"/>')
+    this.$wrapper.append(this.$video)
 
     this.localConfigKey = 'kplayer'
     this.statusSessionKey = 'k-player-status'
@@ -139,51 +184,7 @@ export class KPlayer {
       seekTime: 5,
       volume: this.localConfig.volume,
       speed: { options: speedList, selected: 1 },
-      i18n: {
-        restart: '重播',
-        rewind: '快退 {seektime}s',
-        play: '播放(空格键)',
-        pause: '暂停(空格键)',
-        fastForward: '快进 {seektime}s',
-        seek: 'Seek',
-        seekLabel: '{currentTime} / {duration}',
-        played: '已播放',
-        buffered: '已缓冲',
-        currentTime: '当前时间',
-        duration: '片长',
-        volume: '音量',
-        mute: '静音(M)',
-        unmute: '取消静音(M)',
-        enableCaptions: '显示字幕',
-        disableCaptions: '隐藏字幕',
-        download: '下载',
-        enterFullscreen: '进入全屏(F)',
-        exitFullscreen: '退出全屏(F)',
-        frameTitle: '标题名称： {title}',
-        captions: '字幕',
-        settings: '设置',
-        pip: '画中画(I)',
-        menuBack: '返回上级',
-        speed: '倍速',
-        normal: '1.0x',
-        quality: '分辨率',
-        loop: '循环',
-        start: '开始',
-        end: '结束',
-        all: '全部',
-        reset: '重置',
-        disabled: '禁用',
-        enabled: '启用',
-        advertisement: '广告',
-        qualityBadge: {
-          2160: '4K',
-          1440: 'HD',
-          1080: 'HD',
-          720: 'HD',
-          576: 'SD',
-          480: 'SD',
-        },
-      },
+      i18n,
       tooltips: {
         controls: true,
         seek: true,
@@ -191,22 +192,15 @@ export class KPlayer {
       ...opts,
     })
 
-    this.$wrapper = $wrapper
-    this.$loading = $loading
-    this.$error = $error
-    this.$video = $video
-    this.$progress = $progress
-    this.$header = $header
-    this.$pip = $pip
+    this.$videoWrapper = this.$wrapper.find('.plyr')
 
-    this.$videoWrapper = $wrapper.find('.plyr')
-
-    this.$videoWrapper
-      .append($loading)
-      .append($error)
-      .append($pip)
-      .append($progress)
-      .append($header)
+    this.$videoWrapper.append(
+      this.$loading,
+      this.$error,
+      this.$pip,
+      this.$progress,
+      this.$header
+    )
 
     this.message = new Message(this.$videoWrapper)
     this.eventMap = {}
@@ -677,9 +671,9 @@ export class KPlayer {
   }
 
   private async injectSearchActions() {
-    if (!this.localConfig.showSearchActions) return
-
-    this.$searchActions = $(searchActionsHTML)
+    this.$searchActions = $(searchActionsHTML).toggle(
+      this.localConfig.showSearchActions
+    )
     const actions = await runtime.getSearchActions()
     if (actions.length === 0) return
 
@@ -690,6 +684,7 @@ export class KPlayer {
         ).on('click', search)
       })
     )
+
     this.$searchActions.insertBefore(this.$speed)
   }
 
