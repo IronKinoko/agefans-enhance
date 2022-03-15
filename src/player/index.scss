@@ -223,6 +223,7 @@
       text-align: center;
       &-text {
         line-height: 32px;
+        user-select: none;
       }
     }
     .k-text-btn + .k-text-btn {

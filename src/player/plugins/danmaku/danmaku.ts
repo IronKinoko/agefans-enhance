@@ -3,7 +3,7 @@ import { runtime } from '../../../runtime'
 import { keybind } from '../../../utils/keybind'
 import { defaultConfig, KPlayer } from '../../Kplayer'
 import { getComments, searchAnimeWithEpisode } from './apis'
-import { $danmaku, $danmakuContainer, $pbp } from './html'
+import { $danmaku, $danmakuContainer, $pbp, $danmakuBtn } from './html'
 import './index.scss'
 import { createProgressBarPower } from './progressBarPower'
 import { Anime, Episode } from './types'
@@ -238,6 +238,13 @@ const initEvents = (name: string) => {
     storageEpisodeName(`${videoInfo.rawName}.${videoInfo.episode}`, episodeId)
     loadEpisode(episodeId)
   })
+
+  $danmakuBtn
+    .find('.k-text-btn-text')
+    .css('cursor', 'pointer')
+    .on('click', () => {
+      switchDanmaku()
+    })
 
   const resizeOb = new ResizeObserver(() => {
     core?.resize()
