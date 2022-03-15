@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.23.4
+// @version      1.23.5
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -23,7 +23,7 @@
 // @require      https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js
 // @require      https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.js
 // @require      https://cdn.jsdelivr.net/npm/hls.js@1.0.9/dist/hls.min.js
-// @require      https://cdn.jsdelivr.net/npm/@ironkinoko/danmaku@1.2.5/dist/danmaku.umd.min.js
+// @require      https://cdn.jsdelivr.net/npm/@ironkinoko/danmaku@1.2.6/dist/danmaku.umd.min.js
 // @resource     plyrCSS https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.css
 // @grant        GM_getResourceText
 // @grant        GM_addStyle
@@ -1624,7 +1624,7 @@ ${[...speedList]
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.23.4"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.23.5"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -1714,7 +1714,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.23.4"}
+脚本版本: ${"1.23.5"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
