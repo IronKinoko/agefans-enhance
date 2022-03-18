@@ -301,6 +301,7 @@ export class KPlayer {
     })
     this.on('error', () => {
       this.setCurrentTimeLog(0)
+      this.$searchActions.show()
 
       const code = this.media.error!.code
       this.$loading.hide()
