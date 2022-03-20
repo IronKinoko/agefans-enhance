@@ -31,7 +31,7 @@ export function playModule() {
 
     // 这里的事件由 danmu.3dm.cc 触发
     if (key === 'getSearchName') {
-      const iframe = $<HTMLIFrameElement>('#playleft iframe')[0]
+      const iframe = $<HTMLIFrameElement>(iframeSelector)[0]
 
       iframe.contentWindow?.postMessage(
         { key: 'getSearchName', name: $('#detailname').text() },
@@ -39,7 +39,7 @@ export function playModule() {
       )
     }
     if (key === 'getEpisode') {
-      const iframe = $<HTMLIFrameElement>('#playleft iframe')[0]
+      const iframe = $<HTMLIFrameElement>(iframeSelector)[0]
 
       iframe.contentWindow?.postMessage(
         { key: 'getEpisode', name: $('.movurl .active-play').text() },
@@ -53,4 +53,6 @@ export function playModule() {
     $(iframeSelector)[0].focus()
     if (e.key === ' ') e.preventDefault()
   })
+
+  $(iframeSelector).attr('allow', 'autoplay fullscreen')
 }

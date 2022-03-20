@@ -69,7 +69,7 @@ class Runtime {
       .replace(/[<>《》''‘’""“”\[\]]/g, '')
       .trim()
 
-    episode = episode.replace(/[第集]/g, '')
+    episode = episode.replace(/[第集]/g, '').replace(/^0+/, '')
 
     return { name, rawName, episode }
   }
