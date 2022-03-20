@@ -129,7 +129,7 @@ export class KPlayer {
   wideScreenBodyStyles: {}
   tsumaLength: number
   curentTsuma: number
-  isHoverControls: boolean
+  private isHoverControls = false
   $settings!: JQuery<HTMLDivElement>
   $speed!: JQuery<HTMLDivElement>
   localPlayTimeKey: string
@@ -221,17 +221,14 @@ export class KPlayer {
 
     this.initEvent()
 
-    /** @private */
-    this.isHoverControls = false
+    if (opts.eventToParentWindow) {
+      this.eventToParentWindow()
+    }
 
     const status = session.getItem(this.statusSessionKey)
     if (status) {
       session.removeItem(this.statusSessionKey)
       this.toggleWidescreen(status)
-    }
-
-    if (opts.eventToParentWindow) {
-      this.eventToParentWindow()
     }
   }
 
