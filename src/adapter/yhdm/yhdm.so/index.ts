@@ -14,11 +14,13 @@ runtime.register({
     search: (name) => `http://www.yinghuacd.com/search/${name}/`,
     getSearchName: async () => {
       return new Promise((resolve) => {
-        window.addEventListener('message', (e) => {
+        const fn = (e: MessageEvent<any>) => {
           if (e.data.key === 'getSearchName') {
             resolve(e.data.name)
+            window.removeEventListener('message', fn)
           }
-        })
+        }
+        window.addEventListener('message', fn)
         parent.postMessage({ key: 'getSearchName' }, '*')
       })
     },

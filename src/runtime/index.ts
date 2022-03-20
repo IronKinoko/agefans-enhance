@@ -9,8 +9,8 @@ interface RegisteredItem {
   domains: (string | RegExp)[]
   opts: RegisterOpts[]
   search?: {
-    name: string
-    search: (name: string) => string | void
+    name?: string
+    search?: (name: string) => string | void
     getSearchName?: () => Promise<string> | string
     getEpisode?: () => Promise<string> | string
     disabledInIframe?: boolean
@@ -45,11 +45,11 @@ class Runtime {
     let name = info.name
 
     return searchs
-      .filter((search) => search !== register.search)
+      .filter((search) => search !== register.search && search.search)
       .map((search) => ({
         name: search.name,
         search: () => {
-          const url = search.search(encodeURIComponent(name!))
+          const url = search.search!(encodeURIComponent(name!))
           if (!url) return
           if (isInIframe) parent.postMessage({ key: 'openLink', url }, '*')
           else window.open(url)
