@@ -239,12 +239,9 @@ const initEvents = (name: string) => {
     loadEpisode(episodeId)
   })
 
-  $danmakuBtn
-    .find('.k-text-btn-text')
-    .css('cursor', 'pointer')
-    .on('click', () => {
-      switchDanmaku()
-    })
+  $danmakuBtn.css('cursor', 'pointer').on('click', () => {
+    switchDanmaku()
+  })
 
   const resizeOb = new ResizeObserver(() => {
     core?.resize()

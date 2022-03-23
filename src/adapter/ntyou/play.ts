@@ -54,5 +54,5 @@ export function playModule() {
     if (e.key === ' ') e.preventDefault()
   })
 
-  $(iframeSelector).attr('allow', 'autoplay fullscreen')
+  $(iframeSelector).attr({ gesture: 'media', allow: 'autoplay; fullscreen' })
 }
