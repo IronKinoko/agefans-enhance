@@ -10,7 +10,9 @@ export function popover(target: string | JQuery, overlay: string | JQuery) {
   $target.addClass('k-popover')
   $target.on('mouseenter', () => {
     clearTimeout(timeID)
-    $content.fadeIn('fast')
+    timeID = window.setTimeout(() => {
+      $content.fadeIn('fast')
+    }, 100)
   })
   $target.on('mouseleave', () => {
     clearTimeout(timeID)
