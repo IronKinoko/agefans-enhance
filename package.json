@@ -1,6 +1,6 @@
 {
   "name": "agefans",
-  "version": "1.23.5",
+  "version": "1.23.6",
   "description": "增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能",
   "main": "index.user.js",
   "repository": {
@@ -22,7 +22,8 @@
     "build": "rollup -c --environment NODE_ENV:production",
     "lint": "tsc --noEmit",
     "prepare": "husky install",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "postversion": "git push && git push --tags"
   },
   "devDependencies": {
     "@rollup/plugin-image": "^2.1.1",
