@@ -22,7 +22,8 @@
     "build": "rollup -c --environment NODE_ENV:production",
     "lint": "tsc --noEmit",
     "prepare": "husky install",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "postversion": "git push && git push --tags"
   },
   "devDependencies": {
     "@rollup/plugin-image": "^2.1.1",
