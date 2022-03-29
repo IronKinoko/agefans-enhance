@@ -183,7 +183,7 @@
       top: 0;
       height: 100%;
       z-index: 2;
-      background-color: rgba(35, 173, 229, 1);
+      background-color: var(--k-player-primary-color);
     }
     .k-player-progress-buffer {
       position: absolute;
@@ -219,16 +219,12 @@
 
     .k-text-btn {
       display: inline-block;
-      padding: 0 16px;
+      padding: 0 8px;
       text-align: center;
       &-text {
         line-height: 32px;
         user-select: none;
       }
-    }
-    .k-text-btn + .k-text-btn {
-      margin-left: 8px;
-      padding-left: 0;
     }
   }
 

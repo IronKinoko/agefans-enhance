@@ -3,7 +3,7 @@ import { runtime } from '../../../runtime'
 import { keybind } from '../../../utils/keybind'
 import { defaultConfig, KPlayer } from '../../Kplayer'
 import { getComments, searchAnimeWithEpisode } from './apis'
-import { $danmaku, $danmakuContainer, $pbp, $danmakuBtn } from './html'
+import { $danmaku, $danmakuContainer, $pbp, $danmakuSwitch } from './html'
 import './index.scss'
 import { createProgressBarPower } from './progressBarPower'
 import { Anime, Episode } from './types'
@@ -56,6 +56,7 @@ const $animes = $danmaku.find('#animes')
 const $episodes = $danmaku.find('#episodes')
 const $tips = $danmaku.find('#tips')
 
+const $danmakuSwitcher = $danmakuSwitch.find('.k-switch-input')
 const $showDanmaku = $danmaku.find<HTMLInputElement>("[name='showDanmaku']")
 const $showPbp = $danmaku.find<HTMLInputElement>("[name='showPbp']")
 const $opacity = $danmaku.find<HTMLInputElement>("[name='opacity']")
@@ -239,9 +240,11 @@ const initEvents = (name: string) => {
     loadEpisode(episodeId)
   })
 
-  $danmakuBtn.css('cursor', 'pointer').on('click', () => {
-    switchDanmaku()
-  })
+  $danmakuSwitcher
+    .prop('checked', player.localConfig.showDanmaku)
+    .on('click', () => {
+      switchDanmaku()
+    })
 
   const resizeOb = new ResizeObserver(() => {
     core?.resize()
@@ -325,6 +328,7 @@ function switchDanmaku(bool?: boolean) {
   bool ??= !player.localConfig.showDanmaku
 
   player.configSaveToLocal('showDanmaku', bool)
+  $danmakuSwitcher.prop('checked', bool)
   $showDanmaku.prop('checked', bool)
   player.message.info(`弹幕${bool ? '开启' : '关闭'}`)
   if (bool) {

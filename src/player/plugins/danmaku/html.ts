@@ -82,11 +82,15 @@ const $danmakuOverlay = tabs([
   },
 ])
 $danmakuOverlay.attr('id', 'k-player-danmaku-overlay')
-export const $danmakuBtn =
-  $(`<div class="plyr__controls__item k-popover k-text-btn">
-<span class="k-text-btn-text">弹幕</span>
+export const $danmakuSwitch = $(`<div class="k-switch k-danmaku-switch">
+<input class="k-switch-input" type="checkbox" />
+<div class="k-switch-label">
+  <div class="k-switch-dot">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" width="1em" height="1em"><path fill="currentColor" d="M1.311 3.759l-.153 1.438h2.186c0 1.832-.066 3.056-.175 3.674-.131.618-.688.959-1.683 1.023-.284 0-.568-.021-.874-.043L.317 8.818c.284.032.59.053.896.053.546 0 .852-.17.929-.511.077-.341.12-1.076.12-2.204H0l.306-3.344h1.847V1.427H.098V.479h3.18v3.28H1.311zM4 1.747h1.311A8.095 8.095 0 004.492.426L5.53.085c.306.426.579.873.809 1.363l-.689.299h1.508c.306-.544.569-1.129.809-1.747l1.082.373c-.219.511-.47.969-.743 1.374h1.268V6.23H7.322v.82H10v1.044H7.322V10H6.208V8.094H3.607V7.05h2.601v-.82H4V1.747zm4.568 3.557v-.831H7.322v.831h1.246zm-2.36 0v-.831H5.016v.831h1.192zM5.016 3.557h1.191v-.873H5.016v.873zm2.306-.873v.873h1.246v-.873H7.322z"></path></svg>
+  </div>
+</div>
 </div>`)
-export const $danmaku = popover($danmakuBtn, $danmakuOverlay)
+export const $danmaku = popover($danmakuSwitch, $danmakuOverlay)
 
 export const $danmakuContainer = $('<div id="k-player-danmaku"></div>')
 
