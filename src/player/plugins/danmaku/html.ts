@@ -46,7 +46,7 @@ const $danmakuOverlay = tabs([
         <span>弹幕密度</span>
         <input type="range" name="danmakuDensity" step="0.01" min="0.5" max="2" />
       </label>
-      <div class="k-settings-item">
+      <div class="k-settings-item" style="height:24px">
         <div>弹幕类型</div>
         <label class="k-settings-item" title="顶部弹幕">
           <input type="checkbox" name="danmakuMode" value="top"/>
