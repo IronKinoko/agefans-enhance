@@ -167,8 +167,11 @@
     opacity: 1;
     transition: opacity 0.3s ease-in 0.2s;
   }
-  .k-player-fullscreen .k-player-progress {
-    display: none;
+  .k-player-fullscreen {
+    .k-player-progress,
+    [data-plyr='widescreen'] {
+      display: none;
+    }
   }
   .k-player-progress {
     opacity: 0;
