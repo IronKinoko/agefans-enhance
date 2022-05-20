@@ -21,11 +21,11 @@ export function genUserScriptInfo(pkg) {
 // @include      https://www.dm233.*
 // @include      https://www.olevod.com*
 // @run-at       document-body
-// @require      https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js
-// @require      https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.js
-// @require      https://cdn.jsdelivr.net/npm/hls.js@1.0.9/dist/hls.min.js
-// @require      https://cdn.jsdelivr.net/npm/@ironkinoko/danmaku@1.2.6/dist/danmaku.umd.min.js
-// @resource     plyrCSS https://cdn.jsdelivr.net/npm/plyr@3.6.4/dist/plyr.min.css
+// @require      https://unpkg.com/jquery@3.6.0/dist/jquery.min.js
+// @require      https://unpkg.com/plyr@3.6.4/dist/plyr.min.js
+// @require      https://unpkg.com/hls.js@1.0.9/dist/hls.min.js
+// @require      https://unpkg.com/@ironkinoko/danmaku@1.2.6/dist/danmaku.umd.js
+// @resource     plyrCSS https://unpkg.com/plyr@3.6.4/dist/plyr.min.css
 // @grant        GM_getResourceText
 // @grant        GM_addStyle
 // @grant        GM_getValue
