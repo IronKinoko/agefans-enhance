@@ -396,7 +396,7 @@ export async function setup(_player: KPlayer) {
   videoInfo = info
 
   player.$videoWrapper.append($danmakuContainer)
-  $danmaku.insertBefore(player.$speed)
+  $danmaku.insertBefore(player.$searchActions)
 
   let defaultSearchName = storageAnimeName(videoInfo.rawName) || videoInfo.name
   initEvents(defaultSearchName)

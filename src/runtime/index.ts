@@ -69,7 +69,7 @@ class Runtime {
       .replace(/[<>《》''‘’""“”\[\]]/g, '')
       .trim()
 
-    episode = episode.replace(/[第集]/g, '').replace(/^0+/, '')
+    episode = episode.replace(/[第集话]/g, '').replace(/^0+/, '')
 
     return { name, rawName, episode }
   }
@@ -98,7 +98,8 @@ class Runtime {
     const opts = this.getActiveOpts()
 
     opts.forEach(({ run, runInIframe, setup }) => {
-      if (runInIframe || parent === self) {
+      let needRun = runInIframe ? parent !== self : parent === self
+      if (needRun) {
         setup && setupList.push(setup)
         runList.push(run)
       }
