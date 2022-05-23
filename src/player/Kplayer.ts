@@ -723,7 +723,7 @@ export class KPlayer {
   }
 
   get src() {
-    return this.media.src
+    return this.media.currentSrc
   }
 
   set currentTime(value) {
