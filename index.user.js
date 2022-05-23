@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.24.0
+// @version      1.24.1
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1629,7 +1629,7 @@ ${[...speedList]
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.24.0"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.24.1"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -1719,7 +1719,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.24.0"}
+脚本版本: ${"1.24.1"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -2292,7 +2292,7 @@ userAgent: ${navigator.userAgent}
           }
       }
       get src() {
-          return this.media.src;
+          return this.media.currentSrc;
       }
       set currentTime(value) {
           this.plyr.currentTime = value;
