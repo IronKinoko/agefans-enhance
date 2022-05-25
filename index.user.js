@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.24.1
+// @version      1.25.0
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -613,6 +613,7 @@
   n(css$9,{});
 
   function parseTime(time = 0) {
+      time = Math.round(time);
       return `${Math.floor(time / 60)
         .toString()
         .padStart(2, '0')}:${(time % 60).toString().padStart(2, '0')}`;
@@ -681,13 +682,13 @@
           }
       }
   }
-  const his = new History();
+  const his$1 = new History();
   function renderHistoryList() {
       $('#history')
           .html('')
           .append(() => {
           /** @type {any[]} */
-          const histories = his.getAll();
+          const histories = his$1.getAll();
           let html = '';
           histories.forEach((o) => {
               html += `<a class="history-item" href="${o.href}" data-id="${o.id}" data-detail-href="/detail/${o.id}">
@@ -720,7 +721,7 @@
       }
   }
   function refreshHistoryList() {
-      const list = his.getAll();
+      const list = his$1.getAll();
       const $doms = $('#history .history-item');
       if (list.length !== $doms.length)
           return renderHistoryList();
@@ -1629,7 +1630,7 @@ ${[...speedList]
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.24.1"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.25.0"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -1719,7 +1720,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.24.1"}
+脚本版本: ${"1.25.0"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -3162,7 +3163,7 @@ userAgent: ${navigator.userAgent}
           push && history.pushState({}, title, href);
           document.title = title;
           showCurrentLink(vurl);
-          his.logHistory();
+          his$1.logHistory();
           retryCount = 0;
           switchLoading = false;
       }
@@ -3190,7 +3191,7 @@ userAgent: ${navigator.userAgent}
       const id = (_a = location.pathname.match(/\/play\/(\d*)/)) === null || _a === void 0 ? void 0 : _a[1];
       if (!id)
           return;
-      his.setTime(id, Math.floor(time));
+      his$1.setTime(id, Math.floor(time));
   }
   function addListener() {
       player$4.on('next', () => {
@@ -3279,7 +3280,7 @@ userAgent: ${navigator.userAgent}
           useOriginPlayer();
           return;
       }
-      his.logHistory();
+      his$1.logHistory();
       $('.fullscn').remove();
       replaceHref();
       replacePlayer$6();
@@ -3798,8 +3799,64 @@ userAgent: ${navigator.userAgent}
       },
   });
 
-  var css = ".bimi-wrapper .play-full,\n.bimi-wrapper #bkcl,\n.bimi-wrapper marquee {\n  display: none !important;\n}";
+  var css = ".bimi-wrapper .play-full,\n.bimi-wrapper #bkcl,\n.bimi-wrapper marquee {\n  display: none !important;\n}\n.bimi-wrapper .bimi-his-table {\n  width: 100%;\n  line-height: 1.4;\n  border-spacing: 0;\n  border-collapse: separate;\n}\n.bimi-wrapper .bimi-his-table th,\n.bimi-wrapper .bimi-his-table td {\n  padding: 4px 8px;\n  transition: background 0.3s ease;\n}\n.bimi-wrapper .bimi-his-table tr:hover td {\n  background: #f1f1f1;\n}";
   n(css,{});
+
+  const his = {
+      key: 'bangumi-history',
+      load() {
+          return local.getItem(this.key, []);
+      },
+      save(data) {
+          local.setItem(this.key, data.slice(0, 100));
+      },
+      log(info, time) {
+          let data = local.getItem(this.key, []);
+          data = data.filter((o) => o.id !== info.id);
+          data.unshift(Object.assign(Object.assign({}, info), { time }));
+          this.save(data);
+      },
+  };
+  const logHis = throttle(his.log.bind(his), 1000);
+  function renderHistroy() {
+      const data = his.load();
+      const content = data
+          .map((info) => `<tr>
+    <td>
+      <a href="${info.url}">${info.animeName}</a>
+    </td>
+    <td>
+      <a href="${info.url}">${info.episodeName}</a>
+    </td>
+    <td>${parseTime(info.time)}</td>
+    </tr>`)
+          .join('');
+      modal({
+          title: '历史记录',
+          content: `
+    <table class="bimi-his-table">
+      <thead>
+        <tr>
+          <th>标题</th>
+          <th>章节</th>
+          <th style="width:100px">时间</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${content}
+      </tbody>
+    </table>
+      `,
+      });
+  }
+  function createButton() {
+      const $btn = $('<li class="item"><a>历史</a></li>');
+      $btn.on('click', renderHistroy);
+      $('.header-top__nav ul').append($btn);
+  }
+  function histroyModule() {
+      createButton();
+  }
 
   function replacePlayer() {
       new KPlayer('#player', {
@@ -3811,9 +3868,35 @@ userAgent: ${navigator.userAgent}
       var _a;
       (_a = $(`.player-info .play-qqun .${next ? 'next' : 'pre'}:not(.btns_disad)`)[0]) === null || _a === void 0 ? void 0 : _a.click();
   }
+  function getPlayInfo() {
+      const animeName = $('.v_path a.current').text();
+      const episodeName = (() => {
+          let name = '';
+          let pre = $('.player-info .play-qqun .pre').attr('href');
+          let next = $('.player-info .play-qqun .next').attr('href');
+          if (pre) {
+              name = $(`.player_list a[href='${pre}']`).parent().next().find('a').text();
+          }
+          else if (next) {
+              name = $(`.player_list a[href='${next}']`)
+                  .parent()
+                  .prev()
+                  .find('a')
+                  .text();
+          }
+          else {
+              name = $(`.player_list a[href='${location.pathname}']`).text();
+          }
+          return name;
+      })();
+      const url = location.pathname;
+      const id = location.pathname.match(/\/(?<id>\d+)\/play/).groups.id;
+      return { id, url, animeName, episodeName };
+  }
   async function playModule() {
       var _a;
       $('#bkcl').remove();
+      const info = getPlayInfo();
       const iframe = await queryDom(`#playleft iframe[src*='url=']`);
       window.addEventListener('message', (e) => {
           var _a, _b, _c;
@@ -3844,30 +3927,10 @@ userAgent: ${navigator.userAgent}
               $(iframe).removeAttr('style');
           }
           if (key === 'getSearchName') {
-              (_b = iframe.contentWindow) === null || _b === void 0 ? void 0 : _b.postMessage({ key: 'getSearchName', name: $('.v_path a.current').text() }, '*');
+              (_b = iframe.contentWindow) === null || _b === void 0 ? void 0 : _b.postMessage({ key: 'getSearchName', name: info.animeName }, '*');
           }
           if (key === 'getEpisode') {
-              let name = '';
-              let pre = $('.player-info .play-qqun .pre').attr('href');
-              let next = $('.player-info .play-qqun .next').attr('href');
-              if (pre) {
-                  name = $(`.player_list a[href='${pre}']`)
-                      .parent()
-                      .next()
-                      .find('a')
-                      .text();
-              }
-              else if (next) {
-                  name = $(`.player_list a[href='${next}']`)
-                      .parent()
-                      .prev()
-                      .find('a')
-                      .text();
-              }
-              else {
-                  name = $(`.player_list a[href='${location.pathname}']`).text();
-              }
-              (_c = iframe.contentWindow) === null || _c === void 0 ? void 0 : _c.postMessage({ key: 'getEpisode', name }, '*');
+              (_c = iframe.contentWindow) === null || _c === void 0 ? void 0 : _c.postMessage({ key: 'getEpisode', name: info.episodeName }, '*');
           }
           if (key === 'openLink') {
               window.open(e.data.url);
@@ -3875,6 +3938,9 @@ userAgent: ${navigator.userAgent}
           if (key === 'canplay') {
               const height = ($('#video').width() / video.width) * video.height;
               $('#video').height(height);
+          }
+          if (key === 'timeupdate') {
+              logHis(info, video.currentTime);
           }
       });
       (_a = iframe.contentWindow) === null || _a === void 0 ? void 0 : _a.postMessage({ key: 'initDone' }, '*');
@@ -3904,10 +3970,11 @@ userAgent: ${navigator.userAgent}
       domains: ['bimiacg4.net'],
       opts: [
           {
-              test: ['/play/'],
+              test: /.*/,
               setup: () => $('body').addClass('bimi-wrapper'),
-              run: playModule,
+              run: histroyModule,
           },
+          { test: ['/play/'], run: playModule },
           { test: [/.*/], runInIframe: true, run: playInIframeModule },
       ],
       search: {
