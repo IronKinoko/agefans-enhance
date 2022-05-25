@@ -1,5 +1,6 @@
 import { KPlayer } from '../../player'
 import { queryDom } from '../../utils/queryDom'
+import { Info, logHis } from './history'
 
 function replacePlayer() {
   new KPlayer('#player', {
@@ -14,8 +15,36 @@ function switchPart(next: boolean) {
   )[0]?.click()
 }
 
+function getPlayInfo(): Info {
+  const animeName = $('.v_path a.current').text()
+  const episodeName = (() => {
+    let name = ''
+    let pre = $('.player-info .play-qqun .pre').attr('href')
+    let next = $('.player-info .play-qqun .next').attr('href')
+    if (pre) {
+      name = $(`.player_list a[href='${pre}']`).parent().next().find('a').text()
+    } else if (next) {
+      name = $(`.player_list a[href='${next}']`)
+        .parent()
+        .prev()
+        .find('a')
+        .text()
+    } else {
+      name = $(`.player_list a[href='${location.pathname}']`).text()
+    }
+    return name
+  })()
+
+  const url = location.pathname
+  const id = location.pathname.match(/\/(?<id>\d+)\/play/)!.groups!.id
+
+  return { id, url, animeName, episodeName }
+}
+
 export async function playModule() {
   $('#bkcl').remove()
+
+  const info = getPlayInfo()
 
   const iframe = await queryDom<HTMLIFrameElement>(
     `#playleft iframe[src*='url=']`
@@ -23,6 +52,7 @@ export async function playModule() {
 
   window.addEventListener('message', (e) => {
     if (!Reflect.has(e.data, 'key')) return
+
     const key = e.data.key
     const video = e.data.video
 
@@ -49,31 +79,15 @@ export async function playModule() {
 
     if (key === 'getSearchName') {
       iframe.contentWindow?.postMessage(
-        { key: 'getSearchName', name: $('.v_path a.current').text() },
+        { key: 'getSearchName', name: info.animeName },
         '*'
       )
     }
     if (key === 'getEpisode') {
-      let name = ''
-      let pre = $('.player-info .play-qqun .pre').attr('href')
-      let next = $('.player-info .play-qqun .next').attr('href')
-      if (pre) {
-        name = $(`.player_list a[href='${pre}']`)
-          .parent()
-          .next()
-          .find('a')
-          .text()
-      } else if (next) {
-        name = $(`.player_list a[href='${next}']`)
-          .parent()
-          .prev()
-          .find('a')
-          .text()
-      } else {
-        name = $(`.player_list a[href='${location.pathname}']`).text()
-      }
-
-      iframe.contentWindow?.postMessage({ key: 'getEpisode', name }, '*')
+      iframe.contentWindow?.postMessage(
+        { key: 'getEpisode', name: info.episodeName },
+        '*'
+      )
     }
 
     if (key === 'openLink') {
@@ -83,6 +97,10 @@ export async function playModule() {
     if (key === 'canplay') {
       const height = ($('#video').width()! / video.width) * video.height
       $('#video').height(height)
+    }
+
+    if (key === 'timeupdate') {
+      logHis(info, video.currentTime)
     }
   })
   iframe.contentWindow?.postMessage({ key: 'initDone' }, '*')
