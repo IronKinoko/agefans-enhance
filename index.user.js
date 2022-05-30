@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.25.0
+// @version      1.25.1
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1630,7 +1630,7 @@ ${[...speedList]
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.25.0"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.25.1"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -1720,7 +1720,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.25.0"}
+脚本版本: ${"1.25.1"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -1794,15 +1794,6 @@ userAgent: ${navigator.userAgent}
       autoplay: true,
   };
   class KPlayer {
-      /**
-       * @typedef {Object} EnhanceOpts
-       * @property {HTMLVideoElement} [video]
-       * @property {boolean} [eventToParentWindow]
-       *
-       * Creates an instance of KPlayer.
-       * @param {string|Element} selector
-       * @param {Plyr.Options & EnhanceOpts} [opts]
-       */
       constructor(selector, opts = {}) {
           this.isHoverControls = false;
           this.setCurrentTimeLogThrottled = throttle(() => {
@@ -1830,6 +1821,7 @@ userAgent: ${navigator.userAgent}
                   }
               }
           }, 1000);
+          this.opts = opts;
           this.$wrapper = $('<div id="k-player-wrapper"/>').replaceAll(selector);
           this.$loading = $(loadingHTML);
           this.$error = $(errorHTML);
@@ -1895,7 +1887,13 @@ userAgent: ${navigator.userAgent}
           return store[this.playTimeStoreKey];
       }
       get playTimeStoreKey() {
-          if (this.src.startsWith('blob')) {
+          if (typeof this.opts.logTimeId === 'string') {
+              return this.opts.logTimeId;
+          }
+          else if (typeof this.opts.logTimeId === 'function') {
+              return this.opts.logTimeId();
+          }
+          else if (this.src.startsWith('blob')) {
               return location.origin + location.pathname + location.search;
           }
           else {
@@ -3862,6 +3860,7 @@ userAgent: ${navigator.userAgent}
       new KPlayer('#player', {
           video: $('video')[0],
           eventToParentWindow: true,
+          logTimeId: parent.location.href,
       });
   }
   function switchPart(next) {
