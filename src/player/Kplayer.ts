@@ -78,6 +78,7 @@ const MediaErrorMessage: Record<number, string> = {
 type Opts = {
   video?: HTMLVideoElement
   eventToParentWindow?: boolean
+  logTimeId?: string | (() => string)
 } & Plyr.Options
 
 type CustomEventMap =
@@ -135,17 +136,10 @@ export class KPlayer {
   localPlayTimeKey: string
   $searchActions!: JQuery<HTMLElement>
   static plguinList: ((player: KPlayer) => void)[] = []
+  opts: Opts
 
-  /**
-   * @typedef {Object} EnhanceOpts
-   * @property {HTMLVideoElement} [video]
-   * @property {boolean} [eventToParentWindow]
-   *
-   * Creates an instance of KPlayer.
-   * @param {string|Element} selector
-   * @param {Plyr.Options & EnhanceOpts} [opts]
-   */
   constructor(selector: string | Element, opts: Opts = {}) {
+    this.opts = opts
     this.$wrapper = $('<div id="k-player-wrapper"/>').replaceAll(selector)
     this.$loading = $(loadingHTML)
     this.$error = $(errorHTML)
@@ -251,7 +245,11 @@ export class KPlayer {
   }
 
   get playTimeStoreKey() {
-    if (this.src.startsWith('blob')) {
+    if (typeof this.opts.logTimeId === 'string') {
+      return this.opts.logTimeId
+    } else if (typeof this.opts.logTimeId === 'function') {
+      return this.opts.logTimeId()
+    } else if (this.src.startsWith('blob')) {
       return location.origin + location.pathname + location.search
     } else {
       return this.src

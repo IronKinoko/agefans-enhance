@@ -6,6 +6,7 @@ function replacePlayer() {
   new KPlayer('#player', {
     video: $('video')[0] as HTMLVideoElement,
     eventToParentWindow: true,
+    logTimeId: parent.location.href,
   })
 }
 
@@ -121,6 +122,7 @@ export function playInIframeModule() {
       window.removeEventListener('message', fn)
     }
   }
+
   window.addEventListener('message', fn)
   parent.postMessage({ key: 'initDone' }, '*')
 }
