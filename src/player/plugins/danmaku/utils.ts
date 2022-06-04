@@ -1,10 +1,11 @@
 import { KPlayer, LocalConfig } from '../../Kplayer'
 import { local } from '../../../utils/storage'
-function createStorage(storageKey: string) {
-  function storage(key: string): string | undefined
-  function storage(key: string, value: string): void
-  function storage(key: string, value?: string): string | undefined | void {
-    const store: Record<string, string> = local.getItem(storageKey, {})
+import { Anime } from './types'
+function createStorage<T = string>(storageKey: string) {
+  function storage(key: string): T | undefined
+  function storage(key: string, value: T): void
+  function storage(key: string, value?: T): T | undefined {
+    const store = local.getItem<Record<string, T>>(storageKey, {})
     if (value) {
       store[key] = value
       local.setItem(storageKey, store)
@@ -14,7 +15,9 @@ function createStorage(storageKey: string) {
   }
   return storage
 }
-export const storageAnimeName = createStorage('k-player-danmaku-anime-name')
+export const storageAnimeName = createStorage<
+  string | Pick<Anime, 'animeId' | 'animeTitle'>
+>('k-player-danmaku-anime-name')
 export const storageEpisodeName = createStorage('k-player-danmaku-episode-name')
 function createLock() {
   let prev: any

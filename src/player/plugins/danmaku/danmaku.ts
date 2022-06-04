@@ -180,11 +180,14 @@ const searchAnime = async (name?: string) => {
 
 const findEpisode = async (animes?: Anime[]) => {
   if (!animes) return
-  const anime = animes.find(
-    (anime) =>
-      anime.animeTitle ===
-      (storageAnimeName(videoInfo.rawName) || videoInfo.rawName)
-  )
+  const anime = animes.find((anime) => {
+    const storeAnime = storageAnimeName(videoInfo.rawName)
+    if (typeof storeAnime === 'object') {
+      return anime.animeId === storeAnime.animeId
+    }
+
+    return anime.animeTitle === (storeAnime || videoInfo.rawName)
+  })
 
   if (anime) {
     let episodeName = videoInfo.episode
@@ -230,12 +233,19 @@ const initEvents = (name: string) => {
     const animes: Anime[] = $animes.data('animes')
     const anime = animes.find((anime) => String(anime.animeId) === animeId)
     if (!anime) return
-    storageAnimeName(videoInfo.rawName, anime.animeTitle)
+    storageAnimeName(videoInfo.rawName, {
+      animeId: anime.animeId,
+      animeTitle: anime.animeTitle,
+    })
     updateEpisodes(anime)
   })
   $episodes.on('change', (e) => {
     const episodeId = $(e.target).val() as string
-    storageAnimeName(videoInfo.rawName, $episodes.data('anime').animeTitle)
+    const anime = $episodes.data('anime')
+    storageAnimeName(videoInfo.rawName, {
+      animeId: anime.animeId,
+      animeTitle: anime.animeTitle,
+    })
     storageEpisodeName(`${videoInfo.rawName}.${videoInfo.episode}`, episodeId)
     loadEpisode(episodeId)
   })
@@ -399,6 +409,10 @@ export async function setup(_player: KPlayer) {
   $danmaku.insertBefore(player.$searchActions)
 
   let defaultSearchName = storageAnimeName(videoInfo.rawName) || videoInfo.name
-  initEvents(defaultSearchName)
+  initEvents(
+    typeof defaultSearchName === 'object'
+      ? defaultSearchName.animeTitle
+      : defaultSearchName
+  )
   autoStart()
 }
