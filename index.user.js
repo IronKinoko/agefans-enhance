@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.25.1
+// @version      1.25.2
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1630,7 +1630,7 @@ ${[...speedList]
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.25.1"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.25.2"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -1720,7 +1720,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.25.1"}
+脚本版本: ${"1.25.2"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -2896,8 +2896,13 @@ userAgent: ${navigator.userAgent}
   const findEpisode = async (animes) => {
       if (!animes)
           return;
-      const anime = animes.find((anime) => anime.animeTitle ===
-          (storageAnimeName(videoInfo.rawName) || videoInfo.rawName));
+      const anime = animes.find((anime) => {
+          const storeAnime = storageAnimeName(videoInfo.rawName);
+          if (typeof storeAnime === 'object') {
+              return anime.animeId === storeAnime.animeId;
+          }
+          return anime.animeTitle === (storeAnime || videoInfo.rawName);
+      });
       if (anime) {
           let episodeName = videoInfo.episode;
           let episode;
@@ -2935,12 +2940,19 @@ userAgent: ${navigator.userAgent}
           const anime = animes.find((anime) => String(anime.animeId) === animeId);
           if (!anime)
               return;
-          storageAnimeName(videoInfo.rawName, anime.animeTitle);
+          storageAnimeName(videoInfo.rawName, {
+              animeId: anime.animeId,
+              animeTitle: anime.animeTitle,
+          });
           updateEpisodes(anime);
       });
       $episodes.on('change', (e) => {
           const episodeId = $(e.target).val();
-          storageAnimeName(videoInfo.rawName, $episodes.data('anime').animeTitle);
+          const anime = $episodes.data('anime');
+          storageAnimeName(videoInfo.rawName, {
+              animeId: anime.animeId,
+              animeTitle: anime.animeTitle,
+          });
           storageEpisodeName(`${videoInfo.rawName}.${videoInfo.episode}`, episodeId);
           loadEpisode(episodeId);
       });
@@ -3071,7 +3083,9 @@ userAgent: ${navigator.userAgent}
       player$5.$videoWrapper.append($danmakuContainer);
       $danmaku.insertBefore(player$5.$searchActions);
       let defaultSearchName = storageAnimeName(videoInfo.rawName) || videoInfo.name;
-      initEvents(defaultSearchName);
+      initEvents(typeof defaultSearchName === 'object'
+          ? defaultSearchName.animeTitle
+          : defaultSearchName);
       autoStart();
   }
 
