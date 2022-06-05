@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.25.2
+// @version      1.25.3
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1630,7 +1630,7 @@ ${[...speedList]
   const scriptInfo = (video, githubIssueURL) => `
 <table class="script-info">
   <tbody>
-  <tr><td>脚本版本</td><td>${"1.25.2"}</td></tr>
+  <tr><td>脚本版本</td><td>${"1.25.3"}</td></tr>
   <tr>
     <td>脚本源码</td>
     <td>
@@ -1720,7 +1720,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: ${"1.25.2"}
+脚本版本: ${"1.25.3"}
 `;
   const progressHTML = `
 <div class="k-player-progress">
@@ -2248,13 +2248,13 @@ userAgent: ${navigator.userAgent}
       }
       async injectSearchActions() {
           this.$searchActions = $(searchActionsHTML).toggle(this.localConfig.showSearchActions);
+          this.$searchActions.insertBefore(this.$speed);
           const actions = await runtime.getSearchActions();
           if (actions.length === 0)
               return;
           this.$searchActions.find('.k-menu').append(actions.map(({ name, search }) => {
               return $(`<li class="k-menu-item k-speed-item">${name}</li>`).on('click', search);
           }));
-          this.$searchActions.insertBefore(this.$speed);
       }
       toggleWidescreen(bool = !this.isWideScreen) {
           if (this.isWideScreen === bool)
@@ -3593,6 +3593,7 @@ userAgent: ${navigator.userAgent}
           name: '樱花动漫2',
           search: (name) => `https://www.yhdmp.cc/s_all?ex=1&kw=${name}`,
           getSearchName: () => $('.gohome > a:last').text(),
+          getEpisode: () => $('.movurl li a[style*="color"]').text(),
       },
   });
 
