@@ -670,6 +670,8 @@ export class KPlayer {
     this.$searchActions = $(searchActionsHTML).toggle(
       this.localConfig.showSearchActions
     )
+    this.$searchActions.insertBefore(this.$speed)
+
     const actions = await runtime.getSearchActions()
     if (actions.length === 0) return
 
@@ -680,8 +682,6 @@ export class KPlayer {
         ).on('click', search)
       })
     )
-
-    this.$searchActions.insertBefore(this.$speed)
   }
 
   private toggleWidescreen(bool = !this.isWideScreen) {
