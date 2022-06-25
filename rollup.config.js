@@ -1,12 +1,11 @@
 import image from '@rollup/plugin-image'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
-import replace from '@rollup/plugin-replace'
 import { defineConfig } from 'rollup'
 import Copy from 'rollup-plugin-copy'
 import styles from 'rollup-plugin-styles'
 import pkg from './package.json'
 import { genUserScriptInfo } from './template/userscript'
-import typescript from '@rollup/plugin-typescript'
+import esbuild from 'rollup-plugin-esbuild'
 
 const globals = {
   'hls.js': 'Hls',
@@ -27,17 +26,16 @@ export default defineConfig({
   },
   external: Object.keys(globals),
   plugins: [
-    typescript({
-      target: isDev ? 'ESNext' : 'ES2017',
+    esbuild({
+      target: 'es2017',
+      define: {
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+        'process.env.APP_VERSION': JSON.stringify(pkg.version),
+      },
     }),
     image(),
     styles(),
     nodeResolve({ browser: true, extensions: ['.js', '.ts'] }),
-    replace({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-      'process.env.APP_VERSION': JSON.stringify(pkg.version),
-      preventAssignment: true,
-    }),
     !isDev &&
       Copy({
         targets: [
