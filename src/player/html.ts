@@ -219,7 +219,7 @@ export const scriptInfo = (video: HTMLVideoElement, githubIssueURL: string) => `
     <td>报错/意见</td>
     <td>
       <a target="_blank" rel="noreferrer" href="${githubIssueURL}">GitHub Issues</a>
-      <a target="_blank" rel="noreferrer" href="https://greasyfork.org/zh-CN/scripts/424023-agefans-enhance/feedback">Greasy Fork 反馈</a>
+      <a target="_blank" rel="noreferrer" href="https://greasyfork.org/scripts/424023/feedback">Greasy Fork 反馈</a>
     </td>
   </tr>
   ${
