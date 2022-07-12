@@ -231,12 +231,15 @@ export class KPlayer {
   }
 
   setCurrentTimeLog(time?: number) {
+    time = Math.floor(time ?? this.currentTime)
+
     const store = local.getItem<LocalPlayTimeStore>(this.localPlayTimeKey, {})
-    store[this.playTimeStoreKey] = Math.floor(time ?? this.plyr.currentTime)
+    store[this.playTimeStoreKey] = time
     local.setItem(this.localPlayTimeKey, store)
   }
   setCurrentTimeLogThrottled = throttle(() => {
-    this.setCurrentTimeLog()
+    // 该函数🈶由 timeupdate 触发，只记录 3s 后的时间
+    if (this.currentTime > 3) this.setCurrentTimeLog()
   }, 1000)
 
   getCurrentTimeLog(): number | undefined {
@@ -268,17 +271,19 @@ export class KPlayer {
 
   private isJumped = false
 
-  jumpToLogTime = throttle(() => {
+  jumpToLogTime = () => {
     if (this.isJumped) return
+    // 只有视频前三秒才需要执行自动跳转
     if (this.currentTime < 3) {
       this.isJumped = true
       const logTime = this.getCurrentTimeLog()
+      // 如果视频还未看完，剩余时间超过 10s，执行自动跳转
       if (logTime && this.plyr.duration - logTime > 10) {
         this.message.info(`已自动跳转至历史播放位置 ${parseTime(logTime)}`)
         this.currentTime = logTime
       }
     }
-  }, 1000)
+  }
 
   private initEvent() {
     this.on('loadstart', () => {
