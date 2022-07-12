@@ -137,6 +137,7 @@ export class KPlayer {
   $searchActions!: JQuery<HTMLElement>
   static plguinList: ((player: KPlayer) => void)[] = []
   opts: Opts
+  private prevSpeed = 1
 
   constructor(selector: string | Element, opts: Opts = {}) {
     this.opts = opts
@@ -473,7 +474,14 @@ export class KPlayer {
             this.toggleWidescreen(false)
             break
           case 'z':
-            this.speed = 1
+            if (this.speed !== 1) {
+              this.prevSpeed = this.speed
+              this.speed = 1
+            } else {
+              if (this.speed !== this.prevSpeed) {
+                this.speed = this.prevSpeed
+              }
+            }
             break
           case 'x':
           case 'c': {
