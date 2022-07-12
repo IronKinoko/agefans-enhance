@@ -51,8 +51,28 @@
   }
   &-filter-form {
     padding: 0;
-    input {
-      width: 100%;
+    .ft-input-wrapper {
+      display: flex;
+      align-items: center;
+      > div {
+        flex: 1;
+        input {
+          width: 100%;
+        }
+      }
+
+      label {
+        margin-left: 8px;
+        border: 0;
+        color: white;
+        cursor: pointer;
+        transition: color 0.15s;
+        white-space: nowrap;
+        user-select: none;
+        &:hover {
+          color: var(--k-player-primary-color);
+        }
+      }
     }
   }
 
@@ -92,6 +112,7 @@
       color: white;
       cursor: pointer;
       transition: color 0.15s;
+      user-select: none;
       &:hover {
         color: var(--k-player-primary-color);
       }
@@ -117,7 +138,7 @@
 .plyr__controls__item.plyr__progress__container:hover #k-player-pbp {
   top: -18px;
 }
-.k-danmaku-switch{
+.k-danmaku-switch {
   margin: 0 8px;
 }
 .k-switch {

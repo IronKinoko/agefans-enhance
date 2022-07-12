@@ -17,7 +17,6 @@
     }
   }
 
-
   &-indicator {
     position: absolute;
     width: 0;
@@ -36,6 +35,7 @@
 
   &-pane {
     flex: 0 0 100%;
+    width: 100%;
     padding: 8px;
   }
 }
