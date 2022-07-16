@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.26.0
+// @version      1.27.0
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -20,6 +20,7 @@
 // @include      https://www.dm233.*
 // @include      https://www.olevod.com*
 // @include      https://www.bimiacg4.net*
+// @include      https://*.omofun.tv/*
 // @run-at       document-body
 // @require      https://unpkg.com/jquery@3.6.0/dist/jquery.min.js
 // @require      https://unpkg.com/plyr@3.6.4/dist/plyr.min.js
@@ -1757,7 +1758,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.26.0"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.27.0"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1853,14 +1854,26 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.26.0"}
+\u811A\u672C\u7248\u672C: ${"1.27.0"}
 `;
 
+  const GlobalKey = "show-help-info";
   function help() {
     if ($(".script-info").length)
       return;
     if (!document.fullscreenElement) {
       const video = $("#k-player")[0];
+      if (parent !== self) {
+        parent.postMessage({
+          key: GlobalKey,
+          video: video ? {
+            src: video.currentSrc,
+            videoWidth: video.videoWidth,
+            videoHeight: video.videoHeight
+          } : null
+        }, "*");
+        return;
+      }
       modal({
         className: "script-info",
         title: "agefans Enhance",
@@ -1869,6 +1882,16 @@ userAgent: ${navigator.userAgent}
     }
   }
   keybind(["?", "\uFF1F"], help);
+  window.addEventListener("message", (e) => {
+    var _a;
+    if (((_a = e.data) == null ? void 0 : _a.key) !== GlobalKey)
+      return;
+    modal({
+      className: "script-info",
+      title: "agefans Enhance",
+      content: scriptInfo(e.data.video)
+    });
+  });
 
   function seekTime(duration) {
     return function() {
@@ -3339,7 +3362,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
   n(css$3,{});
 
   let player$4;
-  function replacePlayer$6() {
+  function replacePlayer$7() {
     const dom = document.querySelector("#age_playfram");
     const fn = () => {
       if (!dom.src)
@@ -3378,13 +3401,13 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
   function gotoPrevPart() {
     const dom = getActivedom$2().parent().prev().find("a");
     if (dom.length) {
-      switchPart$8(dom.data("href"), dom);
+      switchPart$9(dom.data("href"), dom);
     }
   }
   function gotoNextPart() {
     const dom = getActivedom$2().parent().next().find("a");
     if (dom.length) {
-      switchPart$8(dom.data("href"), dom);
+      switchPart$9(dom.data("href"), dom);
     }
   }
   function getActivedom$2() {
@@ -3392,7 +3415,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
   }
   let retryCount = 0;
   let switchLoading = false;
-  async function switchPart$8(href, $dom, push = true) {
+  async function switchPart$9(href, $dom, push = true) {
     try {
       if (switchLoading === true)
         return;
@@ -3420,7 +3443,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
         console.error(error);
         window.location.href = href.toString();
       } else {
-        switchPart$8(href, $dom, push);
+        switchPart$9(href, $dom, push);
       }
     }
   }
@@ -3469,7 +3492,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
       const href = location.pathname + location.search;
       const $dom = $(`[data-href='${href}']`);
       if ($dom.length) {
-        switchPart$8(href, $dom, false);
+        switchPart$9(href, $dom, false);
       } else {
         window.location.reload();
       }
@@ -3480,7 +3503,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
       const href = $(this).attr("href");
       $(this).removeAttr("href").attr("data-href", href).css("cursor", "pointer").on("click", (e) => {
         e.preventDefault();
-        switchPart$8(href, $(this));
+        switchPart$9(href, $(this));
       });
     });
   }
@@ -3506,7 +3529,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
     $series.find("a").each((_, anchor) => pagePreview(anchor, anchor.href));
     $(ageBlock({ title: "\u76F8\u5173\u52A8\u753B\uFF1A", content: '<ul id="relates-series"></ul>' })).insertAfter(".baseblock:contains(\u79CD\u5B50\u8D44\u6E90)").find("ul").append($series);
   }
-  function playModule$a() {
+  function playModule$b() {
     $("#cpraid").remove();
     if (session.getItem("stop-use")) {
       useOriginPlayer();
@@ -3515,7 +3538,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
     his$1.logHistory();
     $(".fullscn").remove();
     replaceHref();
-    replacePlayer$6();
+    replacePlayer$7();
     initGetAllVideoURL();
     showRelatesSeries();
     $(".ul_li_a8 > .anime_icon1 > a:nth-child(1)").each((_, anchor) => pagePreview(anchor.parentElement, anchor.href));
@@ -3544,7 +3567,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
           historyModule();
         }
       },
-      { test: "/play", run: playModule$a },
+      { test: "/play", run: playModule$b },
       { test: "/detail", run: detailModule },
       { test: "/recommend", run: recommendModule },
       { test: "/update", run: updateModule },
@@ -3560,7 +3583,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
   });
 
   let player$3;
-  function replacePlayer$5() {
+  function replacePlayer$6() {
     const dom = document.querySelector('#playleft iframe[allowfullscreen="true"]');
     const fn = () => {
       if (!dom.src)
@@ -3582,10 +3605,10 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
     player$3.on("prev", () => unsafeWindow.MacPlayer.GoPreUrl());
     player$3.on("next", () => unsafeWindow.MacPlayer.GoNextUrl());
   }
-  function playModule$9() {
+  function playModule$a() {
     $("body").addClass("www88dmw-wrapper");
     $(".kp_flash_box .mb").remove();
-    replacePlayer$5();
+    replacePlayer$6();
   }
 
   var css$2 = ".www88dmw-wrapper .menuBoxbg {\n  z-index: 999;\n}\n.www88dmw-wrapper #k-player-wrapper div:not(.plyr__progress) {\n  margin: initial;\n}";
@@ -3615,7 +3638,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
   }
   runtime.register({
     domains: ["88dmw"],
-    opts: [{ test: "/play", setup: www88dmwSetup, run: playModule$9 }],
+    opts: [{ test: "/play", setup: www88dmwSetup, run: playModule$a }],
     search: {
       name: "\u52A8\u6F2B\u5C9B",
       search: searchAction,
@@ -3628,7 +3651,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
   n(css$1,{});
 
   let player$2;
-  function replacePlayer$4() {
+  function replacePlayer$5() {
     const dom = document.querySelector("#play2");
     const fn = () => {
       if (!dom.src)
@@ -3646,7 +3669,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
     mutationOb.observe(dom, { attributes: true });
     fn();
   }
-  function switchPart$7(next) {
+  function switchPart$8(next) {
     var _a;
     (_a = getActivedom$1().parent()[next ? "next" : "prev"]().find("a")[0]) == null ? void 0 : _a.click();
   }
@@ -3654,30 +3677,30 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
     return $(`.movurls:visible li a[href='${location.pathname}']`);
   }
   function initEvent$1() {
-    player$2.on("prev", () => switchPart$7(false));
-    player$2.on("next", () => switchPart$7(true));
+    player$2.on("prev", () => switchPart$8(false));
+    player$2.on("next", () => switchPart$8(true));
   }
-  function playModule$8() {
+  function playModule$9() {
     $("body").addClass("yhdm-wrapper");
     $("#adl").remove();
     $("#adr").remove();
     $("#adv").remove();
     $(".fullscn").remove();
-    replacePlayer$4();
+    replacePlayer$5();
   }
 
   runtime.register({
     domains: ["imomoe.live"],
-    opts: [{ test: "/player", run: playModule$8 }]
+    opts: [{ test: "/player", run: playModule$9 }]
   });
 
-  function replacePlayer$3() {
+  function replacePlayer$4() {
     new KPlayer("#dplayer", {
       video: $("video")[0],
       eventToParentWindow: true
     });
   }
-  function switchPart$6(next) {
+  function switchPart$7(next) {
     var _a;
     let directionRight = true;
     const re = /\/v\/\d+-(\d+)/;
@@ -3697,7 +3720,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
       direction.reverse();
     (_a = $(".movurls .sel")[direction[1]]().find("a")[0]) == null ? void 0 : _a.click();
   }
-  function playModule$7() {
+  function playModule$8() {
     $("body").addClass("yhdm-wrapper");
     window.addEventListener("message", (e) => {
       var _a;
@@ -3705,9 +3728,9 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
         return;
       const key = e.data.key;
       if (key === "prev")
-        switchPart$6(false);
+        switchPart$7(false);
       if (key === "next")
-        switchPart$6(true);
+        switchPart$7(true);
       if (key === "enterwidescreen") {
         $("body").css("overflow", "hidden");
         $("#playbox iframe").css({
@@ -3738,17 +3761,17 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
         e.preventDefault();
     });
   }
-  function playInIframeModule$1() {
+  function playInIframeModule$2() {
     if (location.search.includes("vid")) {
-      replacePlayer$3();
+      replacePlayer$4();
     }
   }
 
   runtime.register({
     domains: ["yhdm.so", "yinghuacd.com"],
     opts: [
-      { test: ["/v"], run: playModule$7 },
-      { test: ["vid"], runInIframe: true, run: playInIframeModule$1 }
+      { test: ["/v"], run: playModule$8 },
+      { test: ["vid"], runInIframe: true, run: playInIframeModule$2 }
     ],
     search: {
       name: "\u6A31\u82B1\u52A8\u6F2B1",
@@ -3769,7 +3792,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
   });
 
   let player$1;
-  function replacePlayer$2() {
+  function replacePlayer$3() {
     const dom = document.querySelector("#yh_playfram");
     const fn = () => {
       if (!dom.src)
@@ -3787,7 +3810,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
     mutationOb.observe(dom, { attributes: true });
     fn();
   }
-  function switchPart$5(next) {
+  function switchPart$6(next) {
     var _a;
     (_a = getActivedom().parent()[next ? "next" : "prev"]().find("a")[0]) == null ? void 0 : _a.click();
   }
@@ -3795,19 +3818,19 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
     return $(".movurl:visible li a[style*='color: rgb(255, 255, 255)']");
   }
   function initEvent() {
-    player$1.on("prev", () => switchPart$5(false));
-    player$1.on("next", () => switchPart$5(true));
+    player$1.on("prev", () => switchPart$6(false));
+    player$1.on("next", () => switchPart$6(true));
   }
-  function playModule$6() {
+  function playModule$7() {
     $("body").addClass("yhdm-wrapper");
     $("#ipchk_getplay").remove();
     $(".fullscn").remove();
-    replacePlayer$2();
+    replacePlayer$3();
   }
 
   runtime.register({
     domains: ["yhdmp.cc"],
-    opts: [{ test: "/vp", run: playModule$6 }],
+    opts: [{ test: "/vp", run: playModule$7 }],
     search: {
       name: "\u6A31\u82B1\u52A8\u6F2B2",
       search: (name) => `https://www.yhdmp.cc/s_all?ex=1&kw=${name}`,
@@ -3832,17 +3855,17 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
   }
 
   let player;
-  function switchPart$4(next) {
+  function switchPart$5(next) {
     player.on("prev", () => {
       var _a;
       (_a = $(".meida-content-main-window-right-series-list-volume-active")[next ? "next" : "prev"]().prev().find("a")[0]) == null ? void 0 : _a.click();
     });
   }
   function injectEvent() {
-    player.on("prev", () => switchPart$4(false));
-    player.on("next", () => switchPart$4(true));
+    player.on("prev", () => switchPart$5(false));
+    player.on("next", () => switchPart$5(true));
   }
-  function replacePlayer$1(video) {
+  function replacePlayer$2(video) {
     const fn = () => {
       if (!video.src || video.src === location.href)
         return;
@@ -3853,24 +3876,24 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
     ob.observe(video, { attributes: true, attributeFilter: ["src"] });
     fn();
   }
-  async function playModule$5() {
+  async function playModule$6() {
     const video = await queryDom("video");
-    replacePlayer$1(video);
+    replacePlayer$2(video);
   }
 
   runtime.register({
     domains: ["new-ani.me", "bangumi.online"],
-    opts: [{ test: "/watch", run: playModule$5 }]
+    opts: [{ test: "/watch", run: playModule$6 }]
   });
 
-  async function playModule$4() {
+  async function playModule$5() {
     const video = await queryDom("video");
     new KPlayer("#player", { video, eventToParentWindow: true });
   }
 
   runtime.register({
     domains: ["danmu.4dm.cc"],
-    opts: [{ test: "/m3u8.php", runInIframe: true, run: playModule$4 }],
+    opts: [{ test: "/m3u8.php", runInIframe: true, run: playModule$5 }],
     search: {
       getSearchName: () => {
         return new Promise((resolve) => {
@@ -3899,21 +3922,21 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
     }
   });
 
-  function switchPart$3(next) {
+  function switchPart$4(next) {
     var _a;
     (_a = $(".active-play").parent()[next ? "next" : "prev"]().find("a")[0]) == null ? void 0 : _a.click();
   }
   const iframeSelector = "#playleft iframe";
-  function playModule$3() {
+  function playModule$4() {
     window.addEventListener("message", (e) => {
       var _a, _b;
       if (!Reflect.has(e.data, "key"))
         return;
       const { key, video } = e.data;
       if (key === "prev")
-        switchPart$3(false);
+        switchPart$4(false);
       if (key === "next")
-        switchPart$3(true);
+        switchPart$4(true);
       if (key === "enterwidescreen") {
         $("body").css("overflow", "hidden");
         $(iframeSelector).css({
@@ -3954,18 +3977,18 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 
   runtime.register({
     domains: [".ntyou."],
-    opts: [{ test: "/play", run: playModule$3 }],
+    opts: [{ test: "/play", run: playModule$4 }],
     search: {
       name: "NT\u52A8\u6F2B",
       search: (name) => `https://www.ntyou.com/search/-------------.html?wd=${name}&page=1`
     }
   });
 
-  function switchPart$2(next) {
+  function switchPart$3(next) {
     var _a;
     (_a = $(".eplist-eppic li[style]")[next ? "next" : "prev"]().find("a")[0]) == null ? void 0 : _a.click();
   }
-  async function playModule$2() {
+  async function playModule$3() {
     const iframe = await queryDom("#id_main_playiframe");
     const fn = () => {
       if (!iframe.src)
@@ -3976,8 +3999,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
         return;
       const player = new KPlayer("#player_back");
       player.src = vurl;
-      player.on("prev", () => switchPart$2(false));
-      player.on("next", () => switchPart$2(true));
+      player.on("prev", () => switchPart$3(false));
+      player.on("next", () => switchPart$3(true));
     };
     const ob = new MutationObserver(fn);
     ob.observe(iframe, { attributes: true, attributeFilter: ["src"] });
@@ -3986,7 +4009,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 
   runtime.register({
     domains: [".dm233."],
-    opts: [{ test: "/play", run: playModule$2 }],
+    opts: [{ test: "/play", run: playModule$3 }],
     search: {
       name: "233\u52A8\u6F2B\u7F51",
       search: (name) => `https://www.dm233.org/search?keyword=${name}&seaex=1`,
@@ -3994,16 +4017,16 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
     }
   });
 
-  function switchPart$1(next) {
+  function switchPart$2(next) {
     var _a;
     (_a = $(`.play_but.bline a:contains(${next ? "\u4E0B\u96C6" : "\u4E0A\u96C6"})`)[0]) == null ? void 0 : _a.click();
   }
-  function playModule$1() {
+  function playModule$2() {
     const url = unsafeWindow.MacPlayer.PlayUrl;
     const player = new KPlayer(".MacPlayer");
     player.src = url;
-    player.on("prev", () => switchPart$1(false));
-    player.on("next", () => switchPart$1(true));
+    player.on("prev", () => switchPart$2(false));
+    player.on("next", () => switchPart$2(true));
     function toggle(bool) {
       $(".hot_banner").toggle(bool);
       $("#play_page > div.foot.foot_nav.clearfix").toggle(bool);
@@ -4018,7 +4041,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 
   runtime.register({
     domains: [".olevod."],
-    opts: [{ test: "/play", run: playModule$1 }],
+    opts: [{ test: "/play", run: playModule$2 }],
     search: {
       name: "\u6B27\u4E50\u5F71\u9662",
       search: (name) => `https://www.olevod.com/index.php/vod/search.html?wd=${name}&submit=`,
@@ -4102,14 +4125,14 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
     createButton();
   }
 
-  function replacePlayer() {
+  function replacePlayer$1() {
     new KPlayer("#player", {
       video: $("video")[0],
       eventToParentWindow: true,
       logTimeId: parent.location.href
     });
   }
-  function switchPart(next) {
+  function switchPart$1(next) {
     var _a;
     (_a = $(`.player-info .play-qqun .${next ? "next" : "pre"}:not(.btns_disad)`)[0]) == null ? void 0 : _a.click();
   }
@@ -4132,7 +4155,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
     const id = location.pathname.match(new RegExp("\\/(?<id>\\d+)\\/play")).groups.id;
     return { id, url, animeName, episodeName };
   }
-  async function playModule() {
+  async function playModule$1() {
     var _a;
     $("#bkcl").remove();
     const info = getPlayInfo();
@@ -4147,9 +4170,9 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
         (_a2 = iframe.contentWindow) == null ? void 0 : _a2.postMessage({ key: "initDone" }, "*");
       }
       if (key === "prev")
-        switchPart(false);
+        switchPart$1(false);
       if (key === "next")
-        switchPart(true);
+        switchPart$1(true);
       if (key === "enterwidescreen") {
         $("body").css("overflow", "hidden");
         $(iframe).css({
@@ -4192,12 +4215,12 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
         e.preventDefault();
     });
   }
-  function playInIframeModule() {
+  function playInIframeModule$1() {
     const fn = (e) => {
       if (!Reflect.has(e.data, "key"))
         return;
       if (e.data.key === "initDone") {
-        replacePlayer();
+        replacePlayer$1();
         window.removeEventListener("message", fn);
       }
     };
@@ -4213,12 +4236,139 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
         setup: () => $("body").addClass("bimi-wrapper"),
         run: histroyModule
       },
-      { test: ["/play/"], run: playModule },
-      { test: [/.*/], runInIframe: true, run: playInIframeModule }
+      { test: ["/play/"], run: playModule$1 },
+      { test: [/.*/], runInIframe: true, run: playInIframeModule$1 }
     ],
     search: {
       name: "BIMI\u52A8\u6F2B",
       search: (name) => `https://www.bimiacg4.net/vod/search/wd/${name}/`,
+      getSearchName: () => {
+        return new Promise((resolve) => {
+          const fn = (e) => {
+            if (e.data.key === "getSearchName") {
+              resolve(e.data.name);
+              window.removeEventListener("message", fn);
+            }
+          };
+          window.addEventListener("message", fn);
+          parent.postMessage({ key: "getSearchName" }, "*");
+        });
+      },
+      getEpisode: () => {
+        return new Promise((resolve) => {
+          const fn = (e) => {
+            if (e.data.key === "getEpisode") {
+              resolve(e.data.name);
+              window.removeEventListener("message", fn);
+            }
+          };
+          window.addEventListener("message", fn);
+          parent.postMessage({ key: "getEpisode" }, "*");
+        });
+      }
+    }
+  });
+
+  async function replacePlayer() {
+    const player = new KPlayer("#player", {
+      eventToParentWindow: true,
+      logTimeId: window.location.href
+    });
+    player.src = unsafeWindow.v_decrypt(unsafeWindow.config.url, unsafeWindow._token_key, unsafeWindow.key_token);
+  }
+  function switchPart(next) {
+    if (next) {
+      if (unsafeWindow.MacPlayer.PlayLinkNext)
+        window.location.href = unsafeWindow.MacPlayer.PlayLinkNext;
+    } else {
+      if (unsafeWindow.MacPlayer.PlayLinkPre)
+        window.location.href = unsafeWindow.MacPlayer.PlayLinkPre;
+    }
+  }
+  async function playModule() {
+    var _a;
+    const iframe = await queryDom(`#playleft iframe[src*='url=']`);
+    window.addEventListener("message", (e) => {
+      var _a2, _b, _c;
+      if (!Reflect.has(e.data, "key"))
+        return;
+      const key = e.data.key;
+      const video = e.data.video;
+      if (key === "initDone") {
+        (_a2 = iframe.contentWindow) == null ? void 0 : _a2.postMessage({ key: "initDone" }, "*");
+      }
+      if (key === "prev")
+        switchPart(false);
+      if (key === "next")
+        switchPart(true);
+      if (key === "enterwidescreen") {
+        $("body").css("overflow", "hidden");
+        $(iframe).css({
+          position: "fixed",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          top: 0,
+          zIndex: 99999
+        });
+      }
+      if (key === "exitwidescreen") {
+        $("body").css("overflow", "");
+        $(iframe).removeAttr("style");
+      }
+      if (key === "getSearchName") {
+        (_b = iframe.contentWindow) == null ? void 0 : _b.postMessage({ key: "getSearchName", name: $(".module-info-heading h1 a").text() }, "*");
+      }
+      if (key === "getEpisode") {
+        (_c = iframe.contentWindow) == null ? void 0 : _c.postMessage({
+          key: "getEpisode",
+          name: $(".module-play-list-link.active > span").text()
+        }, "*");
+      }
+      if (key === "openLink") {
+        window.open(e.data.url);
+      }
+      if (key === "canplay") {
+        const height = $("#video").width() / video.width * video.height;
+        $("#video").height(height);
+      }
+    });
+    (_a = iframe.contentWindow) == null ? void 0 : _a.postMessage({ key: "initDone" }, "*");
+    iframe.focus();
+    window.addEventListener("keydown", (e) => {
+      if (document.activeElement !== document.body)
+        return;
+      iframe.focus();
+      if (e.key === " ")
+        e.preventDefault();
+    });
+  }
+  function playInIframeModule() {
+    const fn = (e) => {
+      if (!Reflect.has(e.data, "key"))
+        return;
+      if (e.data.key === "initDone") {
+        replacePlayer();
+        window.removeEventListener("message", fn);
+      }
+    };
+    window.addEventListener("message", fn);
+    parent.postMessage({ key: "initDone" }, "*");
+  }
+
+  runtime.register({
+    domains: ["omofun"],
+    opts: [
+      { test: ["/play/"], run: playModule },
+      {
+        test: [/.*/],
+        runInIframe: true,
+        run: playInIframeModule
+      }
+    ],
+    search: {
+      name: "omofun",
+      search: (name) => `https://omofun.tv/vod/search.html?wd=${name}`,
       getSearchName: () => {
         return new Promise((resolve) => {
           const fn = (e) => {
