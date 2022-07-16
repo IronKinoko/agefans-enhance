@@ -19,8 +19,7 @@ export function normalizeKeyEvent(e: KeyboardEvent) {
   e.shiftKey && !SPECIAL_KEY_EN.includes(key) && keyArr.push('shift')
   e.altKey && keyArr.push('alt')
 
-  if (/Control|Meta|Shift|Alt/i.test(key)) return ''
-  keyArr.push(key)
+  if (!/Control|Meta|Shift|Alt/i.test(key)) keyArr.push(key)
 
   keyArr = [...new Set(keyArr)]
 

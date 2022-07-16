@@ -33,4 +33,6 @@ export enum Commands {
   togglePIP = 'togglePIP',
   internal = 'internal',
   help = 'help',
+  prevFrame = 'prevFrame',
+  nextFrame = 'nextFrame',
 }

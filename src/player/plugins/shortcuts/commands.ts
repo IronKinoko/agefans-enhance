@@ -48,22 +48,53 @@ Shortcuts.registerCommand(Commands.restoreSpeed, function () {
   }
 })
 
-function changeSpeed(increase: boolean): Command['callback'] {
+function changeSpeed(diff: number): Command['callback'] {
   return function () {
     let idx = this._.speedList.indexOf(this.speed)
-    const newIdx = increase
-      ? Math.min(this._.speedList.length - 1, idx + 1)
-      : Math.max(0, idx - 1)
+
+    const newIdx = clamp(idx + diff, 0, this._.speedList.length - 1)
     if (newIdx === idx) return
     const speed = this._.speedList[newIdx]
     this.speed = speed
   }
 }
-Shortcuts.registerCommand(Commands.increaseSpeed, changeSpeed(true))
-Shortcuts.registerCommand(Commands.decreaseSpeed, changeSpeed(false))
+Shortcuts.registerCommand(Commands.increaseSpeed, changeSpeed(1))
+Shortcuts.registerCommand(Commands.decreaseSpeed, changeSpeed(-1))
 
 Shortcuts.registerCommand(Commands.togglePIP, function () {
   this.plyr.pip = !this.plyr.pip
 })
 
 Shortcuts.registerCommand(Commands.internal, function () {})
+
+function changeFrame(diff: number): Command['callback'] {
+  let fps = 30
+  let isSuspend = false
+
+  return function () {
+    this.plyr.pause()
+    this.currentTime = clamp(
+      this.currentTime + diff / fps,
+      0,
+      this.plyr.duration
+    )
+    // 自动播放的话，canplay 事件会执行play函数，暂时挂起
+    if (this.localConfig.autoplay) {
+      if (!isSuspend) {
+        this.plyr.play = ((play) => {
+          isSuspend = true
+          const fn = () => {
+            isSuspend = false
+            this.plyr.play = play
+          }
+          return fn
+        })(this.plyr.play)
+      }
+    }
+
+    this.message.destroy()
+    this.message.info(`${diff > 0 ? '下' : '上'}一帧`)
+  }
+}
+Shortcuts.registerCommand(Commands.prevFrame, changeFrame(-1))
+Shortcuts.registerCommand(Commands.nextFrame, changeFrame(1))
