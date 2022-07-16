@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.27.1
+// @version      1.27.2
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -356,7 +356,7 @@
     };
     const ID = Math.random().toString(16).slice(2);
     $(`
-<div class="k-modal ${opts.className}" role="dialog" id="${ID}">
+<div class="k-modal ${opts.className || ""}" role="dialog" id="${ID}">
   <div class="k-modal-mask"></div>
   <div class="k-modal-wrap">
     <div class="k-modal-container" ${opts.width ? `style="width:${opts.width}px;"` : ""}>
@@ -1706,7 +1706,7 @@
     const tabsContentHTML = [];
     opts.forEach((tab, idx) => {
       const tabHTML = `<div class="k-tab" data-idx="${idx}">${tab.name}</div>`;
-      const $contentHTML = $(`<div class="k-tab-pane"></div>`);
+      const $contentHTML = $(`<div class="k-tab-pane ${tab.className || ""}"></div>`);
       $contentHTML.append(typeof tab.content === "function" ? tab.content() : tab.content);
       tabsHTML.push(tabHTML);
       tabsContentHTML.push($contentHTML);
@@ -1738,7 +1738,7 @@
     return $root;
   }
 
-  var css$6 = ".script-info .k-modal-body {\n  padding: 0;\n}\n.script-info .k-modal-body * {\n  box-sizing: border-box;\n  font-size: 14px;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n}\n.script-info .k-modal-body table {\n  width: 100%;\n  border-spacing: 0;\n  border-collapse: separate;\n}\n.script-info .k-modal-body tbody tr td:first-child {\n  white-space: nowrap;\n  width: 77px;\n}\n.script-info .k-modal-body th,\n.script-info .k-modal-body td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n}\n.script-info .k-modal-body .info-title {\n  font-weight: 600;\n  padding-top: 24px;\n}\n.script-info .k-modal-body a {\n  color: var(--k-player-primary-color);\n  margin: -4px 0 -4px -8px;\n  padding: 4px 8px;\n  border-radius: 4px;\n  text-decoration: none;\n  cursor: pointer;\n}\n.script-info .k-modal-body a:hover {\n  text-decoration: underline;\n  background-color: var(--k-player-primary-color-highlight);\n}\n.script-info .k-modal-body .shortcuts {\n  height: 400px;\n  overflow: auto;\n  position: relative;\n}\n.script-info .k-modal-body .shortcuts th {\n  position: sticky;\n  background-color: white;\n  top: 0;\n  z-index: 1;\n}\n.script-info .k-modal-body .shortcuts .k-input {\n  width: 160px;\n  padding: 4px 8px;\n  border-radius: 4px;\n}\n.script-info .k-modal-body .shortcuts a {\n  margin-left: 8px;\n}";
+  var css$6 = ".script-info .k-modal-body {\n  padding: 0;\n}\n.script-info .k-modal-body * {\n  box-sizing: border-box;\n  font-size: 14px;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n}\n.script-info .k-modal-body table {\n  width: 100%;\n  border-spacing: 0;\n  border-collapse: separate;\n}\n.script-info .k-modal-body tbody tr td:first-child {\n  white-space: nowrap;\n  width: 77px;\n}\n.script-info .k-modal-body th,\n.script-info .k-modal-body td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n}\n.script-info .k-modal-body .info-title {\n  font-weight: 600;\n  padding-top: 24px;\n}\n.script-info .k-modal-body a {\n  color: var(--k-player-primary-color);\n  margin: -4px 0 -4px -8px;\n  padding: 4px 8px;\n  border-radius: 4px;\n  text-decoration: none;\n  cursor: pointer;\n}\n.script-info .k-modal-body a:hover {\n  text-decoration: underline;\n  background-color: var(--k-player-primary-color-highlight);\n}\n.script-info .k-modal-body .shortcuts {\n  padding: 8px;\n}\n.script-info .k-modal-body .shortcuts-wrapper {\n  height: 400px;\n  padding: 0;\n  overflow-y: scroll;\n  position: relative;\n}\n.script-info .k-modal-body .shortcuts-wrapper::-webkit-scrollbar {\n  width: 8px;\n}\n.script-info .k-modal-body .shortcuts-wrapper::-webkit-scrollbar-thumb {\n  background: rgba(0, 0, 0, 0.15);\n  border-radius: 4px;\n}\n.script-info .k-modal-body .shortcuts-wrapper::-webkit-scrollbar-thumb:hover {\n  background-color: rgba(0, 0, 0, 0.45);\n}\n.script-info .k-modal-body .shortcuts th {\n  position: sticky;\n  background-color: white;\n  top: 0;\n  z-index: 1;\n}\n.script-info .k-modal-body .shortcuts .k-input {\n  width: 160px;\n  padding: 4px 8px;\n  border-radius: 4px;\n}\n.script-info .k-modal-body .shortcuts a {\n  margin-left: 8px;\n}";
   n(css$6,{});
 
   function genIssueURL({ title, body }) {
@@ -1758,7 +1758,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.27.1"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.27.2"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1786,27 +1786,28 @@
       },
       {
         name: "\u5FEB\u6377\u952E",
+        className: "shortcuts-wrapper",
         content: () => {
           const $root = $(`
-        <div class="shortcuts">
-          ${alert("\u81EA\u5B9A\u4E49\u6309\u952E\u7ACB\u5373\u751F\u6548\uFF0C\u8BF7\u4F7F\u7528\u82F1\u6587\u8F93\u5165\u6CD5")}
+          <div class="shortcuts">
+            ${alert("\u81EA\u5B9A\u4E49\u6309\u952E\u7ACB\u5373\u751F\u6548\uFF0C\u8BF7\u4F7F\u7528\u82F1\u6587\u8F93\u5165\u6CD5")}
 
-          <table>
-            <thead>
-              <tr>
-                <th>\u52A8\u4F5C</th>
-                <th>\u9ED8\u8BA4\u6309\u952E</th>
-                <th>\u81EA\u5B9A\u4E49</th>
-              </tr>
-            </thead>
-            <colgroup>
-              <col style="width:130px"></col>
-              <col style="width:130px"></col>
-              <col></col>
-            </colgroup>
-            <tbody></tbody>
-          </table>
-        </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>\u52A8\u4F5C</th>
+                  <th>\u9ED8\u8BA4\u6309\u952E</th>
+                  <th>\u81EA\u5B9A\u4E49</th>
+                </tr>
+              </thead>
+              <colgroup>
+                <col style="width:130px"></col>
+                <col style="width:130px"></col>
+                <col></col>
+              </colgroup>
+              <tbody></tbody>
+            </table>
+          </div>
         
         `);
           const keyBindings = Shortcuts.keyBindings.getKeyBindings();
@@ -1854,7 +1855,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.27.1"}
+\u811A\u672C\u7248\u672C: ${"1.27.2"}
 `;
 
   const GlobalKey = "show-help-info";
