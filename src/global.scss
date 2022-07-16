@@ -3,6 +3,7 @@
   --k-player-background: rgba(0, 0, 0, 0.65);
   --k-player-color: white;
   --k-player-primary-color: #00b3ff;
+  --k-player-primary-color-highlight: rgba(0, 179, 255, 0.1);
 }
 
 .k-menu {
@@ -36,7 +37,6 @@
     margin: 0;
     padding: 8px;
     text-align: left;
-    
   }
   &-item {
     width: 100%;
@@ -45,7 +45,6 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    
   }
   &-list > &-item + &-item {
     margin-top: 8px;

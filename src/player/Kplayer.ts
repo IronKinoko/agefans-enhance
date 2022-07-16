@@ -2,19 +2,14 @@ import Hls from 'hls.js'
 import { debounce, throttle } from 'lodash-es'
 import Plyr from 'plyr'
 import { runtime } from '../runtime'
-import { genIssueURL } from '../utils/genIssueURL'
-import { keybind } from '../utils/keybind'
 import { Message } from '../utils/message'
-import { modal } from '../utils/modal'
 import { parseTime } from '../utils/parseTime'
 import { gm, local, session } from '../utils/storage'
 import {
   errorHTML,
-  issueBody,
   loadingHTML,
   pipHTML,
   progressHTML,
-  scriptInfo,
   searchActionsHTML,
   settingsHTML,
   speedHTML,
@@ -137,7 +132,7 @@ export class KPlayer {
   $searchActions!: JQuery<HTMLElement>
   static plguinList: ((player: KPlayer) => void)[] = []
   opts: Opts
-  private prevSpeed = 1
+  _: any = {}
 
   constructor(selector: string | Element, opts: Opts = {}) {
     this.opts = opts
@@ -207,7 +202,6 @@ export class KPlayer {
     this.curentTsuma = -1
     this.injectSettings()
     this.injectSpeed()
-    this.injectQuestion()
     this.injectNext()
     this.injectSreen()
     this.injectSearchActions()
@@ -378,133 +372,6 @@ export class KPlayer {
       this.$pip.fadeOut()
     })
 
-    keybind(
-      [
-        // 进退 30s
-        'shift+ArrowLeft',
-        'shift+ArrowRight',
-        // 进退 60s
-        'alt+ArrowLeft',
-        'alt+ArrowRight',
-        // 进退 90s
-        'ctrl+ArrowLeft',
-        'ctrl+ArrowRight',
-        'meta+ArrowLeft',
-        'meta+ArrowRight',
-        // 下一集
-        'n',
-        ']',
-        '】',
-        'PageDown',
-        // 上一集
-        'p',
-        '[',
-        '【',
-        'PageUp',
-        // 切换网页全屏
-        'w',
-        // 关闭网页全屏
-        'Escape',
-        // 播放速度
-        'z',
-        'x',
-        'c',
-        // 截图
-        'ctrl+s',
-        'meta+s',
-        // 画中画,
-        'i',
-      ],
-      (e, key) => {
-        switch (key) {
-          case 'ctrl+ArrowLeft':
-          case 'meta+ArrowLeft':
-          case 'shift+ArrowLeft':
-          case 'alt+ArrowLeft':
-          case 'ctrl+ArrowRight':
-          case 'meta+ArrowRight':
-          case 'shift+ArrowRight':
-          case 'alt+ArrowRight': {
-            e.stopPropagation()
-            e.preventDefault()
-
-            const time = {
-              'ctrl+ArrowLeft': 90,
-              'meta+ArrowLeft': 90,
-              'shift+ArrowLeft': 30,
-              'alt+ArrowLeft': 60,
-              'ctrl+ArrowRight': 90,
-              'meta+ArrowRight': 90,
-              'shift+ArrowRight': 30,
-              'alt+ArrowRight': 60,
-            }[key]
-            this.message.destroy()
-            if (e.key === 'ArrowLeft') {
-              this.currentTime = Math.max(0, this.currentTime - time)
-              this.message.info(`步退${time}s`)
-            } else {
-              this.currentTime = Math.min(
-                this.currentTime + time,
-                this.plyr.duration
-              )
-              this.message.info(`步进${time}s`)
-            }
-            break
-          }
-          case 'n':
-          case ']':
-          case '】':
-          case 'PageDown':
-            e.preventDefault()
-            this.trigger('next')
-            break
-          case 'p':
-          case '[':
-          case '【':
-          case 'PageUp':
-            e.preventDefault()
-            this.trigger('prev')
-            break
-          case 'w':
-            if (this.plyr.fullscreen.active) break
-            this.toggleWidescreen()
-            break
-          case 'Escape':
-            if (this.plyr.fullscreen.active || !this.isWideScreen) break
-            this.toggleWidescreen(false)
-            break
-          case 'z':
-            if (this.speed !== 1) {
-              this.prevSpeed = this.speed
-              this.speed = 1
-            } else {
-              if (this.speed !== this.prevSpeed) {
-                this.speed = this.prevSpeed
-              }
-            }
-            break
-          case 'x':
-          case 'c': {
-            let idx = speedList.indexOf(this.speed)
-
-            const newIdx =
-              key === 'x'
-                ? Math.max(0, idx - 1)
-                : Math.min(speedList.length - 1, idx + 1)
-            if (newIdx === idx) break
-            const speed = speedList[newIdx]
-            this.speed = speed
-            break
-          }
-          case 'i':
-            this.plyr.pip = !this.plyr.pip
-            break
-          default:
-            break
-        }
-      }
-    )
-
     $('.plyr__controls button,.plyr__controls input').on('mouseleave', (e) => {
       e.target.blur()
     })
@@ -656,13 +523,6 @@ export class KPlayer {
     this.$speed.insertBefore('.plyr__controls__item.plyr__volume')
   }
 
-  private injectQuestion() {
-    $(`<svg class="k-player-question-icon"><use xlink:href="#question"/></svg>`)
-      .appendTo(this.$header)
-      .on('click', () => {
-        showInfo()
-      })
-  }
   private injectNext() {
     $($('#plyr__next').html())
       .insertBefore('.plyr__controls__item.plyr__progress__container')
@@ -697,7 +557,7 @@ export class KPlayer {
     )
   }
 
-  private toggleWidescreen(bool = !this.isWideScreen) {
+  toggleWidescreen(bool = !this.isWideScreen) {
     if (this.isWideScreen === bool) return
     this.isWideScreen = bool
 
@@ -840,23 +700,3 @@ export function addReferrerMeta(content: 'same-origin' | 'no-referrer') {
     $meta.attr('content', content)
   }
 }
-
-export function showInfo() {
-  const video = $('#k-player')[0] as HTMLVideoElement
-  const githubIssueURL = genIssueURL({
-    title: '🐛[Bug]',
-    body: issueBody(video?.src),
-  })
-  modal({
-    title: '脚本信息',
-    content: scriptInfo(video, githubIssueURL),
-  })
-}
-
-keybind(['?', '？'], (e) => {
-  if (!document.fullscreenElement) {
-    e.stopPropagation()
-    e.preventDefault()
-    showInfo()
-  }
-})

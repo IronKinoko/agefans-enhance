@@ -1,6 +1,6 @@
 import Danmaku, { Comment } from '@ironkinoko/danmaku'
 import { runtime } from '../../../runtime'
-import { keybind } from '../../../utils/keybind'
+import { Shortcuts } from '../shortcuts'
 import { defaultConfig, KPlayer } from '../../Kplayer'
 import { getComments, searchAnimeWithEpisode } from './apis'
 import { $danmaku, $danmakuContainer, $pbp, $danmakuSwitch } from './html'
@@ -272,9 +272,6 @@ const initEvents = (name: string) => {
 
   player.initInputEvent()
 
-  // 绑定快捷键
-  keybind(['d'], () => switchDanmaku())
-
   $showDanmaku
     .prop('checked', player.localConfig.showDanmaku)
     .on('change', (e) => {
@@ -347,6 +344,18 @@ function switchDanmaku(bool?: boolean) {
     stop()
   }
 }
+
+enum Commands {
+  switchDanmaku = 'switchDanmaku',
+}
+Shortcuts.keyBindings.registerKeyBinding({
+  command: Commands.switchDanmaku,
+  description: '显示/隐藏弹幕',
+  key: 'D',
+})
+Shortcuts.registerCommand(Commands.switchDanmaku, function () {
+  switchDanmaku()
+})
 
 // 更新 anime select
 const updateAnimes = (animes: Anime[]) => {
