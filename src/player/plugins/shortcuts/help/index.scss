@@ -54,18 +54,10 @@
       z-index: 1;
     }
 
-    input {
-      background: white;
-      border: 1px solid #f1f1f1;
-      outline: 0;
+    .k-input {
+      width: 160px;
       padding: 4px 8px;
       border-radius: 4px;
-      transition: all 0.15s ease;
-      width: 160px;
-      &:focus,
-      &:hover {
-        border-color: var(--k-player-primary-color);
-      }
     }
     a {
       margin-left: 8px;

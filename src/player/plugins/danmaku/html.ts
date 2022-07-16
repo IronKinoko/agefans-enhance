@@ -10,18 +10,18 @@ const $danmakuOverlay = tabs([
     content: `<div id="k-player-danmaku-search-form">
       <label>
         <span>搜索番剧名称</span>
-        <input type="text" id="animeName" />
+        <input type="text" id="animeName" class="k-input" />
       </label>
       <div style="min-height:24px; padding-top:4px">
         <span id="tips"></span>
       </div>
       <label>
         <span>番剧名称</span>
-        <select id="animes"></select>
+        <select id="animes" class="k-select"></select>
       </label>
       <label>
         <span>章节</span>
-        <select id="episodes"></select>
+        <select id="episodes" class="k-select"></select>
       </label>
     </div>`,
   },
@@ -73,7 +73,7 @@ const $danmakuOverlay = tabs([
     <div id="k-player-danmaku-filter-form">
       <div class="ft-input-wrapper">
         <div>
-          <input name="filter-input" placeholder="回车添加屏蔽词"/>
+          <input name="filter-input" placeholder="回车添加屏蔽词" class="k-select"/>
         </div>
         <label id="k-player-danmaku-filter-import" title="导入B站弹幕过滤设置">
           导入
