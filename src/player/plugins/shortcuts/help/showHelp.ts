@@ -1,3 +1,4 @@
+import { alert } from '../../../../utils/alert'
 import { renderKey } from '../../../../utils/renderKey'
 import { tabs } from '../../../../utils/tabs'
 import { Shortcuts } from '../shortcuts'
@@ -60,6 +61,8 @@ export const scriptInfo = (video: HTMLVideoElement | undefined) => {
       content: () => {
         const $root = $(`
         <div class="shortcuts">
+          ${alert('自定义按键立即生效，请使用英文输入法')}
+
           <table>
             <thead>
               <tr>
@@ -86,7 +89,7 @@ export const scriptInfo = (video: HTMLVideoElement | undefined) => {
             <td>${kb.description}</td>
             <td>${renderKey(kb.originKey)}</td>
             <td>
-              <input type="text" readonly ><a>删除</a>
+              <input type="text"><a>删除</a>
             </td>
           </tr>
           `)
@@ -95,11 +98,10 @@ export const scriptInfo = (video: HTMLVideoElement | undefined) => {
             $tr
               .find('input')
               .val(renderKey(kb.customKey))
-              .get(0)
-              ?.addEventListener('keydown', function (e) {
+              .on('keydown', function (e) {
                 e.stopPropagation()
                 e.preventDefault()
-                const key = normalizeKeyEvent(e)
+                const key = normalizeKeyEvent(e.originalEvent!)
                 this.value = renderKey(key)
                 Shortcuts.keyBindings.setKeyBinding(kb.command, key)
               })

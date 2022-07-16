@@ -1,7 +1,7 @@
 import { gm } from '../../../utils/storage'
 import { modal } from '../../../utils/modal'
 import { session } from '../../../utils/storage'
-import { alert } from '../utils/alert'
+import { alert } from '../../../utils/alert'
 import './setting.scss'
 
 const LOCAL_SETTING_KEY = 'agefans-setting'

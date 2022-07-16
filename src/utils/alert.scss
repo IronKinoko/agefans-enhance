@@ -1,7 +1,7 @@
 .k-alert {
   margin-bottom: 16px;
   box-sizing: border-box;
-  color: #000000d9;
+  color: black;
   font-size: 14px;
   font-variant: tabular-nums;
   line-height: 1.5715;
@@ -24,14 +24,14 @@
     vertical-align: -0.125em;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
-    color: #1890ff;
+    color: var(--k-player-primary-color);
   }
   &-content {
     flex: 1;
     min-width: 0;
   }
   &-info {
-    background-color: #e6f7ff;
-    border: 1px solid #91d5ff;
+    background-color: var(--k-player-primary-color-highlight);
+    border: 1px solid var(--k-player-primary-color);
   }
 }

@@ -14,54 +14,11 @@ import {
   settingsHTML,
   speedHTML,
   speedList,
+  i18n,
 } from './html'
 import './index.scss'
+import { Shortcuts } from './plugins/shortcuts'
 
-const i18n = {
-  restart: '重播',
-  rewind: '快退 {seektime}s',
-  play: '播放(空格键)',
-  pause: '暂停(空格键)',
-  fastForward: '快进 {seektime}s',
-  seek: 'Seek',
-  seekLabel: '{currentTime} / {duration}',
-  played: '已播放',
-  buffered: '已缓冲',
-  currentTime: '当前时间',
-  duration: '片长',
-  volume: '音量',
-  mute: '静音(M)',
-  unmute: '取消静音(M)',
-  enableCaptions: '显示字幕',
-  disableCaptions: '隐藏字幕',
-  download: '下载',
-  enterFullscreen: '进入全屏(F)',
-  exitFullscreen: '退出全屏(F)',
-  frameTitle: '标题名称： {title}',
-  captions: '字幕',
-  settings: '设置',
-  pip: '画中画(I)',
-  menuBack: '返回上级',
-  speed: '倍速',
-  normal: '1.0x',
-  quality: '分辨率',
-  loop: '循环',
-  start: '开始',
-  end: '结束',
-  all: '全部',
-  reset: '重置',
-  disabled: '禁用',
-  enabled: '启用',
-  advertisement: '广告',
-  qualityBadge: {
-    2160: '4K',
-    1440: 'HD',
-    1080: 'HD',
-    720: 'HD',
-    576: 'SD',
-    480: 'SD',
-  },
-}
 const MediaErrorMessage: Record<number, string> = {
   1: '你中止了媒体播放',
   2: '网络错误',
@@ -132,7 +89,9 @@ export class KPlayer {
   $searchActions!: JQuery<HTMLElement>
   static plguinList: ((player: KPlayer) => void)[] = []
   opts: Opts
-  _: any = {}
+  _: any = {
+    speedList,
+  }
 
   constructor(selector: string | Element, opts: Opts = {}) {
     this.opts = opts
@@ -183,6 +142,12 @@ export class KPlayer {
     })
 
     this.$videoWrapper = this.$wrapper.find('.plyr')
+
+    this.$videoWrapper
+      .find('[data-plyr="pip"] .plyr__tooltip')
+      .html(
+        `画中画(<k-shortcuts-tip command=${Shortcuts.Commands.togglePIP}></k-shortcuts-tip>)`
+      )
 
     this.$videoWrapper.append(
       this.$loading,

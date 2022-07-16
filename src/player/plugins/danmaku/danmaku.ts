@@ -6,7 +6,7 @@ import { getComments, searchAnimeWithEpisode } from './apis'
 import { $danmaku, $danmakuContainer, $pbp, $danmakuSwitch } from './html'
 import './index.scss'
 import { createProgressBarPower } from './progressBarPower'
-import { Anime, Episode } from './types'
+import { Anime, Commands, Episode } from './types'
 import {
   addRangeListener,
   episodeIdLock,
@@ -345,9 +345,6 @@ function switchDanmaku(bool?: boolean) {
   }
 }
 
-enum Commands {
-  switchDanmaku = 'switchDanmaku',
-}
 Shortcuts.keyBindings.registerKeyBinding({
   command: Commands.switchDanmaku,
   description: '显示/隐藏弹幕',

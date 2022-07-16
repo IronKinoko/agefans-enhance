@@ -1,5 +1,8 @@
 import { popover } from '../../../utils/popover'
+import { renderKey } from '../../../utils/renderKey'
 import { tabs } from '../../../utils/tabs'
+import { Shortcuts } from '../shortcuts'
+import { Commands } from './types'
 
 const $danmakuOverlay = tabs([
   {
@@ -28,7 +31,7 @@ const $danmakuOverlay = tabs([
     <div id="k-player-danmaku-setting-form" class="k-settings-list">
       <label class="k-settings-item">
         <input type="checkbox" name="showDanmaku" />
-        <span>显示弹幕(D)</span>
+        <span>显示弹幕(<k-shortcuts-tip command="${Commands.switchDanmaku}"></k-shortcuts-tip>)</span>
         </label>
       <label class="k-settings-item">
         <input type="checkbox" name="showPbp" />

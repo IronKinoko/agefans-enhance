@@ -1,5 +1,4 @@
 import { clamp } from 'lodash-es'
-import { speedList } from '../../html'
 import { Shortcuts } from './shortcuts'
 import { Command, Commands } from './types'
 import './help'
@@ -51,12 +50,12 @@ Shortcuts.registerCommand(Commands.restoreSpeed, function () {
 
 function changeSpeed(increase: boolean): Command['callback'] {
   return function () {
-    let idx = speedList.indexOf(this.speed)
+    let idx = this._.speedList.indexOf(this.speed)
     const newIdx = increase
-      ? Math.min(speedList.length - 1, idx + 1)
+      ? Math.min(this._.speedList.length - 1, idx + 1)
       : Math.max(0, idx - 1)
     if (newIdx === idx) return
-    const speed = speedList[newIdx]
+    const speed = this._.speedList[newIdx]
     this.speed = speed
   }
 }

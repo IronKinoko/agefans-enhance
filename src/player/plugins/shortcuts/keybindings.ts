@@ -54,8 +54,8 @@ const DefaultKeyBindings: KeyBinding[] = [
     description: '百分比跳转',
     editable: false,
   },
-  { command: Commands.next, key: 'N', description: '下一集' },
   { command: Commands.prev, key: 'P', description: '上一集' },
+  { command: Commands.next, key: 'N', description: '下一集' },
   { command: Commands.toggleWidescreen, key: 'W', description: '宽屏' },
   {
     command: Commands.internal,
@@ -102,6 +102,7 @@ const DefaultKeyBindings: KeyBinding[] = [
 export class KeyBindings {
   storageKey = 'user-custom-keybindings'
 
+  private listener: (() => void)[] = []
   private getCustomKeyBindings() {
     return gm.getItem<CustomKeyBinding[]>(this.storageKey, [])
   }
@@ -111,6 +112,7 @@ export class KeyBindings {
 
   registerKeyBinding(keyBinding: KeyBinding) {
     DefaultKeyBindings.push(keyBinding)
+    this.notify()
   }
 
   setKeyBinding(command: string, key: string) {
@@ -120,7 +122,9 @@ export class KeyBindings {
     if (key) {
       customKeyBindings.push({ command, key })
     }
+
     this.setCustomKeyBindings(customKeyBindings)
+    this.notify()
   }
 
   getKeyBindings() {
@@ -153,5 +157,15 @@ export class KeyBindings {
   getCommand(key: string) {
     const keyBindings = this.getKeyBindings()
     return keyBindings.find((o) => o.key === key)?.command
+  }
+
+  subscribe(cb: () => void) {
+    this.listener.push(cb)
+    return () => {
+      this.listener = this.listener.filter((fn) => fn !== cb)
+    }
+  }
+  notify() {
+    this.listener.forEach((fn) => fn())
   }
 }

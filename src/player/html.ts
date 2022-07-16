@@ -1,4 +1,6 @@
 import { popover } from '../utils/popover'
+import { renderKey } from '../utils/renderKey'
+import { Shortcuts } from './plugins/shortcuts'
 
 const icons = `
 <svg
@@ -81,7 +83,7 @@ aria-hidden="true"
     <svg focusable="false">
       <use xlink:href="#next"></use>
     </svg>
-    <span class="plyr__tooltip">下一集(N)</span>
+    <span class="plyr__tooltip">下一集(<k-shortcuts-tip command="${Shortcuts.Commands.next}"></k-shortcuts-tip>)</span>
   </button>
 </template>
 
@@ -98,8 +100,8 @@ aria-hidden="true"
     <svg class="icon--pressed" focusable="false">
       <use xlink:href="#widescreen-quit"></use>
     </svg>
-    <span class="label--not-pressed plyr__tooltip">网页全屏(W)</span>
-    <span class="label--pressed plyr__tooltip">退出网页全屏(W)</span>
+    <span class="label--not-pressed plyr__tooltip">网页全屏(<k-shortcuts-tip command="${Shortcuts.Commands.toggleWidescreen}"></k-shortcuts-tip>)</span>
+    <span class="label--pressed plyr__tooltip">退出网页全屏(<k-shortcuts-tip command="${Shortcuts.Commands.toggleWidescreen}"></k-shortcuts-tip>)</span>
   </button>
 </template>
 
@@ -209,3 +211,48 @@ export const progressHTML = `
   <div class="k-player-progress-buffer"></div>
 </div>
 `
+
+export const i18n = {
+  restart: '重播',
+  rewind: '快退 {seektime}s',
+  play: '播放(空格键)',
+  pause: '暂停(空格键)',
+  fastForward: '快进 {seektime}s',
+  seek: 'Seek',
+  seekLabel: '{currentTime} / {duration}',
+  played: '已播放',
+  buffered: '已缓冲',
+  currentTime: '当前时间',
+  duration: '片长',
+  volume: '音量',
+  mute: '静音(M)',
+  unmute: '取消静音(M)',
+  enableCaptions: '显示字幕',
+  disableCaptions: '隐藏字幕',
+  download: '下载',
+  enterFullscreen: '进入全屏(F)',
+  exitFullscreen: '退出全屏(F)',
+  frameTitle: '标题名称： {title}',
+  captions: '字幕',
+  settings: '设置',
+  menuBack: '返回上级',
+  speed: '倍速',
+  normal: '1.0x',
+  quality: '分辨率',
+  loop: '循环',
+  start: '开始',
+  end: '结束',
+  all: '全部',
+  reset: '重置',
+  disabled: '禁用',
+  enabled: '启用',
+  advertisement: '广告',
+  qualityBadge: {
+    2160: '4K',
+    1440: 'HD',
+    1080: 'HD',
+    720: 'HD',
+    576: 'SD',
+    480: 'SD',
+  },
+}

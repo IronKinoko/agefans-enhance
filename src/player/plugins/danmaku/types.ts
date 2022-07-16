@@ -12,3 +12,7 @@ export interface Episode {
   episodeId: number
   episodeTitle: string
 }
+
+export enum Commands {
+  switchDanmaku = 'switchDanmaku',
+}
