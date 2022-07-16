@@ -5,8 +5,6 @@ import { scriptInfo } from './showHelp'
 const GlobalKey = 'show-help-info'
 
 export function help() {
-  if ($('.script-info').length) return
-
   if (!document.fullscreenElement) {
     const video = $('#k-player')[0] as HTMLVideoElement
 
@@ -27,20 +25,22 @@ export function help() {
       return
     }
 
-    modal({
-      className: 'script-info',
-      title: 'agefans Enhance',
-      content: scriptInfo(video),
-    })
+    showHelp(video)
   }
+}
+
+function showHelp(video: any) {
+  if ($('.script-info').length) return
+
+  modal({
+    className: 'script-info',
+    title: 'agefans Enhance',
+    content: scriptInfo(video),
+  })
 }
 
 keybind(['?', '？'], help)
 window.addEventListener('message', (e) => {
   if (e.data?.key !== GlobalKey) return
-  modal({
-    className: 'script-info',
-    title: 'agefans Enhance',
-    content: scriptInfo(e.data.video),
-  })
+  showHelp(e.data.video)
 })
