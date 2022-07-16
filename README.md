@@ -25,7 +25,7 @@
 
 ## 安装
 
-[Greasy Fork 链接，点击安装](https://greasyfork.org/zh-CN/scripts/424023-agefans-enhance)
+[Greasy Fork 链接，点击安装](https://greasyfork.org/scripts/424023)
 
 ## 权限声明
 
