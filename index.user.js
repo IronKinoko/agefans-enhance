@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.27.0
+// @version      1.27.1
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -20,7 +20,7 @@
 // @include      https://www.dm233.*
 // @include      https://www.olevod.com*
 // @include      https://www.bimiacg4.net*
-// @include      https://*.omofun.tv/*
+// @include      https://*omofun.tv/*
 // @run-at       document-body
 // @require      https://unpkg.com/jquery@3.6.0/dist/jquery.min.js
 // @require      https://unpkg.com/plyr@3.6.4/dist/plyr.min.js
@@ -148,7 +148,7 @@
   }
   const runtime = new Runtime();
 
-  var css$f = ".agefans-wrapper .loginout a {\n  cursor: pointer;\n  text-decoration: underline;\n}\n.agefans-wrapper .loginout a + a {\n  margin-left: 8px;\n}\n.agefans-wrapper .nav_button {\n  cursor: pointer;\n}\n.agefans-wrapper .res_links {\n  word-break: break-all;\n  word-wrap: break-word;\n}\n\n@media (max-width: 480px) {\n  .nav_button:nth-child(n+6) {\n    display: inline-block;\n  }\n  #nav {\n    position: relative;\n    overflow-x: auto;\n    white-space: nowrap;\n    height: 91px;\n  }\n  #nav::-webkit-scrollbar {\n    display: none;\n  }\n  #nav .nav_button {\n    white-space: nowrap;\n  }\n  #top_search_from {\n    width: calc(100% - 16px);\n    float: left;\n    margin-top: 10px;\n    position: sticky;\n    left: 8px;\n    margin: 8px;\n  }\n  #new_tip1 {\n    margin-top: 10px !important;\n  }\n}";
+  var css$f = ".agefans-wrapper .loginout a {\n  cursor: pointer;\n  text-decoration: underline;\n}\n.agefans-wrapper .loginout a + a {\n  margin-left: 8px;\n}\n.agefans-wrapper .nav_button {\n  cursor: pointer;\n}\n.agefans-wrapper .res_links {\n  word-break: break-all;\n  word-wrap: break-word;\n}\n\n@media (max-width: 480px) {\n  .nav_button:nth-child(n+6) {\n    display: inline-block;\n  }\n\n  #nav {\n    position: relative;\n    overflow-x: auto;\n    white-space: nowrap;\n    height: 91px;\n  }\n  #nav::-webkit-scrollbar {\n    display: none;\n  }\n  #nav .nav_button {\n    white-space: nowrap;\n  }\n\n  #top_search_from {\n    width: calc(100% - 16px);\n    float: left;\n    margin-top: 10px;\n    position: sticky;\n    left: 8px;\n    margin: 8px;\n  }\n\n  #new_tip1 {\n    margin-top: 10px !important;\n  }\n}";
   n(css$f,{});
 
   var css$e = ".agefans-wrapper .page-preview-trigger .page-preview {\n  position: fixed;\n  pointer-events: none;\n  background-color: rgb(32, 32, 32);\n  border: 1px solid rgb(64, 64, 65);\n  z-index: 1000;\n  display: flex;\n  border-radius: 4px;\n  overflow: hidden;\n}\n.agefans-wrapper .page-preview-trigger .page-preview-center {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n.agefans-wrapper .page-preview-trigger .page-preview .baseblock2 {\n  border: none;\n  border-left: 1px solid #404041;\n  border-radius: 0;\n}\n.agefans-wrapper .page-preview-trigger .blocktitle.detail_title1 {\n  color: #e0e0e0;\n  border-bottom: 1px solid #404041;\n}\n.agefans-wrapper .page-preview-trigger .detail_imform_tag {\n  display: inline-block;\n  color: #808081;\n  min-width: 5em;\n}\n.agefans-wrapper .page-preview-trigger .detail_imform_value {\n  color: #e0e0e0;\n}\n.agefans-wrapper .page-preview-trigger .detail_imform_show_full {\n  display: none;\n}\n.agefans-wrapper .page-preview-trigger .detail_imform_kv {\n  min-width: 200px;\n  max-width: 256px;\n  display: inline-block;\n  margin: 3px 0px;\n  word-break: break-all;\n  word-wrap: break-word;\n}\n.agefans-wrapper .page-preview-trigger .detail_imform_desc_pre {\n  font-size: 15px;\n}\n.agefans-wrapper .page-preview-trigger .detail_imform_desc_pre * {\n  color: #e0e0e0;\n}\n.agefans-wrapper .page-preview-trigger .detail_imform_name {\n  margin: 0px;\n  color: #d0e0f0;\n  font-size: 1.2em;\n  font-weight: bold;\n  display: inline-block;\n}";
@@ -1758,7 +1758,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.27.0"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.27.1"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1854,7 +1854,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.27.0"}
+\u811A\u672C\u7248\u672C: ${"1.27.1"}
 `;
 
   const GlobalKey = "show-help-info";
