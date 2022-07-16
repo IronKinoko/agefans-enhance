@@ -21,7 +21,7 @@ export function genUserScriptInfo(pkg) {
 // @include      https://www.dm233.*
 // @include      https://www.olevod.com*
 // @include      https://www.bimiacg4.net*
-// @include      https://*.omofun.tv/*
+// @include      https://*omofun.tv/*
 // @run-at       document-body
 // @require      https://unpkg.com/jquery@3.6.0/dist/jquery.min.js
 // @require      https://unpkg.com/plyr@3.6.4/dist/plyr.min.js
