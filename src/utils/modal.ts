@@ -18,7 +18,7 @@ export function modal(opts: ModalOpts) {
 
   const ID = Math.random().toString(16).slice(2)
   $(`
-<div class="k-modal ${opts.className}" role="dialog" id="${ID}">
+<div class="k-modal ${opts.className || ''}" role="dialog" id="${ID}">
   <div class="k-modal-mask"></div>
   <div class="k-modal-wrap">
     <div class="k-modal-container" ${

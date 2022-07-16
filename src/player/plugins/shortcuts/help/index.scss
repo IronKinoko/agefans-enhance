@@ -44,9 +44,25 @@
   }
 
   .shortcuts {
-    height: 400px;
-    overflow: auto;
-    position: relative;
+    padding: 8px;
+
+    &-wrapper {
+      height: 400px;
+      padding: 0;
+      overflow-y: scroll;
+      position: relative;
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.15);
+        border-radius: 4px;
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.45);
+        }
+      }
+    }
+
     th {
       position: sticky;
       background-color: white;

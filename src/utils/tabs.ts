@@ -2,6 +2,7 @@ import './tabs.scss'
 
 interface Tab {
   name: string
+  className?: string
   content: string | JQuery | (() => string | JQuery)
 }
 export function tabs(opts: Tab[]) {
@@ -9,7 +10,9 @@ export function tabs(opts: Tab[]) {
   const tabsContentHTML: JQuery[] = []
   opts.forEach((tab, idx) => {
     const tabHTML = `<div class="k-tab" data-idx="${idx}">${tab.name}</div>`
-    const $contentHTML = $(`<div class="k-tab-pane"></div>`)
+    const $contentHTML = $(
+      `<div class="k-tab-pane ${tab.className || ''}"></div>`
+    )
 
     $contentHTML.append(
       typeof tab.content === 'function' ? tab.content() : tab.content

@@ -58,27 +58,28 @@ export const scriptInfo = (video: HTMLVideoElement | undefined) => {
     },
     {
       name: '快捷键',
+      className: 'shortcuts-wrapper',
       content: () => {
         const $root = $(`
-        <div class="shortcuts">
-          ${alert('自定义按键立即生效，请使用英文输入法')}
+          <div class="shortcuts">
+            ${alert('自定义按键立即生效，请使用英文输入法')}
 
-          <table>
-            <thead>
-              <tr>
-                <th>动作</th>
-                <th>默认按键</th>
-                <th>自定义</th>
-              </tr>
-            </thead>
-            <colgroup>
-              <col style="width:130px"></col>
-              <col style="width:130px"></col>
-              <col></col>
-            </colgroup>
-            <tbody></tbody>
-          </table>
-        </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>动作</th>
+                  <th>默认按键</th>
+                  <th>自定义</th>
+                </tr>
+              </thead>
+              <colgroup>
+                <col style="width:130px"></col>
+                <col style="width:130px"></col>
+                <col></col>
+              </colgroup>
+              <tbody></tbody>
+            </table>
+          </div>
         
         `)
         const keyBindings = Shortcuts.keyBindings.getKeyBindings()
