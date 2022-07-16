@@ -2,16 +2,21 @@ import './tabs.scss'
 
 interface Tab {
   name: string
-  content: string
+  content: string | JQuery | (() => string | JQuery)
 }
 export function tabs(opts: Tab[]) {
   const tabsHTML: string[] = []
-  const tabsContentHTML: string[] = []
+  const tabsContentHTML: JQuery[] = []
   opts.forEach((tab, idx) => {
     const tabHTML = `<div class="k-tab" data-idx="${idx}">${tab.name}</div>`
-    const contentHTML = `<div class="k-tab-pane">${tab.content}</div>`
+    const $contentHTML = $(`<div class="k-tab-pane"></div>`)
+
+    $contentHTML.append(
+      typeof tab.content === 'function' ? tab.content() : tab.content
+    )
+
     tabsHTML.push(tabHTML)
-    tabsContentHTML.push(contentHTML)
+    tabsContentHTML.push($contentHTML)
   })
 
   const $root = $(`<div class="k-tabs-wrapper">
@@ -19,8 +24,10 @@ export function tabs(opts: Tab[]) {
       ${tabsHTML.join('')}
       <div class="k-tab-indicator"></div>
     </div>
-    <div class="k-tabs-panes">${tabsContentHTML.join('')}</div>
+    <div class="k-tabs-panes"></div>
   </div>`)
+
+  $root.find('.k-tabs-panes').append(...tabsContentHTML)
 
   const $indicator = $root.find('.k-tab-indicator')
 

@@ -1,16 +1,14 @@
 import { clamp } from 'lodash-es'
-import { modal } from '../../../utils/modal'
 import { speedList } from '../../html'
-import { genIssueURL } from './help/genIssueURL'
-import { issueBody, scriptInfo } from './help/showHelp'
 import { Shortcuts } from './shortcuts'
 import { Command, Commands } from './types'
+import './help'
 
 function seekTime(duration: number): Command['callback'] {
   return function () {
     this.currentTime = clamp(this.currentTime + duration, 0, this.plyr.duration)
 
-    this.message.info(`步${duration < 0 ? '退' : '进'}${duration}s`)
+    this.message.info(`步${duration < 0 ? '退' : '进'}${Math.abs(duration)}s`)
   }
 }
 
@@ -70,17 +68,3 @@ Shortcuts.registerCommand(Commands.togglePIP, function () {
 })
 
 Shortcuts.registerCommand(Commands.internal, function () {})
-
-Shortcuts.registerCommand(Commands.help, function () {
-  if (!document.fullscreenElement) {
-    const video = $('#k-player')[0] as HTMLVideoElement
-    const githubIssueURL = genIssueURL({
-      title: '🐛[Bug]',
-      body: issueBody(video?.src),
-    })
-    modal({
-      title: '脚本信息',
-      content: scriptInfo(video, githubIssueURL),
-    })
-  }
-})

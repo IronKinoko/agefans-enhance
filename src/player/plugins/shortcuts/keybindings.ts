@@ -8,16 +8,18 @@ const DefaultKeyBindings: KeyBinding[] = [
     command: Commands.internal,
     key: 'ArrowLeft',
     description: '步退5s',
+    editable: false,
   },
   {
     command: Commands.internal,
     key: 'ArrowRight',
     description: '步退5s',
+    editable: false,
   },
   {
-    command: Commands.forward30,
-    key: 'shift ArrowRight',
-    description: '步进30s',
+    command: Commands.backward30,
+    key: 'shift ArrowLeft',
+    description: '步退30s',
   },
   {
     command: Commands.forward30,
@@ -45,6 +47,12 @@ const DefaultKeyBindings: KeyBinding[] = [
     key: 'ctrl ArrowRight',
     mac: 'meta ArrowRight',
     description: '步进90s',
+  },
+  {
+    command: Commands.internal,
+    key: '0~9',
+    description: '百分比跳转',
+    editable: false,
   },
   { command: Commands.next, key: 'N', description: '下一集' },
   { command: Commands.prev, key: 'P', description: '上一集' },
@@ -84,7 +92,7 @@ const DefaultKeyBindings: KeyBinding[] = [
     description: '切换禁用',
   },
   {
-    command: Commands.help,
+    command: Commands.internal,
     key: '?',
     editable: false,
     description: '显示帮助',
@@ -107,9 +115,9 @@ export class KeyBindings {
 
   setKeyBinding(command: string, key: string) {
     let customKeyBindings = this.getCustomKeyBindings()
-    if (!key) {
-      customKeyBindings = customKeyBindings.filter((o) => o.command !== command)
-    } else {
+    customKeyBindings = customKeyBindings.filter((o) => o.command !== command)
+
+    if (key) {
       customKeyBindings.push({ command, key })
     }
     this.setCustomKeyBindings(customKeyBindings)
@@ -123,13 +131,15 @@ export class KeyBindings {
         (o) => o.command === keyBinding.command
       )
 
-      const nextKeyBinding = { ...keyBinding }
+      const nextKeyBinding = { ...keyBinding, originKey: '', customKey: '' }
 
       if (isMac && nextKeyBinding.mac) {
         nextKeyBinding.key = nextKeyBinding.mac
       }
+      nextKeyBinding.originKey = nextKeyBinding.key
       if (customKeyBinding) {
         nextKeyBinding.key = customKeyBinding.key
+        nextKeyBinding.customKey = customKeyBinding.key
       }
 
       return nextKeyBinding

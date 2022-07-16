@@ -1,13 +1,25 @@
 const isMac = /macintosh|mac os x/i.test(navigator.userAgent)
-const macKeyMap = {
-  ctrl: '⌘',
+
+const KeyMap = {
+  ArrowUp: '↑',
+  ArrowDown: '↓',
+  ArrowLeft: '←',
+  ArrowRight: '→',
+}
+
+const MacKeyMap = {
+  ctrl: '⌃',
+  meta: '⌘',
   alt: '⌥',
   shift: '⇧',
-} as const
+}
+if (isMac) {
+  Object.assign(KeyMap, MacKeyMap)
+}
+
 export function renderKey(key: string) {
-  const lowerCaseKey = key.toLowerCase()
-  if (isMac && Reflect.has(macKeyMap, lowerCaseKey)) {
-    return macKeyMap[lowerCaseKey as keyof typeof macKeyMap]
-  }
+  Object.entries(KeyMap).forEach(([k, v]) => {
+    key = key.replace(new RegExp(k, 'i'), v)
+  })
   return key
 }
