@@ -20,14 +20,22 @@ function injectEvent() {
 function replacePlayer(video: HTMLVideoElement) {
   const fn = () => {
     if (!video.src || video.src === location.href) return
-    player = new KPlayer('.player.meida-content-main-window-left', { video })
+    player = new KPlayer('.player-box', { video })
     injectEvent()
   }
   const ob = new MutationObserver(fn)
   ob.observe(video, { attributes: true, attributeFilter: ['src'] })
   fn()
 }
+
+function resizeWrapper() {
+  const wrapper = $('.player.watch-content-player')
+  const w = wrapper.width()!
+  wrapper.height((w / 16) * 9)
+}
 export async function playModule() {
   const video = await queryDom<HTMLVideoElement>('video')
+  resizeWrapper()
+  window.addEventListener('resize', resizeWrapper)
   replacePlayer(video)
 }
