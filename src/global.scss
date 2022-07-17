@@ -43,6 +43,9 @@
   &:hover {
     border-color: var(--k-player-primary-color);
   }
+  &::placeholder {
+    color: #999;
+  }
 }
 
 .k-settings {
