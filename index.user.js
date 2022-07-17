@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.27.4
+// @version      1.27.5
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1758,7 +1758,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.27.4"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.27.5"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1855,7 +1855,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.27.4"}
+\u811A\u672C\u7248\u672C: ${"1.27.5"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -3869,15 +3869,22 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
     const fn = () => {
       if (!video.src || video.src === location.href)
         return;
-      player = new KPlayer(".player.meida-content-main-window-left", { video });
+      player = new KPlayer(".player-box", { video });
       injectEvent();
     };
     const ob = new MutationObserver(fn);
     ob.observe(video, { attributes: true, attributeFilter: ["src"] });
     fn();
   }
+  function resizeWrapper() {
+    const wrapper = $(".player.watch-content-player");
+    const w = wrapper.width();
+    wrapper.height(w / 16 * 9);
+  }
   async function playModule$6() {
     const video = await queryDom("video");
+    resizeWrapper();
+    window.addEventListener("resize", resizeWrapper);
     replacePlayer$2(video);
   }
 
