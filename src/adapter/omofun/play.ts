@@ -33,7 +33,6 @@ export async function playModule() {
     if (!Reflect.has(e.data, 'key')) return
 
     const key = e.data.key
-    const video = e.data.video
 
     if (key === 'initDone') {
       iframe.contentWindow?.postMessage({ key: 'initDone' }, '*')
@@ -42,6 +41,7 @@ export async function playModule() {
     if (key === 'next') switchPart(true)
     if (key === 'enterwidescreen') {
       $('body').css('overflow', 'hidden')
+      $('body').addClass('widescreen')
       $(iframe).css({
         position: 'fixed',
         left: 0,
@@ -53,6 +53,7 @@ export async function playModule() {
     }
     if (key === 'exitwidescreen') {
       $('body').css('overflow', '')
+      $('body').removeClass('widescreen')
       $(iframe).removeAttr('style')
     }
 
@@ -75,11 +76,6 @@ export async function playModule() {
     if (key === 'openLink') {
       window.open(e.data.url)
     }
-
-    if (key === 'canplay') {
-      const height = ($('#video').width()! / video.width) * video.height
-      $('#video').height(height)
-    }
   })
   iframe.contentWindow?.postMessage({ key: 'initDone' }, '*')
 
@@ -89,6 +85,7 @@ export async function playModule() {
     iframe.focus()
     if (e.key === ' ') e.preventDefault()
   })
+  $('#buffer').hide()
 }
 
 export function playInIframeModule() {

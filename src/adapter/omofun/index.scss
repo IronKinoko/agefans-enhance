@@ -1,0 +1,10 @@
+.omofun-wrapper {
+  &.widescreen {
+    * {
+      visibility: hidden;
+    }
+    iframe {
+      visibility: initial;
+    }
+  }
+}

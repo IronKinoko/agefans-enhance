@@ -1,10 +1,17 @@
 import { runtime } from '../../runtime/index'
 import { playModule, playInIframeModule } from './play'
+import './index.scss'
 
 runtime.register({
   domains: ['omofun'],
   opts: [
-    { test: ['/play/'], run: playModule },
+    {
+      test: ['/play/'],
+      setup: () => {
+        $('body').addClass('omofun-wrapper')
+      },
+      run: playModule,
+    },
     {
       test: [/.*/],
       runInIframe: true,
