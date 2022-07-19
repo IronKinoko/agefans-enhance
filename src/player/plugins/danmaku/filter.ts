@@ -10,8 +10,8 @@ export function createFilter(player: KPlayer, refreshDanmaku: () => void) {
     modal({
       title: '导入B站屏蔽设定',
       content: `
-      <p>1. 随便点开一个视频，右侧弹幕列表打开屏蔽设定，对屏蔽列表右键，导出xml文件。</p>
-      <p>2. 点击下面【开始导入】按钮，选择刚下载的xml文件</p>
+      <p>1. 随便点开一个视频，右侧弹幕列表打开屏蔽设定，对屏蔽列表右键，导出xml或json文件。</p>
+      <p>2. 点击下面【开始导入】按钮，选择刚下载的xml或json文件</p>
       `,
       okText: '开始导入',
       onOk: importBiliSettings,
@@ -31,6 +31,7 @@ export function createFilter(player: KPlayer, refreshDanmaku: () => void) {
         const result = fd.result as string
         if (typeof result === 'string') {
           if (file.name.endsWith('.xml')) importBiliXML(result)
+          if (file.name.endsWith('.json')) importBiliJSON(result)
         }
       }
       fd.readAsText(file)
@@ -48,6 +49,30 @@ export function createFilter(player: KPlayer, refreshDanmaku: () => void) {
       .filter((t) => /^(t|r)=/.test(t))
       .map((t) => t.replace(/^(t|r)=/, ''))
 
+    mergeRules(rules)
+  }
+
+  function importBiliJSON(jsonStr: string) {
+    console.log(jsonStr)
+    try {
+      console.log(JSON.parse(jsonStr))
+    } catch (error) {
+      console.log(error)
+    }
+    let json = JSON.parse(jsonStr) as {
+      type: number
+      filter: string
+      opened: boolean
+    }[]
+
+    let rules = json
+      .filter((o) => o.opened && o.type !== 2)
+      .map((o) => (o.type === 1 ? `/${o.filter}/` : o.filter))
+
+    mergeRules(rules)
+  }
+
+  function mergeRules(rules: string[]) {
     const mergedRules = new Set([...player.localConfig.danmakuFilter, ...rules])
 
     player.message.info(
