@@ -53,23 +53,21 @@ export function createFilter(player: KPlayer, refreshDanmaku: () => void) {
   }
 
   function importBiliJSON(jsonStr: string) {
-    console.log(jsonStr)
     try {
-      console.log(JSON.parse(jsonStr))
+      let json = JSON.parse(jsonStr) as {
+        type: number
+        filter: string
+        opened: boolean
+      }[]
+
+      let rules = json
+        .filter((o) => o.opened && o.type !== 2)
+        .map((o) => (o.type === 1 ? `/${o.filter}/` : o.filter))
+
+      mergeRules(rules)
     } catch (error) {
-      console.log(error)
+      player.message.info('导入失败，JSON 格式有误', 3000)
     }
-    let json = JSON.parse(jsonStr) as {
-      type: number
-      filter: string
-      opened: boolean
-    }[]
-
-    let rules = json
-      .filter((o) => o.opened && o.type !== 2)
-      .map((o) => (o.type === 1 ? `/${o.filter}/` : o.filter))
-
-    mergeRules(rules)
   }
 
   function mergeRules(rules: string[]) {
