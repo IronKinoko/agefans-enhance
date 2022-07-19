@@ -1,5 +1,6 @@
 import { KPlayer } from '../..'
 import { modal } from '../../../utils/modal'
+import { parseToJSON } from '../../../utils/parseToJSON'
 
 export function createFilter(player: KPlayer, refreshDanmaku: () => void) {
   const $filter = $('#k-player-danmaku-filter-form')
@@ -52,13 +53,15 @@ export function createFilter(player: KPlayer, refreshDanmaku: () => void) {
     mergeRules(rules)
   }
 
-  function importBiliJSON(jsonStr: string) {
+  async function importBiliJSON(jsonStr: string) {
     try {
-      let json = JSON.parse(jsonStr) as {
-        type: number
-        filter: string
-        opened: boolean
-      }[]
+      let json = await parseToJSON<
+        {
+          type: number
+          filter: string
+          opened: boolean
+        }[]
+      >(jsonStr)
 
       let rules = json
         .filter((o) => o.opened && o.type !== 2)
