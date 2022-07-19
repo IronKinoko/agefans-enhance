@@ -14,12 +14,12 @@ export function createFilter(player: KPlayer, refreshDanmaku: () => void) {
       <p>2. 点击下面【开始导入】按钮，选择刚下载的xml文件</p>
       `,
       okText: '开始导入',
-      onOk: importBXML,
+      onOk: importBiliSettings,
     })
   })
-  function importBXML() {
+  function importBiliSettings() {
     const $import = $<HTMLInputElement>(
-      '<input type="file" style="display:none" accept=".xml"/>'
+      '<input type="file" style="display:none" accept=".xml,.json"/>'
     )
 
     $import.on('change', (e) => {
@@ -30,35 +30,36 @@ export function createFilter(player: KPlayer, refreshDanmaku: () => void) {
       fd.onload = () => {
         const result = fd.result as string
         if (typeof result === 'string') {
-          const $xml = $(result)
-          const $activeItems = $xml.find('item[enabled="true"]')
-          let rules = $activeItems
-            .map((_, el) => el.textContent)
-            .get()
-            .filter((t) => t.startsWith('t'))
-            .map((t) => t.replace(/^t=/, ''))
-
-          const mergedRules = new Set([
-            ...player.localConfig.danmakuFilter,
-            ...rules,
-          ])
-
-          player.message.info(
-            `导入 ${
-              mergedRules.size - player.localConfig.danmakuFilter.length
-            } 条规则`
-          )
-
-          player.configSaveToLocal('danmakuFilter', [...mergedRules])
-
-          refreshDanmaku()
-          refreshFilterDom()
+          if (file.name.endsWith('.xml')) importBiliXML(result)
         }
       }
       fd.readAsText(file)
     })
     $import.appendTo('body')
     $import.get(0)?.click()
+  }
+
+  function importBiliXML(xml: string) {
+    const $xml = $(xml)
+    const $activeItems = $xml.find('item[enabled="true"]')
+    let rules = $activeItems
+      .map((_, el) => el.textContent)
+      .get()
+      .filter((t) => /^(t|r)=/.test(t))
+      .map((t) => t.replace(/^(t|r)=/, ''))
+
+    const mergedRules = new Set([...player.localConfig.danmakuFilter, ...rules])
+
+    player.message.info(
+      `导入 ${
+        mergedRules.size - player.localConfig.danmakuFilter.length
+      } 条规则`
+    )
+
+    player.configSaveToLocal('danmakuFilter', [...mergedRules])
+
+    refreshDanmaku()
+    refreshFilterDom()
   }
 
   // input 相关事件
@@ -92,12 +93,20 @@ export function createFilter(player: KPlayer, refreshDanmaku: () => void) {
     refreshFilterDom()
   }
 
-  function addFilter(text: string) {
+  function addFilter(filter: string) {
     const filters = player.localConfig.danmakuFilter
     $input.val('')
-    if (!text || filters.includes(text)) return
+    if (!filter || filters.includes(filter)) return
 
-    filters.push(text)
+    if (/^\/.*\/$/.test(filter)) {
+      try {
+        new RegExp(filter.slice(1, -1))
+      } catch (error) {
+        return
+      }
+    }
+
+    filters.push(filter)
     player.configSaveToLocal('danmakuFilter', filters)
     refreshFilterDom()
     refreshDanmaku()

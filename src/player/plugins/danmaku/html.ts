@@ -73,7 +73,7 @@ const $danmakuOverlay = tabs([
     <div id="k-player-danmaku-filter-form">
       <div class="ft-input-wrapper">
         <div>
-          <input name="filter-input" placeholder="回车添加屏蔽词" class="k-select"/>
+          <input name="filter-input" placeholder="可正则“/”开头“/”结尾" class="k-select"/>
         </div>
         <label id="k-player-danmaku-filter-import" title="导入B站弹幕过滤设置">
           导入

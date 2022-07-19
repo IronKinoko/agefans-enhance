@@ -99,7 +99,7 @@ const start = () => {
           comments: adjustCommentCount(comments),
         })
       } else {
-        core.reload(adjustCommentCount(comments)!)
+        core.reload(adjustCommentCount(comments))
         core.show()
       }
       core.speed = baseDanmkuSpeed * player.localConfig.danmakuSpeed
@@ -112,13 +112,19 @@ const start = () => {
   requestAnimationFrame(run)
 }
 
-const adjustCommentCount = (comments?: Comment[]) => {
-  if (!comments) return
+const adjustCommentCount = (comments: Comment[]) => {
   let ret: Comment[] = comments
   // 过滤弹幕
   ret = ret.filter(
     (cmt) =>
-      !player.localConfig.danmakuFilter.some((o) => cmt.text!.includes(o))
+      !player.localConfig.danmakuFilter.some((filter) => {
+        if (/^\/.*\/$/.test(filter)) {
+          const re = new RegExp(filter.slice(1, -1))
+          return re.test(cmt.text)
+        } else {
+          return cmt.text.includes(filter)
+        }
+      })
   )
 
   // 过滤弹幕类型
