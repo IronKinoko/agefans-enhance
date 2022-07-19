@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.27.5
+// @version      1.27.6
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1400,12 +1400,15 @@
   }
 
   var Commands$1 = /* @__PURE__ */ ((Commands2) => {
+    Commands2["forward5"] = "forward5";
+    Commands2["backward5"] = "backward5";
     Commands2["forward30"] = "forward30";
     Commands2["backward30"] = "backward30";
     Commands2["forward60"] = "forward60";
     Commands2["backward60"] = "backward60";
     Commands2["forward90"] = "forward90";
     Commands2["backward90"] = "backward90";
+    Commands2["togglePlay"] = "togglePlay";
     Commands2["next"] = "next";
     Commands2["prev"] = "prev";
     Commands2["toggleWidescreen"] = "toggleWidescreen";
@@ -1418,6 +1421,10 @@
     Commands2["help"] = "help";
     Commands2["prevFrame"] = "prevFrame";
     Commands2["nextFrame"] = "nextFrame";
+    Commands2["toggleFullscreen"] = "toggleFullscreen";
+    Commands2["decreaseVolume"] = "decreaseVolume";
+    Commands2["increaseVolume"] = "increaseVolume";
+    Commands2["toggleMute"] = "toggleMute";
     return Commands2;
   })(Commands$1 || {});
 
@@ -1442,17 +1449,16 @@
   var __spreadProps$1 = (a, b) => __defProps$1(a, __getOwnPropDescs$1(b));
   const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
   const DefaultKeyBindings = [
+    { command: Commands$1.togglePlay, key: "Space", description: "\u64AD\u653E/\u6682\u505C" },
     {
-      command: Commands$1.internal,
+      command: Commands$1.backward5,
       key: "ArrowLeft",
-      description: "\u6B65\u90005s",
-      editable: false
+      description: "\u6B65\u90005s"
     },
     {
-      command: Commands$1.internal,
+      command: Commands$1.forward5,
       key: "ArrowRight",
-      description: "\u6B65\u90005s",
-      editable: false
+      description: "\u6B65\u8FDB5s"
     },
     {
       command: Commands$1.backward30,
@@ -1486,21 +1492,14 @@
       mac: "meta ArrowRight",
       description: "\u6B65\u8FDB90s"
     },
-    {
-      command: Commands$1.internal,
-      key: "0~9",
-      description: "\u767E\u5206\u6BD4\u8DF3\u8F6C",
-      editable: false
-    },
     { command: Commands$1.prevFrame, key: "", description: "\u4E0A\u4E00\u5E27" },
     { command: Commands$1.nextFrame, key: "", description: "\u4E0B\u4E00\u5E27" },
     { command: Commands$1.prev, key: "P", description: "\u4E0A\u4E00\u96C6" },
     { command: Commands$1.next, key: "N", description: "\u4E0B\u4E00\u96C6" },
     { command: Commands$1.toggleWidescreen, key: "W", description: "\u5BBD\u5C4F" },
     {
-      command: Commands$1.internal,
+      command: Commands$1.toggleFullscreen,
       key: "F",
-      editable: false,
       description: "\u5168\u5C4F"
     },
     {
@@ -1514,21 +1513,18 @@
     { command: Commands$1.increaseSpeed, key: "C", description: "\u52A0\u901F\u64AD\u653E" },
     { command: Commands$1.togglePIP, key: "I", description: "\u753B\u4E2D\u753B" },
     {
-      command: Commands$1.internal,
+      command: Commands$1.increaseVolume,
       key: "ArrowUp",
-      editable: false,
       description: "\u589E\u5927\u97F3\u91CF"
     },
     {
-      command: Commands$1.internal,
+      command: Commands$1.decreaseVolume,
       key: "ArrowDown",
-      editable: false,
       description: "\u51CF\u5C0F\u97F3\u91CF"
     },
     {
-      command: Commands$1.internal,
+      command: Commands$1.toggleMute,
       key: "M",
-      editable: false,
       description: "\u5207\u6362\u7981\u7528"
     },
     {
@@ -1602,6 +1598,9 @@
     const SPECIAL_KEY_EN = "`-=[]\\;',./~!@#$%^&*()_+{}|:\"<>?".split("");
     const SPECIAL_KEY_ZH = "\xB7-=\u3010\u3011\u3001\uFF1B\u2018\uFF0C\u3002/\uFF5E\uFF01@#\xA5%\u2026&*\uFF08\uFF09\u2014+\u300C\u300D\uFF5C\uFF1A\u201C\u300A\u300B\uFF1F".split("");
     let key = e.key;
+    if (e.code === "Space") {
+      key = "Space";
+    }
     if (/^[a-z]$/.test(key)) {
       key = key.toUpperCase();
     } else if (SPECIAL_KEY_ZH.includes(key)) {
@@ -1758,7 +1757,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.27.5"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.27.6"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1855,7 +1854,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.27.5"}
+\u811A\u672C\u7248\u672C: ${"1.27.6"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -1899,6 +1898,8 @@ userAgent: ${navigator.userAgent}
       this.message.info(`\u6B65${duration < 0 ? "\u9000" : "\u8FDB"}${Math.abs(duration)}s`);
     };
   }
+  Shortcuts.registerCommand(Commands$1.forward5, seekTime(5));
+  Shortcuts.registerCommand(Commands$1.backward5, seekTime(-5));
   Shortcuts.registerCommand(Commands$1.forward30, seekTime(30));
   Shortcuts.registerCommand(Commands$1.backward30, seekTime(-30));
   Shortcuts.registerCommand(Commands$1.forward60, seekTime(60));
@@ -1915,6 +1916,9 @@ userAgent: ${navigator.userAgent}
     if (this.plyr.fullscreen.active)
       return;
     this.toggleWidescreen();
+  });
+  Shortcuts.registerCommand(Commands$1.togglePlay, function() {
+    this.plyr.togglePlay();
   });
   Shortcuts.registerCommand(Commands$1.Escape, function() {
     if (this.plyr.fullscreen.active || !this.isWideScreen)
@@ -1972,6 +1976,18 @@ userAgent: ${navigator.userAgent}
   }
   Shortcuts.registerCommand(Commands$1.prevFrame, changeFrame(-1));
   Shortcuts.registerCommand(Commands$1.nextFrame, changeFrame(1));
+  Shortcuts.registerCommand(Commands$1.toggleFullscreen, function() {
+    this.plyr.fullscreen.toggle();
+  });
+  Shortcuts.registerCommand(Commands$1.increaseVolume, function() {
+    this.plyr.increaseVolume(0.1);
+  });
+  Shortcuts.registerCommand(Commands$1.decreaseVolume, function() {
+    this.plyr.decreaseVolume(0.1);
+  });
+  Shortcuts.registerCommand(Commands$1.toggleMute, function() {
+    this.plyr.muted = !this.plyr.muted;
+  });
 
   const icons = `
 <svg
@@ -2287,7 +2303,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
       this.localConfig = Object.assign({}, defaultConfig, gm.getItem(this.localConfigKey));
       this.plyr = new Plyr__default["default"]("#k-player", __spreadValues$1({
         autoplay: this.localConfig.autoplay,
-        keyboard: { global: true },
+        keyboard: { global: false, focused: false },
         controls: [
           "play",
           "progress",
@@ -2881,7 +2897,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
     <div id="k-player-danmaku-filter-form">
       <div class="ft-input-wrapper">
         <div>
-          <input name="filter-input" placeholder="\u56DE\u8F66\u6DFB\u52A0\u5C4F\u853D\u8BCD" class="k-select"/>
+          <input name="filter-input" placeholder="\u53EF\u6B63\u5219\u201C/\u201D\u5F00\u5934\u201C/\u201D\u7ED3\u5C3E" class="k-select"/>
         </div>
         <label id="k-player-danmaku-filter-import" title="\u5BFC\u5165B\u7AD9\u5F39\u5E55\u8FC7\u6EE4\u8BBE\u7F6E">
           \u5BFC\u5165
@@ -2973,6 +2989,14 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
     $(".plyr__controls__item.plyr__progress__container .plyr__progress").append($pbp);
   }
 
+  function parseToJSON(raw) {
+    return new Promise((resolve, reject) => {
+      const blob = new Blob([raw], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      fetch(url).then((r) => r.json()).then(resolve).catch(reject);
+    });
+  }
+
   function createFilter(player, refreshDanmaku) {
     const $filter = $("#k-player-danmaku-filter-form");
     const $importLabel = $("#k-player-danmaku-filter-import");
@@ -2980,16 +3004,16 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
       modal({
         title: "\u5BFC\u5165B\u7AD9\u5C4F\u853D\u8BBE\u5B9A",
         content: `
-      <p>1. \u968F\u4FBF\u70B9\u5F00\u4E00\u4E2A\u89C6\u9891\uFF0C\u53F3\u4FA7\u5F39\u5E55\u5217\u8868\u6253\u5F00\u5C4F\u853D\u8BBE\u5B9A\uFF0C\u5BF9\u5C4F\u853D\u5217\u8868\u53F3\u952E\uFF0C\u5BFC\u51FAxml\u6587\u4EF6\u3002</p>
-      <p>2. \u70B9\u51FB\u4E0B\u9762\u3010\u5F00\u59CB\u5BFC\u5165\u3011\u6309\u94AE\uFF0C\u9009\u62E9\u521A\u4E0B\u8F7D\u7684xml\u6587\u4EF6</p>
+      <p>1. \u968F\u4FBF\u70B9\u5F00\u4E00\u4E2A\u89C6\u9891\uFF0C\u53F3\u4FA7\u5F39\u5E55\u5217\u8868\u6253\u5F00\u5C4F\u853D\u8BBE\u5B9A\uFF0C\u5BF9\u5C4F\u853D\u5217\u8868\u53F3\u952E\uFF0C\u5BFC\u51FAxml\u6216json\u6587\u4EF6\u3002</p>
+      <p>2. \u70B9\u51FB\u4E0B\u9762\u3010\u5F00\u59CB\u5BFC\u5165\u3011\u6309\u94AE\uFF0C\u9009\u62E9\u521A\u4E0B\u8F7D\u7684xml\u6216json\u6587\u4EF6</p>
       `,
         okText: "\u5F00\u59CB\u5BFC\u5165",
-        onOk: importBXML
+        onOk: importBiliSettings
       });
     });
-    function importBXML() {
+    function importBiliSettings() {
       var _a;
-      const $import = $('<input type="file" style="display:none" accept=".xml"/>');
+      const $import = $('<input type="file" style="display:none" accept=".xml,.json"/>');
       $import.on("change", (e) => {
         var _a2;
         const file = (_a2 = e.target.files) == null ? void 0 : _a2[0];
@@ -3000,23 +3024,38 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
         fd.onload = () => {
           const result = fd.result;
           if (typeof result === "string") {
-            const $xml = $(result);
-            const $activeItems = $xml.find('item[enabled="true"]');
-            let rules = $activeItems.map((_, el) => el.textContent).get().filter((t) => t.startsWith("t")).map((t) => t.replace(/^t=/, ""));
-            const mergedRules = /* @__PURE__ */ new Set([
-              ...player.localConfig.danmakuFilter,
-              ...rules
-            ]);
-            player.message.info(`\u5BFC\u5165 ${mergedRules.size - player.localConfig.danmakuFilter.length} \u6761\u89C4\u5219`);
-            player.configSaveToLocal("danmakuFilter", [...mergedRules]);
-            refreshDanmaku();
-            refreshFilterDom();
+            if (file.name.endsWith(".xml"))
+              importBiliXML(result);
+            if (file.name.endsWith(".json"))
+              importBiliJSON(result);
           }
         };
         fd.readAsText(file);
       });
       $import.appendTo("body");
       (_a = $import.get(0)) == null ? void 0 : _a.click();
+    }
+    function importBiliXML(xml) {
+      const $xml = $(xml);
+      const $activeItems = $xml.find('item[enabled="true"]');
+      let rules = $activeItems.map((_, el) => el.textContent).get().filter((t) => /^(t|r)=/.test(t)).map((t) => t.replace(/^(t|r)=/, ""));
+      mergeRules(rules);
+    }
+    async function importBiliJSON(jsonStr) {
+      try {
+        let json = await parseToJSON(jsonStr);
+        let rules = json.filter((o) => o.opened && o.type !== 2).map((o) => o.type === 1 ? `/${o.filter}/` : o.filter);
+        mergeRules(rules);
+      } catch (error) {
+        player.message.info("\u5BFC\u5165\u5931\u8D25\uFF0CJSON \u683C\u5F0F\u6709\u8BEF", 3e3);
+      }
+    }
+    function mergeRules(rules) {
+      const mergedRules = /* @__PURE__ */ new Set([...player.localConfig.danmakuFilter, ...rules]);
+      player.message.info(`\u5BFC\u5165 ${mergedRules.size - player.localConfig.danmakuFilter.length} \u6761\u89C4\u5219`);
+      player.configSaveToLocal("danmakuFilter", [...mergedRules]);
+      refreshDanmaku();
+      refreshFilterDom();
     }
     const $input = $filter.find('[name="filter-input"]');
     $input.on("keypress", (e) => {
@@ -3045,12 +3084,19 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
       refreshDanmaku();
       refreshFilterDom();
     }
-    function addFilter(text) {
+    function addFilter(filter) {
       const filters = player.localConfig.danmakuFilter;
       $input.val("");
-      if (!text || filters.includes(text))
+      if (!filter || filters.includes(filter))
         return;
-      filters.push(text);
+      if (/^\/.*\/$/.test(filter)) {
+        try {
+          new RegExp(filter.slice(1, -1));
+        } catch (error) {
+          return;
+        }
+      }
+      filters.push(filter);
       player.configSaveToLocal("danmakuFilter", filters);
       refreshFilterDom();
       refreshDanmaku();
@@ -3119,10 +3165,15 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
     requestAnimationFrame(run);
   };
   const adjustCommentCount = (comments2) => {
-    if (!comments2)
-      return;
     let ret = comments2;
-    ret = ret.filter((cmt) => !player$5.localConfig.danmakuFilter.some((o) => cmt.text.includes(o)));
+    ret = ret.filter((cmt) => !player$5.localConfig.danmakuFilter.some((filter) => {
+      if (/^\/.*\/$/.test(filter)) {
+        const re = new RegExp(filter.slice(1, -1));
+        return re.test(cmt.text);
+      } else {
+        return cmt.text.includes(filter);
+      }
+    }));
     const mode = player$5.localConfig.danmakuMode;
     if (!mode.includes("color")) {
       ret = ret.filter((cmt) => cmt.style.color === "#ffffff");

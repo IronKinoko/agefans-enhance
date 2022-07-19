@@ -1,6 +1,6 @@
 {
   "name": "agefans",
-  "version": "1.27.5",
+  "version": "1.27.6",
   "description": "增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能",
   "main": "index.user.js",
   "repository": {
@@ -52,9 +52,6 @@
     "lodash-es": "^4.17.21",
     "plyr": "^3.6.12"
   },
-  "browserslist": [
-    "last 1 chrome version"
-  ],
   "prettier": {
     "singleQuote": true,
     "semi": false,
