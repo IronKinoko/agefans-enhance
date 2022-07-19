@@ -17,12 +17,15 @@ export interface CustomKeyBinding {
 }
 
 export enum Commands {
+  forward5 = 'forward5',
+  backward5 = 'backward5',
   forward30 = 'forward30',
   backward30 = 'backward30',
   forward60 = 'forward60',
   backward60 = 'backward60',
   forward90 = 'forward90',
   backward90 = 'backward90',
+  togglePlay = 'togglePlay',
   next = 'next',
   prev = 'prev',
   toggleWidescreen = 'toggleWidescreen',
@@ -35,4 +38,8 @@ export enum Commands {
   help = 'help',
   prevFrame = 'prevFrame',
   nextFrame = 'nextFrame',
+  toggleFullscreen = 'toggleFullscreen',
+  decreaseVolume = 'decreaseVolume',
+  increaseVolume = 'increaseVolume',
+  toggleMute = 'toggleMute',
 }

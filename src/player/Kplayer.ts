@@ -118,7 +118,7 @@ export class KPlayer {
 
     this.plyr = new Plyr('#k-player', {
       autoplay: this.localConfig.autoplay,
-      keyboard: { global: true },
+      keyboard: { global: false, focused: false },
       controls: [
         'play',
         'progress',

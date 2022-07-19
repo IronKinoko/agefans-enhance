@@ -11,6 +11,9 @@ function seekTime(duration: number): Command['callback'] {
   }
 }
 
+Shortcuts.registerCommand(Commands.forward5, seekTime(5))
+Shortcuts.registerCommand(Commands.backward5, seekTime(-5))
+
 Shortcuts.registerCommand(Commands.forward30, seekTime(30))
 Shortcuts.registerCommand(Commands.backward30, seekTime(-30))
 
@@ -30,6 +33,10 @@ Shortcuts.registerCommand(Commands.next, function () {
 Shortcuts.registerCommand(Commands.toggleWidescreen, function () {
   if (this.plyr.fullscreen.active) return
   this.toggleWidescreen()
+})
+
+Shortcuts.registerCommand(Commands.togglePlay, function () {
+  this.plyr.togglePlay()
 })
 
 Shortcuts.registerCommand(Commands.Escape, function () {
@@ -98,3 +105,18 @@ function changeFrame(diff: number): Command['callback'] {
 }
 Shortcuts.registerCommand(Commands.prevFrame, changeFrame(-1))
 Shortcuts.registerCommand(Commands.nextFrame, changeFrame(1))
+
+Shortcuts.registerCommand(Commands.toggleFullscreen, function () {
+  this.plyr.fullscreen.toggle()
+})
+
+Shortcuts.registerCommand(Commands.increaseVolume, function () {
+  this.plyr.increaseVolume(0.1)
+})
+Shortcuts.registerCommand(Commands.decreaseVolume, function () {
+  this.plyr.decreaseVolume(0.1)
+})
+
+Shortcuts.registerCommand(Commands.toggleMute, function () {
+  this.plyr.muted = !this.plyr.muted
+})

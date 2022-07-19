@@ -5,6 +5,10 @@ export function normalizeKeyEvent(e: KeyboardEvent) {
 
   let key = e.key
 
+  if (e.code === 'Space') {
+    key = 'Space'
+  }
+
   // trans a-z to A-Z
   if (/^[a-z]$/.test(key)) {
     key = key.toUpperCase()

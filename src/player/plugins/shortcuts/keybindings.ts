@@ -4,17 +4,16 @@ import { Commands, KeyBinding, CustomKeyBinding } from './types'
 const isMac = /macintosh|mac os x/i.test(navigator.userAgent)
 
 const DefaultKeyBindings: KeyBinding[] = [
+  { command: Commands.togglePlay, key: 'Space', description: '播放/暂停' },
   {
-    command: Commands.internal,
+    command: Commands.backward5,
     key: 'ArrowLeft',
     description: '步退5s',
-    editable: false,
   },
   {
-    command: Commands.internal,
+    command: Commands.forward5,
     key: 'ArrowRight',
-    description: '步退5s',
-    editable: false,
+    description: '步进5s',
   },
   {
     command: Commands.backward30,
@@ -48,21 +47,14 @@ const DefaultKeyBindings: KeyBinding[] = [
     mac: 'meta ArrowRight',
     description: '步进90s',
   },
-  {
-    command: Commands.internal,
-    key: '0~9',
-    description: '百分比跳转',
-    editable: false,
-  },
   { command: Commands.prevFrame, key: '', description: '上一帧' },
   { command: Commands.nextFrame, key: '', description: '下一帧' },
   { command: Commands.prev, key: 'P', description: '上一集' },
   { command: Commands.next, key: 'N', description: '下一集' },
   { command: Commands.toggleWidescreen, key: 'W', description: '宽屏' },
   {
-    command: Commands.internal,
+    command: Commands.toggleFullscreen,
     key: 'F',
-    editable: false,
     description: '全屏',
   },
   {
@@ -76,21 +68,18 @@ const DefaultKeyBindings: KeyBinding[] = [
   { command: Commands.increaseSpeed, key: 'C', description: '加速播放' },
   { command: Commands.togglePIP, key: 'I', description: '画中画' },
   {
-    command: Commands.internal,
+    command: Commands.increaseVolume,
     key: 'ArrowUp',
-    editable: false,
     description: '增大音量',
   },
   {
-    command: Commands.internal,
+    command: Commands.decreaseVolume,
     key: 'ArrowDown',
-    editable: false,
     description: '减小音量',
   },
   {
-    command: Commands.internal,
+    command: Commands.toggleMute,
     key: 'M',
-    editable: false,
     description: '切换禁用',
   },
   {
