@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.27.7
+// @version      1.27.8
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1757,7 +1757,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.27.7"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.27.8"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1854,7 +1854,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.27.7"}
+\u811A\u672C\u7248\u672C: ${"1.27.8"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -4332,11 +4332,13 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
   });
 
   async function replacePlayer() {
+    const dom = await queryDom("video");
+    dom.src = "";
     const player = new KPlayer("#player", {
       eventToParentWindow: true,
       logTimeId: window.location.href
     });
-    player.src = unsafeWindow.v_decrypt(unsafeWindow.config.url, unsafeWindow._token_key, unsafeWindow.key_token);
+    player.src = unsafeWindow.config.url;
   }
   function switchPart(next) {
     if (next) {
