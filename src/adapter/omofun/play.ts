@@ -2,17 +2,15 @@ import { KPlayer } from '../../player'
 import { queryDom } from '../../utils/queryDom'
 
 async function replacePlayer() {
+  const dom = await queryDom<HTMLVideoElement>('video')
+  dom.src = ''
+
   const player = new KPlayer('#player', {
     eventToParentWindow: true,
     logTimeId: window.location.href,
   })
 
-  // 有个配置文件被解密后重新加密了，现在重新解密一下就能获取到视频的m3u8地址
-  player.src = unsafeWindow.v_decrypt(
-    unsafeWindow.config.url,
-    unsafeWindow._token_key,
-    unsafeWindow.key_token
-  )
+  player.src = unsafeWindow.config.url
 }
 
 function switchPart(next: boolean) {
