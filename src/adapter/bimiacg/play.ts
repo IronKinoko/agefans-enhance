@@ -52,7 +52,7 @@ export async function playModule() {
   )
 
   window.addEventListener('message', (e) => {
-    if (!Reflect.has(e.data, 'key')) return
+    if (!e.data?.key) return
 
     const key = e.data.key
     const video = e.data.video
@@ -116,7 +116,7 @@ export async function playModule() {
 
 export function playInIframeModule() {
   const fn = (e: MessageEvent) => {
-    if (!Reflect.has(e.data, 'key')) return
+    if (!e.data?.key) return
     if (e.data.key === 'initDone') {
       replacePlayer()
       window.removeEventListener('message', fn)

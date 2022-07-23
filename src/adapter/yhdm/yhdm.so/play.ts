@@ -30,7 +30,7 @@ export function playModule() {
   $('body').addClass('yhdm-wrapper')
 
   window.addEventListener('message', (e) => {
-    if (!Reflect.has(e.data, 'key')) return
+    if (!e.data?.key) return
     const key = e.data.key
     if (key === 'prev') switchPart(false)
     if (key === 'next') switchPart(true)
