@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.27.8
+// @version      1.27.9
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1757,7 +1757,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.27.8"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.27.9"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1854,7 +1854,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.27.8"}
+\u811A\u672C\u7248\u672C: ${"1.27.9"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -3159,7 +3159,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
         core.speed = baseDanmkuSpeed * player$5.localConfig.danmakuSpeed;
       }
       if (player$5.localConfig.showPbp) {
-        createProgressBarPower(player$5.media.duration, comments);
+        createProgressBarPower(player$5.media.duration, adjustCommentCount(comments));
       }
     }
     requestAnimationFrame(run);
@@ -3774,8 +3774,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
   function playModule$8() {
     $("body").addClass("yhdm-wrapper");
     window.addEventListener("message", (e) => {
-      var _a;
-      if (!Reflect.has(e.data, "key"))
+      var _a, _b;
+      if (!((_a = e.data) == null ? void 0 : _a.key))
         return;
       const key = e.data.key;
       if (key === "prev")
@@ -3798,7 +3798,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
       }
       if (key === "getSearchName") {
         const iframe = $("#playbox iframe")[0];
-        (_a = iframe.contentWindow) == null ? void 0 : _a.postMessage({ key: "getSearchName", name: $(".gohome.l > h1 > a").text() }, "*");
+        (_b = iframe.contentWindow) == null ? void 0 : _b.postMessage({ key: "getSearchName", name: $(".gohome.l > h1 > a").text() }, "*");
       }
       if (key === "openLink") {
         window.open(e.data.url);
@@ -3991,8 +3991,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
   const iframeSelector = "#playleft iframe";
   function playModule$4() {
     window.addEventListener("message", (e) => {
-      var _a, _b;
-      if (!Reflect.has(e.data, "key"))
+      var _a, _b, _c;
+      if (!((_a = e.data) == null ? void 0 : _a.key))
         return;
       const { key, video } = e.data;
       if (key === "prev")
@@ -4020,11 +4020,11 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
       }
       if (key === "getSearchName") {
         const iframe = $(iframeSelector)[0];
-        (_a = iframe.contentWindow) == null ? void 0 : _a.postMessage({ key: "getSearchName", name: $("#detailname").text() }, "*");
+        (_b = iframe.contentWindow) == null ? void 0 : _b.postMessage({ key: "getSearchName", name: $("#detailname").text() }, "*");
       }
       if (key === "getEpisode") {
         const iframe = $(iframeSelector)[0];
-        (_b = iframe.contentWindow) == null ? void 0 : _b.postMessage({ key: "getEpisode", name: $(".movurl .active-play").text() }, "*");
+        (_c = iframe.contentWindow) == null ? void 0 : _c.postMessage({ key: "getEpisode", name: $(".movurl .active-play").text() }, "*");
       }
     });
     window.addEventListener("keydown", (e) => {
@@ -4223,13 +4223,13 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
     const info = getPlayInfo();
     const iframe = await queryDom(`#playleft iframe[src*='url=']`);
     window.addEventListener("message", (e) => {
-      var _a2, _b, _c;
-      if (!Reflect.has(e.data, "key"))
+      var _a2, _b, _c, _d;
+      if (!((_a2 = e.data) == null ? void 0 : _a2.key))
         return;
       const key = e.data.key;
       const video = e.data.video;
       if (key === "initDone") {
-        (_a2 = iframe.contentWindow) == null ? void 0 : _a2.postMessage({ key: "initDone" }, "*");
+        (_b = iframe.contentWindow) == null ? void 0 : _b.postMessage({ key: "initDone" }, "*");
       }
       if (key === "prev")
         switchPart$1(false);
@@ -4251,10 +4251,10 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
         $(iframe).removeAttr("style");
       }
       if (key === "getSearchName") {
-        (_b = iframe.contentWindow) == null ? void 0 : _b.postMessage({ key: "getSearchName", name: info.animeName }, "*");
+        (_c = iframe.contentWindow) == null ? void 0 : _c.postMessage({ key: "getSearchName", name: info.animeName }, "*");
       }
       if (key === "getEpisode") {
-        (_c = iframe.contentWindow) == null ? void 0 : _c.postMessage({ key: "getEpisode", name: info.episodeName }, "*");
+        (_d = iframe.contentWindow) == null ? void 0 : _d.postMessage({ key: "getEpisode", name: info.episodeName }, "*");
       }
       if (key === "openLink") {
         window.open(e.data.url);
@@ -4279,7 +4279,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
   }
   function playInIframeModule$1() {
     const fn = (e) => {
-      if (!Reflect.has(e.data, "key"))
+      var _a;
+      if (!((_a = e.data) == null ? void 0 : _a.key))
         return;
       if (e.data.key === "initDone") {
         replacePlayer$1();
@@ -4353,12 +4354,12 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
     var _a;
     const iframe = await queryDom(`#playleft iframe[src*='url=']`);
     window.addEventListener("message", (e) => {
-      var _a2, _b, _c;
-      if (!Reflect.has(e.data, "key"))
+      var _a2, _b, _c, _d;
+      if (!((_a2 = e.data) == null ? void 0 : _a2.key))
         return;
       const key = e.data.key;
       if (key === "initDone") {
-        (_a2 = iframe.contentWindow) == null ? void 0 : _a2.postMessage({ key: "initDone" }, "*");
+        (_b = iframe.contentWindow) == null ? void 0 : _b.postMessage({ key: "initDone" }, "*");
       }
       if (key === "prev")
         switchPart(false);
@@ -4382,10 +4383,10 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
         $(iframe).removeAttr("style");
       }
       if (key === "getSearchName") {
-        (_b = iframe.contentWindow) == null ? void 0 : _b.postMessage({ key: "getSearchName", name: $(".module-info-heading h1 a").text() }, "*");
+        (_c = iframe.contentWindow) == null ? void 0 : _c.postMessage({ key: "getSearchName", name: $(".module-info-heading h1 a").text() }, "*");
       }
       if (key === "getEpisode") {
-        (_c = iframe.contentWindow) == null ? void 0 : _c.postMessage({
+        (_d = iframe.contentWindow) == null ? void 0 : _d.postMessage({
           key: "getEpisode",
           name: $(".module-play-list-link.active > span").text()
         }, "*");
@@ -4407,7 +4408,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
   }
   function playInIframeModule() {
     const fn = (e) => {
-      if (!Reflect.has(e.data, "key"))
+      var _a;
+      if (!((_a = e.data) == null ? void 0 : _a.key))
         return;
       if (e.data.key === "initDone") {
         replacePlayer();
