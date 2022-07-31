@@ -106,7 +106,10 @@ const start = () => {
     }
 
     if (player.localConfig.showPbp) {
-      createProgressBarPower(player.media.duration, comments!)
+      createProgressBarPower(
+        player.media.duration,
+        adjustCommentCount(comments)
+      )
     }
   }
   requestAnimationFrame(run)
