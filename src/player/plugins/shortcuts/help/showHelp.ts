@@ -90,7 +90,9 @@ export const scriptInfo = (video: HTMLVideoElement | undefined) => {
             <td>${kb.description}</td>
             <td>${renderKey(kb.originKey)}</td>
             <td>
-              <input type="text" class="k-input"><a>删除</a>
+              <div class="shortcuts-input-wrapper">
+                <input type="text" class="k-input"><a>删除</a>
+              </div>
             </td>
           </tr>
           `)
