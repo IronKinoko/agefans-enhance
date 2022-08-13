@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.27.9
+// @version      1.28.0
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1381,7 +1381,10 @@
     ArrowUp: "\u2191",
     ArrowDown: "\u2193",
     ArrowLeft: "\u2190",
-    ArrowRight: "\u2192"
+    ArrowRight: "\u2192",
+    ctrl: "Ctrl",
+    alt: "Alt",
+    shift: "Shift"
   };
   const MacKeyMap = {
     ctrl: "\u2303",
@@ -1737,7 +1740,7 @@
     return $root;
   }
 
-  var css$7 = ".script-info .k-modal-body {\n  padding: 0;\n}\n.script-info .k-modal-body * {\n  box-sizing: border-box;\n  font-size: 14px;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n}\n.script-info .k-modal-body table {\n  width: 100%;\n  border-spacing: 0;\n  border-collapse: separate;\n}\n.script-info .k-modal-body tbody tr td:first-child {\n  white-space: nowrap;\n  width: 77px;\n}\n.script-info .k-modal-body th,\n.script-info .k-modal-body td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n}\n.script-info .k-modal-body .info-title {\n  font-weight: 600;\n  padding-top: 24px;\n}\n.script-info .k-modal-body a {\n  color: var(--k-player-primary-color);\n  margin: -4px 0 -4px -8px;\n  padding: 4px 8px;\n  border-radius: 4px;\n  text-decoration: none;\n  cursor: pointer;\n}\n.script-info .k-modal-body a:hover {\n  text-decoration: underline;\n  background-color: var(--k-player-primary-color-highlight);\n}\n.script-info .k-modal-body .k-tabs {\n  border-bottom: 1px solid #f1f1f1;\n}\n.script-info .k-modal-body .shortcuts {\n  padding: 8px;\n}\n.script-info .k-modal-body .shortcuts-wrapper {\n  height: 400px;\n  padding: 0;\n  overflow-y: scroll;\n  position: relative;\n}\n.script-info .k-modal-body .shortcuts-wrapper::-webkit-scrollbar {\n  width: 8px;\n}\n.script-info .k-modal-body .shortcuts-wrapper::-webkit-scrollbar-thumb {\n  background: rgba(0, 0, 0, 0.15);\n  border-radius: 4px;\n}\n.script-info .k-modal-body .shortcuts-wrapper::-webkit-scrollbar-thumb:hover {\n  background-color: rgba(0, 0, 0, 0.45);\n}\n.script-info .k-modal-body .shortcuts th {\n  position: sticky;\n  background-color: white;\n  top: 0;\n  z-index: 1;\n}\n.script-info .k-modal-body .shortcuts .k-input {\n  width: 160px;\n  padding: 4px 8px;\n  border-radius: 4px;\n}\n.script-info .k-modal-body .shortcuts a {\n  margin-left: 8px;\n}";
+  var css$7 = ".script-info .k-modal-body {\n  padding: 0;\n}\n.script-info .k-modal-body * {\n  box-sizing: border-box;\n  font-size: 14px;\n  line-height: normal;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n}\n.script-info .k-modal-body table {\n  width: 100%;\n  border-spacing: 0;\n  border-collapse: separate;\n}\n.script-info .k-modal-body tbody tr td:first-child {\n  white-space: nowrap;\n  width: 77px;\n}\n.script-info .k-modal-body th,\n.script-info .k-modal-body td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n}\n.script-info .k-modal-body .info-title {\n  font-weight: 600;\n  padding-top: 24px;\n}\n.script-info .k-modal-body a {\n  color: var(--k-player-primary-color);\n  margin: -4px 0 -4px -8px;\n  padding: 4px 8px;\n  border-radius: 4px;\n  text-decoration: none;\n  cursor: pointer;\n  display: inline-block;\n  white-space: nowrap;\n}\n.script-info .k-modal-body a:hover {\n  text-decoration: underline;\n  background-color: var(--k-player-primary-color-highlight);\n}\n.script-info .k-modal-body .k-tabs {\n  border-bottom: 1px solid #f1f1f1;\n}\n.script-info .k-modal-body .shortcuts {\n  padding: 8px;\n}\n.script-info .k-modal-body .shortcuts-wrapper {\n  height: 400px;\n  padding: 0;\n  overflow-y: scroll;\n  position: relative;\n}\n.script-info .k-modal-body .shortcuts-wrapper::-webkit-scrollbar {\n  width: 8px;\n}\n.script-info .k-modal-body .shortcuts-wrapper::-webkit-scrollbar-thumb {\n  background: rgba(0, 0, 0, 0.15);\n  border-radius: 4px;\n}\n.script-info .k-modal-body .shortcuts-wrapper::-webkit-scrollbar-thumb:hover {\n  background-color: rgba(0, 0, 0, 0.45);\n}\n.script-info .k-modal-body .shortcuts th {\n  position: sticky;\n  background-color: white;\n  top: 0;\n  z-index: 1;\n}\n.script-info .k-modal-body .shortcuts .shortcuts-input-wrapper {\n  display: flex;\n  align-items: center;\n}\n.script-info .k-modal-body .shortcuts .k-input {\n  flex: 1;\n  padding: 4px 8px;\n  border-radius: 4px;\n}\n.script-info .k-modal-body .shortcuts a {\n  margin-left: 8px;\n}\n.script-info .k-modal-body .shortcuts .k-font-kbd {\n  font-family: consolas, monospace;\n}";
   n(css$7,{});
 
   function genIssueURL({ title, body }) {
@@ -1757,7 +1760,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.27.9"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.28.0"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1814,9 +1817,11 @@
             const $tr = $(`
           <tr>
             <td>${kb.description}</td>
-            <td>${renderKey(kb.originKey)}</td>
+            <td><span class="k-font-kbd">${renderKey(kb.originKey)}</span></td>
             <td>
-              <input type="text" class="k-input"><a>\u5220\u9664</a>
+              <div class="shortcuts-input-wrapper">
+                <input type="text" class="k-input k-font-kbd"><a>\u5220\u9664</a>
+              </div>
             </td>
           </tr>
           `);
@@ -1854,7 +1859,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.27.9"}
+\u811A\u672C\u7248\u672C: ${"1.28.0"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -2824,7 +2829,10 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
   }
 
   var Commands = /* @__PURE__ */ ((Commands2) => {
-    Commands2["switchDanmaku"] = "switchDanmaku";
+    Commands2["danmakuSwitch"] = "switchDanmaku";
+    Commands2["danmakuSyncBack"] = "danmakuSyncBack";
+    Commands2["danmakuSyncForward"] = "danmakuSyncForward";
+    Commands2["danmakuSyncRestore"] = "danmakuSyncRestore";
     return Commands2;
   })(Commands || {});
 
@@ -2855,7 +2863,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
     <div id="k-player-danmaku-setting-form" class="k-settings-list">
       <label class="k-settings-item">
         <input type="checkbox" name="showDanmaku" />
-        <span>\u663E\u793A\u5F39\u5E55(<k-shortcuts-tip command="${Commands.switchDanmaku}"></k-shortcuts-tip>)</span>
+        <span>\u663E\u793A\u5F39\u5E55(<k-shortcuts-tip command="${Commands.danmakuSwitch}"></k-shortcuts-tip>)</span>
         </label>
       <label class="k-settings-item">
         <input type="checkbox" name="showPbp" />
@@ -3129,6 +3137,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
   let comments;
   let player$5;
   let videoInfo;
+  let syncDiff = 0;
   function refreshDanmaku() {
     stop();
     autoStart();
@@ -3196,6 +3205,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
       return;
     stop();
     comments = await getComments(episodeId);
+    syncDiff = 0;
     state = 3 /* getComments */;
     start();
     player$5.message.info(`\u756A\u5267\uFF1A${$animes.find(":selected").text()}`, 2e3);
@@ -3354,12 +3364,60 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
     }
   }
   Shortcuts.keyBindings.registerKeyBinding({
-    command: Commands.switchDanmaku,
+    command: Commands.danmakuSwitch,
     description: "\u663E\u793A/\u9690\u85CF\u5F39\u5E55",
     key: "D"
   });
-  Shortcuts.registerCommand(Commands.switchDanmaku, function() {
+  Shortcuts.registerCommand(Commands.danmakuSwitch, function() {
     switchDanmaku();
+  });
+  Shortcuts.keyBindings.registerKeyBinding({
+    command: Commands.danmakuSyncForward,
+    description: "\u5F39\u5E55\u8D85\u524D0.5s",
+    key: "."
+  });
+  Shortcuts.registerCommand(Commands.danmakuSyncForward, function() {
+    if (!comments)
+      return;
+    comments.forEach((comment) => {
+      comment.time += -0.5;
+    });
+    syncDiff += -0.5;
+    player$5.message.destroy();
+    player$5.message.info(`\u5F39\u5E55\u540C\u6B65\uFF1A\u8D85\u524D\u4E860.5s\uFF08${syncDiff}s\uFF09`);
+    refreshDanmaku();
+  });
+  Shortcuts.keyBindings.registerKeyBinding({
+    command: Commands.danmakuSyncBack,
+    description: "\u5F39\u5E55\u6EDE\u540E0.5s",
+    key: ","
+  });
+  Shortcuts.registerCommand(Commands.danmakuSyncBack, function() {
+    if (!comments)
+      return;
+    comments.forEach((comment) => {
+      comment.time += 0.5;
+    });
+    syncDiff += 0.5;
+    player$5.message.destroy();
+    player$5.message.info(`\u5F39\u5E55\u540C\u6B65\uFF1A\u6EDE\u540E\u4E860.5s\uFF08${syncDiff}s\uFF09`);
+    refreshDanmaku();
+  });
+  Shortcuts.keyBindings.registerKeyBinding({
+    command: Commands.danmakuSyncRestore,
+    description: "\u5F39\u5E55\u540C\u6B65\u590D\u4F4D",
+    key: "/"
+  });
+  Shortcuts.registerCommand(Commands.danmakuSyncRestore, function() {
+    if (!comments)
+      return;
+    comments.forEach((comment) => {
+      comment.time += -syncDiff;
+    });
+    syncDiff = 0;
+    player$5.message.destroy();
+    player$5.message.info("\u5F39\u5E55\u540C\u6B65\uFF1A\u5DF2\u590D\u4F4D");
+    refreshDanmaku();
   });
   const updateAnimes = (animes) => {
     const html = animes.reduce((html2, anime) => html2 + `<option value="${anime.animeId}">${anime.animeTitle}</option>`, "");
