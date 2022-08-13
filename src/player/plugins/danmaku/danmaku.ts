@@ -374,8 +374,8 @@ Shortcuts.registerCommand(Commands.danmakuSyncForward, function () {
     comment.time += -0.5
   })
   syncDiff += -0.5
-  player.message.destroy()
-  player.message.info(`弹幕同步：超前了0.5s（${syncDiff}s）`)
+  this.message.destroy()
+  this.message.info(`弹幕同步：超前了0.5s（${syncDiff}s）`)
   refreshDanmaku()
 })
 Shortcuts.keyBindings.registerKeyBinding({
@@ -389,8 +389,8 @@ Shortcuts.registerCommand(Commands.danmakuSyncBack, function () {
     comment.time += 0.5
   })
   syncDiff += 0.5
-  player.message.destroy()
-  player.message.info(`弹幕同步：滞后了0.5s（${syncDiff}s）`)
+  this.message.destroy()
+  this.message.info(`弹幕同步：滞后了0.5s（${syncDiff}s）`)
   refreshDanmaku()
 })
 Shortcuts.keyBindings.registerKeyBinding({
@@ -404,8 +404,8 @@ Shortcuts.registerCommand(Commands.danmakuSyncRestore, function () {
     comment.time += -syncDiff
   })
   syncDiff = 0
-  player.message.destroy()
-  player.message.info('弹幕同步：已复位')
+  this.message.destroy()
+  this.message.info('弹幕同步：已复位')
   refreshDanmaku()
 })
 
