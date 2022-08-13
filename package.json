@@ -23,8 +23,8 @@
     "lint": "tsc --noEmit",
     "prepare": "husky install",
     "deploy": "gh-pages -d dist",
-    "version": "npm run build && npm run deploy",
-    "postversion": "git push && git push --tags"
+    "version": "npm run build",
+    "postversion": "npm run deploy && git push && git push --tags"
   },
   "devDependencies": {
     "@rollup/plugin-image": "^2.1.1",
