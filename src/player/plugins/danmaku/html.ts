@@ -31,7 +31,7 @@ const $danmakuOverlay = tabs([
     <div id="k-player-danmaku-setting-form" class="k-settings-list">
       <label class="k-settings-item">
         <input type="checkbox" name="showDanmaku" />
-        <span>显示弹幕(<k-shortcuts-tip command="${Commands.switchDanmaku}"></k-shortcuts-tip>)</span>
+        <span>显示弹幕(<k-shortcuts-tip command="${Commands.danmakuSwitch}"></k-shortcuts-tip>)</span>
         </label>
       <label class="k-settings-item">
         <input type="checkbox" name="showPbp" />

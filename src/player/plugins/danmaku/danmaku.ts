@@ -73,6 +73,7 @@ let player: KPlayer
 let videoInfo: NonNullable<
   Awaited<ReturnType<typeof runtime.getCurrentVideoNameAndEpisode>>
 >
+let syncDiff = 0
 
 function refreshDanmaku() {
   stop()
@@ -165,7 +166,7 @@ const loadEpisode = async (episodeId: string) => {
 
   stop()
   comments = await getComments(episodeId)
-
+  syncDiff = 0
   state = State.getComments
   start()
 
@@ -355,12 +356,57 @@ function switchDanmaku(bool?: boolean) {
 }
 
 Shortcuts.keyBindings.registerKeyBinding({
-  command: Commands.switchDanmaku,
+  command: Commands.danmakuSwitch,
   description: '显示/隐藏弹幕',
   key: 'D',
 })
-Shortcuts.registerCommand(Commands.switchDanmaku, function () {
+Shortcuts.registerCommand(Commands.danmakuSwitch, function () {
   switchDanmaku()
+})
+Shortcuts.keyBindings.registerKeyBinding({
+  command: Commands.danmakuSyncForward,
+  description: '弹幕超前0.5s',
+  key: '.',
+})
+Shortcuts.registerCommand(Commands.danmakuSyncForward, function () {
+  if (!comments) return
+  comments.forEach((comment) => {
+    comment.time += -0.5
+  })
+  syncDiff += -0.5
+  player.message.destroy()
+  player.message.info(`弹幕同步：超前了0.5s（${syncDiff}s）`)
+  refreshDanmaku()
+})
+Shortcuts.keyBindings.registerKeyBinding({
+  command: Commands.danmakuSyncBack,
+  description: '弹幕滞后0.5s',
+  key: ',',
+})
+Shortcuts.registerCommand(Commands.danmakuSyncBack, function () {
+  if (!comments) return
+  comments.forEach((comment) => {
+    comment.time += 0.5
+  })
+  syncDiff += 0.5
+  player.message.destroy()
+  player.message.info(`弹幕同步：滞后了0.5s（${syncDiff}s）`)
+  refreshDanmaku()
+})
+Shortcuts.keyBindings.registerKeyBinding({
+  command: Commands.danmakuSyncRestore,
+  description: '弹幕同步复位',
+  key: '/',
+})
+Shortcuts.registerCommand(Commands.danmakuSyncRestore, function () {
+  if (!comments) return
+  comments.forEach((comment) => {
+    comment.time += -syncDiff
+  })
+  syncDiff = 0
+  player.message.destroy()
+  player.message.info('弹幕同步：已复位')
+  refreshDanmaku()
 })
 
 // 更新 anime select

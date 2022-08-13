@@ -14,5 +14,8 @@ export interface Episode {
 }
 
 export enum Commands {
-  switchDanmaku = 'switchDanmaku',
+  danmakuSwitch = 'switchDanmaku',
+  danmakuSyncBack = 'danmakuSyncBack',
+  danmakuSyncForward = 'danmakuSyncForward',
+  danmakuSyncRestore = 'danmakuSyncRestore',
 }

@@ -88,10 +88,10 @@ export const scriptInfo = (video: HTMLVideoElement | undefined) => {
           const $tr = $(`
           <tr>
             <td>${kb.description}</td>
-            <td>${renderKey(kb.originKey)}</td>
+            <td><span class="k-font-kbd">${renderKey(kb.originKey)}</span></td>
             <td>
               <div class="shortcuts-input-wrapper">
-                <input type="text" class="k-input"><a>删除</a>
+                <input type="text" class="k-input k-font-kbd"><a>删除</a>
               </div>
             </td>
           </tr>

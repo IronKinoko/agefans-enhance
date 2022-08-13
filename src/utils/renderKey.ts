@@ -5,6 +5,9 @@ const KeyMap = {
   ArrowDown: '↓',
   ArrowLeft: '←',
   ArrowRight: '→',
+  ctrl: 'Ctrl',
+  alt: 'Alt',
+  shift: 'Shift',
 }
 
 const MacKeyMap = {
