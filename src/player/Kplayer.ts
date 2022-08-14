@@ -1,5 +1,6 @@
 import Hls from 'hls.js'
-import { debounce, throttle } from 'lodash-es'
+import throttle from 'lodash-es/throttle'
+import debounce from 'lodash-es/debounce'
 import Plyr from 'plyr'
 import { runtime } from '../runtime'
 import { Message } from '../utils/message'

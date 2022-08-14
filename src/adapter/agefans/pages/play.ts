@@ -11,7 +11,7 @@ import {
 import { his } from './history'
 import { pagePreview } from '../utils/pagePreview'
 import './play.scss'
-import { throttle } from 'lodash-es'
+import throttle from 'lodash-es/throttle'
 import { ageBlock } from '../utils/ageBlock'
 
 let player: KPlayer
