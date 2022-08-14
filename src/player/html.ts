@@ -174,7 +174,7 @@ export const settingsHTML = popover(
 <div class="k-settings-list">
   <label class="k-settings-item">
     <input type="checkbox" name="showSearchActions" />
-    显示拓展搜索
+    显示友链
   </label>
   <label class="k-settings-item">
     <input type="checkbox" name="autoplay" />
