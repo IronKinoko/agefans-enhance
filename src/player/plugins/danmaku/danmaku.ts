@@ -182,10 +182,14 @@ const searchAnime = async (name?: string) => {
   if (!name || name.length < 2) return showTips('番剧名称不少于2个字')
   if (searchAnimeLock(name)) return
 
-  const animes = await searchAnimeWithEpisode(name)
-  if (animes.length === 0) return showTips('未搜索到番剧')
-  updateAnimes(animes)
-  findEpisode(animes)
+  try {
+    const animes = await searchAnimeWithEpisode(name)
+    if (animes.length === 0) return showTips('未搜索到番剧')
+    updateAnimes(animes)
+    findEpisode(animes)
+  } catch (error) {
+    showTips('弹幕服务异常，稍后再试')
+  }
 }
 
 const findEpisode = async (animes?: Anime[]) => {
