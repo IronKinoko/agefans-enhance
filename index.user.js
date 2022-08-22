@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.28.0
+// @version      1.28.1
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -148,7 +148,7 @@
   }
   const runtime = new Runtime();
 
-  var css$g = ".agefans-wrapper .loginout a {\n  cursor: pointer;\n  text-decoration: underline;\n}\n.agefans-wrapper .loginout a + a {\n  margin-left: 8px;\n}\n.agefans-wrapper .nav_button {\n  cursor: pointer;\n}\n.agefans-wrapper .res_links {\n  word-break: break-all;\n  word-wrap: break-word;\n}\n\n@media (max-width: 480px) {\n  .nav_button:nth-child(n+6) {\n    display: inline-block;\n  }\n\n  #nav {\n    position: relative;\n    overflow-x: auto;\n    white-space: nowrap;\n    height: 91px;\n  }\n  #nav::-webkit-scrollbar {\n    display: none;\n  }\n  #nav .nav_button {\n    white-space: nowrap;\n  }\n\n  #top_search_from {\n    width: calc(100% - 16px);\n    float: left;\n    margin-top: 10px;\n    position: sticky;\n    left: 8px;\n    margin: 8px;\n  }\n\n  #new_tip1 {\n    margin-top: 10px !important;\n  }\n}";
+  var css$g = ".agefans-wrapper .loginout a {\n  cursor: pointer;\n  text-decoration: underline;\n}\n.agefans-wrapper .loginout a + a {\n  margin-left: 8px;\n}\n.agefans-wrapper .nav_button {\n  cursor: pointer;\n}\n.agefans-wrapper .res_links {\n  word-break: break-all;\n  word-wrap: break-word;\n}\n\n@media (max-width: 480px) {\n  .nav_button:nth-child(n+6) {\n    display: inline-block;\n  }\n  #nav {\n    position: relative;\n    overflow-x: auto;\n    white-space: nowrap;\n    height: 91px;\n  }\n  #nav::-webkit-scrollbar {\n    display: none;\n  }\n  #nav .nav_button {\n    white-space: nowrap;\n  }\n  #top_search_from {\n    width: calc(100% - 16px);\n    float: left;\n    margin-top: 10px;\n    position: sticky;\n    left: 8px;\n    margin: 8px;\n  }\n  #new_tip1 {\n    margin-top: 10px !important;\n  }\n}";
   n(css$g,{});
 
   var css$f = ".agefans-wrapper .page-preview-trigger .page-preview {\n  position: fixed;\n  pointer-events: none;\n  background-color: rgb(32, 32, 32);\n  border: 1px solid rgb(64, 64, 65);\n  z-index: 1000;\n  display: flex;\n  border-radius: 4px;\n  overflow: hidden;\n}\n.agefans-wrapper .page-preview-trigger .page-preview-center {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n.agefans-wrapper .page-preview-trigger .page-preview .baseblock2 {\n  border: none;\n  border-left: 1px solid #404041;\n  border-radius: 0;\n}\n.agefans-wrapper .page-preview-trigger .blocktitle.detail_title1 {\n  color: #e0e0e0;\n  border-bottom: 1px solid #404041;\n}\n.agefans-wrapper .page-preview-trigger .detail_imform_tag {\n  display: inline-block;\n  color: #808081;\n  min-width: 5em;\n}\n.agefans-wrapper .page-preview-trigger .detail_imform_value {\n  color: #e0e0e0;\n}\n.agefans-wrapper .page-preview-trigger .detail_imform_show_full {\n  display: none;\n}\n.agefans-wrapper .page-preview-trigger .detail_imform_kv {\n  min-width: 200px;\n  max-width: 256px;\n  display: inline-block;\n  margin: 3px 0px;\n  word-break: break-all;\n  word-wrap: break-word;\n}\n.agefans-wrapper .page-preview-trigger .detail_imform_desc_pre {\n  font-size: 15px;\n}\n.agefans-wrapper .page-preview-trigger .detail_imform_desc_pre * {\n  color: #e0e0e0;\n}\n.agefans-wrapper .page-preview-trigger .detail_imform_name {\n  margin: 0px;\n  color: #d0e0f0;\n  font-size: 1.2em;\n  font-weight: bold;\n  display: inline-block;\n}";
@@ -719,6 +719,36 @@
     });
   }
 
+  /**
+   * Checks if `value` is the
+   * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
+   * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+   *
+   * @static
+   * @memberOf _
+   * @since 0.1.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+   * @example
+   *
+   * _.isObject({});
+   * // => true
+   *
+   * _.isObject([1, 2, 3]);
+   * // => true
+   *
+   * _.isObject(_.noop);
+   * // => true
+   *
+   * _.isObject(null);
+   * // => false
+   */
+  function isObject(value) {
+    var type = typeof value;
+    return value != null && (type == 'object' || type == 'function');
+  }
+
   /** Detect free variable `global` from Node.js. */
   var freeGlobal = typeof global == 'object' && global && global.Object === Object && global;
 
@@ -731,6 +761,62 @@
   var root = freeGlobal$1 || freeSelf || Function('return this')();
 
   var root$1 = root;
+
+  /**
+   * Gets the timestamp of the number of milliseconds that have elapsed since
+   * the Unix epoch (1 January 1970 00:00:00 UTC).
+   *
+   * @static
+   * @memberOf _
+   * @since 2.4.0
+   * @category Date
+   * @returns {number} Returns the timestamp.
+   * @example
+   *
+   * _.defer(function(stamp) {
+   *   console.log(_.now() - stamp);
+   * }, _.now());
+   * // => Logs the number of milliseconds it took for the deferred invocation.
+   */
+  var now = function() {
+    return root$1.Date.now();
+  };
+
+  var now$1 = now;
+
+  /** Used to match a single whitespace character. */
+  var reWhitespace = /\s/;
+
+  /**
+   * Used by `_.trim` and `_.trimEnd` to get the index of the last non-whitespace
+   * character of `string`.
+   *
+   * @private
+   * @param {string} string The string to inspect.
+   * @returns {number} Returns the index of the last non-whitespace character.
+   */
+  function trimmedEndIndex(string) {
+    var index = string.length;
+
+    while (index-- && reWhitespace.test(string.charAt(index))) {}
+    return index;
+  }
+
+  /** Used to match leading whitespace. */
+  var reTrimStart = /^\s+/;
+
+  /**
+   * The base implementation of `_.trim`.
+   *
+   * @private
+   * @param {string} string The string to trim.
+   * @returns {string} Returns the trimmed string.
+   */
+  function baseTrim(string) {
+    return string
+      ? string.slice(0, trimmedEndIndex(string) + 1).replace(reTrimStart, '')
+      : string;
+  }
 
   /** Built-in value references. */
   var Symbol = root$1.Symbol;
@@ -877,70 +963,6 @@
       (isObjectLike(value) && baseGetTag(value) == symbolTag);
   }
 
-  /** Used to match a single whitespace character. */
-  var reWhitespace = /\s/;
-
-  /**
-   * Used by `_.trim` and `_.trimEnd` to get the index of the last non-whitespace
-   * character of `string`.
-   *
-   * @private
-   * @param {string} string The string to inspect.
-   * @returns {number} Returns the index of the last non-whitespace character.
-   */
-  function trimmedEndIndex(string) {
-    var index = string.length;
-
-    while (index-- && reWhitespace.test(string.charAt(index))) {}
-    return index;
-  }
-
-  /** Used to match leading whitespace. */
-  var reTrimStart = /^\s+/;
-
-  /**
-   * The base implementation of `_.trim`.
-   *
-   * @private
-   * @param {string} string The string to trim.
-   * @returns {string} Returns the trimmed string.
-   */
-  function baseTrim(string) {
-    return string
-      ? string.slice(0, trimmedEndIndex(string) + 1).replace(reTrimStart, '')
-      : string;
-  }
-
-  /**
-   * Checks if `value` is the
-   * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
-   * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
-   *
-   * @static
-   * @memberOf _
-   * @since 0.1.0
-   * @category Lang
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is an object, else `false`.
-   * @example
-   *
-   * _.isObject({});
-   * // => true
-   *
-   * _.isObject([1, 2, 3]);
-   * // => true
-   *
-   * _.isObject(_.noop);
-   * // => true
-   *
-   * _.isObject(null);
-   * // => false
-   */
-  function isObject(value) {
-    var type = typeof value;
-    return value != null && (type == 'object' || type == 'function');
-  }
-
   /** Used as references for various `Number` constants. */
   var NAN = 0 / 0;
 
@@ -999,84 +1021,6 @@
       ? freeParseInt(value.slice(2), isBinary ? 2 : 8)
       : (reIsBadHex.test(value) ? NAN : +value);
   }
-
-  /**
-   * The base implementation of `_.clamp` which doesn't coerce arguments.
-   *
-   * @private
-   * @param {number} number The number to clamp.
-   * @param {number} [lower] The lower bound.
-   * @param {number} upper The upper bound.
-   * @returns {number} Returns the clamped number.
-   */
-  function baseClamp(number, lower, upper) {
-    if (number === number) {
-      if (upper !== undefined) {
-        number = number <= upper ? number : upper;
-      }
-      if (lower !== undefined) {
-        number = number >= lower ? number : lower;
-      }
-    }
-    return number;
-  }
-
-  /**
-   * Clamps `number` within the inclusive `lower` and `upper` bounds.
-   *
-   * @static
-   * @memberOf _
-   * @since 4.0.0
-   * @category Number
-   * @param {number} number The number to clamp.
-   * @param {number} [lower] The lower bound.
-   * @param {number} upper The upper bound.
-   * @returns {number} Returns the clamped number.
-   * @example
-   *
-   * _.clamp(-10, -5, 5);
-   * // => -5
-   *
-   * _.clamp(10, -5, 5);
-   * // => 5
-   */
-  function clamp(number, lower, upper) {
-    if (upper === undefined) {
-      upper = lower;
-      lower = undefined;
-    }
-    if (upper !== undefined) {
-      upper = toNumber(upper);
-      upper = upper === upper ? upper : 0;
-    }
-    if (lower !== undefined) {
-      lower = toNumber(lower);
-      lower = lower === lower ? lower : 0;
-    }
-    return baseClamp(toNumber(number), lower, upper);
-  }
-
-  /**
-   * Gets the timestamp of the number of milliseconds that have elapsed since
-   * the Unix epoch (1 January 1970 00:00:00 UTC).
-   *
-   * @static
-   * @memberOf _
-   * @since 2.4.0
-   * @category Date
-   * @returns {number} Returns the timestamp.
-   * @example
-   *
-   * _.defer(function(stamp) {
-   *   console.log(_.now() - stamp);
-   * }, _.now());
-   * // => Logs the number of milliseconds it took for the deferred invocation.
-   */
-  var now = function() {
-    return root$1.Date.now();
-  };
-
-  var now$1 = now;
 
   /** Error message constants. */
   var FUNC_ERROR_TEXT$1 = 'Expected a function';
@@ -1374,6 +1318,62 @@
     });
     $target.append($content);
     return $target;
+  }
+
+  /**
+   * The base implementation of `_.clamp` which doesn't coerce arguments.
+   *
+   * @private
+   * @param {number} number The number to clamp.
+   * @param {number} [lower] The lower bound.
+   * @param {number} upper The upper bound.
+   * @returns {number} Returns the clamped number.
+   */
+  function baseClamp(number, lower, upper) {
+    if (number === number) {
+      if (upper !== undefined) {
+        number = number <= upper ? number : upper;
+      }
+      if (lower !== undefined) {
+        number = number >= lower ? number : lower;
+      }
+    }
+    return number;
+  }
+
+  /**
+   * Clamps `number` within the inclusive `lower` and `upper` bounds.
+   *
+   * @static
+   * @memberOf _
+   * @since 4.0.0
+   * @category Number
+   * @param {number} number The number to clamp.
+   * @param {number} [lower] The lower bound.
+   * @param {number} upper The upper bound.
+   * @returns {number} Returns the clamped number.
+   * @example
+   *
+   * _.clamp(-10, -5, 5);
+   * // => -5
+   *
+   * _.clamp(10, -5, 5);
+   * // => 5
+   */
+  function clamp(number, lower, upper) {
+    if (upper === undefined) {
+      upper = lower;
+      lower = undefined;
+    }
+    if (upper !== undefined) {
+      upper = toNumber(upper);
+      upper = upper === upper ? upper : 0;
+    }
+    if (lower !== undefined) {
+      lower = toNumber(lower);
+      lower = lower === lower ? lower : 0;
+    }
+    return baseClamp(toNumber(number), lower, upper);
   }
 
   const isMac$1 = /macintosh|mac os x/i.test(navigator.userAgent);
@@ -1760,7 +1760,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.28.0"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.28.1"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1859,7 +1859,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.28.0"}
+\u811A\u672C\u7248\u672C: ${"1.28.1"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -2150,7 +2150,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 <div class="k-settings-list">
   <label class="k-settings-item">
     <input type="checkbox" name="showSearchActions" />
-    \u663E\u793A\u62D3\u5C55\u641C\u7D22
+    \u663E\u793A\u53CB\u94FE
   </label>
   <label class="k-settings-item">
     <input type="checkbox" name="autoplay" />
@@ -3219,11 +3219,15 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
       return showTips("\u756A\u5267\u540D\u79F0\u4E0D\u5C11\u4E8E2\u4E2A\u5B57");
     if (searchAnimeLock(name))
       return;
-    const animes = await searchAnimeWithEpisode(name);
-    if (animes.length === 0)
-      return showTips("\u672A\u641C\u7D22\u5230\u756A\u5267");
-    updateAnimes(animes);
-    findEpisode(animes);
+    try {
+      const animes = await searchAnimeWithEpisode(name);
+      if (animes.length === 0)
+        return showTips("\u672A\u641C\u7D22\u5230\u756A\u5267");
+      updateAnimes(animes);
+      findEpisode(animes);
+    } catch (error) {
+      showTips("\u5F39\u5E55\u670D\u52A1\u5F02\u5E38\uFF0C\u7A0D\u540E\u518D\u8BD5");
+    }
   };
   const findEpisode = async (animes) => {
     if (!animes)
@@ -3383,8 +3387,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
       comment.time += -0.5;
     });
     syncDiff += -0.5;
-    player$5.message.destroy();
-    player$5.message.info(`\u5F39\u5E55\u540C\u6B65\uFF1A\u8D85\u524D\u4E860.5s\uFF08${syncDiff}s\uFF09`);
+    this.message.destroy();
+    this.message.info(`\u5F39\u5E55\u540C\u6B65\uFF1A\u8D85\u524D\u4E860.5s\uFF08${syncDiff}s\uFF09`);
     refreshDanmaku();
   });
   Shortcuts.keyBindings.registerKeyBinding({
@@ -3399,8 +3403,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
       comment.time += 0.5;
     });
     syncDiff += 0.5;
-    player$5.message.destroy();
-    player$5.message.info(`\u5F39\u5E55\u540C\u6B65\uFF1A\u6EDE\u540E\u4E860.5s\uFF08${syncDiff}s\uFF09`);
+    this.message.destroy();
+    this.message.info(`\u5F39\u5E55\u540C\u6B65\uFF1A\u6EDE\u540E\u4E860.5s\uFF08${syncDiff}s\uFF09`);
     refreshDanmaku();
   });
   Shortcuts.keyBindings.registerKeyBinding({
@@ -3415,8 +3419,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
       comment.time += -syncDiff;
     });
     syncDiff = 0;
-    player$5.message.destroy();
-    player$5.message.info("\u5F39\u5E55\u540C\u6B65\uFF1A\u5DF2\u590D\u4F4D");
+    this.message.destroy();
+    this.message.info("\u5F39\u5E55\u540C\u6B65\uFF1A\u5DF2\u590D\u4F4D");
     refreshDanmaku();
   });
   const updateAnimes = (animes) => {
