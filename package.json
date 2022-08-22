@@ -1,6 +1,6 @@
 {
   "name": "agefans",
-  "version": "1.28.1",
+  "version": "1.28.2",
   "description": "增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能",
   "main": "index.user.js",
   "repository": {
