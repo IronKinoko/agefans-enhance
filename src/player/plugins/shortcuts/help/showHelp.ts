@@ -45,6 +45,12 @@ export const scriptInfo = (video: HTMLVideoElement | undefined) => {
           <a target="_blank" rel="noreferrer" href="https://greasyfork.org/scripts/424023/feedback">Greasy Fork 反馈</a>
         </td>
       </tr>
+      <tr>
+        <td>特别鸣谢</td>
+        <td>
+          <a target="_blank" rel="noreferrer" href="https://www.dandanplay.com/">弹弹play</a>提供弹幕服务
+        </td>
+      </tr>
       ${
         video
           ? `<tr><td colspan="2" class="info-title">视频信息</td></tr>
