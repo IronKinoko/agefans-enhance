@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.28.1
+// @version      1.28.2
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1760,7 +1760,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.28.1"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.28.2"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1777,6 +1777,12 @@
         <td>
           <a target="_blank" rel="noreferrer" href="${githubIssueURL}">GitHub Issues</a>
           <a target="_blank" rel="noreferrer" href="https://greasyfork.org/scripts/424023/feedback">Greasy Fork \u53CD\u9988</a>
+        </td>
+      </tr>
+      <tr>
+        <td>\u7279\u522B\u9E23\u8C22</td>
+        <td>
+          <a target="_blank" rel="noreferrer" href="https://www.dandanplay.com/">\u5F39\u5F39play</a>\u63D0\u4F9B\u5F39\u5E55\u670D\u52A1
         </td>
       </tr>
       ${video ? `<tr><td colspan="2" class="info-title">\u89C6\u9891\u4FE1\u606F</td></tr>
@@ -1859,7 +1865,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.28.1"}
+\u811A\u672C\u7248\u672C: ${"1.28.2"}
 `;
 
   const GlobalKey = "show-help-info";

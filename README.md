@@ -96,3 +96,7 @@ document.cookie = 'username=admin; path=/;max-age=9000000'
 目前这种情况大多数是因为`agefans`本身提供的资源就有问题。可以尝试暂时关闭脚本，测试链接是否正常。
 
 如果关闭脚本后能正常观看，欢迎提交 issue 给我。（按 <kbd>?</kbd> 键选择提交 issue）
+
+## 特别鸣谢
+
+[弹弹 play](https://www.dandanplay.com/) 提供弹幕服务
