@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.28.2
+// @version      1.28.3
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -32,15 +32,14 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
-// @connect      api.acplay.net
-// @connect      chinacloudsites.cn
+// @connect      dandanplay.net
 // @license      MIT
 // ==/UserScript==
 
 /**
  * 权限声明:
  * 1. GM_xmlhttpRequest
- *    脚本会请求有限的网络权限。仅用于访问弹幕查询功能需要链接到的 api.acplay.net 与 chinacloudsites.cn 第三方域名
+ *    脚本会请求有限的网络权限。仅用于访问弹幕查询功能需要链接到的 dandanplay.net 第三方域名
  *    你可以从 脚本编辑/设置/XHR安全 中管理网络权限
  *
  * 2. GM_getResourceText, GM_addStyle
@@ -421,16 +420,14 @@
     }
   }
 
-  var css$d = ".k-alert {\n  margin-bottom: 16px;\n  box-sizing: border-box;\n  color: black;\n  font-size: 14px;\n  font-variant: tabular-nums;\n  line-height: 1.5715;\n  list-style: none;\n  font-feature-settings: \"tnum\";\n  position: relative;\n  display: flex;\n  align-items: center;\n  padding: 8px 15px;\n  word-wrap: break-word;\n  border-radius: 2px;\n}\n.k-alert-icon {\n  margin-right: 8px;\n  display: inline-block;\n  color: inherit;\n  font-style: normal;\n  line-height: 0;\n  text-align: center;\n  text-transform: none;\n  vertical-align: -0.125em;\n  text-rendering: optimizeLegibility;\n  -webkit-font-smoothing: antialiased;\n  color: var(--k-player-primary-color);\n}\n.k-alert-content {\n  flex: 1;\n  min-width: 0;\n}\n.k-alert-info {\n  background-color: var(--k-player-primary-color-highlight);\n  border: 1px solid var(--k-player-primary-color);\n}";
+  var css$d = ".k-alert {\n  margin-bottom: 16px;\n  box-sizing: border-box;\n  color: black;\n  font-size: 14px;\n  font-variant: tabular-nums;\n  line-height: 1.5715;\n  list-style: none;\n  font-feature-settings: \"tnum\";\n  position: relative;\n  display: flex;\n  align-items: center;\n  padding: 8px 15px;\n  word-wrap: break-word;\n  border-radius: 2px;\n}\n.k-alert-icon {\n  margin-right: 8px;\n  display: block;\n  color: var(--k-player-primary-color);\n}\n.k-alert-content {\n  flex: 1;\n  min-width: 0;\n}\n.k-alert-info {\n  background-color: var(--k-player-primary-color-highlight);\n  border: 1px solid var(--k-player-primary-color);\n}";
   n(css$d,{});
 
   function alert(html) {
     return `<div class="k-alert k-alert-info">
-  <span class="k-alert-icon">
-    <svg viewBox="64 64 896 896" focusable="false" data-icon="info-circle" width="1em" height="1em" fill="currentColor" aria-hidden="true">
-      <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm32 664c0 4.4-3.6 8-8 8h-48c-4.4 0-8-3.6-8-8V456c0-4.4 3.6-8 8-8h48c4.4 0 8 3.6 8 8v272zm-32-344a48.01 48.01 0 010-96 48.01 48.01 0 010 96z"></path>
-    </svg>
-  </span>
+  <svg class="k-alert-icon" viewBox="64 64 896 896" focusable="false" data-icon="info-circle" width="1em" height="1em" fill="currentColor" aria-hidden="true">
+    <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm32 664c0 4.4-3.6 8-8 8h-48c-4.4 0-8-3.6-8-8V456c0-4.4 3.6-8 8-8h48c4.4 0 8 3.6 8 8v272zm-32-344a48.01 48.01 0 010-96 48.01 48.01 0 010 96z"></path>
+  </svg>
   <div class="k-alert-content">
     <div class="k-alert-message">${html}</div>
   </div>
@@ -1760,7 +1757,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.28.2"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.28.3"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1865,7 +1862,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.28.2"}
+\u811A\u672C\u7248\u672C: ${"1.28.3"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -2814,7 +2811,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 
   async function getComments(episodeId) {
     const res = await request({
-      url: `https://api.acplay.net/api/v2/comment/${episodeId}?withRelated=true&chConvert=1`
+      url: `https://api.dandanplay.net/api/v2/comment/${episodeId}?withRelated=true&chConvert=1`
     });
     return res.comments.map((o) => {
       const [time, type, color] = o.p.split(",");
@@ -2828,7 +2825,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
   }
   async function searchAnimeWithEpisode(anime, episode) {
     const res = await request({
-      url: "https://api.acplay.net/api/v2/search/episodes",
+      url: "https://api.dandanplay.net/api/v2/search/episodes",
       params: { anime, episode }
     });
     return res.animes;
