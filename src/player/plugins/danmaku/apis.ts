@@ -3,13 +3,13 @@ import { request } from '../../../utils/request'
 import { Anime, RawComments } from './types'
 import { convert32ToHex } from './utils'
 
-// https://api.acplay.net/swagger/ui/index#/
+// https://api.dandanplay.net/swagger/ui/index#/
 
 export async function getComments(
   episodeId: number | string
 ): Promise<Comment[]> {
   const res: RawComments = await request({
-    url: `https://api.acplay.net/api/v2/comment/${episodeId}?withRelated=true&chConvert=1`,
+    url: `https://api.dandanplay.net/api/v2/comment/${episodeId}?withRelated=true&chConvert=1`,
   })
 
   return res.comments
@@ -30,7 +30,7 @@ export async function searchAnimeWithEpisode(
   episode?: string
 ): Promise<Anime[]> {
   const res = await request({
-    url: 'https://api.acplay.net/api/v2/search/episodes',
+    url: 'https://api.dandanplay.net/api/v2/search/episodes',
     params: { anime, episode },
   })
 

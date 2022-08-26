@@ -33,15 +33,14 @@ export function genUserScriptInfo(pkg) {
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
-// @connect      api.acplay.net
-// @connect      chinacloudsites.cn
+// @connect      dandanplay.net
 // @license      MIT
 // ==/UserScript==
 
 /**
  * 权限声明:
  * 1. GM_xmlhttpRequest
- *    脚本会请求有限的网络权限。仅用于访问弹幕查询功能需要链接到的 api.acplay.net 与 chinacloudsites.cn 第三方域名
+ *    脚本会请求有限的网络权限。仅用于访问弹幕查询功能需要链接到的 dandanplay.net 第三方域名
  *    你可以从 脚本编辑/设置/XHR安全 中管理网络权限
  *
  * 2. GM_getResourceText, GM_addStyle
