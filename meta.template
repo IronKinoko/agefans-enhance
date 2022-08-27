@@ -1,10 +1,9 @@
-export function genUserScriptInfo(pkg) {
-  return `// ==UserScript==
+// ==UserScript==
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      ${pkg.version}
-// @description  ${pkg.description}
+// @version      {{version}}
+// @description  {{description}}
 // @author       IronKinoko
 // @include      https://www.age.tv/*
 // @include      https://www.agefans.*
@@ -57,5 +56,3 @@ export function genUserScriptInfo(pkg) {
     let plyrCSS = GM_getResourceText('plyrCSS')  
     GM_addStyle(plyrCSS)
 })();
-`
-}

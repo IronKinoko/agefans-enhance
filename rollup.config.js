@@ -4,8 +4,9 @@ import { defineConfig } from 'rollup'
 import Copy from 'rollup-plugin-copy'
 import styles from 'rollup-plugin-styles'
 import pkg from './package.json'
-import { genUserScriptInfo } from './template/userscript'
 import esbuild from 'rollup-plugin-esbuild'
+import fs from 'fs'
+import path from 'path'
 
 const globals = {
   'hls.js': 'Hls',
@@ -21,7 +22,6 @@ export default defineConfig({
     dir: 'dist',
     entryFileNames: 'index.user.js',
     format: 'iife',
-    banner: genUserScriptInfo(pkg),
     globals,
   },
   external: Object.keys(globals),
@@ -42,5 +42,30 @@ export default defineConfig({
           { src: ['README.md', 'package.json', 'LICENSE'], dest: 'dist' },
         ],
       }),
+    userscript(),
   ].filter(Boolean),
 })
+
+/**
+ * @return {import('rollup').Plugin}
+ */
+function userscript() {
+  const metaFilePath = path.resolve(__dirname, 'meta.template')
+
+  return {
+    name: 'userscript',
+    buildStart() {
+      this.addWatchFile(metaFilePath)
+    },
+    outputOptions(opts) {
+      let meta = fs.readFileSync(metaFilePath, 'utf-8')
+      for (const key in pkg) {
+        if (Object.hasOwnProperty.call(pkg, key)) {
+          const element = pkg[key]
+          meta = meta.replace(`{{${key}}}`, element)
+        }
+      }
+      opts.banner = meta
+    },
+  }
+}
