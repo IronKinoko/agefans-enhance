@@ -23,6 +23,7 @@ interface DanmakuConfig {
   showDanmaku: boolean
   opacity: number
   showPbp: boolean
+  danmakuFontSize: number
   danmakuSpeed: number
   danmakuDensity: number
   danmakuMode: DanmakuMode
@@ -37,6 +38,7 @@ Object.assign(defaultConfig, {
   opacity: 0.6,
   showPbp: false,
   danmakuSpeed: 1,
+  danmakuFontSize: 1,
   danmakuMode: ['top', 'color'],
   danmakuFilter: [],
 })
@@ -49,6 +51,7 @@ enum State {
 }
 
 const baseDanmkuSpeed = 130
+const baseFontSize = 24
 let state = State.unSearched
 
 const $animeName = $danmaku.find('#animeName')
@@ -61,6 +64,9 @@ const $showDanmaku = $danmaku.find<HTMLInputElement>("[name='showDanmaku']")
 const $showPbp = $danmaku.find<HTMLInputElement>("[name='showPbp']")
 const $opacity = $danmaku.find<HTMLInputElement>("[name='opacity']")
 const $danmakuSpeed = $danmaku.find<HTMLInputElement>("[name='danmakuSpeed']")
+const $danmakuFontSize = $danmaku.find<HTMLInputElement>(
+  "[name='danmakuFontSize']"
+)
 const $danmakuDensity = $danmaku.find<HTMLInputElement>(
   "[name='danmakuDensity']"
 )
@@ -313,6 +319,15 @@ const initEvents = (name: string) => {
     name: 'opacity',
     onInput: (v) => {
       $danmakuContainer.css({ opacity: v })
+    },
+    player,
+  })
+
+  addRangeListener({
+    $dom: $danmakuFontSize,
+    name: 'danmakuFontSize',
+    onInput: (v) => {
+      $danmakuContainer.css('--danmaku-font-size', baseFontSize * v + 'px')
     },
     player,
   })

@@ -7,8 +7,8 @@
   z-index: 10;
   pointer-events: none;
 
-  * {
-    font-size: 25px;
+  .danmaku {
+    font-size: var(--danmaku-font-size, 24px);
     font-family: SimHei, 'Microsoft JhengHei', Arial, Helvetica, sans-serif;
     font-weight: bold;
     text-shadow: black 1px 0px 1px, black 0px 1px 1px, black 0px -1px 1px,
@@ -41,6 +41,15 @@
     }
     label + label {
       margin-top: 8px;
+    }
+
+    .specific-thanks {
+      color: #757575;
+      font-size: 12px;
+      position: absolute;
+      left: 8px;
+      bottom: 8px;
+      user-select: none;
     }
   }
   &-setting-form {
@@ -80,7 +89,7 @@
     margin-top: 8px;
     .ft {
       &-body {
-        height: 114px;
+        height: 147px;
         overflow: auto;
         &::-webkit-scrollbar {
           display: none;

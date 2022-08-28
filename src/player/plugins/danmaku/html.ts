@@ -23,6 +23,8 @@ const $danmakuOverlay = tabs([
         <span>章节</span>
         <select id="episodes" class="k-select"></select>
       </label>
+      
+      <span class="specific-thanks">弹幕服务由 弹弹play 提供</span>
     </div>`,
   },
   {
@@ -40,6 +42,10 @@ const $danmakuOverlay = tabs([
       <label class="k-settings-item">
         <span>透明度&#12288;</span>
         <input type="range" name="opacity" step="0.01" min="0" max="1" />
+      </label>
+      <label class="k-settings-item">
+        <span>弹幕大小</span>
+        <input type="range" name="danmakuFontSize" step="0.01" min="0.5" max="2" />
       </label>
       <label class="k-settings-item">
         <span>弹幕速度</span>
