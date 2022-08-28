@@ -80,8 +80,8 @@ function refreshDanmaku() {
   autoStart()
 }
 
-const showTips = (message: string) => {
-  $tips.text(message).fadeIn('fast').delay(1500).fadeOut('fast')
+const showTips = (message: string, duration = 1500) => {
+  $tips.text(message).fadeIn('fast').delay(duration).fadeOut('fast')
 }
 
 const stop = () => {
@@ -188,7 +188,7 @@ const searchAnime = async (name?: string) => {
     updateAnimes(animes)
     findEpisode(animes)
   } catch (error) {
-    showTips('弹幕服务异常，稍后再试')
+    showTips('弹幕服务异常，稍后再试', 3000)
   }
 }
 
@@ -368,21 +368,6 @@ Shortcuts.registerCommand(Commands.danmakuSwitch, function () {
   switchDanmaku()
 })
 Shortcuts.keyBindings.registerKeyBinding({
-  command: Commands.danmakuSyncForward,
-  description: '弹幕超前0.5s',
-  key: '.',
-})
-Shortcuts.registerCommand(Commands.danmakuSyncForward, function () {
-  if (!comments) return
-  comments.forEach((comment) => {
-    comment.time += -0.5
-  })
-  syncDiff += -0.5
-  this.message.destroy()
-  this.message.info(`弹幕同步：超前了0.5s（${syncDiff}s）`)
-  refreshDanmaku()
-})
-Shortcuts.keyBindings.registerKeyBinding({
   command: Commands.danmakuSyncBack,
   description: '弹幕滞后0.5s',
   key: ',',
@@ -395,6 +380,21 @@ Shortcuts.registerCommand(Commands.danmakuSyncBack, function () {
   syncDiff += 0.5
   this.message.destroy()
   this.message.info(`弹幕同步：滞后了0.5s（${syncDiff}s）`)
+  refreshDanmaku()
+})
+Shortcuts.keyBindings.registerKeyBinding({
+  command: Commands.danmakuSyncForward,
+  description: '弹幕超前0.5s',
+  key: '.',
+})
+Shortcuts.registerCommand(Commands.danmakuSyncForward, function () {
+  if (!comments) return
+  comments.forEach((comment) => {
+    comment.time += -0.5
+  })
+  syncDiff += -0.5
+  this.message.destroy()
+  this.message.info(`弹幕同步：超前了0.5s（${syncDiff}s）`)
   refreshDanmaku()
 })
 Shortcuts.keyBindings.registerKeyBinding({

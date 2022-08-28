@@ -69,7 +69,13 @@ class Runtime {
       .replace(/[<>《》''‘’""“”\[\]]/g, '')
       .trim()
 
-    episode = episode.replace(/[第集话]/g, '').replace(/^0+/, '')
+    episode =
+      // 取出数字
+      episode.match(/([0-9.]+)[集话]/)?.[1].replace(/^0+/, '') ||
+      // 如果没有数字 过滤中文等常见符号
+      episode.replace(/[第集话()（）]/g, '') ||
+      // fallback 返回全名
+      episode
 
     return { name, rawName, episode }
   }

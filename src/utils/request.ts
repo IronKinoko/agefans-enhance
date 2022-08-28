@@ -25,7 +25,7 @@ export function request(opts: Opts) {
       responseType: 'json',
       onload: (res: any) => {
         if (process.env.NODE_ENV === 'development') {
-          console.log(res)
+          console.log(res, res.response)
         }
         resolve(res.response)
       },
