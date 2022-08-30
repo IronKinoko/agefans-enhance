@@ -95,7 +95,7 @@ async function getVurl(href: string) {
   }
 
   if (_playid === '<play>QLIVE</play>') {
-    throw new AGEfansError('脚本不支持QLIVE模式，请使用关闭脚本使用原生播放')
+    throw new AGEfansError('脚本不支持QLIVE模式，请关闭脚本使用原生播放')
   }
 
   let _url = _purl + _vurl

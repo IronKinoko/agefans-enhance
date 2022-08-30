@@ -24,7 +24,16 @@ function createTest(target: string) {
       : test.test(target)
 }
 class Runtime {
-  private list: RegisteredItem[] = []
+  private list: RegisteredItem[] = [
+    {
+      domains: [],
+      opts: [],
+      search: {
+        name: '[BT]蜜柑计划',
+        search: (name) => `https://mikanani.me/Home/Search?searchstr=${name}`,
+      },
+    },
+  ]
   register(item: RegisteredItem) {
     this.list.push(item)
   }
