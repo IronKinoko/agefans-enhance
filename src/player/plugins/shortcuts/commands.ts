@@ -50,7 +50,7 @@ Shortcuts.registerCommand(Commands.restoreSpeed, function () {
     this.speed = 1
   } else {
     if (this.speed !== this._.prevSpeed) {
-      this.speed = this._.prevSpeed
+      this.speed = this._.prevSpeed || 1
     }
   }
 })
