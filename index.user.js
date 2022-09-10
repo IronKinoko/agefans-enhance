@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.29.0
+// @version      1.29.1
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -75,7 +75,16 @@
   }
   class Runtime {
     constructor() {
-      this.list = [];
+      this.list = [
+        {
+          domains: [],
+          opts: [],
+          search: {
+            name: "[BT]\u871C\u67D1\u8BA1\u5212",
+            search: (name) => `https://mikanani.me/Home/Search?searchstr=${name}`
+          }
+        }
+      ];
     }
     register(item) {
       this.list.push(item);
@@ -322,7 +331,7 @@
       throw new AGEfansError("\u89C6\u9891\u8F6C\u7801\u4E2D\uFF0C\u8BF7\u7A0D\u540E\u518D\u8BD5");
     }
     if (_playid === "<play>QLIVE</play>") {
-      throw new AGEfansError("\u811A\u672C\u4E0D\u652F\u6301QLIVE\u6A21\u5F0F\uFF0C\u8BF7\u4F7F\u7528\u5173\u95ED\u811A\u672C\u4F7F\u7528\u539F\u751F\u64AD\u653E");
+      throw new AGEfansError("\u811A\u672C\u4E0D\u652F\u6301QLIVE\u6A21\u5F0F\uFF0C\u8BF7\u5173\u95ED\u811A\u672C\u4F7F\u7528\u539F\u751F\u64AD\u653E");
     }
     let _url = _purl + _vurl;
     let url = new URL(_url, location.origin);
@@ -1756,7 +1765,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.29.0"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.29.1"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1861,7 +1870,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.29.0"}
+\u811A\u672C\u7248\u672C: ${"1.29.1"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -1938,7 +1947,7 @@ userAgent: ${navigator.userAgent}
       this.speed = 1;
     } else {
       if (this.speed !== this._.prevSpeed) {
-        this.speed = this._.prevSpeed;
+        this.speed = this._.prevSpeed || 1;
       }
     }
   });
