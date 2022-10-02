@@ -1,0 +1,10 @@
+.acgnya-wrapper {
+  &.widescreen {
+    * {
+      visibility: hidden;
+    }
+    iframe {
+      visibility: initial;
+    }
+  }
+}
