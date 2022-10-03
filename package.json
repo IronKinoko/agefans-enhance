@@ -1,6 +1,6 @@
 {
   "name": "agefans",
-  "version": "1.30.0",
+  "version": "1.31.0",
   "description": "增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能",
   "main": "index.user.js",
   "repository": {
@@ -47,7 +47,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "@ironkinoko/danmaku": "^1.2.6",
+    "@ironkinoko/danmaku": "^1.3.0",
     "hls.js": "^1.1.5",
     "jquery": "^3.6.0",
     "lodash-es": "^4.17.21",

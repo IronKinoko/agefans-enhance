@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.30.0
+// @version      1.31.0
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -27,7 +27,7 @@
 // @require      https://unpkg.com/jquery@3.6.0/dist/jquery.min.js
 // @require      https://unpkg.com/plyr@3.6.4/dist/plyr.min.js
 // @require      https://unpkg.com/hls.js@1.0.9/dist/hls.min.js
-// @require      https://unpkg.com/@ironkinoko/danmaku@1.2.6/dist/danmaku.umd.js
+// @require      https://unpkg.com/@ironkinoko/danmaku@1.3.0/dist/danmaku.umd.js
 // @resource     plyrCSS https://unpkg.com/plyr@3.6.4/dist/plyr.css
 // @grant        GM_getResourceText
 // @grant        GM_addStyle
@@ -1767,7 +1767,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.30.0"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.31.0"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1872,7 +1872,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.30.0"}
+\u811A\u672C\u7248\u672C: ${"1.31.0"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -2885,6 +2885,10 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
         <span>\u663E\u793A\u9AD8\u80FD\u8FDB\u5EA6\u6761</span>
       </label>
       <label class="k-settings-item">
+        <input type="checkbox" name="merge" />
+        <span>\u5408\u5E76\u5F39\u5E55</span>
+      </label>
+      <label class="k-settings-item">
         <span>\u900F\u660E\u5EA6&#12288;</span>
         <input type="range" name="opacity" step="0.01" min="0" max="1" />
       </label>
@@ -2976,7 +2980,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 </svg>
 `);
 
-  var css$6 = "#k-player-danmaku {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  pointer-events: none;\n}\n#k-player-danmaku .danmaku {\n  font-size: var(--danmaku-font-size, 24px);\n  font-family: SimHei, \"Microsoft JhengHei\", Arial, Helvetica, sans-serif;\n  font-weight: bold;\n  text-shadow: black 1px 0px 1px, black 0px 1px 1px, black 0px -1px 1px, black -1px 0px 1px;\n  line-height: 1.3;\n}\n#k-player-danmaku-overlay {\n  width: 210px;\n}\n#k-player-danmaku-search-form > * {\n  font-size: 14px;\n  box-sizing: border-box;\n  text-align: left;\n}\n#k-player-danmaku-search-form input,\n#k-player-danmaku-search-form select {\n  display: block;\n  margin-top: 4px;\n  width: 100%;\n}\n#k-player-danmaku-search-form label {\n  display: block;\n}\n#k-player-danmaku-search-form label span {\n  line-height: 1.4;\n}\n#k-player-danmaku-search-form label + label {\n  margin-top: 8px;\n}\n#k-player-danmaku-search-form .specific-thanks {\n  color: #757575;\n  font-size: 12px;\n  position: absolute;\n  left: 8px;\n  bottom: 8px;\n  user-select: none;\n}\n#k-player-danmaku-setting-form {\n  padding: 0;\n}\n#k-player-danmaku-setting-form input {\n  margin: 0;\n}\n#k-player-danmaku-filter-form {\n  padding: 0;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper {\n  display: flex;\n  align-items: center;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper > div {\n  flex: 1;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper > div input {\n  width: 100%;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper label {\n  margin-left: 8px;\n  border: 0;\n  color: white;\n  cursor: pointer;\n  transition: color 0.15s;\n  white-space: nowrap;\n  user-select: none;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper label:hover {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-filter-table {\n  margin-top: 8px;\n}\n#k-player-danmaku-filter-table .ft-body {\n  height: 147px;\n  overflow: auto;\n}\n#k-player-danmaku-filter-table .ft-body::-webkit-scrollbar {\n  display: none;\n}\n#k-player-danmaku-filter-table .ft-row {\n  display: flex;\n  border-radius: 4px;\n  transition: all 0.15s;\n}\n#k-player-danmaku-filter-table .ft-row:hover {\n  background: var(--k-player-background-highlight);\n}\n#k-player-danmaku-filter-table .ft-content {\n  padding: 4px 8px;\n  flex: 1px;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n#k-player-danmaku-filter-table .ft-op {\n  flex-shrink: 0;\n  padding: 4px 8px;\n}\n#k-player-danmaku-filter-table a {\n  color: white;\n  cursor: pointer;\n  transition: color 0.15s;\n  user-select: none;\n}\n#k-player-danmaku-filter-table a:hover {\n  color: var(--k-player-primary-color);\n}\n\n#k-player-pbp {\n  position: absolute;\n  top: -17px;\n  height: 28px;\n  -webkit-appearance: none;\n  left: 0;\n  position: absolute;\n  margin-left: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  margin-right: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  width: calc(100% + var(--plyr-range-thumb-height, 13px));\n  pointer-events: none;\n}\n\n#k-player-pbp-played-path {\n  color: var(--k-player-primary-color);\n}\n\n.plyr__controls__item.plyr__progress__container:hover #k-player-pbp {\n  top: -18px;\n}\n\n.k-danmaku-switch {\n  margin: 0 8px;\n}\n\n.k-switch {\n  position: relative;\n  width: 30px;\n  height: 20px;\n  display: flex;\n  align-items: center;\n}\n.k-switch-input {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  opacity: 0;\n  margin: 0;\n  cursor: pointer;\n  z-index: 1;\n}\n.k-switch-input + .k-switch-label {\n  --color: #757575;\n  --left: 2px;\n}\n.k-switch-input:checked + .k-switch-label {\n  --color: var(--k-player-primary-color);\n  --left: 12px;\n}\n.k-switch-label {\n  width: 30px;\n  height: 20px;\n  position: relative;\n  background: var(--color);\n  transition: all 0.3s;\n  border-radius: 15px;\n}\n.k-switch-dot {\n  position: absolute;\n  color: var(--color);\n  transition: all 0.3s;\n  height: 16px;\n  width: 16px;\n  font-size: 10px;\n  background: white;\n  border-radius: 50%;\n  left: var(--left);\n  top: 50%;\n  transform: translateY(-50%);\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}";
+  var css$6 = "#k-player-danmaku {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  pointer-events: none;\n}\n#k-player-danmaku .danmaku {\n  font-size: var(--danmaku-font-size, 24px);\n  font-family: SimHei, \"Microsoft JhengHei\", Arial, Helvetica, sans-serif;\n  font-weight: bold;\n  text-shadow: black 1px 0px 1px, black 0px 1px 1px, black 0px -1px 1px, black -1px 0px 1px;\n  line-height: 1.3;\n}\n#k-player-danmaku-overlay {\n  width: 210px;\n}\n#k-player-danmaku-search-form > * {\n  font-size: 14px;\n  box-sizing: border-box;\n  text-align: left;\n}\n#k-player-danmaku-search-form input,\n#k-player-danmaku-search-form select {\n  display: block;\n  margin-top: 4px;\n  width: 100%;\n}\n#k-player-danmaku-search-form label {\n  display: block;\n}\n#k-player-danmaku-search-form label span {\n  line-height: 1.4;\n}\n#k-player-danmaku-search-form label + label {\n  margin-top: 8px;\n}\n#k-player-danmaku-search-form .specific-thanks {\n  color: #757575;\n  font-size: 12px;\n  position: absolute;\n  left: 8px;\n  bottom: 8px;\n  user-select: none;\n}\n#k-player-danmaku-setting-form {\n  padding: 0;\n}\n#k-player-danmaku-setting-form input {\n  margin: 0;\n}\n#k-player-danmaku-filter-form {\n  padding: 0;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper {\n  display: flex;\n  align-items: center;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper > div {\n  flex: 1;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper > div input {\n  width: 100%;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper label {\n  margin-left: 8px;\n  border: 0;\n  color: white;\n  cursor: pointer;\n  transition: color 0.15s;\n  white-space: nowrap;\n  user-select: none;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper label:hover {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-filter-table {\n  margin-top: 8px;\n}\n#k-player-danmaku-filter-table .ft-body {\n  height: 168px;\n  overflow: auto;\n}\n#k-player-danmaku-filter-table .ft-body::-webkit-scrollbar {\n  display: none;\n}\n#k-player-danmaku-filter-table .ft-row {\n  display: flex;\n  border-radius: 4px;\n  transition: all 0.15s;\n}\n#k-player-danmaku-filter-table .ft-row:hover {\n  background: var(--k-player-background-highlight);\n}\n#k-player-danmaku-filter-table .ft-content {\n  padding: 4px 8px;\n  flex: 1px;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n#k-player-danmaku-filter-table .ft-op {\n  flex-shrink: 0;\n  padding: 4px 8px;\n}\n#k-player-danmaku-filter-table a {\n  color: white;\n  cursor: pointer;\n  transition: color 0.15s;\n  user-select: none;\n}\n#k-player-danmaku-filter-table a:hover {\n  color: var(--k-player-primary-color);\n}\n\n#k-player-pbp {\n  position: absolute;\n  top: -17px;\n  height: 28px;\n  -webkit-appearance: none;\n  left: 0;\n  position: absolute;\n  margin-left: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  margin-right: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  width: calc(100% + var(--plyr-range-thumb-height, 13px));\n  pointer-events: none;\n}\n\n#k-player-pbp-played-path {\n  color: var(--k-player-primary-color);\n}\n\n.plyr__controls__item.plyr__progress__container:hover #k-player-pbp {\n  top: -18px;\n}\n\n.k-danmaku-switch {\n  margin: 0 8px;\n}\n\n.k-switch {\n  position: relative;\n  width: 30px;\n  height: 20px;\n  display: flex;\n  align-items: center;\n}\n.k-switch-input {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  opacity: 0;\n  margin: 0;\n  cursor: pointer;\n  z-index: 1;\n}\n.k-switch-input + .k-switch-label {\n  --color: #757575;\n  --left: 2px;\n}\n.k-switch-input:checked + .k-switch-label {\n  --color: var(--k-player-primary-color);\n  --left: 12px;\n}\n.k-switch-label {\n  width: 30px;\n  height: 20px;\n  position: relative;\n  background: var(--color);\n  transition: all 0.3s;\n  border-radius: 15px;\n}\n.k-switch-dot {\n  position: absolute;\n  color: var(--color);\n  transition: all 0.3s;\n  height: 16px;\n  width: 16px;\n  font-size: 10px;\n  background: white;\n  border-radius: 50%;\n  left: var(--left);\n  top: 50%;\n  transform: translateY(-50%);\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}";
   n(css$6,{});
 
   function createProgressBarPower(duration, comments) {
@@ -3150,6 +3154,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
   const $danmakuSwitcher = $danmakuSwitch.find(".k-switch-input");
   const $showDanmaku = $danmaku.find("[name='showDanmaku']");
   const $showPbp = $danmaku.find("[name='showPbp']");
+  const $merge = $danmaku.find("[name='merge']");
   const $opacity = $danmaku.find("[name='opacity']");
   const $danmakuSpeed = $danmaku.find("[name='danmakuSpeed']");
   const $danmakuFontSize = $danmaku.find("[name='danmakuFontSize']");
@@ -3181,7 +3186,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
           core = new Danmaku__default["default"]({
             container: $danmakuContainer[0],
             media: player$6.media,
-            comments: adjustCommentCount(comments)
+            comments: adjustCommentCount(comments),
+            merge: player$6.localConfig.merge
           });
         } else {
           core.reload(adjustCommentCount(comments));
@@ -3343,6 +3349,13 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
     const $pbpPlayed = $pbp.find("#k-player-pbp-played-path");
     player$6.on("timeupdate", () => {
       $pbpPlayed.attr("width", (player$6.currentTime / player$6.plyr.duration || 0) * 100 + "%");
+    });
+    $merge.prop("checked", player$6.localConfig.merge).on("change", (e) => {
+      const chekced = e.target.checked;
+      $pbp.toggle(chekced);
+      player$6.configSaveToLocal("merge", chekced);
+      if (core)
+        core.merge = chekced;
     });
     addRangeListener({
       $dom: $opacity,
