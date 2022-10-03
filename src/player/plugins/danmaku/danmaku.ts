@@ -23,6 +23,7 @@ interface DanmakuConfig {
   showDanmaku: boolean
   opacity: number
   showPbp: boolean
+  merge: boolean
   danmakuFontSize: number
   danmakuSpeed: number
   danmakuDensity: number
@@ -62,6 +63,7 @@ const $tips = $danmaku.find('#tips')
 const $danmakuSwitcher = $danmakuSwitch.find('.k-switch-input')
 const $showDanmaku = $danmaku.find<HTMLInputElement>("[name='showDanmaku']")
 const $showPbp = $danmaku.find<HTMLInputElement>("[name='showPbp']")
+const $merge = $danmaku.find<HTMLInputElement>("[name='merge']")
 const $opacity = $danmaku.find<HTMLInputElement>("[name='opacity']")
 const $danmakuSpeed = $danmaku.find<HTMLInputElement>("[name='danmakuSpeed']")
 const $danmakuFontSize = $danmaku.find<HTMLInputElement>(
@@ -104,6 +106,7 @@ const start = () => {
           container: $danmakuContainer[0],
           media: player.media,
           comments: adjustCommentCount(comments),
+          merge: player.localConfig.merge,
         })
       } else {
         core.reload(adjustCommentCount(comments))
@@ -130,9 +133,9 @@ const adjustCommentCount = (comments: Comment[]) => {
       !player.localConfig.danmakuFilter.some((filter) => {
         if (/^\/.*\/$/.test(filter)) {
           const re = new RegExp(filter.slice(1, -1))
-          return re.test(cmt.text)
+          return re.test(cmt.text!)
         } else {
-          return cmt.text.includes(filter)
+          return cmt.text!.includes(filter)
         }
       })
   )
@@ -312,6 +315,13 @@ const initEvents = (name: string) => {
       'width',
       (player.currentTime / player.plyr.duration || 0) * 100 + '%'
     )
+  })
+
+  $merge.prop('checked', player.localConfig.merge).on('change', (e) => {
+    const chekced = e.target.checked
+    $pbp.toggle(chekced)
+    player.configSaveToLocal('merge', chekced)
+    if (core) core.merge = chekced
   })
 
   addRangeListener({

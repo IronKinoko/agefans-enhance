@@ -40,6 +40,10 @@ const $danmakuOverlay = tabs([
         <span>显示高能进度条</span>
       </label>
       <label class="k-settings-item">
+        <input type="checkbox" name="merge" />
+        <span>合并弹幕</span>
+      </label>
+      <label class="k-settings-item">
         <span>透明度&#12288;</span>
         <input type="range" name="opacity" step="0.01" min="0" max="1" />
       </label>
