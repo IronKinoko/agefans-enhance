@@ -20,7 +20,11 @@ function injectEvent() {
 function replacePlayer(video: HTMLVideoElement) {
   const fn = () => {
     if (!video.src || video.src === location.href) return
-    player = new KPlayer('.player-box', { video })
+    console.log(video)
+
+    player = new KPlayer(document.querySelector('.bangumi-player-box')!, {
+      video,
+    })
     injectEvent()
   }
   const ob = new MutationObserver(fn)
@@ -29,12 +33,12 @@ function replacePlayer(video: HTMLVideoElement) {
 }
 
 function resizeWrapper() {
-  const wrapper = $('.player.watch-content-player')
+  const wrapper = $('.bangumi-player.watch-content-player')
   const w = wrapper.width()!
   wrapper.height((w / 16) * 9)
 }
 export async function playModule() {
-  const video = await queryDom<HTMLVideoElement>('video')
+  const video = await queryDom<HTMLVideoElement>('video:not([src=""])')
   resizeWrapper()
   window.addEventListener('resize', resizeWrapper)
   replacePlayer(video)
