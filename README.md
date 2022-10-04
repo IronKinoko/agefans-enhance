@@ -15,6 +15,7 @@
 - 弹幕
 - 画中画
 - 自动换集
+- 超多快捷键，支持自定义
 - 调整播放器外边框，适配视频比例
 - 记录播放历史，可在顶部【历史】菜单中查看
 - 记录播放位置，自动续播
@@ -56,20 +57,18 @@
 
 ## 网站适配列表
 
-- https://www.age.tv/*
-- https://www.agefans.*
-- https://www.agemys.*
-- \*://\*.yhdm.so/\*
-- \*://\*.yinghuacd.com/\*
-- https://www.yhdmp.cc/vp/*
-- http://www.imomoe.live/player/*
-- http://www.88dmw.com/*
-- https://new-ani.me/*
-- https://bangumi.online/*
-- https://danmu.4dm.cc/m3u8.php*
-- http*://www.ntyou.*
-- https://www.dm233.*
-- https://www.olevod.com*
+- 标记为推荐的网站
+
+* [\*agefans](http://www.age.tv/)
+* [樱花动漫 1](https://www.yhdmp.cc/)
+* [樱花动漫 2](http://www.yinghuacd.com/)
+* [樱花动漫 3](https://www.odcoc.com/)
+* [acgnya](https://www.acgnya.com/)
+* [bimiacg](https://www.bimiacg4.net/)
+* [dm233](https://www.dm233.org/)
+* [アニメ新番組](https://bangumi.online/)
+* [NT 动漫](http://www.ntyou.cc/)
+* [\*omofun](https://omofun.tv/)
 
 ## 注意事项
 
