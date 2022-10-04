@@ -1,6 +1,6 @@
 import './message.scss'
 export class Message {
-  $message: JQuery<HTMLDivElement>
+  private $message: JQuery<HTMLDivElement>
   constructor(selector: string | JQuery) {
     this.$message = $('<div id="k-player-message">')
     this.$message.appendTo($(selector as any))

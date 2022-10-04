@@ -66,6 +66,11 @@ const DefaultKeyBindings: KeyBinding[] = [
   { command: Commands.restoreSpeed, key: 'Z', description: '原速播放' },
   { command: Commands.decreaseSpeed, key: 'X', description: '减速播放' },
   { command: Commands.increaseSpeed, key: 'C', description: '加速播放' },
+  {
+    command: Commands.temporaryIncreaseSpeed,
+    key: 'V',
+    description: '长按加速',
+  },
   { command: Commands.togglePIP, key: 'I', description: '画中画' },
   {
     command: Commands.increaseVolume,

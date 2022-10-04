@@ -7,6 +7,7 @@ import { normalizeKeyEvent } from './utils'
 export class Shortcuts {
   constructor(private player: KPlayer) {
     window.addEventListener('keydown', this.handleKeyEvent)
+    window.addEventListener('keyup', this.handleKeyEvent)
   }
   static Commands = Commands
   static keyBindings = new KeyBindings()
@@ -14,9 +15,10 @@ export class Shortcuts {
 
   static registerCommand(
     command: Command['command'],
-    callback: Command['callback']
+    keydown: Command['keydown'],
+    keyup?: Command['keyup']
   ) {
-    this.commands.push({ command, callback })
+    this.commands.push({ command, keydown, keyup })
   }
 
   handleKeyEvent = (e: KeyboardEvent) => {
@@ -26,14 +28,15 @@ export class Shortcuts {
     const command = Shortcuts.keyBindings.getCommand(key)
     if (command) {
       e.preventDefault()
-      this.invoke(command)
+      this.invoke(command, e)
     }
   }
 
-  invoke(command: string) {
+  invoke(command: string, e: KeyboardEvent) {
     const cmd = Shortcuts.commands.find((cmd) => cmd.command === command)
     if (cmd) {
-      cmd.callback.call(this.player)
+      const type = e.type === 'keydown' ? 'keydown' : 'keyup'
+      cmd[type]?.call(this.player, e)
     }
   }
 }

@@ -1,8 +1,12 @@
 import { KPlayer } from '../../Kplayer'
 
+export interface CommandEvent {
+  (this: KPlayer, event: KeyboardEvent): void
+}
 export interface Command {
   command: string
-  callback(this: KPlayer): void
+  keydown: CommandEvent
+  keyup?: CommandEvent
 }
 export interface KeyBinding {
   command: string
@@ -33,6 +37,7 @@ export enum Commands {
   restoreSpeed = 'restoreSpeed',
   increaseSpeed = 'increaseSpeed',
   decreaseSpeed = 'decreaseSpeed',
+  temporaryIncreaseSpeed = 'temporaryIncreaseSpeed',
   togglePIP = 'togglePIP',
   internal = 'internal',
   help = 'help',

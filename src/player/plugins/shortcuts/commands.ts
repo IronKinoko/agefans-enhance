@@ -1,9 +1,9 @@
 import clamp from 'lodash-es/clamp'
 import { Shortcuts } from './shortcuts'
-import { Command, Commands } from './types'
+import { CommandEvent, Commands } from './types'
 import './help'
 
-function seekTime(duration: number): Command['callback'] {
+function seekTime(duration: number): CommandEvent {
   return function () {
     this.currentTime = clamp(this.currentTime + duration, 0, this.plyr.duration)
 
@@ -44,29 +44,60 @@ Shortcuts.registerCommand(Commands.Escape, function () {
   this.toggleWidescreen(false)
 })
 
-Shortcuts.registerCommand(Commands.restoreSpeed, function () {
-  if (this.speed !== 1) {
-    this._.prevSpeed = this.speed
-    this.speed = 1
-  } else {
-    if (this.speed !== this._.prevSpeed) {
-      this.speed = this._.prevSpeed || 1
+Shortcuts.registerCommand(
+  Commands.restoreSpeed,
+  (() => {
+    let prevSpeed = 1
+    return function () {
+      if (this.speed !== 1) {
+        prevSpeed = this.speed
+        this.speed = 1
+      } else {
+        if (this.speed !== prevSpeed) {
+          this.speed = prevSpeed
+        }
+      }
     }
-  }
-})
+  })()
+)
 
-function changeSpeed(diff: number): Command['callback'] {
+function changeSpeed(diff: number): CommandEvent {
   return function () {
-    let idx = this._.speedList.indexOf(this.speed)
+    let idx = this.speedList.indexOf(this.speed)
 
-    const newIdx = clamp(idx + diff, 0, this._.speedList.length - 1)
+    const newIdx = clamp(idx + diff, 0, this.speedList.length - 1)
     if (newIdx === idx) return
-    const speed = this._.speedList[newIdx]
+    const speed = this.speedList[newIdx]
     this.speed = speed
   }
 }
 Shortcuts.registerCommand(Commands.increaseSpeed, changeSpeed(1))
 Shortcuts.registerCommand(Commands.decreaseSpeed, changeSpeed(-1))
+
+function createTemporaryIncreaseSpeed(): [CommandEvent, CommandEvent] {
+  let prevSpeed = 1
+  let isIncreasingSpeed = false
+  return [
+    function keydown(e) {
+      if (!e.repeat || isIncreasingSpeed) return
+
+      isIncreasingSpeed = true
+      prevSpeed = this.speed
+      this.plyr.speed = 3
+      this.message.info('倍速播放中', 500)
+    },
+    function keyup(e) {
+      if (!isIncreasingSpeed) return
+      isIncreasingSpeed = false
+      this.plyr.speed = prevSpeed
+    },
+  ]
+}
+
+Shortcuts.registerCommand(
+  Commands.temporaryIncreaseSpeed,
+  ...createTemporaryIncreaseSpeed()
+)
 
 Shortcuts.registerCommand(Commands.togglePIP, function () {
   this.plyr.pip = !this.plyr.pip
@@ -74,7 +105,7 @@ Shortcuts.registerCommand(Commands.togglePIP, function () {
 
 Shortcuts.registerCommand(Commands.internal, function () {})
 
-function changeFrame(diff: number): Command['callback'] {
+function changeFrame(diff: number): CommandEvent {
   let fps = 30
   let isSuspend = false
 
@@ -90,11 +121,10 @@ function changeFrame(diff: number): Command['callback'] {
       if (!isSuspend) {
         this.plyr.play = ((play) => {
           isSuspend = true
-          const fn = () => {
+          return () => {
             isSuspend = false
             this.plyr.play = play
           }
-          return fn
         })(this.plyr.play)
       }
     }

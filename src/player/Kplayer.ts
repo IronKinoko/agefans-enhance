@@ -90,9 +90,7 @@ export class KPlayer {
   $searchActions!: JQuery<HTMLElement>
   static plguinList: ((player: KPlayer) => void)[] = []
   opts: Opts
-  _: any = {
-    speedList,
-  }
+  speedList = speedList
 
   constructor(selector: string | Element, opts: Opts = {}) {
     this.opts = opts
@@ -131,9 +129,7 @@ export class KPlayer {
         'fullscreen',
       ],
       storage: { enabled: false },
-      seekTime: 5,
       volume: this.localConfig.volume,
-      speed: { options: speedList, selected: 1 },
       i18n,
       tooltips: {
         controls: true,
