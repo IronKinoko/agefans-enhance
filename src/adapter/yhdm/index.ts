@@ -1,5 +1,4 @@
 import './index.scss'
-import './imomoe.live'
 import './odcoc.com'
 import './yhdm.so'
 import './yhdmp.cc'
