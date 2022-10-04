@@ -7,6 +7,6 @@ runtime.register({
   search: {
     name: 'NT动漫',
     search: (name) =>
-      `https://www.ntyou.com/search/-------------.html?wd=${name}&page=1`,
+      `http://www.ntyou.cc/search/-------------.html?wd=${name}&page=1`,
   },
 })
