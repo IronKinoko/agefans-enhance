@@ -1,4 +1,4 @@
-import { queryDom } from '../../utils/queryDom'
+import { queryDom } from '../../../utils/queryDom'
 
 function switchPart(next: boolean) {
   if (next) {
@@ -16,7 +16,6 @@ export async function playModule() {
 
   window.addEventListener('message', (e) => {
     if (!e.data?.key) return
-
     const key = e.data.key
 
     if (key === 'prev') switchPart(false)
@@ -41,7 +40,7 @@ export async function playModule() {
 
     if (key === 'getSearchName') {
       iframe.contentWindow?.postMessage(
-        { key: 'getSearchName', name: $('.module-info-heading h1 a').text() },
+        { key: 'getSearchName', name: $('h3.title a.title').text() },
         '*'
       )
     }
@@ -49,7 +48,7 @@ export async function playModule() {
       iframe.contentWindow?.postMessage(
         {
           key: 'getEpisode',
-          name: $('.module-play-list-link.active > span').text(),
+          name: $('h3.title small').text(),
         },
         '*'
       )

@@ -1,10 +1,21 @@
 import { runtime } from '../../runtime'
-import { playModule } from './play'
+import { parser } from './parser'
 
 // 这是个解析器网站，里面只有一个播放器。将其替换成 KPlayer
 runtime.register({
-  domains: ['danmu.4dm.cc'],
-  opts: [{ test: '/m3u8.php', runInIframe: true, run: playModule }],
+  domains: ['pro.ascepan.top', 'danmu.yhdmjx.com'],
+  opts: [
+    {
+      test: () => window.location.href.includes('danmu.yhdmjx.com/m3u8.php'),
+      runInIframe: true,
+      run: parser['danmu.yhdmjx.com'],
+    },
+    {
+      test: () => window.location.href.includes('pro.ascepan.top/player'),
+      runInIframe: true,
+      run: parser['pro.ascepan.top'],
+    },
+  ],
   search: {
     getSearchName: () => {
       return new Promise((resolve) => {

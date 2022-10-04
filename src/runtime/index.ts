@@ -1,6 +1,6 @@
 interface RegisterOpts {
   runInIframe?: boolean
-  test: string | RegExp | (string | RegExp)[]
+  test: string | RegExp | (string | RegExp)[] | (() => boolean)
   setup?: Function
   run: Function
 }
@@ -18,8 +18,10 @@ interface RegisteredItem {
 }
 
 function createTest(target: string) {
-  return (test: string | RegExp) =>
-    typeof test === 'string'
+  return (test: string | RegExp | (() => boolean)) =>
+    typeof test === 'function'
+      ? test()
+      : typeof test === 'string'
       ? target.includes(test) || test === '*'
       : test.test(target)
 }

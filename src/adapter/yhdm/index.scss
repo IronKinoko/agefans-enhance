@@ -9,4 +9,13 @@
   .pp .player {
     height: 540px;
   }
+
+  &.widescreen {
+    * {
+      visibility: hidden;
+    }
+    iframe {
+      visibility: initial;
+    }
+  }
 }

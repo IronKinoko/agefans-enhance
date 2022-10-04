@@ -29,7 +29,7 @@ export function playModule() {
       if (width) $('#ageframediv').height((video.height / video.width) * width)
     }
 
-    // 这里的事件由 danmu.3dm.cc 触发
+    // 这里的事件由 danmu.yhdmjx.com 触发
     if (key === 'getSearchName') {
       const iframe = $<HTMLIFrameElement>(iframeSelector)[0]
 
