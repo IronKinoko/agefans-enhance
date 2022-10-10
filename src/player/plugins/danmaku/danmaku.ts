@@ -18,7 +18,7 @@ import {
 } from './utils'
 import { createFilter } from './filter'
 
-type DanmakuMode = ('top' | 'bottom' | 'color')[]
+type DanmakuMode = ('top' | 'color')[]
 interface DanmakuConfig {
   showDanmaku: boolean
   opacity: number
@@ -29,6 +29,7 @@ interface DanmakuConfig {
   danmakuDensity: number
   danmakuMode: DanmakuMode
   danmakuFilter: string[]
+  danmakuAreaHeight: number
 }
 declare module '../../KPlayer' {
   interface LocalConfig extends DanmakuConfig {}
@@ -42,7 +43,10 @@ Object.assign(defaultConfig, {
   danmakuFontSize: 1,
   danmakuMode: ['top', 'color'],
   danmakuFilter: [],
-})
+  danmakuAreaHeight: 1,
+  merge: false,
+  danmakuDensity: 1,
+} as DanmakuConfig)
 
 enum State {
   unSearched,
@@ -71,6 +75,9 @@ const $danmakuFontSize = $danmaku.find<HTMLInputElement>(
 )
 const $danmakuDensity = $danmaku.find<HTMLInputElement>(
   "[name='danmakuDensity']"
+)
+const $danmakuAreaHeight = $danmaku.find<HTMLInputElement>(
+  "[name='danmakuAreaHeight']"
 )
 
 const $danmakuMode = $danmaku.find<HTMLInputElement>("[name='danmakuMode']")
@@ -146,9 +153,6 @@ const adjustCommentCount = (comments: Comment[]) => {
     ret = ret.filter(
       (cmt) => (cmt.style as CSSStyleDeclaration)!.color === '#ffffff'
     )
-  }
-  if (!mode.includes('bottom')) {
-    ret = ret.filter((cmt) => cmt.mode !== 'bottom')
   }
   if (!mode.includes('top')) {
     ret = ret.filter((cmt) => cmt.mode !== 'top')
@@ -282,7 +286,7 @@ const initEvents = (name: string) => {
   const resizeOb = new ResizeObserver(() => {
     core?.resize()
   })
-  resizeOb.observe(player.$videoWrapper[0])
+  resizeOb.observe($danmakuContainer[0])
 
   const mutationOb = new MutationObserver(async () => {
     searchAnimeLock(Math.random())
@@ -355,6 +359,14 @@ const initEvents = (name: string) => {
     $dom: $danmakuDensity,
     name: 'danmakuDensity',
     onChange: refreshDanmaku,
+    player,
+  })
+  addRangeListener({
+    $dom: $danmakuAreaHeight,
+    name: 'danmakuAreaHeight',
+    onInput: (val) => {
+      $danmakuContainer.css({ bottom: (1 - val) * 100 + '%' })
+    },
     player,
   })
 
