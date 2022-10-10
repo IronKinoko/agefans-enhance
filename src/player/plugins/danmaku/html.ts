@@ -39,10 +39,16 @@ const $danmakuOverlay = tabs([
         <input type="checkbox" name="showPbp" />
         <span>显示高能进度条</span>
       </label>
-      <label class="k-settings-item">
-        <input type="checkbox" name="merge" />
-        <span>合并弹幕</span>
-      </label>
+      <div class="k-settings-item">
+        <label class="k-settings-item" title="启用后合并显示重复的弹幕">
+          <input type="checkbox" name="danmakuMerge" />
+          <span>合并弹幕</span>
+        </label>
+        <label class="k-settings-item" title="启用后当弹幕过多的时候可以重叠显示">
+          <input type="checkbox" name="danmakuOverlap" />
+          <span>重叠弹幕</span>
+        </label>
+      </div>
       <label class="k-settings-item">
         <span>透明度&#12288;</span>
         <input type="range" name="opacity" step="0.01" min="0" max="1" />
@@ -61,17 +67,21 @@ const $danmakuOverlay = tabs([
       </label>
       <label class="k-settings-item">
         <span>弹幕区域</span>
-        <input type="range" name="danmakuAreaHeight" step="0.01" min="0.25" max="1" />
+        <input type="range" name="danmakuScrollAreaPercent" step="0.01" min="0.25" max="1" />
       </label>
       <div class="k-settings-item" style="height:24px">
         <div>弹幕类型</div>
         <label class="k-settings-item" title="顶部弹幕">
           <input type="checkbox" name="danmakuMode" value="top"/>
-          <span>顶部</span>
+          <span>顶</span>
+        </label>
+        <label class="k-settings-item" title="底部弹幕">
+          <input type="checkbox" name="danmakuMode" value="bottom"/>
+          <span>底</span>
         </label>
         <label class="k-settings-item" title="彩色弹幕">
           <input type="checkbox" name="danmakuMode" value="color" />
-          <span>彩色</span>
+          <span>彩</span>
         </label>
       </div>
     </div>

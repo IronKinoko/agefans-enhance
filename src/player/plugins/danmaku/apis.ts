@@ -17,7 +17,7 @@ export async function getComments(
       const [time, type, color] = o.p.split(',')
 
       return {
-        mode: ({ 1: 'rtl', 5: 'top' } as const)[type] || 'rtl',
+        mode: ({ 1: 'rtl', 4: 'bottom', 5: 'top' } as const)[type] || 'rtl',
         text: o.m,
         time: parseFloat(time),
         style: { color: convert32ToHex(color) },

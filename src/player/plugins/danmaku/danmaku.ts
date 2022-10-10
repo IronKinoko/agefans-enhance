@@ -18,18 +18,19 @@ import {
 } from './utils'
 import { createFilter } from './filter'
 
-type DanmakuMode = ('top' | 'color')[]
+type DanmakuMode = ('top' | 'bottom' | 'color')[]
 interface DanmakuConfig {
   showDanmaku: boolean
   opacity: number
   showPbp: boolean
-  merge: boolean
+  danmakuOverlap: boolean
+  danmakuMerge: boolean
   danmakuFontSize: number
   danmakuSpeed: number
   danmakuDensity: number
   danmakuMode: DanmakuMode
   danmakuFilter: string[]
-  danmakuAreaHeight: number
+  danmakuScrollAreaPercent: number
 }
 declare module '../../KPlayer' {
   interface LocalConfig extends DanmakuConfig {}
@@ -43,9 +44,10 @@ Object.assign(defaultConfig, {
   danmakuFontSize: 1,
   danmakuMode: ['top', 'color'],
   danmakuFilter: [],
-  danmakuAreaHeight: 1,
-  merge: false,
+  danmakuScrollAreaPercent: 1,
+  danmakuMerge: false,
   danmakuDensity: 1,
+  danmakuOverlap: false,
 } as DanmakuConfig)
 
 enum State {
@@ -67,7 +69,10 @@ const $tips = $danmaku.find('#tips')
 const $danmakuSwitcher = $danmakuSwitch.find('.k-switch-input')
 const $showDanmaku = $danmaku.find<HTMLInputElement>("[name='showDanmaku']")
 const $showPbp = $danmaku.find<HTMLInputElement>("[name='showPbp']")
-const $merge = $danmaku.find<HTMLInputElement>("[name='merge']")
+const $danmakuMerge = $danmaku.find<HTMLInputElement>("[name='danmakuMerge']")
+const $danmakuOverlap = $danmaku.find<HTMLInputElement>(
+  "[name='danmakuOverlap']"
+)
 const $opacity = $danmaku.find<HTMLInputElement>("[name='opacity']")
 const $danmakuSpeed = $danmaku.find<HTMLInputElement>("[name='danmakuSpeed']")
 const $danmakuFontSize = $danmaku.find<HTMLInputElement>(
@@ -76,8 +81,8 @@ const $danmakuFontSize = $danmaku.find<HTMLInputElement>(
 const $danmakuDensity = $danmaku.find<HTMLInputElement>(
   "[name='danmakuDensity']"
 )
-const $danmakuAreaHeight = $danmaku.find<HTMLInputElement>(
-  "[name='danmakuAreaHeight']"
+const $danmakuScrollAreaPercent = $danmaku.find<HTMLInputElement>(
+  "[name='danmakuScrollAreaPercent']"
 )
 
 const $danmakuMode = $danmaku.find<HTMLInputElement>("[name='danmakuMode']")
@@ -113,7 +118,9 @@ const start = () => {
           container: $danmakuContainer[0],
           media: player.media,
           comments: adjustCommentCount(comments),
-          merge: player.localConfig.merge,
+          merge: player.localConfig.danmakuMerge,
+          scrollAreaPercent: player.localConfig.danmakuScrollAreaPercent,
+          overlap: player.localConfig.danmakuOverlap,
         })
       } else {
         core.reload(adjustCommentCount(comments))
@@ -153,6 +160,9 @@ const adjustCommentCount = (comments: Comment[]) => {
     ret = ret.filter(
       (cmt) => (cmt.style as CSSStyleDeclaration)!.color === '#ffffff'
     )
+  }
+  if (!mode.includes('bottom')) {
+    ret = ret.filter((cmt) => cmt.mode !== 'bottom')
   }
   if (!mode.includes('top')) {
     ret = ret.filter((cmt) => cmt.mode !== 'top')
@@ -321,12 +331,23 @@ const initEvents = (name: string) => {
     )
   })
 
-  $merge.prop('checked', player.localConfig.merge).on('change', (e) => {
-    const chekced = e.target.checked
-    $pbp.toggle(chekced)
-    player.configSaveToLocal('merge', chekced)
-    if (core) core.merge = chekced
-  })
+  $danmakuMerge
+    .prop('checked', player.localConfig.danmakuMerge)
+    .on('change', (e) => {
+      const chekced = e.target.checked
+      $pbp.toggle(chekced)
+      player.configSaveToLocal('danmakuMerge', chekced)
+      if (core) core.merge = chekced
+    })
+
+  $danmakuOverlap
+    .prop('checked', player.localConfig.danmakuOverlap)
+    .on('change', (e) => {
+      const chekced = e.target.checked
+      $pbp.toggle(chekced)
+      player.configSaveToLocal('danmakuOverlap', chekced)
+      if (core) core.overlap = chekced
+    })
 
   addRangeListener({
     $dom: $opacity,
@@ -362,10 +383,10 @@ const initEvents = (name: string) => {
     player,
   })
   addRangeListener({
-    $dom: $danmakuAreaHeight,
-    name: 'danmakuAreaHeight',
-    onInput: (val) => {
-      $danmakuContainer.css({ bottom: (1 - val) * 100 + '%' })
+    $dom: $danmakuScrollAreaPercent,
+    name: 'danmakuScrollAreaPercent',
+    onChange: (val) => {
+      if (core) core.scrollAreaPercent = val
     },
     player,
   })
