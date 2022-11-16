@@ -243,6 +243,19 @@ export class KPlayer {
   }
 
   private initEvent() {
+    this.$video
+      .on('dragover', (e) => {
+        e.preventDefault()
+      })
+      .on('drop', (_e) => {
+        const e = _e.originalEvent!
+        e.preventDefault()
+        const file = e.dataTransfer?.files[0]
+        if (file) {
+          this.src = URL.createObjectURL(file)
+        }
+      })
+
     this.on('loadstart', () => {
       this.$loading.show()
       this.hideError()
