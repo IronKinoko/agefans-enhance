@@ -1,4 +1,4 @@
-import { KPlayer } from '../../../player'
+import { addReferrerMeta, KPlayer } from '../../../player'
 import parseToURL from '../../../utils/parseToURL'
 
 let player: KPlayer
@@ -10,6 +10,7 @@ function replacePlayer() {
     let url = new URL(dom.src)
     let videoURL = url.searchParams.get('url')
     if (videoURL) {
+      addReferrerMeta('no-referrer')
       player = new KPlayer('#yh_playfram')
       player.src = parseToURL(videoURL)
       initEvent()
