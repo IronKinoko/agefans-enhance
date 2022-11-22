@@ -12,6 +12,8 @@
   "globals": {
     "GM_setValue": "readonly",
     "GM_getValue": "readonly",
+    "GM_getResourceText": "readonly",
+    "GM_addStyle": "readonly",
     "unsafeWindow": "readonly",
     "ClipboardItem": "readonly",
     "$": "readonly"

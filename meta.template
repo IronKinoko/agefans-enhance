@@ -2,8 +2,8 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      {{version}}
-// @description  {{description}}
+// @version      #version#
+// @description  #description#
 // @author       IronKinoko
 // @include      https://www.age.tv/*
 // @include      https://www.agefans.*
