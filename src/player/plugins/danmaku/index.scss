@@ -43,6 +43,14 @@
       margin-top: 8px;
     }
 
+    .open-danmaku-list {
+      cursor: pointer;
+      transition: color 0.15s;
+      &:hover {
+        color: var(--k-player-primary-color);
+      }
+    }
+
     .specific-thanks {
       color: #757575;
       font-size: 12px;
@@ -199,5 +207,78 @@
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+}
+
+.k-player-danmaku-list {
+  * {
+    box-sizing: border-box;
+    font-size: 14px;
+    line-height: normal;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+      Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }
+  .k-modal-body {
+    padding: 0;
+  }
+
+  &-wrapper {
+    height: 500px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &-source-filter {
+  }
+
+  &-table-wrapper {
+    flex: 1;
+    min-height: 0;
+    overflow-y: scroll;
+    position: relative;
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 4px;
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.45);
+      }
+    }
+  }
+  &-table {
+    width: 100%;
+    border-spacing: 0;
+    border-collapse: separate;
+    table-layout: fixed;
+
+    th,
+    td {
+      padding: 8px;
+      border-bottom: 1px solid #f1f1f1;
+      word-wrap: break-word;
+      word-break: break-all;
+      white-space: nowrap;
+    }
+
+    th {
+      position: sticky;
+      background-color: white;
+      top: 0;
+      z-index: 1;
+    }
+
+    th:nth-child(1) {
+      width: 55px;
+    }
+    td:nth-child(2) {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    th:nth-child(3) {
+      width: 100px;
+    }
   }
 }

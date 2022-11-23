@@ -1,6 +1,7 @@
-import { KPlayer, LocalConfig } from '../../Kplayer'
 import { local } from '../../../utils/storage'
+import { KPlayer, LocalConfig } from '../../Kplayer'
 import { Anime } from './types'
+
 function createStorage<T = string>(storageKey: string) {
   function storage(key: string): T | undefined
   function storage(key: string, value: T): void
@@ -31,6 +32,18 @@ export const episodeIdLock = createLock()
 export const searchAnimeLock = createLock()
 export function convert32ToHex(color: string) {
   return '#' + parseInt(color).toString(16)
+}
+export function parseUid(uid: string) {
+  let source = '弹弹play',
+    id = uid
+
+  const matcher = uid.match(/^\[(.*?)\](.*)/)
+  if (matcher) {
+    source = matcher[1]
+    id = matcher[2]
+  }
+
+  return { source, id }
 }
 
 export function rangePercent(min: number, input: number, max: number) {

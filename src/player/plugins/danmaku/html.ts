@@ -1,7 +1,5 @@
 import { popover } from '../../../utils/popover'
-import { renderKey } from '../../../utils/renderKey'
 import { tabs } from '../../../utils/tabs'
-import { Shortcuts } from '../shortcuts'
 import { Commands } from './types'
 
 const $danmakuOverlay = tabs([
@@ -22,6 +20,9 @@ const $danmakuOverlay = tabs([
       <label>
         <span>章节</span>
         <select id="episodes" class="k-select"></select>
+      </label>
+      <label>
+        <span class="open-danmaku-list">弹幕列表</span>
       </label>
       
       <span class="specific-thanks">弹幕服务由 弹弹play 提供</span>

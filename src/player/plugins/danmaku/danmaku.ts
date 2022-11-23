@@ -1,12 +1,14 @@
-import Danmaku, { Comment } from '@ironkinoko/danmaku'
+import Danmaku from '@ironkinoko/danmaku'
 import { runtime } from '../../../runtime'
-import { Shortcuts } from '../shortcuts'
 import { defaultConfig, KPlayer } from '../../Kplayer'
+import { Shortcuts } from '../shortcuts'
 import { getComments, searchAnimeWithEpisode } from './apis'
-import { $danmaku, $danmakuContainer, $pbp, $danmakuSwitch } from './html'
+import { createDanmakuList } from './danmakuList'
+import { createFilter } from './filter'
+import { $danmaku, $danmakuContainer, $danmakuSwitch, $pbp } from './html'
 import './index.scss'
 import { createProgressBarPower } from './progressBarPower'
-import { Anime, Commands, Episode } from './types'
+import { Anime, Commands, Comment, Episode } from './types'
 import {
   addRangeListener,
   episodeIdLock,
@@ -16,7 +18,6 @@ import {
   storageAnimeName,
   storageEpisodeName,
 } from './utils'
-import { createFilter } from './filter'
 
 type DanmakuMode = ('top' | 'bottom' | 'color')[]
 interface DanmakuConfig {
@@ -31,6 +32,7 @@ interface DanmakuConfig {
   danmakuMode: DanmakuMode
   danmakuFilter: string[]
   danmakuScrollAreaPercent: number
+  danmakuSourceDisabledList: string[]
 }
 declare module '../../KPlayer' {
   interface LocalConfig extends DanmakuConfig {}
@@ -48,6 +50,7 @@ Object.assign(defaultConfig, {
   danmakuMerge: false,
   danmakuDensity: 1,
   danmakuOverlap: false,
+  danmakuSourceDisabledList: [],
 } as DanmakuConfig)
 
 enum State {
@@ -401,6 +404,8 @@ const initEvents = (name: string) => {
   })
 
   createFilter(player, refreshDanmaku)
+
+  createDanmakuList(player, () => comments, refreshDanmaku)
 }
 
 function switchDanmaku(bool?: boolean) {

@@ -1,7 +1,6 @@
-import { Comment } from '@ironkinoko/danmaku'
 import { request } from '../../../utils/request'
-import { Anime, RawComments } from './types'
-import { convert32ToHex } from './utils'
+import { Anime, RawComments, Comment } from './types'
+import { convert32ToHex, parseUid } from './utils'
 
 // https://api.dandanplay.net/swagger/ui/index#/
 
@@ -14,13 +13,16 @@ export async function getComments(
 
   return res.comments
     .map((o) => {
-      const [time, type, color] = o.p.split(',')
+      const [time, type, color, uid] = o.p.split(',')
+
+      const user = parseUid(uid)
 
       return {
         mode: ({ 1: 'rtl', 4: 'bottom', 5: 'top' } as const)[type] || 'rtl',
         text: o.m,
         time: parseFloat(time),
         style: { color: convert32ToHex(color) },
+        user,
       }
     })
     .sort((a, b) => a.time - b.time)

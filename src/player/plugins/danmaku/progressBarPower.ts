@@ -1,5 +1,5 @@
-import { Comment } from '@ironkinoko/danmaku'
 import { $pbp } from './html'
+import { Comment } from './types'
 
 type Point = { x: string; y: string }
 
