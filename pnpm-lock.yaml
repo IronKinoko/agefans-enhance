@@ -4,12 +4,11 @@ specifiers:
   '@ironkinoko/danmaku': ^1.4.1
   '@types/jquery': ^3.5.14
   '@types/lodash-es': ^4.17.6
-  bochi: ^1.0.3
+  bochi: ^1.0.5
   eslint: ^7.32.0
   gh-pages: ^3.2.3
   hls.js: ^1.1.5
   husky: ^6.0.0
-  jquery: ^3.6.0
   lint-staged: ^11.2.6
   lodash-es: ^4.17.21
   plyr: ^3.6.12
@@ -20,14 +19,13 @@ specifiers:
 dependencies:
   '@ironkinoko/danmaku': 1.4.1
   hls.js: 1.1.5
-  jquery: 3.6.0
   lodash-es: 4.17.21
   plyr: 3.7.2
 
 devDependencies:
   '@types/jquery': 3.5.14
   '@types/lodash-es': 4.17.6
-  bochi: 1.0.3
+  bochi: 1.0.5
   eslint: 7.32.0
   gh-pages: 3.2.3
   husky: 6.0.0
@@ -263,15 +261,6 @@ packages:
       }
     dev: true
 
-  /@types/fs-extra/9.0.13:
-    resolution:
-      {
-        integrity: sha512-nEnwB++1u5lVDM2UI4c1+5R+FYaKfaAzS4OococimjVm3nQw3TuzH5UNsocrcTBbhnerblyHj4A49qXbIiZdpA==,
-      }
-    dependencies:
-      '@types/node': 18.11.9
-    dev: true
-
   /@types/jquery/3.5.14:
     resolution:
       {
@@ -330,22 +319,6 @@ packages:
       {
         integrity: sha512-JYM8x9EGF163bEyhdJBpR2QX1R5naCJHC8ucJylJ3w9/CVBaskdQ8WqBf8MmQrd1kRvp/a4TS8HJ+bxzR7ZJYQ==,
       }
-    dev: true
-
-  /@types/yargs-parser/21.0.0:
-    resolution:
-      {
-        integrity: sha512-iO9ZQHkZxHn4mSakYV0vFHAVDyEOIJQrV2uZ06HxEPcx+mt8swXoZHIbaaJ2crJYFfErySgktuTZ3BeLz+XmFA==,
-      }
-    dev: true
-
-  /@types/yargs/17.0.13:
-    resolution:
-      {
-        integrity: sha512-9sWaruZk2JGxIQU+IhI1fhPYRcQ0UuTNuKuCW9bR5fp7qi2Llf7WDzNa17Cy7TKnh3cdxDOiyTu6gaLS0eDatg==,
-      }
-    dependencies:
-      '@types/yargs-parser': 21.0.0
     dev: true
 
   /acorn-jsx/5.3.2_acorn@7.4.1:
@@ -543,19 +516,17 @@ packages:
     engines: { node: '>=8' }
     dev: true
 
-  /bochi/1.0.3:
+  /bochi/1.0.5:
     resolution:
       {
-        integrity: sha512-ctX1e4DOMF2T7Na2xWtnqSJzOgKwvKIx5R+NODRJDpi4bzEjduebDwbIRJ2y/5RIg5+uuUGpqBqlE2OLf8bQ1Q==,
+        integrity: sha512-d4NtZIOqTgRd7d0b8HK8XDjj1/9U5f+oqByp9LfUFBV6uVT8r+Aj61JRUDBEL/T5woU7A3HWGttuwqtbsn1wjQ==,
       }
     hasBin: true
     dependencies:
       '@rollup/plugin-commonjs': 23.0.2_rollup@3.4.0
       '@rollup/plugin-image': 3.0.1_rollup@3.4.0
       '@rollup/plugin-node-resolve': 15.0.1_rollup@3.4.0
-      '@types/fs-extra': 9.0.13
       '@types/node': 18.11.9
-      '@types/yargs': 17.0.13
       chalk: 5.1.2
       esbuild: 0.15.15
       fs-extra: 10.1.0
@@ -2230,13 +2201,6 @@ packages:
       }
     engines: { node: '>=10' }
     dev: true
-
-  /jquery/3.6.0:
-    resolution:
-      {
-        integrity: sha512-JVzAR/AjBvVt2BmYhxRCSYysDsPcssdmTFnzyLEts9qNwmjmu4JTAMYubEfwVOSwpQ1I1sKKFcxhZCI2buerfw==,
-      }
-    dev: false
 
   /js-tokens/4.0.0:
     resolution:

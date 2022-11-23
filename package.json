@@ -30,7 +30,7 @@
   "devDependencies": {
     "@types/jquery": "^3.5.14",
     "@types/lodash-es": "^4.17.6",
-    "bochi": "^1.0.3",
+    "bochi": "^1.0.5",
     "eslint": "^7.32.0",
     "gh-pages": "^3.2.3",
     "husky": "^6.0.0",
@@ -42,7 +42,6 @@
   "dependencies": {
     "@ironkinoko/danmaku": "^1.4.1",
     "hls.js": "^1.1.5",
-    "jquery": "^3.6.0",
     "lodash-es": "^4.17.21",
     "plyr": "^3.6.12"
   },
