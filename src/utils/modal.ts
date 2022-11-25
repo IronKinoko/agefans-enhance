@@ -3,6 +3,7 @@ import './modal.scss'
 export interface ModalOpts {
   title?: string | JQuery
   content: string | JQuery
+  afterClose?: () => void
   onClose?: () => void
   onOk?: () => void
   okText?: string
@@ -10,7 +11,7 @@ export interface ModalOpts {
   width?: number
 }
 export function modal(opts: ModalOpts) {
-  const { title, content, onClose, onOk, okText = '确 定' } = opts
+  const { title, content, onClose, onOk, afterClose, okText = '确 定' } = opts
   const store = {
     width: document.body.style.width,
     overflow: document.body.style.overflow,
@@ -60,6 +61,7 @@ export function modal(opts: ModalOpts) {
     $(`#${ID}`).remove()
     $('body').css(store)
     window.removeEventListener('keydown', fn, { capture: true })
+    afterClose?.()
   }
 
   function handleClose() {

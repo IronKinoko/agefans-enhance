@@ -67,6 +67,7 @@ let state = State.unSearched
 const $animeName = $danmaku.find('#animeName')
 const $animes = $danmaku.find('#animes')
 const $episodes = $danmaku.find('#episodes')
+const $openDanmakuList = $danmaku.find('.open-danmaku-list')
 const $tips = $danmaku.find('#tips')
 
 const $danmakuSwitcher = $danmakuSwitch.find('.k-switch-input')
@@ -115,28 +116,30 @@ const start = () => {
   function run() {
     if (!player.media.duration) return requestAnimationFrame(run)
     if (!comments) return
+
+    const nextComments = adjustCommentCount(comments)
+    $openDanmakuList
+      .find('[data-id="count"]')
+      .text(`(${nextComments.length}/${comments.length})`)
     if (player.localConfig.showDanmaku) {
       if (!core) {
         core = new Danmaku({
           container: $danmakuContainer[0],
           media: player.media,
-          comments: adjustCommentCount(comments),
+          comments: nextComments,
           merge: player.localConfig.danmakuMerge,
           scrollAreaPercent: player.localConfig.danmakuScrollAreaPercent,
           overlap: player.localConfig.danmakuOverlap,
         })
       } else {
-        core.reload(adjustCommentCount(comments))
+        core.reload(nextComments)
         core.show()
       }
       core.speed = baseDanmkuSpeed * player.localConfig.danmakuSpeed
     }
 
     if (player.localConfig.showPbp) {
-      createProgressBarPower(
-        player.media.duration,
-        adjustCommentCount(comments)
-      )
+      createProgressBarPower(player.media.duration, nextComments)
     }
   }
   requestAnimationFrame(run)
@@ -145,17 +148,23 @@ const start = () => {
 const adjustCommentCount = (comments: Comment[]) => {
   let ret: Comment[] = comments
   // 过滤弹幕
-  ret = ret.filter(
-    (cmt) =>
-      !player.localConfig.danmakuFilter.some((filter) => {
-        if (/^\/.*\/$/.test(filter)) {
-          const re = new RegExp(filter.slice(1, -1))
-          return re.test(cmt.text!)
-        } else {
-          return cmt.text!.includes(filter)
-        }
-      })
-  )
+  ret = ret.filter((cmt) => {
+    const isFilterMatch = player.localConfig.danmakuFilter.some((filter) => {
+      if (/^\/.*\/$/.test(filter)) {
+        const re = new RegExp(filter.slice(1, -1))
+        return re.test(cmt.text!)
+      } else {
+        return cmt.text!.includes(filter)
+      }
+    })
+    return !isFilterMatch
+  })
+
+  ret = ret.filter((cmt) => {
+    const isDisabledSource =
+      player.localConfig.danmakuSourceDisabledList.includes(cmt.user.source)
+    return !isDisabledSource
+  })
 
   // 过滤弹幕类型
   const mode = player.localConfig.danmakuMode

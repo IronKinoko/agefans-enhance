@@ -22,7 +22,9 @@ const $danmakuOverlay = tabs([
         <select id="episodes" class="k-select"></select>
       </label>
       <label>
-        <span class="open-danmaku-list">弹幕列表</span>
+        <span class="open-danmaku-list">
+          <span>弹幕列表</span><small data-id="count"></small>
+        </span>
       </label>
       
       <span class="specific-thanks">弹幕服务由 弹弹play 提供</span>

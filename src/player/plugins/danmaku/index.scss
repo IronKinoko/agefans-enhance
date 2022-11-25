@@ -46,7 +46,7 @@
     .open-danmaku-list {
       cursor: pointer;
       transition: color 0.15s;
-      &:hover {
+      &:hover * {
         color: var(--k-player-primary-color);
       }
     }
@@ -230,6 +230,17 @@
   }
 
   &-source-filter {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    padding: 16px;
+  }
+  &-source {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
   }
 
   &-table-wrapper {
