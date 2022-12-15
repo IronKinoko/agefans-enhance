@@ -4,7 +4,7 @@ specifiers:
   '@ironkinoko/danmaku': ^1.4.1
   '@types/jquery': ^3.5.14
   '@types/lodash-es': ^4.17.6
-  bochi: ^1.0.5
+  bochi: ^1.1.1
   eslint: ^7.32.0
   gh-pages: ^3.2.3
   hls.js: ^1.1.5
@@ -14,7 +14,7 @@ specifiers:
   plyr: ^3.6.12
   prettier: ^2.6.2
   pretty-quick: ^3.1.3
-  typescript: ^4.9.3
+  typescript: ^4.9.4
 
 dependencies:
   '@ironkinoko/danmaku': 1.4.1
@@ -25,14 +25,14 @@ dependencies:
 devDependencies:
   '@types/jquery': 3.5.14
   '@types/lodash-es': 4.17.6
-  bochi: 1.0.5
+  bochi: 1.1.1
   eslint: 7.32.0
   gh-pages: 3.2.3
   husky: 6.0.0
   lint-staged: 11.2.6
   prettier: 2.7.1
   pretty-quick: 3.1.3_prettier@2.7.1
-  typescript: 4.9.3
+  typescript: 4.9.4
 
 packages:
   /@babel/code-frame/7.12.11:
@@ -146,6 +146,36 @@ packages:
       }
     dev: false
 
+  /@ironkinoko/rollup-plugin-styles/4.0.3_rollup@3.4.0:
+    resolution:
+      {
+        integrity: sha512-FU7Hko5Z9bu3PW14XXRbKE91Hn0iWEpXQW4YzUIOMNyJ9VrIoO5sImyzIo5PRc9o9buTePhygGQ4OEe3bvOTdQ==,
+      }
+    engines: { node: ^12.20.0 || ^14.13.1 || >=16.0.0 }
+    peerDependencies:
+      rollup: ^2.63.0 || 3.x
+    dependencies:
+      '@rollup/pluginutils': 5.0.2_rollup@3.4.0
+      cosmiconfig: 7.0.1
+      cssnano: 5.1.14_postcss@8.4.14
+      fs-extra: 10.1.0
+      icss-utils: 5.1.0_postcss@8.4.14
+      mime-types: 2.1.35
+      p-queue: 6.6.2
+      postcss: 8.4.14
+      postcss-modules-extract-imports: 3.0.0_postcss@8.4.14
+      postcss-modules-local-by-default: 4.0.0_postcss@8.4.14
+      postcss-modules-scope: 3.0.0_postcss@8.4.14
+      postcss-modules-values: 4.0.0_postcss@8.4.14
+      postcss-value-parser: 4.2.0
+      query-string: 7.1.1
+      resolve: 1.22.1
+      resolve.exports: 1.1.0
+      rollup: 3.4.0
+      source-map-js: 1.0.2
+      tslib: 2.4.0
+    dev: true
+
   /@rollup/plugin-commonjs/23.0.2_rollup@3.4.0:
     resolution:
       {
@@ -205,17 +235,6 @@ packages:
       rollup: 3.4.0
     dev: true
 
-  /@rollup/pluginutils/4.2.1:
-    resolution:
-      {
-        integrity: sha512-iKnFXr7NkdZAIHiIWE+BX5ULi/ucVFYWD6TbAV+rZctiRTY2PL6tsIKhoIOaoskiWAkgu+VsbXgUVDNLHf+InQ==,
-      }
-    engines: { node: '>= 8.0.0' }
-    dependencies:
-      estree-walker: 2.0.2
-      picomatch: 2.3.1
-    dev: true
-
   /@rollup/pluginutils/5.0.2_rollup@3.4.0:
     resolution:
       {
@@ -240,18 +259,6 @@ packages:
         integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==,
       }
     engines: { node: '>=10.13.0' }
-    dev: true
-
-  /@types/cssnano/5.1.0_postcss@8.4.14:
-    resolution:
-      {
-        integrity: sha512-ikR+18UpFGgvaWSur4og6SJYF/6QEYHXvrIt36dp81p1MG3cAPTYDMBJGeyWa3LCnqEbgNMHKRb+FP0NrXtoWQ==,
-      }
-    deprecated: This is a stub types definition. cssnano provides its own type definitions, so you do not need this installed.
-    dependencies:
-      cssnano: 5.1.14_postcss@8.4.14
-    transitivePeerDependencies:
-      - postcss
     dev: true
 
   /@types/estree/1.0.0:
@@ -516,13 +523,14 @@ packages:
     engines: { node: '>=8' }
     dev: true
 
-  /bochi/1.0.5:
+  /bochi/1.1.1:
     resolution:
       {
-        integrity: sha512-d4NtZIOqTgRd7d0b8HK8XDjj1/9U5f+oqByp9LfUFBV6uVT8r+Aj61JRUDBEL/T5woU7A3HWGttuwqtbsn1wjQ==,
+        integrity: sha512-FmJDsOpYjDf+FoQBDfidZcc5q0b1ndLllFG5oOAwAS39NfWvsQPmCOwT0F25tq9N+r3PecHYLKMr7gw/TPfJHw==,
       }
     hasBin: true
     dependencies:
+      '@ironkinoko/rollup-plugin-styles': 4.0.3_rollup@3.4.0
       '@rollup/plugin-commonjs': 23.0.2_rollup@3.4.0
       '@rollup/plugin-image': 3.0.1_rollup@3.4.0
       '@rollup/plugin-node-resolve': 15.0.1_rollup@3.4.0
@@ -530,10 +538,10 @@ packages:
       chalk: 5.1.2
       esbuild: 0.15.15
       fs-extra: 10.1.0
+      node-html-parser: 6.1.4
       pretty-ms: 8.0.0
       rollup: 3.4.0
       rollup-plugin-esbuild: 5.0.0_gy77k6wisfmkvlklwxkgcpqdui
-      rollup-plugin-styles: 4.0.0_rollup@3.4.0
       sass: 1.56.1
       yargs: 17.6.2
     transitivePeerDependencies:
@@ -876,6 +884,19 @@ packages:
       nth-check: 2.1.1
     dev: true
 
+  /css-select/5.1.0:
+    resolution:
+      {
+        integrity: sha512-nwoRF1rvRRnnCqqY7updORDsuqKzqYJ28+oSMaJMMgOauh3fvwHqMS7EZpIPqK8GL+g9mKxF1vP/ZjSeNjEVHg==,
+      }
+    dependencies:
+      boolbase: 1.0.0
+      css-what: 6.1.0
+      domhandler: 5.0.3
+      domutils: 3.0.1
+      nth-check: 2.1.1
+    dev: true
+
   /css-tree/1.1.3:
     resolution:
       {
@@ -1064,6 +1085,17 @@ packages:
       entities: 2.2.0
     dev: true
 
+  /dom-serializer/2.0.0:
+    resolution:
+      {
+        integrity: sha512-wIkAryiqt/nV5EQKqQpo3SToSOV9J0DnbJqwK7Wv/Trc92zIAYZ4FlMu+JPFW1DfGFt81ZTCGgDEabffXeLyJg==,
+      }
+    dependencies:
+      domelementtype: 2.3.0
+      domhandler: 5.0.3
+      entities: 4.4.0
+    dev: true
+
   /domelementtype/2.3.0:
     resolution:
       {
@@ -1081,6 +1113,16 @@ packages:
       domelementtype: 2.3.0
     dev: true
 
+  /domhandler/5.0.3:
+    resolution:
+      {
+        integrity: sha512-cgwlv/1iFQiFnU96XXgROh8xTeetsnJiDsTc7TYCLFd9+/WNkIqPTxiM/8pSd8VIrhXGTf1Ny1q1hquVqDJB5w==,
+      }
+    engines: { node: '>= 4' }
+    dependencies:
+      domelementtype: 2.3.0
+    dev: true
+
   /domutils/2.8.0:
     resolution:
       {
@@ -1090,6 +1132,17 @@ packages:
       dom-serializer: 1.4.1
       domelementtype: 2.3.0
       domhandler: 4.3.1
+    dev: true
+
+  /domutils/3.0.1:
+    resolution:
+      {
+        integrity: sha512-z08c1l761iKhDFtfXO04C7kTdPBLi41zwOZl00WS8b5eiaebNpY00HKbztwBq+e3vyqWNwWF3mP9YLUeqIrF+Q==,
+      }
+    dependencies:
+      dom-serializer: 2.0.0
+      domelementtype: 2.3.0
+      domhandler: 5.0.3
     dev: true
 
   /electron-to-chromium/1.4.284:
@@ -1137,6 +1190,14 @@ packages:
       {
         integrity: sha512-p92if5Nz619I0w+akJrLZH0MX0Pb5DX39XOwQTtXSdQQOaYH03S1uIQp4mhOZtAXrxq4ViO67YTiLBo2638o9A==,
       }
+    dev: true
+
+  /entities/4.4.0:
+    resolution:
+      {
+        integrity: sha512-oYp7156SP8LkeGD0GF85ad1X9Ai79WtRsZ2gxJqtBuzH+98YUV6jkHEKlZkMbcrjJjIVJNIDP/3WL9wQkoPbWA==,
+      }
+    engines: { node: '>=0.12' }
     dev: true
 
   /error-ex/1.3.2:
@@ -1967,6 +2028,14 @@ packages:
       function-bind: 1.1.1
     dev: true
 
+  /he/1.2.0:
+    resolution:
+      {
+        integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==,
+      }
+    hasBin: true
+    dev: true
+
   /hls.js/1.1.5:
     resolution:
       {
@@ -2570,6 +2639,16 @@ packages:
       {
         integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==,
       }
+    dev: true
+
+  /node-html-parser/6.1.4:
+    resolution:
+      {
+        integrity: sha512-3muP9Uy/Pz7bQa9TNYVQzWJhNZMqyCx7xJle8kz2/y1UgzAUyXXShc1IcPaJy6u07CE3K5rQcRwlvHzmlySRjg==,
+      }
+    dependencies:
+      css-select: 5.1.0
+      he: 1.2.0
     dev: true
 
   /node-releases/2.0.6:
@@ -3446,6 +3525,14 @@ packages:
     engines: { node: '>=4' }
     dev: true
 
+  /resolve.exports/1.1.0:
+    resolution:
+      {
+        integrity: sha512-J1l+Zxxp4XK3LUDZ9m60LRJF/mAe4z6a4xyabPHk7pvK5t35dACV32iIjJDFeWZFfZlO29w6SZ67knR0tHzJtQ==,
+      }
+    engines: { node: '>=10' }
+    dev: true
+
   /resolve/1.22.1:
     resolution:
       {
@@ -3505,36 +3592,6 @@ packages:
       rollup: 3.4.0
     transitivePeerDependencies:
       - supports-color
-    dev: true
-
-  /rollup-plugin-styles/4.0.0_rollup@3.4.0:
-    resolution:
-      {
-        integrity: sha512-A2K2sao84OsTmDxXG83JTCdXWrmgvQkkI38XDat46rdtpGMRm9tSYqeCdlwwGDJF4kKIafhV1mUidqu8MxUGig==,
-      }
-    engines: { node: ^12.20.0 || ^14.13.1 || >=16.0.0 }
-    peerDependencies:
-      rollup: ^2.63.0
-    dependencies:
-      '@rollup/pluginutils': 4.2.1
-      '@types/cssnano': 5.1.0_postcss@8.4.14
-      cosmiconfig: 7.0.1
-      cssnano: 5.1.14_postcss@8.4.14
-      fs-extra: 10.1.0
-      icss-utils: 5.1.0_postcss@8.4.14
-      mime-types: 2.1.35
-      p-queue: 6.6.2
-      postcss: 8.4.14
-      postcss-modules-extract-imports: 3.0.0_postcss@8.4.14
-      postcss-modules-local-by-default: 4.0.0_postcss@8.4.14
-      postcss-modules-scope: 3.0.0_postcss@8.4.14
-      postcss-modules-values: 4.0.0_postcss@8.4.14
-      postcss-value-parser: 4.2.0
-      query-string: 7.1.1
-      resolve: 1.22.1
-      rollup: 3.4.0
-      source-map-js: 1.0.2
-      tslib: 2.4.0
     dev: true
 
   /rollup/3.4.0:
@@ -3666,6 +3723,7 @@ packages:
       {
         integrity: sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==,
       }
+    deprecated: Please use @jridgewell/sourcemap-codec instead
     dev: true
 
   /split-on-first/1.1.0:
@@ -3917,10 +3975,10 @@ packages:
     engines: { node: '>=10' }
     dev: true
 
-  /typescript/4.9.3:
+  /typescript/4.9.4:
     resolution:
       {
-        integrity: sha512-CIfGzTelbKNEnLpLdGFgdyKhG23CKdKgQPOBc+OUNrkJ2vr+KSzsSV5kq5iWhEQbok+quxgGzrAtGWCyU7tHnA==,
+        integrity: sha512-Uz+dTXYzxXXbsFpM86Wh3dKCxrQqUcVMxwU54orwlJjOpO3ao8L7j5lH+dWfTwgCwIuM9GQ2kvVotzYJMXTBZg==,
       }
     engines: { node: '>=4.2.0' }
     hasBin: true
