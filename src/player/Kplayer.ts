@@ -100,7 +100,7 @@ export class KPlayer {
     this.$pip = $(pipHTML)
     this.$video = (
       (opts.video ? $(opts.video) : $('<video />')) as JQuery<HTMLVideoElement>
-    ).attr('id', 'k-player')
+    ).attr({ id: 'k-player', playsinline: true })
     this.$progress = $(progressHTML)
     this.$header = $('<div id="k-player-header"/>')
     this.$wrapper.append(this.$video)
@@ -139,6 +139,9 @@ export class KPlayer {
     })
 
     this.$videoWrapper = this.$wrapper.find('.plyr')
+    this.$videoWrapper
+      .find('.plyr__time--duration')
+      .after('<div class="plyr__controls__item k-player-controls-spacer"/>')
 
     this.$videoWrapper
       .find('[data-plyr="pip"] .plyr__tooltip')

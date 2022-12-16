@@ -8,12 +8,19 @@
   pointer-events: none;
 
   .danmaku {
-    font-size: var(--danmaku-font-size, 24px);
+    font-size: calc(
+      var(--danmaku-font-size, 24px) * var(--danmaku-font-size-scale, 1)
+    );
     font-family: SimHei, 'Microsoft JhengHei', Arial, Helvetica, sans-serif;
     font-weight: bold;
     text-shadow: black 1px 0px 1px, black 0px 1px 1px, black 0px -1px 1px,
       black -1px 0px 1px;
     line-height: 1.3;
+  }
+  @media (max-width: 576px) {
+    .danmaku {
+      --danmaku-font-size: 16px;
+    }
   }
 
   &-overlay {
@@ -142,6 +149,7 @@
   top: -17px;
   height: 28px;
   -webkit-appearance: none;
+  appearance: none;
   left: 0;
   position: absolute;
   margin-left: calc(var(--plyr-range-thumb-height, 13px) * -0.5);
@@ -156,7 +164,7 @@
   top: -18px;
 }
 .k-danmaku-switch {
-  margin: 0 8px 0 auto;
+  margin: 0 8px;
 }
 .k-switch {
   position: relative;

@@ -54,6 +54,10 @@
     height: 100%;
   }
 
+  .k-player-controls-spacer {
+    flex: 1;
+  }
+
   #k-player-loading,
   #k-player-error {
     position: absolute;
@@ -228,13 +232,13 @@
     }
   }
 
-  @media (max-width: 480px) {
+  @media (max-width: 576px) {
     .plyr__controls {
       padding-top: 30px;
     }
     [data-plyr='pip'],
-    [data-plyr='snapshot'],
-    [data-plyr='widescreen'] {
+    [data-plyr='widescreen'],
+    .plyr__volume {
       display: none;
     }
   }

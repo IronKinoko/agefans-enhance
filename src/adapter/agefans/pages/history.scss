@@ -31,7 +31,7 @@
         }
       }
     }
-    @media (max-width: 480px) {
+    @media (max-width: 576px) {
       .history-list {
         display: grid;
         grid-template-columns: repeat(3, 1fr);

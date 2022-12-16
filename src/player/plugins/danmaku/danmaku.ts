@@ -61,7 +61,6 @@ enum State {
 }
 
 const baseDanmkuSpeed = 130
-const baseFontSize = 24
 let state = State.unSearched
 
 const $animeName = $danmaku.find('#animeName')
@@ -374,7 +373,7 @@ const initEvents = (name: string) => {
     $dom: $danmakuFontSize,
     name: 'danmakuFontSize',
     onInput: (v) => {
-      $danmakuContainer.css('--danmaku-font-size', baseFontSize * v + 'px')
+      $danmakuContainer.css('--danmaku-font-size-scale', v)
     },
     player,
   })
