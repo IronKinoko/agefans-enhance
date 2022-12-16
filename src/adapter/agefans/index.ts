@@ -33,7 +33,7 @@ runtime.register({
   ],
   search: {
     name: 'agefans',
-    search: (name) => `https://www.agemys.com/search?query=${name}&page=1`,
+    search: (name) => `https://www.agemys.net/search?query=${name}&page=1`,
     getSearchName: () => $('#detailname a').text(),
     getEpisode: () => $("li a[style*='color: rgb(238, 0, 0)']").text(),
   },

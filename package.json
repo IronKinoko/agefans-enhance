@@ -39,10 +39,10 @@
     "typescript": "^4.9.4"
   },
   "dependencies": {
-    "@ironkinoko/danmaku": "^1.4.1",
-    "hls.js": "^1.1.5",
+    "@ironkinoko/danmaku": "1.4.1",
+    "hls.js": "1.0.9",
     "lodash-es": "^4.17.21",
-    "plyr": "^3.6.12"
+    "plyr": "3.6.4"
   },
   "globals": {
     "hls.js": "Hls",

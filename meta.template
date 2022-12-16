@@ -23,9 +23,6 @@
 // @require      https://unpkg.com/plyr@3.6.4/dist/plyr.min.js
 // @require      https://unpkg.com/hls.js@1.0.9/dist/hls.min.js
 // @require      https://unpkg.com/@ironkinoko/danmaku@1.4.1/dist/danmaku.umd.js
-// @resource     plyrCSS https://unpkg.com/plyr@3.6.4/dist/plyr.css
-// @grant        GM_getResourceText
-// @grant        GM_addStyle
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
@@ -48,8 +45,3 @@
  * 4. @include
  *    脚本还匹配了 agefans 以外的一些链接，用于提供相同视频资源搜索功能
  */
-
-(function() {
-    let plyrCSS = GM_getResourceText('plyrCSS')  
-    GM_addStyle(plyrCSS)
-})();

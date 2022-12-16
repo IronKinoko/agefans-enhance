@@ -562,10 +562,15 @@ export class KPlayer {
   set src(src: string) {
     this.isJumped = false
     if (src.includes('.m3u8')) {
-      if (!Hls.isSupported()) throw new Error('不支持播放 hls 文件')
-      const hls = new Hls()
-      hls.loadSource(src)
-      hls.attachMedia(this.media)
+      if (Hls.isSupported()) {
+        const hls = new Hls()
+        hls.loadSource(src)
+        hls.attachMedia(this.media)
+      } else if (this.media.canPlayType('application/vnd.apple.mpegurl')) {
+        this.$video.attr('src', src)
+      } else {
+        throw new Error('不支持播放 hls 文件')
+      }
     } else {
       this.$video.attr('src', src)
     }

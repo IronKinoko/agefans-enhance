@@ -23,7 +23,11 @@ function createStorage(storage: Storage) {
 
 export const session = createStorage(window.sessionStorage)
 export const local = createStorage(window.localStorage)
-export const gm = {
-  getItem: GM_getValue,
-  setItem: GM_setValue,
+
+let gm: Pick<ReturnType<typeof createStorage>, 'getItem' | 'setItem'>
+try {
+  gm = { getItem: GM_getValue, setItem: GM_setValue }
+} catch (error) {
+  gm = local
 }
+export { gm }
