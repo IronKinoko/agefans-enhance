@@ -63,12 +63,11 @@
 - [樱花动漫 1](https://www.yhdmp.cc/)
 - [樱花动漫 2](http://www.yinghuacd.com/)
 - [樱花动漫 3](https://www.odcoc.com/)
-- [acgnya](https://www.acgnya.com/)
+- [\*acgnya](https://www.acgnya.com/)
 - [bimiacg](https://www.bimiacg4.net/)
 - [dm233](https://www.dm233.org/)
 - [アニメ新番組](https://bangumi.online/)
 - [NT 动漫](http://www.ntyou.cc/)
-- [\*omofun](https://omofun.tv/)
 
 ## 注意事项
 
