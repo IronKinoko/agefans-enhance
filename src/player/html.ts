@@ -1,5 +1,4 @@
 import { popover } from '../utils/popover'
-import { renderKey } from '../utils/renderKey'
 import { Shortcuts } from './plugins/shortcuts'
 
 const icons = `

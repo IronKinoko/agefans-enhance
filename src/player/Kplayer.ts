@@ -115,10 +115,13 @@ export class KPlayer {
       gm.getItem(this.localConfigKey)
     )
 
+    const isIOS = /ip(hone|od)/i.test(navigator.userAgent)
+
     this.plyr = new Plyr('#k-player', {
       autoplay: this.localConfig.autoplay,
       keyboard: { global: false, focused: false },
       controls: [
+        isIOS && 'play-large',
         'play',
         'progress',
         'current-time',
@@ -127,9 +130,13 @@ export class KPlayer {
         'volume',
         'pip',
         'fullscreen',
-      ],
+      ].filter(Boolean) as string[],
       storage: { enabled: false },
       volume: this.localConfig.volume,
+      fullscreen: {
+        enabled: true,
+        iosNative: isIOS,
+      },
       i18n,
       tooltips: {
         controls: true,
@@ -263,6 +270,9 @@ export class KPlayer {
       this.$loading.show()
       this.hideError()
     })
+    this.on('loadedmetadata', () => {
+      this.$loading.hide()
+    })
     this.on('canplay', () => {
       this.$loading.hide()
       if (this.localConfig.autoplay) {
@@ -316,6 +326,9 @@ export class KPlayer {
     })
     this.on('pause', () => {
       this.hideControlsDebounced()
+    })
+    this.on('next', () => {
+      this.message.info('正在切换下一集')
     })
     this.on('enterfullscreen', () => {
       this.$videoWrapper.addClass('k-player-fullscreen')

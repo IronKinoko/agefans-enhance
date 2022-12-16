@@ -1,4 +1,5 @@
 import { KPlayer } from '../../player'
+import { execInUnsafeWindow } from '../../utils/execInUnsafeWindow'
 import { queryDom } from '../../utils/queryDom'
 
 let player: KPlayer
@@ -10,10 +11,8 @@ export const parser = {
 
     player = new KPlayer('#player', { eventToParentWindow: true })
 
-    player.src = unsafeWindow.v_decrypt(
-      unsafeWindow.config.url,
-      unsafeWindow._token_key,
-      unsafeWindow.key_token
+    player.src = await execInUnsafeWindow(() =>
+      window.v_decrypt(window.config.url, window._token_key, window.key_token)
     )
   },
   'pro.ascepan.top': async () => {
@@ -21,6 +20,6 @@ export const parser = {
     video.src = ''
 
     player = new KPlayer('#player', { eventToParentWindow: true })
-    player.src = unsafeWindow.config.url
+    player.src = await execInUnsafeWindow(() => window.config.url)
   },
 }

@@ -1,12 +1,17 @@
+import { execInUnsafeWindow } from '../../../utils/execInUnsafeWindow'
 import { queryDom } from '../../../utils/queryDom'
 
 function switchPart(next: boolean) {
   if (next) {
-    if (unsafeWindow.MacPlayer.PlayLinkNext)
-      window.location.href = unsafeWindow.MacPlayer.PlayLinkNext
+    execInUnsafeWindow(() => {
+      if (window.MacPlayer.PlayLinkNext)
+        window.location.href = window.MacPlayer.PlayLinkNext
+    })
   } else {
-    if (unsafeWindow.MacPlayer.PlayLinkPre)
-      window.location.href = unsafeWindow.MacPlayer.PlayLinkPre
+    execInUnsafeWindow(() => {
+      if (window.MacPlayer.PlayLinkPre)
+        window.location.href = window.MacPlayer.PlayLinkPre
+    })
   }
 }
 export async function playModule() {

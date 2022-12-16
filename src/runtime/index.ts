@@ -124,9 +124,7 @@ class Runtime {
     })
 
     setupList.forEach((setup) => setup())
-    window.addEventListener('DOMContentLoaded', () => {
-      runList.forEach((run) => run())
-    })
+    runList.forEach((run) => run())
   }
 }
 
