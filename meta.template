@@ -28,6 +28,8 @@
 // @grant        GM_xmlhttpRequest
 // @connect      dandanplay.net
 // @license      MIT
+// @downloadURL  https://github.com/IronKinoko/agefans-enhance/raw/gh-pages/index.user.js
+// @updateURL    https://github.com/IronKinoko/agefans-enhance/raw/gh-pages/index.user.js
 // ==/UserScript==
 
 /**
