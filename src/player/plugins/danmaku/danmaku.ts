@@ -69,7 +69,6 @@ const $episodes = $danmaku.find('#episodes')
 const $openDanmakuList = $danmaku.find('.open-danmaku-list')
 const $tips = $danmaku.find('#tips')
 
-const $danmakuSwitcher = $danmakuSwitch.find('.k-switch-input')
 const $showDanmaku = $danmaku.find<HTMLInputElement>("[name='showDanmaku']")
 const $showPbp = $danmaku.find<HTMLInputElement>("[name='showPbp']")
 const $danmakuMerge = $danmaku.find<HTMLInputElement>("[name='danmakuMerge']")
@@ -298,8 +297,8 @@ const initEvents = (name: string) => {
     loadEpisode(episodeId)
   })
 
-  $danmakuSwitcher
-    .prop('checked', player.localConfig.showDanmaku)
+  $danmakuSwitch
+    .toggleClass('plyr__control--pressed', player.localConfig.showDanmaku)
     .on('click', () => {
       switchDanmaku()
     })
@@ -420,7 +419,7 @@ function switchDanmaku(bool?: boolean) {
   bool ??= !player.localConfig.showDanmaku
 
   player.configSaveToLocal('showDanmaku', bool)
-  $danmakuSwitcher.prop('checked', bool)
+  $danmakuSwitch.toggleClass('plyr__control--pressed', bool)
   $showDanmaku.prop('checked', bool)
   player.message.info(`弹幕${bool ? '开启' : '关闭'}`)
   if (bool) {
@@ -543,6 +542,7 @@ export async function setup(_player: KPlayer) {
 
   player.$videoWrapper.append($danmakuContainer)
   $danmaku.insertBefore(player.$searchActions)
+  $danmaku.before($danmakuSwitch)
 
   let defaultSearchName = storageAnimeName(videoInfo.rawName) || videoInfo.name
   initEvents(
