@@ -7,5 +7,8 @@ export function parseToJSON<T = any>(raw: string) {
       .then((r) => r.json())
       .then(resolve)
       .catch(reject)
+      .finally(() => {
+        URL.revokeObjectURL(url)
+      })
   })
 }
