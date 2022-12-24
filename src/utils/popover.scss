@@ -12,7 +12,12 @@
   &-content {
     background: var(--k-player-background);
     border-radius: 4px;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     cursor: initial;
+    max-height: var(--k-player-popover-max-height, 70vh);
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 }

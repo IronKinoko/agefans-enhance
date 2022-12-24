@@ -26,7 +26,7 @@
 
 ## 安装
 
-[Greasy Fork 链接，点击安装](https://greasyfork.org/scripts/424023)
+可以通过 [Greasy Fork](https://greasyfork.org/scripts/424023) 或 [GitHub](https://github.com/IronKinoko/agefans-enhance/raw/gh-pages/index.user.js) 安装
 
 ## 权限声明
 
