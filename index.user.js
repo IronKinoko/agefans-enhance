@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.36.2
+// @version      1.36.3
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -742,7 +742,7 @@
     gm = local;
   }
 
-  var css$e = ".k-popover {\n  position: relative;\n}\n.k-popover-overlay {\n  position: absolute;\n  display: none;\n  bottom: 100%;\n  left: 50%;\n  transform: translateX(-50%);\n  z-index: 100;\n  padding-bottom: 20px;\n}\n.k-popover-content {\n  background: var(--k-player-background);\n  border-radius: 4px;\n  overflow: hidden;\n  cursor: initial;\n}";
+  var css$e = ".k-popover {\n  position: relative;\n}\n.k-popover-overlay {\n  position: absolute;\n  display: none;\n  bottom: 100%;\n  left: 50%;\n  transform: translateX(-50%);\n  z-index: 100;\n  padding-bottom: 20px;\n}\n.k-popover-content {\n  background: var(--k-player-background);\n  border-radius: 4px;\n  overflow-x: hidden;\n  overflow-y: auto;\n  cursor: initial;\n  max-height: var(--k-player-popover-max-height, 70vh);\n}\n.k-popover-content::-webkit-scrollbar {\n  display: none;\n}";
   n(css$e,{});
 
   function popover(target, overlay) {
@@ -1321,7 +1321,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.36.2"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.36.3"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1426,7 +1426,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.36.2"}
+\u811A\u672C\u7248\u672C: ${"1.36.3"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -2599,7 +2599,9 @@ ${[...speedList].reverse().map(
     return new Promise((resolve, reject) => {
       const blob = new Blob([raw], { type: "application/json" });
       const url = URL.createObjectURL(blob);
-      fetch(url).then((r) => r.json()).then(resolve).catch(reject);
+      fetch(url).then((r) => r.json()).then(resolve).catch(reject).finally(() => {
+        URL.revokeObjectURL(url);
+      });
     });
   }
 
