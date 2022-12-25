@@ -17,8 +17,8 @@ function createStorage<T = string>(storageKey: string) {
   return storage
 }
 export const storageAnimeName = createStorage<
-  string | Pick<Anime, 'animeId' | 'animeTitle'>
->('k-player-danmaku-anime-name')
+  Pick<Anime, 'animeId' | 'animeTitle'> & { keyword: string }
+>('k-player-danmaku-anime-name-v2')
 export const storageEpisodeName = createStorage('k-player-danmaku-episode-name')
 function createLock() {
   let prev: any
@@ -29,7 +29,6 @@ function createLock() {
   }
 }
 export const episodeIdLock = createLock()
-export const searchAnimeLock = createLock()
 export function convert32ToHex(color: string) {
   return '#' + parseInt(color).toString(16)
 }

@@ -227,11 +227,11 @@ const findEpisode = async (animes?: Anime[]) => {
   if (!animes) return
   const anime = animes.find((anime) => {
     const storeAnime = storageAnimeName(videoInfo.rawName)
-    if (typeof storeAnime === 'object') {
+    if (storeAnime) {
       return anime.animeId === storeAnime.animeId
     }
 
-    return anime.animeTitle === (storeAnime || videoInfo.rawName)
+    return anime.animeTitle === videoInfo.rawName
   })
 
   if (anime) {
@@ -253,7 +253,6 @@ const findEpisode = async (animes?: Anime[]) => {
     }
     if (episode) {
       state = State.findEpisode
-      $animeName.val(anime.animeTitle)
       $animes.val(anime.animeId)
       $animes.trigger('change')
       $episodes.val(episode.episodeId)
@@ -281,6 +280,7 @@ const initEvents = (name: string) => {
     storageAnimeName(videoInfo.rawName, {
       animeId: anime.animeId,
       animeTitle: anime.animeTitle,
+      keyword: $animeName.val() as string,
     })
     updateEpisodes(anime)
   })
@@ -290,6 +290,7 @@ const initEvents = (name: string) => {
     storageAnimeName(videoInfo.rawName, {
       animeId: anime.animeId,
       animeTitle: anime.animeTitle,
+      keyword: $animeName.val() as string,
     })
     storageEpisodeName(`${videoInfo.rawName}.${videoInfo.episode}`, episodeId)
     loadEpisode(episodeId)
@@ -544,7 +545,7 @@ export async function setup(_player: KPlayer) {
   let defaultSearchName = storageAnimeName(videoInfo.rawName) || videoInfo.name
   initEvents(
     typeof defaultSearchName === 'object'
-      ? defaultSearchName.animeTitle
+      ? defaultSearchName.keyword
       : defaultSearchName
   )
   autoStart()
