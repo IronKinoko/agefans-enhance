@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.36.3
+// @version      1.36.4
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1321,7 +1321,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.36.3"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.36.4"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1426,7 +1426,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.36.3"}
+\u811A\u672C\u7248\u672C: ${"1.36.4"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -1771,6 +1771,10 @@ ${[...speedList].reverse().map(
     \u81EA\u52A8\u4E0B\u4E00\u96C6
   </label>
   <label class="k-settings-item">
+    <input type="checkbox" name="showPlayLarge" />
+    \u663E\u793A\u64AD\u653E\u56FE\u6807
+  </label>
+  <label class="k-settings-item">
     <input type="checkbox" name="continuePlay" />
     \u8BB0\u5FC6\u64AD\u653E\u4F4D\u7F6E
   </label>
@@ -1873,7 +1877,8 @@ ${[...speedList].reverse().map(
     showProgress: true,
     volume: 1,
     showSearchActions: true,
-    autoplay: true
+    autoplay: true,
+    showPlayLarge: false
   };
   const _KPlayer = class {
     constructor(selector, opts = {}) {
@@ -1927,7 +1932,7 @@ ${[...speedList].reverse().map(
         autoplay: this.localConfig.autoplay,
         keyboard: { global: false, focused: false },
         controls: [
-          isIOS && "play-large",
+          "play-large",
           "play",
           "progress",
           "current-time",
@@ -1936,7 +1941,7 @@ ${[...speedList].reverse().map(
           "volume",
           "pip",
           "fullscreen"
-        ].filter(Boolean),
+        ],
         storage: { enabled: false },
         volume: this.localConfig.volume,
         fullscreen: {
@@ -2163,6 +2168,12 @@ ${[...speedList].reverse().map(
     }
     injectSettings() {
       this.$settings = $(settingsHTML);
+      this.$settings.find("[name=showPlayLarge]").prop("checked", this.localConfig.showPlayLarge).on("change", (e) => {
+        const checked = e.target.checked;
+        this.configSaveToLocal("showPlayLarge", checked);
+        this.$videoWrapper.find(".plyr__control.plyr__control--overlaid").toggle(checked);
+      });
+      this.$videoWrapper.find(".plyr__control.plyr__control--overlaid").toggle(this.localConfig.showPlayLarge);
       this.$settings.find("[name=showSearchActions]").prop("checked", this.localConfig.showSearchActions).on("change", (e) => {
         const checked = e.target.checked;
         this.configSaveToLocal("showSearchActions", checked);
@@ -2177,9 +2188,7 @@ ${[...speedList].reverse().map(
         this.configSaveToLocal("showProgress", checked);
         this.$progress.toggle(checked);
       });
-      if (!this.localConfig.showProgress) {
-        this.$progress.css("display", "none");
-      }
+      this.$progress.toggle(this.localConfig.showProgress);
       this.$settings.find("[name=autoplay]").prop("checked", this.localConfig.autoplay).on("change", (e) => {
         const checked = e.target.checked;
         this.configSaveToLocal("autoplay", checked);
@@ -4809,6 +4818,7 @@ ${[...speedList].reverse().map(
     const iframe = await queryDom(
       `#playleft iframe[src*='url=']`
     );
+    iframe.allow = "autoplay; fullscreen; picture-in-picture;";
     window.addEventListener("message", (e) => {
       var _a, _b, _c;
       if (!((_a = e.data) == null ? void 0 : _a.key))
