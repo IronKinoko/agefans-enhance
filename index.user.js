@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.36.4
+// @version      1.36.5
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1321,7 +1321,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.36.4"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.36.5"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1426,7 +1426,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.36.4"}
+\u811A\u672C\u7248\u672C: ${"1.36.5"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -2420,7 +2420,7 @@ ${[...speedList].reverse().map(
     }
     return storage;
   }
-  const storageAnimeName = createStorage("k-player-danmaku-anime-name");
+  const storageAnimeName = createStorage("k-player-danmaku-anime-name-v2");
   const storageEpisodeName = createStorage("k-player-danmaku-episode-name");
   function createLock() {
     let prev;
@@ -2432,7 +2432,6 @@ ${[...speedList].reverse().map(
     };
   }
   const episodeIdLock = createLock();
-  const searchAnimeLock = createLock();
   function convert32ToHex(color) {
     return "#" + parseInt(color).toString(16);
   }
@@ -2571,23 +2570,32 @@ ${[...speedList].reverse().map(
         }
       });
       const $source = $root.find(".k-player-danmaku-list-source");
-      Array.from(new Set(comments.map((o) => o.user.source))).forEach(
-        (source) => {
-          const isDisabled = player.localConfig.danmakuSourceDisabledList.includes(source);
-          $(`<label class="k-player-danmaku-list-source-item k-capsule">
-            <input hidden type="checkbox" value="${source}"/>
-            <div>${source}</div>
-          </label>`).appendTo($source).find("input").prop("checked", !isDisabled).on("change", (e) => {
-            let next = [...player.localConfig.danmakuSourceDisabledList];
-            if (e.currentTarget.checked) {
-              next = next.filter((src) => src !== source);
-            } else {
-              next.push(source);
-            }
-            player.configSaveToLocal("danmakuSourceDisabledList", next);
-          });
-        }
+      const sourceCountMap = comments.reduce(
+        (map, cmt) => {
+          var _a;
+          const source = cmt.user.source;
+          (_a = map[source]) != null ? _a : map[source] = 0;
+          map[source]++;
+          return map;
+        },
+        {}
       );
+      Object.entries(sourceCountMap).forEach(([source, count]) => {
+        const isDisabled = player.localConfig.danmakuSourceDisabledList.includes(source);
+        const percent = (count / comments.length * 100).toFixed(2);
+        $(`<label class="k-player-danmaku-list-source-item k-capsule">
+          <input hidden type="checkbox" value="${source}"/>
+          <div title="${source}\u6709${count}\u6761\u5F39\u5E55">${source}(${percent}%)</div>
+        </label>`).appendTo($source).find("input").prop("checked", !isDisabled).on("change", (e) => {
+          let next = [...player.localConfig.danmakuSourceDisabledList];
+          if (e.currentTarget.checked) {
+            next = next.filter((src) => src !== source);
+          } else {
+            next.push(source);
+          }
+          player.configSaveToLocal("danmakuSourceDisabledList", next);
+        });
+      });
       const $wrapper = $root.find(".k-player-danmaku-list-table-wrapper");
       const $content = $root.find(".k-player-danmaku-list-table-content");
       const $table = $root.find(".k-player-danmaku-list-table");
@@ -3067,8 +3075,6 @@ ${[...speedList].reverse().map(
     name || (name = $animeName.val());
     if (!name || name.length < 2)
       return showTips("\u756A\u5267\u540D\u79F0\u4E0D\u5C11\u4E8E2\u4E2A\u5B57");
-    if (searchAnimeLock(name))
-      return;
     try {
       const animes = await searchAnimeWithEpisode(name);
       if (animes.length === 0)
@@ -3084,10 +3090,10 @@ ${[...speedList].reverse().map(
       return;
     const anime = animes.find((anime2) => {
       const storeAnime = storageAnimeName(videoInfo.rawName);
-      if (typeof storeAnime === "object") {
+      if (storeAnime) {
         return anime2.animeId === storeAnime.animeId;
       }
-      return anime2.animeTitle === (storeAnime || videoInfo.rawName);
+      return anime2.animeTitle === videoInfo.rawName;
     });
     if (anime) {
       let episodeName = videoInfo.episode;
@@ -3107,7 +3113,6 @@ ${[...speedList].reverse().map(
       }
       if (episode) {
         state = 2 /* findEpisode */;
-        $animeName.val(anime.animeTitle);
         $animes.val(anime.animeId);
         $animes.trigger("change");
         $episodes.val(episode.episodeId);
@@ -3134,7 +3139,8 @@ ${[...speedList].reverse().map(
         return;
       storageAnimeName(videoInfo.rawName, {
         animeId: anime.animeId,
-        animeTitle: anime.animeTitle
+        animeTitle: anime.animeTitle,
+        keyword: $animeName.val()
       });
       updateEpisodes(anime);
     });
@@ -3143,7 +3149,8 @@ ${[...speedList].reverse().map(
       const anime = $episodes.data("anime");
       storageAnimeName(videoInfo.rawName, {
         animeId: anime.animeId,
-        animeTitle: anime.animeTitle
+        animeTitle: anime.animeTitle,
+        keyword: $animeName.val()
       });
       storageEpisodeName(`${videoInfo.rawName}.${videoInfo.episode}`, episodeId);
       loadEpisode(episodeId);
@@ -3156,7 +3163,6 @@ ${[...speedList].reverse().map(
     });
     resizeOb.observe($danmakuContainer[0]);
     const mutationOb = new MutationObserver(async () => {
-      searchAnimeLock(Math.random());
       Object.assign(videoInfo, await runtime.getCurrentVideoNameAndEpisode());
       state = 1 /* searched */;
       autoStart();
@@ -3363,7 +3369,7 @@ ${[...speedList].reverse().map(
     $danmaku.before($danmakuSwitch);
     let defaultSearchName = storageAnimeName(videoInfo.rawName) || videoInfo.name;
     initEvents(
-      typeof defaultSearchName === "object" ? defaultSearchName.animeTitle : defaultSearchName
+      typeof defaultSearchName === "object" ? defaultSearchName.keyword : defaultSearchName
     );
     autoStart();
   }
