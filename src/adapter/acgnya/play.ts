@@ -18,6 +18,7 @@ export async function playModule() {
   const iframe = await queryDom<HTMLIFrameElement>(
     `#playleft iframe[src*='url=']`
   )
+  iframe.allow = 'autoplay; fullscreen; picture-in-picture;'
 
   window.addEventListener('message', (e) => {
     if (!e.data?.key) return
