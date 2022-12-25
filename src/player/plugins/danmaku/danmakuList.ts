@@ -76,29 +76,36 @@ export function createDanmakuList(
 
     const $source = $root.find('.k-player-danmaku-list-source')
 
-    Array.from(new Set(comments.map((o) => o.user.source))).forEach(
-      (source) => {
-        const isDisabled =
-          player.localConfig.danmakuSourceDisabledList.includes(source)
-
-        $(`<label class="k-player-danmaku-list-source-item k-capsule">
-            <input hidden type="checkbox" value="${source}"/>
-            <div>${source}</div>
-          </label>`)
-          .appendTo($source)
-          .find('input')
-          .prop('checked', !isDisabled)
-          .on('change', (e) => {
-            let next = [...player.localConfig.danmakuSourceDisabledList]
-            if (e.currentTarget.checked) {
-              next = next.filter((src) => src !== source)
-            } else {
-              next.push(source)
-            }
-            player.configSaveToLocal('danmakuSourceDisabledList', next)
-          })
-      }
+    const sourceCountMap = comments.reduce<Record<string, number>>(
+      (map, cmt) => {
+        const source = cmt.user.source
+        map[source] ??= 0
+        map[source]++
+        return map
+      },
+      {}
     )
+    Object.entries(sourceCountMap).forEach(([source, count]) => {
+      const isDisabled =
+        player.localConfig.danmakuSourceDisabledList.includes(source)
+      const percent = ((count / comments.length) * 100).toFixed(2)
+      $(`<label class="k-player-danmaku-list-source-item k-capsule">
+          <input hidden type="checkbox" value="${source}"/>
+          <div title="${source}有${count}条弹幕">${source}(${percent}%)</div>
+        </label>`)
+        .appendTo($source)
+        .find('input')
+        .prop('checked', !isDisabled)
+        .on('change', (e) => {
+          let next = [...player.localConfig.danmakuSourceDisabledList]
+          if (e.currentTarget.checked) {
+            next = next.filter((src) => src !== source)
+          } else {
+            next.push(source)
+          }
+          player.configSaveToLocal('danmakuSourceDisabledList', next)
+        })
+    })
 
     const $wrapper = $root.find('.k-player-danmaku-list-table-wrapper')
     const $content = $root.find('.k-player-danmaku-list-table-content')
