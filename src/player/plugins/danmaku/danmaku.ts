@@ -13,7 +13,6 @@ import {
   addRangeListener,
   episodeIdLock,
   getCheckboxGroupValue,
-  searchAnimeLock,
   setCheckboxGroupValue,
   storageAnimeName,
   storageEpisodeName,
@@ -213,7 +212,6 @@ const searchAnime = async (name?: string) => {
 
   name ||= $animeName.val() as string
   if (!name || name.length < 2) return showTips('番剧名称不少于2个字')
-  if (searchAnimeLock(name)) return
 
   try {
     const animes = await searchAnimeWithEpisode(name)
@@ -309,7 +307,6 @@ const initEvents = (name: string) => {
   resizeOb.observe($danmakuContainer[0])
 
   const mutationOb = new MutationObserver(async () => {
-    searchAnimeLock(Math.random())
     Object.assign(videoInfo, await runtime.getCurrentVideoNameAndEpisode())
     state = State.searched
     autoStart()
