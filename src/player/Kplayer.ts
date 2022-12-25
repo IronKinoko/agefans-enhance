@@ -52,6 +52,7 @@ export interface LocalConfig {
   volume: number
   showSearchActions: boolean
   autoplay: boolean
+  showPlayLarge: boolean
 }
 
 export const defaultConfig = {
@@ -62,6 +63,7 @@ export const defaultConfig = {
   volume: 1,
   showSearchActions: true,
   autoplay: true,
+  showPlayLarge: false,
 } as LocalConfig
 
 export class KPlayer {
@@ -121,7 +123,7 @@ export class KPlayer {
       autoplay: this.localConfig.autoplay,
       keyboard: { global: false, focused: false },
       controls: [
-        isIOS && 'play-large',
+        'play-large',
         'play',
         'progress',
         'current-time',
@@ -130,7 +132,7 @@ export class KPlayer {
         'volume',
         'pip',
         'fullscreen',
-      ].filter(Boolean) as string[],
+      ],
       storage: { enabled: false },
       volume: this.localConfig.volume,
       fullscreen: {
@@ -439,6 +441,20 @@ export class KPlayer {
     this.$settings = $(settingsHTML) as JQuery<HTMLDivElement>
 
     this.$settings
+      .find<HTMLInputElement>('[name=showPlayLarge]')
+      .prop('checked', this.localConfig.showPlayLarge)
+      .on('change', (e) => {
+        const checked = e.target.checked
+        this.configSaveToLocal('showPlayLarge', checked)
+        this.$videoWrapper
+          .find('.plyr__control.plyr__control--overlaid')
+          .toggle(checked)
+      })
+    this.$videoWrapper
+      .find('.plyr__control.plyr__control--overlaid')
+      .toggle(this.localConfig.showPlayLarge)
+
+    this.$settings
       .find<HTMLInputElement>('[name=showSearchActions]')
       .prop('checked', this.localConfig.showSearchActions)
       .on('change', (e) => {
@@ -463,9 +479,8 @@ export class KPlayer {
         this.configSaveToLocal('showProgress', checked)
         this.$progress.toggle(checked)
       })
-    if (!this.localConfig.showProgress) {
-      this.$progress.css('display', 'none')
-    }
+    this.$progress.toggle(this.localConfig.showProgress)
+
     this.$settings
       .find<HTMLInputElement>('[name=autoplay]')
       .prop('checked', this.localConfig.autoplay)

@@ -184,6 +184,10 @@ export const settingsHTML = popover(
     自动下一集
   </label>
   <label class="k-settings-item">
+    <input type="checkbox" name="showPlayLarge" />
+    显示播放图标
+  </label>
+  <label class="k-settings-item">
     <input type="checkbox" name="continuePlay" />
     记忆播放位置
   </label>
