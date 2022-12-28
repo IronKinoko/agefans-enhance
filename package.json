@@ -18,8 +18,8 @@
   },
   "homepage": "https://github.com/IronKinoko/agefans-enhance#readme",
   "scripts": {
-    "dev": "bochi dev",
-    "build": "bochi build",
+    "dev": "bocchi dev",
+    "build": "bocchi build",
     "lint": "tsc --noEmit",
     "prepare": "husky install",
     "deploy": "gh-pages -d dist",
@@ -30,7 +30,7 @@
   "devDependencies": {
     "@types/jquery": "^3.5.14",
     "@types/lodash-es": "^4.17.6",
-    "bochi": "^1.1.1",
+    "bocchi": "^1.1.1",
     "gh-pages": "^3.2.3",
     "husky": "^6.0.0",
     "lint-staged": "^11.2.6",

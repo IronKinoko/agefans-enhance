@@ -1,4 +1,4 @@
-/// <reference types="bochi/env" />
+/// <reference types="bocchi/env" />
 
 interface Window {
   [x: string]: any
