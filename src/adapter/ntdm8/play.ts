@@ -46,6 +46,9 @@ export function playModule() {
         '*'
       )
     }
+    if (key === 'openLink') {
+      window.open(e.data.url)
+    }
   })
 
   window.addEventListener('keydown', (e) => {

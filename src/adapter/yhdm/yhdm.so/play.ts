@@ -32,6 +32,8 @@ export function playModule() {
   window.addEventListener('message', (e) => {
     if (!e.data?.key) return
     const key = e.data.key
+    const video = e.data.video
+
     if (key === 'prev') switchPart(false)
     if (key === 'next') switchPart(true)
     if (key === 'enterwidescreen') {
@@ -59,6 +61,13 @@ export function playModule() {
     }
     if (key === 'openLink') {
       window.open(e.data.url)
+    }
+
+    if (key === 'canplay') {
+      const $iframe = $<HTMLIFrameElement>('#playbox iframe')
+
+      const height = ($iframe.width()! / video.width) * video.height
+      $iframe.height(height)
     }
   })
 
