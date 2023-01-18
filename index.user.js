@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.36.6
+// @version      1.36.7
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1321,7 +1321,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.36.6"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.36.7"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1426,7 +1426,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.36.6"}
+\u811A\u672C\u7248\u672C: ${"1.36.7"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -4311,6 +4311,7 @@ ${[...speedList].reverse().map(
       if (!((_a = e.data) == null ? void 0 : _a.key))
         return;
       const key = e.data.key;
+      const video = e.data.video;
       if (key === "prev")
         switchPart$6(false);
       if (key === "next")
@@ -4338,6 +4339,11 @@ ${[...speedList].reverse().map(
       }
       if (key === "openLink") {
         window.open(e.data.url);
+      }
+      if (key === "canplay") {
+        const $iframe = $("#playbox iframe");
+        const height = $iframe.width() / video.width * video.height;
+        $iframe.height(height);
       }
     });
     window.addEventListener("keydown", (e) => {
@@ -4520,6 +4526,9 @@ ${[...speedList].reverse().map(
           { key: "getEpisode", name: $(".movurl .active-play").text() },
           "*"
         );
+      }
+      if (key === "openLink") {
+        window.open(e.data.url);
       }
     });
     window.addEventListener("keydown", (e) => {
