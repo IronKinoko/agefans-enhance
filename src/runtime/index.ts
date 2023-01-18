@@ -123,8 +123,15 @@ class Runtime {
       }
     })
 
-    setupList.forEach((setup) => setup())
-    runList.forEach((run) => run())
+    const init = () => {
+      setupList.forEach((setup) => setup())
+      runList.forEach((run) => run())
+    }
+    if (document.readyState !== 'loading') {
+      init()
+    } else {
+      window.addEventListener('DOMContentLoaded', init)
+    }
   }
 }
 
