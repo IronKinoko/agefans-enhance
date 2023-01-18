@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.36.5
+// @version      1.36.6
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -11,7 +11,7 @@
 // @include      http://www.yinghuacd.com/*
 // @include      https://www.yhdmp.cc/vp/*
 // @include      https://bangumi.online/*
-// @include      http*://www.ntyou.*
+// @include      http*://www.ntdm8.*
 // @include      https://www.dm233.*
 // @include      https://www.bimiacg4.net*
 // @include      https://www.acgnya.com/*
@@ -1321,7 +1321,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.36.5"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.36.6"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1426,7 +1426,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.36.5"}
+\u811A\u672C\u7248\u672C: ${"1.36.6"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -4533,11 +4533,11 @@ ${[...speedList].reverse().map(
   }
 
   runtime.register({
-    domains: [".ntyou."],
+    domains: [".ntdm8."],
     opts: [{ test: "/play", run: playModule$3 }],
     search: {
       name: "NT\u52A8\u6F2B",
-      search: (name) => `http://www.ntyou.cc/search/-------------.html?wd=${name}&page=1`
+      search: (name) => `http://www.ntdm8.com/search/-------------.html?wd=${name}&page=1`
     }
   });
 
