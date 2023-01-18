@@ -2,11 +2,11 @@ import { runtime } from '../../runtime'
 import { playModule } from './play'
 
 runtime.register({
-  domains: ['.ntyou.'],
+  domains: ['.ntdm8.'],
   opts: [{ test: '/play', run: playModule }],
   search: {
     name: 'NT动漫',
     search: (name) =>
-      `http://www.ntyou.cc/search/-------------.html?wd=${name}&page=1`,
+      `http://www.ntdm8.com/search/-------------.html?wd=${name}&page=1`,
   },
 })

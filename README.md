@@ -63,7 +63,7 @@
 - [bimiacg](https://www.bimiacg4.net/)
 - [dm233](https://www.dm233.org/)
 - [アニメ新番組](https://bangumi.online/)
-- [NT 动漫](http://www.ntyou.cc/)
+- [NT 动漫](http://www.ntdm8.com/)
 
 ## 注意事项
 
