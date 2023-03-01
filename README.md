@@ -56,7 +56,7 @@
 \* 标记为推荐的网站
 
 - [\*agefans](http://www.age.tv/)
-- [樱花动漫 1](https://www.yhdmp.cc/)
+- [樱花动漫 1](https://www.yhdmp.net/)
 - [樱花动漫 2](http://www.yinghuacd.com/)
 - [樱花动漫 3](https://www.odcoc.com/)
 - [\*acgnya](https://www.acgnya.com/)
