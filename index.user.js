@@ -2,14 +2,14 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.36.8
+// @version      1.36.9
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
 // @include      https://www.agefans.*
 // @include      https://www.agemys.*
 // @include      http://www.yinghuacd.com/*
-// @include      https://www.yhdmp.cc/vp/*
+// @include      https://www.yhdmp.net/vp/*
 // @include      https://bangumi.online/*
 // @include      http*://www.ntdm8.*
 // @include      https://www.dm233.*
@@ -1328,7 +1328,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.36.8"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.36.9"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1433,7 +1433,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.36.8"}
+\u811A\u672C\u7248\u672C: ${"1.36.9"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -4430,11 +4430,11 @@ ${[...speedList].reverse().map(
   }
 
   runtime.register({
-    domains: ["yhdmp.cc"],
+    domains: ["yhdmp.net"],
     opts: [{ test: "/vp", run: playModule$5 }],
     search: {
       name: "\u6A31\u82B1\u52A8\u6F2B2",
-      search: (name) => `https://www.yhdmp.cc/s_all?ex=1&kw=${name}`,
+      search: (name) => `https://www.yhdmp.net/s_all?ex=1&kw=${name}`,
       getSearchName: () => $(".gohome > a:last").text(),
       getEpisode: () => $('.movurl li a[style*="color"]').text()
     }
