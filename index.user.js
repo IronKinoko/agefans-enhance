@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.36.9
+// @version      1.36.10
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1328,7 +1328,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.36.9"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.36.10"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1433,7 +1433,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.36.9"}
+\u811A\u672C\u7248\u672C: ${"1.36.10"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -2429,16 +2429,6 @@ ${[...speedList].reverse().map(
   }
   const storageAnimeName = createStorage("k-player-danmaku-anime-name-v2");
   const storageEpisodeName = createStorage("k-player-danmaku-episode-name");
-  function createLock() {
-    let prev;
-    return function check(deps) {
-      if (prev === deps)
-        return true;
-      prev = deps;
-      return false;
-    };
-  }
-  const episodeIdLock = createLock();
   function convert32ToHex(color) {
     return "#" + parseInt(color).toString(16);
   }
@@ -3066,8 +3056,6 @@ ${[...speedList].reverse().map(
     return ret;
   };
   const loadEpisode = async (episodeId) => {
-    if (episodeIdLock(episodeId))
-      return;
     stop();
     comments = await getComments(episodeId);
     syncDiff = 0;
