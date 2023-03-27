@@ -11,7 +11,6 @@ import { createProgressBarPower } from './progressBarPower'
 import { Anime, Commands, Comment, Episode } from './types'
 import {
   addRangeListener,
-  episodeIdLock,
   getCheckboxGroupValue,
   setCheckboxGroupValue,
   storageAnimeName,
@@ -194,8 +193,6 @@ const adjustCommentCount = (comments: Comment[]) => {
 }
 
 const loadEpisode = async (episodeId: string) => {
-  if (episodeIdLock(episodeId)) return
-
   stop()
   comments = await getComments(episodeId)
   syncDiff = 0
