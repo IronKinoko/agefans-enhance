@@ -274,6 +274,9 @@ export class KPlayer {
     })
     this.on('loadedmetadata', () => {
       this.$loading.hide()
+      this.$searchActions
+        .find('.k-text-btn-text')
+        .text(this.media.videoHeight + 'P')
     })
     this.on('canplay', () => {
       this.$loading.hide()
