@@ -10,7 +10,7 @@ import { settingModule } from './pages/setting'
 import { updateModule } from './pages/update'
 
 runtime.register({
-  domains: ['age.tv', 'agemys', 'agefans'],
+  domains: ['age.tv', 'agemys', 'agefans', 'agedm'],
   opts: [
     {
       test: '*',
