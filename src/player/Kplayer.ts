@@ -332,6 +332,9 @@ export class KPlayer {
     this.on('pause', () => {
       this.hideControlsDebounced()
     })
+    this.on('prev', () => {
+      this.message.info('正在切换上一集')
+    })
     this.on('next', () => {
       this.message.info('正在切换下一集')
     })

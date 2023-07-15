@@ -3,7 +3,7 @@ import { parser } from './parser'
 
 // 这是个解析器网站，里面只有一个播放器。将其替换成 KPlayer
 runtime.register({
-  domains: ['pro.ascepan.top', 'danmu.yhdmjx.com'],
+  domains: ['pro.ascepan.top', 'danmu.yhdmjx.com', 'sp-flv.com'],
   opts: [
     {
       test: () => window.location.href.includes('danmu.yhdmjx.com/m3u8.php'),
@@ -14,6 +14,11 @@ runtime.register({
       test: () => window.location.href.includes('pro.ascepan.top/player'),
       runInIframe: true,
       run: parser['pro.ascepan.top'],
+    },
+    {
+      test: () => !!window.location.href.match(/sp-flv\.com.*url=/),
+      runInIframe: true,
+      run: parser['sp-flv.com'],
     },
   ],
   search: {
