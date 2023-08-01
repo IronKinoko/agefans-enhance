@@ -1,3 +1,4 @@
+import { sleep } from '../../utils/sleep'
 import { local } from '../../utils/storage'
 
 function calcSortDirection() {
@@ -29,6 +30,16 @@ function calcSortDirection() {
     local.setItem('sortDirection', 'asc')
   }
   return local.getItem('sortDirection') as 'asc' | 'desc'
+}
+
+function getActiveTabIndex() {
+  const pathname = window.location.pathname
+  const match = pathname.match(/play\/.*\/(\d+)\/(\d+)/)
+  if (match) {
+    const activeTab = match[1]
+    return Number(activeTab) - 1
+  }
+  return null
 }
 
 function getSortButon() {
@@ -85,7 +96,21 @@ function insertFocusBtn() {
   `
 
   $(html)
-    .on('click', activeScrollIntoView)
+    .on('click', async () => {
+      const idx = getActiveTabIndex()
+      if (idx != null) {
+        const $activeTab = $('.playlist-source-tab button[data-bs-toggle]').eq(
+          idx
+        )
+
+        if (!$activeTab.hasClass('active')) {
+          $activeTab.trigger('click')
+          await sleep(100)
+        }
+      }
+
+      activeScrollIntoView()
+    })
     .prependTo('.playlist-source-tab .float-end')
 }
 
