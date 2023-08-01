@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.38.0
+// @version      1.38.1
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1330,7 +1330,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.38.0"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.38.1"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1435,7 +1435,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.38.0"}
+\u811A\u672C\u7248\u672C: ${"1.38.1"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -3556,7 +3556,10 @@ ${[...speedList].reverse().map(
   function rememberSortDirection() {
     const $btn = getSortButon();
     $btn.on("click", () => {
-      setTimeout(calcSortDirection, 100);
+      setTimeout(() => {
+        calcSortDirection();
+        activeScrollIntoView();
+      }, 100);
     });
   }
   function getSortDirection() {
@@ -3568,7 +3571,7 @@ ${[...speedList].reverse().map(
       getSortButon().trigger("click");
     }
   }
-  function scrollIntoView() {
+  function activeScrollIntoView() {
     const $active = getActive();
     function getScrollParent() {
       let parent = $active.parent()[0];
@@ -3590,7 +3593,7 @@ ${[...speedList].reverse().map(
     const html = `
   <button type="button" class="btn btn-sm btn-outline-light btn-playlist-order">\u805A\u7126</button>
   `;
-    $(html).on("click", scrollIntoView).prependTo(".playlist-source-tab .float-end");
+    $(html).on("click", activeScrollIntoView).prependTo(".playlist-source-tab .float-end");
   }
   function getActive() {
     return $(".video_detail_episode .video_detail_spisode_playing").parent();
@@ -3665,7 +3668,7 @@ ${[...speedList].reverse().map(
     rememberSortDirection();
     restoreSortDirection();
     insertFocusBtn();
-    scrollIntoView();
+    activeScrollIntoView();
   }
 
   runtime.register({
