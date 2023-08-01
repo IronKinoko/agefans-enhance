@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.38.1
+// @version      1.38.2
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1330,7 +1330,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.38.1"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.38.2"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1435,7 +1435,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.38.1"}
+\u811A\u672C\u7248\u672C: ${"1.38.2"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -3550,6 +3550,15 @@ ${[...speedList].reverse().map(
     }
     return local.getItem("sortDirection");
   }
+  function getActiveTabIndex() {
+    const pathname = window.location.pathname;
+    const match = pathname.match(/play\/.*\/(\d+)\/(\d+)/);
+    if (match) {
+      const activeTab = match[1];
+      return Number(activeTab) - 1;
+    }
+    return null;
+  }
   function getSortButon() {
     return $('button:contains("\u66F4\u6539\u6392\u5E8F")');
   }
@@ -3593,7 +3602,19 @@ ${[...speedList].reverse().map(
     const html = `
   <button type="button" class="btn btn-sm btn-outline-light btn-playlist-order">\u805A\u7126</button>
   `;
-    $(html).on("click", activeScrollIntoView).prependTo(".playlist-source-tab .float-end");
+    $(html).on("click", async () => {
+      const idx = getActiveTabIndex();
+      if (idx != null) {
+        const $activeTab = $(".playlist-source-tab button[data-bs-toggle]").eq(
+          idx
+        );
+        if (!$activeTab.hasClass("active")) {
+          $activeTab.trigger("click");
+          await sleep(100);
+        }
+      }
+      activeScrollIntoView();
+    }).prependTo(".playlist-source-tab .float-end");
   }
   function getActive() {
     return $(".video_detail_episode .video_detail_spisode_playing").parent();
