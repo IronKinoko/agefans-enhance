@@ -38,7 +38,10 @@ function getSortButon() {
 function rememberSortDirection() {
   const $btn = getSortButon()
   $btn.on('click', () => {
-    setTimeout(calcSortDirection, 100)
+    setTimeout(() => {
+      calcSortDirection()
+      activeScrollIntoView()
+    }, 100)
   })
 }
 
@@ -54,7 +57,7 @@ function restoreSortDirection() {
   }
 }
 
-function scrollIntoView() {
+function activeScrollIntoView() {
   const $active = getActive()
 
   function getScrollParent() {
@@ -82,7 +85,7 @@ function insertFocusBtn() {
   `
 
   $(html)
-    .on('click', scrollIntoView)
+    .on('click', activeScrollIntoView)
     .prependTo('.playlist-source-tab .float-end')
 }
 
@@ -162,5 +165,5 @@ export function playModule() {
   rememberSortDirection()
   restoreSortDirection()
   insertFocusBtn()
-  scrollIntoView()
+  activeScrollIntoView()
 }
