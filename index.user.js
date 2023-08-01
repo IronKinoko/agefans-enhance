@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.37.0
+// @version      1.38.0
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1330,7 +1330,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.37.0"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.38.0"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1435,7 +1435,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.37.0"}
+\u811A\u672C\u7248\u672C: ${"1.38.0"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -3522,17 +3522,90 @@ ${[...speedList].reverse().map(
     }
   });
 
+  function calcSortDirection() {
+    var _a, _b, _c;
+    const $active = getActive();
+    const $prev = $active.prev();
+    const $next = $active.next();
+    const prevText = (_a = $prev.text().match(/\d+/)) == null ? void 0 : _a[0];
+    const nextText = (_b = $next.text().match(/\d+/)) == null ? void 0 : _b[0];
+    const activeText = (_c = $active.text().match(/\d+/)) == null ? void 0 : _c[0];
+    const prev = Number(prevText);
+    const current = Number(activeText);
+    const next = Number(nextText);
+    if (prevText) {
+      if (prev < current) {
+        local.setItem("sortDirection", "asc");
+      } else {
+        local.setItem("sortDirection", "desc");
+      }
+    } else if (nextText) {
+      if (next > current) {
+        local.setItem("sortDirection", "asc");
+      } else {
+        local.setItem("sortDirection", "desc");
+      }
+    } else {
+      local.setItem("sortDirection", "asc");
+    }
+    return local.getItem("sortDirection");
+  }
+  function getSortButon() {
+    return $('button:contains("\u66F4\u6539\u6392\u5E8F")');
+  }
+  function rememberSortDirection() {
+    const $btn = getSortButon();
+    $btn.on("click", () => {
+      setTimeout(calcSortDirection, 100);
+    });
+  }
+  function getSortDirection() {
+    return local.getItem("sortDirection", "asc");
+  }
+  function restoreSortDirection() {
+    const sortDirection = getSortDirection();
+    if (sortDirection === "desc") {
+      getSortButon().trigger("click");
+    }
+  }
+  function scrollIntoView() {
+    const $active = getActive();
+    function getScrollParent() {
+      let parent = $active.parent()[0];
+      while (parent && parent.tagName !== "BODY") {
+        const overflowY = getComputedStyle(parent).overflowY;
+        if (overflowY === "auto" || overflowY === "scroll") {
+          return parent;
+        }
+        parent = parent.parentElement;
+      }
+      return document.body;
+    }
+    const scrollEl = getScrollParent();
+    const scrollRect = scrollEl.getBoundingClientRect();
+    const activeRect = $active[0].getBoundingClientRect();
+    scrollEl.scrollTop += activeRect.top - scrollRect.top - 100;
+  }
+  function insertFocusBtn() {
+    const html = `
+  <button type="button" class="btn btn-sm btn-outline-light btn-playlist-order">\u805A\u7126</button>
+  `;
+    $(html).on("click", scrollIntoView).prependTo(".playlist-source-tab .float-end");
+  }
   function getActive() {
     return $(".video_detail_episode .video_detail_spisode_playing").parent();
   }
   function switchPart$8(next) {
-    var _a;
+    var _a, _b;
     const $active = getActive();
-    console.log("\u{1F680} ~ file: play.ts:6 ~ switchPart ~ $active:", $active);
-    (_a = $active[next ? "next" : "prev"]().find("a")[0]) == null ? void 0 : _a.click();
+    const sortDirection = getSortDirection();
+    if (sortDirection === "asc")
+      (_a = $active[next ? "next" : "prev"]().find("a")[0]) == null ? void 0 : _a.click();
+    else
+      (_b = $active[next ? "prev" : "next"]().find("a")[0]) == null ? void 0 : _b.click();
   }
   const iframeSelector$1 = ".video_play_wrapper iframe";
-  function playModule$8() {
+  function initPlayer() {
     window.addEventListener("message", (e) => {
       var _a, _b, _c;
       if (!((_a = e.data) == null ? void 0 : _a.key))
@@ -3586,6 +3659,13 @@ ${[...speedList].reverse().map(
         e.preventDefault();
     });
     $(iframeSelector$1).attr({ gesture: "media", allow: "autoplay; fullscreen" });
+  }
+  function playModule$8() {
+    initPlayer();
+    rememberSortDirection();
+    restoreSortDirection();
+    insertFocusBtn();
+    scrollIntoView();
   }
 
   runtime.register({
