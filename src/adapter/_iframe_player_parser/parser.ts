@@ -1,6 +1,7 @@
 import { KPlayer } from '../../player'
 import { execInUnsafeWindow } from '../../utils/execInUnsafeWindow'
 import { queryDom } from '../../utils/queryDom'
+import { sleep } from '../../utils/sleep'
 import { wait } from '../../utils/wait'
 
 let player: KPlayer
@@ -51,16 +52,32 @@ export const parser = {
   },
   /**
    * agefans-01
-   * @include 43.240.74.134:8443
+   * @include 43.240.74.134:8443/vip/?url=
    */
   'agefans-01': async () => {
     let url: string = ''
     while (!url) {
-      url = await execInUnsafeWindow(() => !!window.stray.url)
+      url = await execInUnsafeWindow(() => window.stray?.url)
+      await sleep(100)
     }
     $('#artplayer').remove()
     $('body').append('<div id="k-player-container"/>')
-    player = new KPlayer('#player', { eventToParentWindow: true })
+    player = new KPlayer('#k-player-container', { eventToParentWindow: true })
+    player.src = url
+  },
+  /**
+   * agefans-02
+   * @include 43.240.74.134:8443/m3u8/?url=
+   */
+  'agefans-02': async () => {
+    let url: string = ''
+    while (!url) {
+      url = await execInUnsafeWindow(() => window.Vurl)
+      await sleep(100)
+    }
+    $('#loading').remove()
+    $('body').append('<div id="k-player-container"/>')
+    player = new KPlayer('#k-player-container', { eventToParentWindow: true })
     player.src = url
   },
 }

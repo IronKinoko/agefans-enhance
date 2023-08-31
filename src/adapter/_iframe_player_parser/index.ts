@@ -4,7 +4,12 @@ import './index.scss'
 
 // 这是个解析器网站，里面只有一个播放器。将其替换成 KPlayer
 runtime.register({
-  domains: ['pro.ascepan.top', 'danmu.yhdmjx.com', 'sp-flv.com'],
+  domains: [
+    'pro.ascepan.top',
+    'danmu.yhdmjx.com',
+    'sp-flv.com',
+    '43.240.74.134',
+  ],
   opts: [
     {
       test: () => window.location.href.includes('danmu.yhdmjx.com/m3u8.php'),
@@ -23,9 +28,14 @@ runtime.register({
       run: parser['sp-flv.com'],
     },
     {
-      test: () => !!window.location.href.match(/43.240.74.134.*url=/),
+      test: () => !!window.location.href.match(/43.240.74.134.*vip.*url=/),
       runInIframe: true,
       run: parser['agefans-01'],
+    },
+    {
+      test: () => !!window.location.href.match(/43.240.74.134.*m3u8.*url=/),
+      runInIframe: true,
+      run: parser['agefans-02'],
     },
   ],
   search: {
