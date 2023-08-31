@@ -1,5 +1,6 @@
 import { runtime } from '../../runtime'
 import { parser } from './parser'
+import './index.scss'
 
 // 这是个解析器网站，里面只有一个播放器。将其替换成 KPlayer
 runtime.register({
@@ -14,6 +15,7 @@ runtime.register({
       test: () => window.location.href.includes('pro.ascepan.top/player'),
       runInIframe: true,
       run: parser['pro.ascepan.top'],
+      setup: () => $('body').addClass('pro-ascepan-top'),
     },
     {
       test: () => !!window.location.href.match(/sp-flv\.com.*url=/),
