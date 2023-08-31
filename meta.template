@@ -20,6 +20,7 @@
 // @include      https://danmu.yhdmjx.com/*
 // @include      https://www.odcoc.com/*
 // @include      https://*.sp-flv.com*
+// @include      https://*43.240.74.134*
 // @run-at       document-end
 // @require      https://unpkg.com/jquery@3.6.0/dist/jquery.min.js
 // @require      https://unpkg.com/plyr@3.6.4/dist/plyr.min.js

@@ -49,4 +49,18 @@ export const parser = {
 
     console.log("🚀 ~ file: parser.ts:29 ~ 'vip.sp-flv.com': ~ url:", url)
   },
+  /**
+   * agefans-01
+   * @include 43.240.74.134:8443
+   */
+  'agefans-01': async () => {
+    let url: string = ''
+    while (!url) {
+      url = await execInUnsafeWindow(() => !!window.stray.url)
+    }
+    $('#artplayer').remove()
+    $('body').append('<div id="k-player-container"/>')
+    player = new KPlayer('#player', { eventToParentWindow: true })
+    player.src = url
+  },
 }

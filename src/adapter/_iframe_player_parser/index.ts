@@ -20,6 +20,11 @@ runtime.register({
       runInIframe: true,
       run: parser['sp-flv.com'],
     },
+    {
+      test: () => !!window.location.href.match(/43.240.74.134.*url=/),
+      runInIframe: true,
+      run: parser['agefans-01'],
+    },
   ],
   search: {
     getSearchName: () => {
