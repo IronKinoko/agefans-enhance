@@ -96,8 +96,10 @@ class Runtime {
       domains.some(createTest(location.origin))
     )
 
-    if (registers.length !== 1)
-      throw new Error(`激活的域名应该就一个 ${window.location}`)
+    if (registers.length !== 1) {
+      console.log(window.location, registers)
+      throw new Error(`激活的域名应该就一个`)
+    }
     return registers[0]
   }
 
