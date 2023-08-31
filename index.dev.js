@@ -2,7 +2,7 @@
 // @name         agefans Enhance - Dev
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.38.2
+// @version      1.38.3
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -12,7 +12,7 @@
 // @include      http*://*.yinghuacd.com/*
 // @include      https://www.yhdmp.net/vp/*
 // @include      https://bangumi.online/*
-// @include      http*://www.ntdm8.*
+// @include      http*://www.ntdm9.*
 // @include      https://www.dm233.*
 // @include      https://www.bimiacg4.net*
 // @include      https://www.acgnya.com/*
@@ -20,6 +20,7 @@
 // @include      https://danmu.yhdmjx.com/*
 // @include      https://www.odcoc.com/*
 // @include      https://*.sp-flv.com*
+// @include      https://*43.240.74.134*
 // @run-at       document-end
 // @require      https://unpkg.com/jquery@3.6.0/dist/jquery.min.js
 // @require      https://unpkg.com/plyr@3.6.4/dist/plyr.min.js
@@ -32,7 +33,7 @@
 // @license      MIT
 // @downloadURL  https://github.com/IronKinoko/agefans-enhance/raw/gh-pages/index.user.js
 // @updateURL    https://github.com/IronKinoko/agefans-enhance/raw/gh-pages/index.user.js
-// @require      file://D:\Github\agefans-enhance\dist\index.user.js
+// @require      file:///Users/zl/Documents/Github/agefans-enhance/dist/index.user.js
 // ==/UserScript==
 
 /**

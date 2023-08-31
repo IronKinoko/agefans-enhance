@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.38.3
+// @version      1.38.4
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -12,7 +12,7 @@
 // @include      http*://*.yinghuacd.com/*
 // @include      https://www.yhdmp.net/vp/*
 // @include      https://bangumi.online/*
-// @include      http*://www.ntdm8.*
+// @include      http*://www.ntdm9.*
 // @include      https://www.dm233.*
 // @include      https://www.bimiacg4.net*
 // @include      https://www.acgnya.com/*
@@ -20,6 +20,7 @@
 // @include      https://danmu.yhdmjx.com/*
 // @include      https://www.odcoc.com/*
 // @include      https://*.sp-flv.com*
+// @include      https://*43.240.74.134*
 // @run-at       document-end
 // @require      https://unpkg.com/jquery@3.6.0/dist/jquery.min.js
 // @require      https://unpkg.com/plyr@3.6.4/dist/plyr.min.js
@@ -115,8 +116,10 @@
       const registers = this.list.filter(
         ({ domains }) => domains.some(createTest(location.origin))
       );
-      if (registers.length !== 1)
-        throw new Error(`\u6FC0\u6D3B\u7684\u57DF\u540D\u5E94\u8BE5\u5C31\u4E00\u4E2A ${window.location}`);
+      if (registers.length !== 1) {
+        console.log(window.location, registers);
+        throw new Error(`\u6FC0\u6D3B\u7684\u57DF\u540D\u5E94\u8BE5\u5C31\u4E00\u4E2A`);
+      }
       return registers[0];
     }
     getActiveOpts() {
@@ -1330,7 +1333,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.38.3"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.38.4"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1435,7 +1438,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.38.3"}
+\u811A\u672C\u7248\u672C: ${"1.38.4"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -3472,6 +3475,31 @@ ${[...speedList].reverse().map(
         player$2.src = url;
       }
       console.log("\u{1F680} ~ file: parser.ts:29 ~ 'vip.sp-flv.com': ~ url:", url);
+    },
+    "agefans-01": async () => {
+      let url = "";
+      while (!url) {
+        url = await execInUnsafeWindow(() => {
+          var _a;
+          return (_a = window.stray) == null ? void 0 : _a.url;
+        });
+        await sleep(100);
+      }
+      $("#artplayer").remove();
+      $("body").append('<div id="k-player-container"/>');
+      player$2 = new KPlayer("#k-player-container", { eventToParentWindow: true });
+      player$2.src = url;
+    },
+    "agefans-02": async () => {
+      let url = "";
+      while (!url) {
+        url = await execInUnsafeWindow(() => window.Vurl);
+        await sleep(100);
+      }
+      $("#loading").remove();
+      $("body").append('<div id="k-player-container"/>');
+      player$2 = new KPlayer("#k-player-container", { eventToParentWindow: true });
+      player$2.src = url;
     }
   };
 
@@ -3479,7 +3507,12 @@ ${[...speedList].reverse().map(
   n(css$3,{});
 
   runtime.register({
-    domains: ["pro.ascepan.top", "danmu.yhdmjx.com", "sp-flv.com"],
+    domains: [
+      "pro.ascepan.top",
+      "danmu.yhdmjx.com",
+      "sp-flv.com",
+      "43.240.74.134"
+    ],
     opts: [
       {
         test: () => window.location.href.includes("danmu.yhdmjx.com/m3u8.php"),
@@ -3496,6 +3529,16 @@ ${[...speedList].reverse().map(
         test: () => !!window.location.href.match(/sp-flv\.com.*url=/),
         runInIframe: true,
         run: parser["sp-flv.com"]
+      },
+      {
+        test: () => !!window.location.href.match(/43.240.74.134.*vip.*url=/),
+        runInIframe: true,
+        run: parser["agefans-01"]
+      },
+      {
+        test: () => !!window.location.href.match(/43.240.74.134.*m3u8.*url=/),
+        runInIframe: true,
+        run: parser["agefans-02"]
       }
     ],
     search: {
@@ -4078,11 +4121,11 @@ ${[...speedList].reverse().map(
   }
 
   runtime.register({
-    domains: [".ntdm8."],
+    domains: [".ntdm9."],
     opts: [{ test: "/play", run: playModule$3 }],
     search: {
       name: "NT\u52A8\u6F2B",
-      search: (name) => `http://www.ntdm8.com/search/-------------.html?wd=${name}&page=1`
+      search: (name) => `http://www.ntdm9.com/search/-------------.html?wd=${name}&page=1`
     }
   });
 
