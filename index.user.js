@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.38.4
+// @version      1.38.5
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1333,7 +1333,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.38.4"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.38.5"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1438,7 +1438,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.38.4"}
+\u811A\u672C\u7248\u672C: ${"1.38.5"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -3493,9 +3493,13 @@ ${[...speedList].reverse().map(
     "agefans-02": async () => {
       let url = "";
       while (!url) {
-        url = await execInUnsafeWindow(() => window.Vurl);
+        url = await execInUnsafeWindow(() => {
+          var _a, _b;
+          return (_b = (_a = window.art) == null ? void 0 : _a.hls) == null ? void 0 : _b.url;
+        });
         await sleep(100);
       }
+      await execInUnsafeWindow(() => window.art.destroy(false));
       $("#loading").remove();
       $("body").append('<div id="k-player-container"/>');
       player$2 = new KPlayer("#k-player-container", { eventToParentWindow: true });
