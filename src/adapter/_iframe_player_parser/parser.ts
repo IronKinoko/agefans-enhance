@@ -72,9 +72,12 @@ export const parser = {
   'agefans-02': async () => {
     let url: string = ''
     while (!url) {
-      url = await execInUnsafeWindow(() => window.Vurl)
+      url = await execInUnsafeWindow(() => window.art?.hls?.url)
       await sleep(100)
     }
+
+    await execInUnsafeWindow(() => window.art.destroy(false))
+
     $('#loading').remove()
     $('body').append('<div id="k-player-container"/>')
     player = new KPlayer('#k-player-container', { eventToParentWindow: true })
