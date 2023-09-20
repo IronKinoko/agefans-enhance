@@ -11,10 +11,16 @@ body:
     validations:
       required: true
   - type: textarea
+    id: browser
+    attributes:
+      label: 浏览器信息
+      placeholder: 使用的浏览器名称、版本、userAgent等
+    validations:
+      required: false
+  - type: textarea
     id: desc
     attributes:
       label: 简要描述下问题
-      value:
-      placeholder: 你可以通过脚本的【?】按钮来提交issue，这样可以带上更多的内容
+      description: 你可以使用【?】键打开【脚本信息】使用【报错意见】中的【GitHub Issues】提交问题，这样可以带上更多有效的信息
     validations:
       required: false
