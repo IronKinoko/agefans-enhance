@@ -10,11 +10,12 @@ body:
       placeholder: 请填写网页链接
     validations:
       required: true
-  - type: textarea
+  - type: input
     id: browser
     attributes:
       label: 浏览器信息
-      placeholder: 使用的浏览器名称、版本、userAgent等
+      placeholder: 使用的浏览器的名称和版本，如果知道 UserAgent 信息就更好了
+      description: 可在 https://tool.chinaz.com/useragent/ 中查看当前的UserAgent
     validations:
       required: false
   - type: textarea
