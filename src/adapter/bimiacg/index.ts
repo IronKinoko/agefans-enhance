@@ -6,7 +6,7 @@ import { queryDom } from '../../utils/queryDom'
 import { histroyModule } from './history'
 
 runtime.register({
-  domains: ['bimiacg4.net'],
+  domains: ['bimiacg10.net'],
   opts: [
     {
       test: /.*/,
@@ -18,7 +18,7 @@ runtime.register({
   ],
   search: {
     name: 'BIMI动漫',
-    search: (name) => `https://www.bimiacg4.net/vod/search/wd/${name}/`,
+    search: (name) => `https://www.bimiacg10.net/vod/search/wd/${name}/`,
     getSearchName: () => {
       return new Promise((resolve) => {
         const fn = (e: MessageEvent<any>) => {
