@@ -173,7 +173,7 @@ export const settingsHTML = popover(
 <div class="k-settings-list">
   <label class="k-settings-item">
     <input type="checkbox" name="showSearchActions" />
-    显示友链
+    显示画质
   </label>
   <label class="k-settings-item">
     <input type="checkbox" name="autoplay" />
@@ -202,7 +202,7 @@ export const settingsHTML = popover(
 export const searchActionsHTML = popover(
   `
 <div class="plyr__controls__item k-popover k-text-btn">
-  <span class="k-text-btn-text">友链</span>
+  <span class="k-text-btn-text">画质</span>
 </div>
 `,
   `<ul class="k-menu"></ul>`
