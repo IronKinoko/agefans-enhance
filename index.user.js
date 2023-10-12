@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.39.0
+// @version      1.39.1
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -60,153 +60,6 @@
   var css$c = ":root {\n  --k-player-background-highlight: rgba(95, 95, 95, 0.65);\n  --k-player-background: rgba(0, 0, 0, 0.65);\n  --k-player-color: white;\n  --k-player-primary-color: #00b3ff;\n  --k-player-primary-color-highlight: rgba(0, 179, 255, 0.1);\n}\n\n.k-menu {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  border-radius: 4px;\n  overflow: hidden;\n}\n.k-menu-item {\n  padding: 0 16px;\n  line-height: 36px;\n  height: 36px;\n  cursor: pointer;\n  width: 100%;\n  white-space: nowrap;\n  color: white;\n  transition: all 0.3s;\n  text-align: center;\n}\n.k-menu-item:hover {\n  background: var(--k-player-background-highlight);\n}\n\n.k-btn, .k-capsule div {\n  color: var(--k-player-primary-color);\n  background: var(--k-player-primary-color-highlight);\n  padding: 4px 8px;\n  border-radius: 4px;\n  cursor: pointer;\n  white-space: nowrap;\n  transition: all 0.15s;\n  user-select: none;\n}\n\n.k-capsule input:not(:checked) + div {\n  color: #999;\n  background: #ddd;\n}\n\n.k-menu-item.k-menu-active {\n  color: var(--k-player-primary-color);\n}\n\n.k-input,\n.k-select {\n  background: white;\n  border: 1px solid #f1f1f1;\n  color: black;\n  outline: 0;\n  border-radius: 2px;\n  transition: all 0.15s ease;\n}\n.k-input:focus, .k-input:hover,\n.k-select:focus,\n.k-select:hover {\n  border-color: var(--k-player-primary-color);\n}\n.k-input::placeholder,\n.k-select::placeholder {\n  color: #999;\n}\n\n.k-settings-list {\n  margin: 0;\n  padding: 8px;\n  text-align: left;\n}\n.k-settings-item {\n  width: 100%;\n  white-space: nowrap;\n  color: white;\n  display: flex;\n  align-items: center;\n  gap: 8px;\n}\n.k-settings-list > .k-settings-item + .k-settings-item {\n  margin-top: 8px;\n}";
   n(css$c,{});
 
-  function createTest(target) {
-    return (test) => typeof test === "function" ? test() : typeof test === "string" ? target.includes(test) || test === "*" : test.test(target);
-  }
-  class Runtime {
-    constructor() {
-      this.list = [
-        {
-          domains: [],
-          opts: [],
-          search: {
-            name: "[BT]\u871C\u67D1\u8BA1\u5212",
-            search: (name) => `https://mikanani.me/Home/Search?searchstr=${name}`
-          }
-        }
-      ];
-      window.addEventListener("message", (e) => {
-        var _a, _b;
-        if (((_a = e.data) == null ? void 0 : _a.key) === "getLocationHref") {
-          (_b = e.source) == null ? void 0 : _b.postMessage(
-            { key: "getLocationHref", url: location.href },
-            { targetOrigin: "*" }
-          );
-        }
-      });
-    }
-    async getTopLocationHref() {
-      if (parent === self)
-        return window.location.href;
-      return new Promise((resolve) => {
-        window.addEventListener("message", function once(e) {
-          var _a;
-          if (((_a = e.data) == null ? void 0 : _a.key) === "getLocationHref") {
-            window.removeEventListener("message", once);
-            resolve(e.data.url);
-          }
-        });
-        parent.postMessage({ key: "getLocationHref" }, "*");
-      });
-    }
-    register(item) {
-      this.list.push(item);
-    }
-    async getSearchActions() {
-      const isInIframe = parent !== self;
-      const searchs = this.list.map((o) => o.search).filter(Boolean).filter((o) => !(isInIframe && o.disabledInIframe));
-      const register = this.getActiveRegister();
-      const info = await this.getCurrentVideoNameAndEpisode();
-      if (!(info == null ? void 0 : info.name))
-        return [];
-      let name = info.name;
-      return searchs.filter((search) => search !== register.search && search.search).map((search) => ({
-        name: search.name,
-        search: () => {
-          const url = search.search(encodeURIComponent(name));
-          if (!url)
-            return;
-          if (isInIframe)
-            parent.postMessage({ key: "openLink", url }, "*");
-          else
-            window.open(url);
-        }
-      }));
-    }
-    async getCurrentVideoNameAndEpisode() {
-      var _a, _b, _c, _d;
-      const register = this.getActiveRegister();
-      if (!((_a = register.search) == null ? void 0 : _a.getSearchName))
-        return;
-      let rawName = await register.search.getSearchName();
-      let episode = await ((_c = (_b = register.search).getEpisode) == null ? void 0 : _c.call(_b)) || "";
-      if (!rawName)
-        return;
-      let name = rawName.replace(/第.季/, "").replace(/[<>《》''‘’""“”\[\]]/g, "").trim();
-      episode = ((_d = episode.match(/([0-9.]+)[集话]/)) == null ? void 0 : _d[1].replace(/^0+/, "")) || episode.replace(/[第集话()（）]/g, "") || episode;
-      return { name, rawName, episode };
-    }
-    getActiveRegister() {
-      const registers = this.list.filter(
-        ({ domains }) => domains.some(createTest(location.origin))
-      );
-      if (registers.length !== 1) {
-        console.log(window.location, registers);
-        throw new Error(`\u6FC0\u6D3B\u7684\u57DF\u540D\u5E94\u8BE5\u5C31\u4E00\u4E2A`);
-      }
-      return registers[0];
-    }
-    getActiveOpts() {
-      const register = this.getActiveRegister();
-      return register.opts.filter(({ test }) => {
-        const testArr = Array.isArray(test) ? test : [test];
-        return testArr.some(createTest(location.pathname + location.search));
-      });
-    }
-    run() {
-      let setupList = [];
-      let runList = [];
-      const opts = this.getActiveOpts();
-      opts.forEach(({ run, runInIframe, setup }) => {
-        let needRun = runInIframe ? parent !== self : parent === self;
-        if (needRun) {
-          setup && setupList.push(setup);
-          runList.push(run);
-        }
-      });
-      const init = () => {
-        setupList.forEach((setup) => setup());
-        runList.forEach((run) => run());
-      };
-      if (document.readyState !== "loading") {
-        init();
-      } else {
-        window.addEventListener("DOMContentLoaded", init);
-      }
-    }
-  }
-  const runtime = new Runtime();
-
-  /**
-   * Checks if `value` is the
-   * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
-   * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
-   *
-   * @static
-   * @memberOf _
-   * @since 0.1.0
-   * @category Lang
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is an object, else `false`.
-   * @example
-   *
-   * _.isObject({});
-   * // => true
-   *
-   * _.isObject([1, 2, 3]);
-   * // => true
-   *
-   * _.isObject(_.noop);
-   * // => true
-   *
-   * _.isObject(null);
-   * // => false
-   */
-  function isObject(value) {
-    var type = typeof value;
-    return value != null && (type == 'object' || type == 'function');
-  }
-
   /** Detect free variable `global` from Node.js. */
   var freeGlobal = typeof global == 'object' && global && global.Object === Object && global;
 
@@ -216,75 +69,21 @@
   /** Used as a reference to the global object. */
   var root = freeGlobal || freeSelf || Function('return this')();
 
-  /**
-   * Gets the timestamp of the number of milliseconds that have elapsed since
-   * the Unix epoch (1 January 1970 00:00:00 UTC).
-   *
-   * @static
-   * @memberOf _
-   * @since 2.4.0
-   * @category Date
-   * @returns {number} Returns the timestamp.
-   * @example
-   *
-   * _.defer(function(stamp) {
-   *   console.log(_.now() - stamp);
-   * }, _.now());
-   * // => Logs the number of milliseconds it took for the deferred invocation.
-   */
-  var now = function() {
-    return root.Date.now();
-  };
-
-  /** Used to match a single whitespace character. */
-  var reWhitespace = /\s/;
-
-  /**
-   * Used by `_.trim` and `_.trimEnd` to get the index of the last non-whitespace
-   * character of `string`.
-   *
-   * @private
-   * @param {string} string The string to inspect.
-   * @returns {number} Returns the index of the last non-whitespace character.
-   */
-  function trimmedEndIndex(string) {
-    var index = string.length;
-
-    while (index-- && reWhitespace.test(string.charAt(index))) {}
-    return index;
-  }
-
-  /** Used to match leading whitespace. */
-  var reTrimStart = /^\s+/;
-
-  /**
-   * The base implementation of `_.trim`.
-   *
-   * @private
-   * @param {string} string The string to trim.
-   * @returns {string} Returns the trimmed string.
-   */
-  function baseTrim(string) {
-    return string
-      ? string.slice(0, trimmedEndIndex(string) + 1).replace(reTrimStart, '')
-      : string;
-  }
-
   /** Built-in value references. */
   var Symbol = root.Symbol;
 
   /** Used for built-in method references. */
-  var objectProto$1 = Object.prototype;
+  var objectProto$4 = Object.prototype;
 
   /** Used to check objects for own properties. */
-  var hasOwnProperty = objectProto$1.hasOwnProperty;
+  var hasOwnProperty$3 = objectProto$4.hasOwnProperty;
 
   /**
    * Used to resolve the
    * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
    * of values.
    */
-  var nativeObjectToString$1 = objectProto$1.toString;
+  var nativeObjectToString$1 = objectProto$4.toString;
 
   /** Built-in value references. */
   var symToStringTag$1 = Symbol ? Symbol.toStringTag : undefined;
@@ -297,7 +96,7 @@
    * @returns {string} Returns the raw `toStringTag`.
    */
   function getRawTag(value) {
-    var isOwn = hasOwnProperty.call(value, symToStringTag$1),
+    var isOwn = hasOwnProperty$3.call(value, symToStringTag$1),
         tag = value[symToStringTag$1];
 
     try {
@@ -317,14 +116,14 @@
   }
 
   /** Used for built-in method references. */
-  var objectProto = Object.prototype;
+  var objectProto$3 = Object.prototype;
 
   /**
    * Used to resolve the
    * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
    * of values.
    */
-  var nativeObjectToString = objectProto.toString;
+  var nativeObjectToString = objectProto$3.toString;
 
   /**
    * Converts `value` to a string using `Object.prototype.toString`.
@@ -413,6 +212,70 @@
       (isObjectLike(value) && baseGetTag(value) == symbolTag);
   }
 
+  /** Used to match a single whitespace character. */
+  var reWhitespace = /\s/;
+
+  /**
+   * Used by `_.trim` and `_.trimEnd` to get the index of the last non-whitespace
+   * character of `string`.
+   *
+   * @private
+   * @param {string} string The string to inspect.
+   * @returns {number} Returns the index of the last non-whitespace character.
+   */
+  function trimmedEndIndex(string) {
+    var index = string.length;
+
+    while (index-- && reWhitespace.test(string.charAt(index))) {}
+    return index;
+  }
+
+  /** Used to match leading whitespace. */
+  var reTrimStart = /^\s+/;
+
+  /**
+   * The base implementation of `_.trim`.
+   *
+   * @private
+   * @param {string} string The string to trim.
+   * @returns {string} Returns the trimmed string.
+   */
+  function baseTrim(string) {
+    return string
+      ? string.slice(0, trimmedEndIndex(string) + 1).replace(reTrimStart, '')
+      : string;
+  }
+
+  /**
+   * Checks if `value` is the
+   * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
+   * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+   *
+   * @static
+   * @memberOf _
+   * @since 0.1.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+   * @example
+   *
+   * _.isObject({});
+   * // => true
+   *
+   * _.isObject([1, 2, 3]);
+   * // => true
+   *
+   * _.isObject(_.noop);
+   * // => true
+   *
+   * _.isObject(null);
+   * // => false
+   */
+  function isObject(value) {
+    var type = typeof value;
+    return value != null && (type == 'object' || type == 'function');
+  }
+
   /** Used as references for various `Number` constants. */
   var NAN = 0 / 0;
 
@@ -471,6 +334,727 @@
       ? freeParseInt(value.slice(2), isBinary ? 2 : 8)
       : (reIsBadHex.test(value) ? NAN : +value);
   }
+
+  /** `Object#toString` result references. */
+  var asyncTag = '[object AsyncFunction]',
+      funcTag = '[object Function]',
+      genTag = '[object GeneratorFunction]',
+      proxyTag = '[object Proxy]';
+
+  /**
+   * Checks if `value` is classified as a `Function` object.
+   *
+   * @static
+   * @memberOf _
+   * @since 0.1.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is a function, else `false`.
+   * @example
+   *
+   * _.isFunction(_);
+   * // => true
+   *
+   * _.isFunction(/abc/);
+   * // => false
+   */
+  function isFunction(value) {
+    if (!isObject(value)) {
+      return false;
+    }
+    // The use of `Object#toString` avoids issues with the `typeof` operator
+    // in Safari 9 which returns 'object' for typed arrays and other constructors.
+    var tag = baseGetTag(value);
+    return tag == funcTag || tag == genTag || tag == asyncTag || tag == proxyTag;
+  }
+
+  /** Used to detect overreaching core-js shims. */
+  var coreJsData = root['__core-js_shared__'];
+
+  /** Used to detect methods masquerading as native. */
+  var maskSrcKey = (function() {
+    var uid = /[^.]+$/.exec(coreJsData && coreJsData.keys && coreJsData.keys.IE_PROTO || '');
+    return uid ? ('Symbol(src)_1.' + uid) : '';
+  }());
+
+  /**
+   * Checks if `func` has its source masked.
+   *
+   * @private
+   * @param {Function} func The function to check.
+   * @returns {boolean} Returns `true` if `func` is masked, else `false`.
+   */
+  function isMasked(func) {
+    return !!maskSrcKey && (maskSrcKey in func);
+  }
+
+  /** Used for built-in method references. */
+  var funcProto$1 = Function.prototype;
+
+  /** Used to resolve the decompiled source of functions. */
+  var funcToString$1 = funcProto$1.toString;
+
+  /**
+   * Converts `func` to its source code.
+   *
+   * @private
+   * @param {Function} func The function to convert.
+   * @returns {string} Returns the source code.
+   */
+  function toSource(func) {
+    if (func != null) {
+      try {
+        return funcToString$1.call(func);
+      } catch (e) {}
+      try {
+        return (func + '');
+      } catch (e) {}
+    }
+    return '';
+  }
+
+  /**
+   * Used to match `RegExp`
+   * [syntax characters](http://ecma-international.org/ecma-262/7.0/#sec-patterns).
+   */
+  var reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
+
+  /** Used to detect host constructors (Safari). */
+  var reIsHostCtor = /^\[object .+?Constructor\]$/;
+
+  /** Used for built-in method references. */
+  var funcProto = Function.prototype,
+      objectProto$2 = Object.prototype;
+
+  /** Used to resolve the decompiled source of functions. */
+  var funcToString = funcProto.toString;
+
+  /** Used to check objects for own properties. */
+  var hasOwnProperty$2 = objectProto$2.hasOwnProperty;
+
+  /** Used to detect if a method is native. */
+  var reIsNative = RegExp('^' +
+    funcToString.call(hasOwnProperty$2).replace(reRegExpChar, '\\$&')
+    .replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$'
+  );
+
+  /**
+   * The base implementation of `_.isNative` without bad shim checks.
+   *
+   * @private
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is a native function,
+   *  else `false`.
+   */
+  function baseIsNative(value) {
+    if (!isObject(value) || isMasked(value)) {
+      return false;
+    }
+    var pattern = isFunction(value) ? reIsNative : reIsHostCtor;
+    return pattern.test(toSource(value));
+  }
+
+  /**
+   * Gets the value at `key` of `object`.
+   *
+   * @private
+   * @param {Object} [object] The object to query.
+   * @param {string} key The key of the property to get.
+   * @returns {*} Returns the property value.
+   */
+  function getValue(object, key) {
+    return object == null ? undefined : object[key];
+  }
+
+  /**
+   * Gets the native function at `key` of `object`.
+   *
+   * @private
+   * @param {Object} object The object to query.
+   * @param {string} key The key of the method to get.
+   * @returns {*} Returns the function if it's native, else `undefined`.
+   */
+  function getNative(object, key) {
+    var value = getValue(object, key);
+    return baseIsNative(value) ? value : undefined;
+  }
+
+  /**
+   * Performs a
+   * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
+   * comparison between two values to determine if they are equivalent.
+   *
+   * @static
+   * @memberOf _
+   * @since 4.0.0
+   * @category Lang
+   * @param {*} value The value to compare.
+   * @param {*} other The other value to compare.
+   * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
+   * @example
+   *
+   * var object = { 'a': 1 };
+   * var other = { 'a': 1 };
+   *
+   * _.eq(object, object);
+   * // => true
+   *
+   * _.eq(object, other);
+   * // => false
+   *
+   * _.eq('a', 'a');
+   * // => true
+   *
+   * _.eq('a', Object('a'));
+   * // => false
+   *
+   * _.eq(NaN, NaN);
+   * // => true
+   */
+  function eq(value, other) {
+    return value === other || (value !== value && other !== other);
+  }
+
+  /* Built-in method references that are verified to be native. */
+  var nativeCreate = getNative(Object, 'create');
+
+  /**
+   * Removes all key-value entries from the hash.
+   *
+   * @private
+   * @name clear
+   * @memberOf Hash
+   */
+  function hashClear() {
+    this.__data__ = nativeCreate ? nativeCreate(null) : {};
+    this.size = 0;
+  }
+
+  /**
+   * Removes `key` and its value from the hash.
+   *
+   * @private
+   * @name delete
+   * @memberOf Hash
+   * @param {Object} hash The hash to modify.
+   * @param {string} key The key of the value to remove.
+   * @returns {boolean} Returns `true` if the entry was removed, else `false`.
+   */
+  function hashDelete(key) {
+    var result = this.has(key) && delete this.__data__[key];
+    this.size -= result ? 1 : 0;
+    return result;
+  }
+
+  /** Used to stand-in for `undefined` hash values. */
+  var HASH_UNDEFINED$1 = '__lodash_hash_undefined__';
+
+  /** Used for built-in method references. */
+  var objectProto$1 = Object.prototype;
+
+  /** Used to check objects for own properties. */
+  var hasOwnProperty$1 = objectProto$1.hasOwnProperty;
+
+  /**
+   * Gets the hash value for `key`.
+   *
+   * @private
+   * @name get
+   * @memberOf Hash
+   * @param {string} key The key of the value to get.
+   * @returns {*} Returns the entry value.
+   */
+  function hashGet(key) {
+    var data = this.__data__;
+    if (nativeCreate) {
+      var result = data[key];
+      return result === HASH_UNDEFINED$1 ? undefined : result;
+    }
+    return hasOwnProperty$1.call(data, key) ? data[key] : undefined;
+  }
+
+  /** Used for built-in method references. */
+  var objectProto = Object.prototype;
+
+  /** Used to check objects for own properties. */
+  var hasOwnProperty = objectProto.hasOwnProperty;
+
+  /**
+   * Checks if a hash value for `key` exists.
+   *
+   * @private
+   * @name has
+   * @memberOf Hash
+   * @param {string} key The key of the entry to check.
+   * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
+   */
+  function hashHas(key) {
+    var data = this.__data__;
+    return nativeCreate ? (data[key] !== undefined) : hasOwnProperty.call(data, key);
+  }
+
+  /** Used to stand-in for `undefined` hash values. */
+  var HASH_UNDEFINED = '__lodash_hash_undefined__';
+
+  /**
+   * Sets the hash `key` to `value`.
+   *
+   * @private
+   * @name set
+   * @memberOf Hash
+   * @param {string} key The key of the value to set.
+   * @param {*} value The value to set.
+   * @returns {Object} Returns the hash instance.
+   */
+  function hashSet(key, value) {
+    var data = this.__data__;
+    this.size += this.has(key) ? 0 : 1;
+    data[key] = (nativeCreate && value === undefined) ? HASH_UNDEFINED : value;
+    return this;
+  }
+
+  /**
+   * Creates a hash object.
+   *
+   * @private
+   * @constructor
+   * @param {Array} [entries] The key-value pairs to cache.
+   */
+  function Hash(entries) {
+    var index = -1,
+        length = entries == null ? 0 : entries.length;
+
+    this.clear();
+    while (++index < length) {
+      var entry = entries[index];
+      this.set(entry[0], entry[1]);
+    }
+  }
+
+  // Add methods to `Hash`.
+  Hash.prototype.clear = hashClear;
+  Hash.prototype['delete'] = hashDelete;
+  Hash.prototype.get = hashGet;
+  Hash.prototype.has = hashHas;
+  Hash.prototype.set = hashSet;
+
+  /**
+   * Removes all key-value entries from the list cache.
+   *
+   * @private
+   * @name clear
+   * @memberOf ListCache
+   */
+  function listCacheClear() {
+    this.__data__ = [];
+    this.size = 0;
+  }
+
+  /**
+   * Gets the index at which the `key` is found in `array` of key-value pairs.
+   *
+   * @private
+   * @param {Array} array The array to inspect.
+   * @param {*} key The key to search for.
+   * @returns {number} Returns the index of the matched value, else `-1`.
+   */
+  function assocIndexOf(array, key) {
+    var length = array.length;
+    while (length--) {
+      if (eq(array[length][0], key)) {
+        return length;
+      }
+    }
+    return -1;
+  }
+
+  /** Used for built-in method references. */
+  var arrayProto = Array.prototype;
+
+  /** Built-in value references. */
+  var splice = arrayProto.splice;
+
+  /**
+   * Removes `key` and its value from the list cache.
+   *
+   * @private
+   * @name delete
+   * @memberOf ListCache
+   * @param {string} key The key of the value to remove.
+   * @returns {boolean} Returns `true` if the entry was removed, else `false`.
+   */
+  function listCacheDelete(key) {
+    var data = this.__data__,
+        index = assocIndexOf(data, key);
+
+    if (index < 0) {
+      return false;
+    }
+    var lastIndex = data.length - 1;
+    if (index == lastIndex) {
+      data.pop();
+    } else {
+      splice.call(data, index, 1);
+    }
+    --this.size;
+    return true;
+  }
+
+  /**
+   * Gets the list cache value for `key`.
+   *
+   * @private
+   * @name get
+   * @memberOf ListCache
+   * @param {string} key The key of the value to get.
+   * @returns {*} Returns the entry value.
+   */
+  function listCacheGet(key) {
+    var data = this.__data__,
+        index = assocIndexOf(data, key);
+
+    return index < 0 ? undefined : data[index][1];
+  }
+
+  /**
+   * Checks if a list cache value for `key` exists.
+   *
+   * @private
+   * @name has
+   * @memberOf ListCache
+   * @param {string} key The key of the entry to check.
+   * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
+   */
+  function listCacheHas(key) {
+    return assocIndexOf(this.__data__, key) > -1;
+  }
+
+  /**
+   * Sets the list cache `key` to `value`.
+   *
+   * @private
+   * @name set
+   * @memberOf ListCache
+   * @param {string} key The key of the value to set.
+   * @param {*} value The value to set.
+   * @returns {Object} Returns the list cache instance.
+   */
+  function listCacheSet(key, value) {
+    var data = this.__data__,
+        index = assocIndexOf(data, key);
+
+    if (index < 0) {
+      ++this.size;
+      data.push([key, value]);
+    } else {
+      data[index][1] = value;
+    }
+    return this;
+  }
+
+  /**
+   * Creates an list cache object.
+   *
+   * @private
+   * @constructor
+   * @param {Array} [entries] The key-value pairs to cache.
+   */
+  function ListCache(entries) {
+    var index = -1,
+        length = entries == null ? 0 : entries.length;
+
+    this.clear();
+    while (++index < length) {
+      var entry = entries[index];
+      this.set(entry[0], entry[1]);
+    }
+  }
+
+  // Add methods to `ListCache`.
+  ListCache.prototype.clear = listCacheClear;
+  ListCache.prototype['delete'] = listCacheDelete;
+  ListCache.prototype.get = listCacheGet;
+  ListCache.prototype.has = listCacheHas;
+  ListCache.prototype.set = listCacheSet;
+
+  /* Built-in method references that are verified to be native. */
+  var Map = getNative(root, 'Map');
+
+  /**
+   * Removes all key-value entries from the map.
+   *
+   * @private
+   * @name clear
+   * @memberOf MapCache
+   */
+  function mapCacheClear() {
+    this.size = 0;
+    this.__data__ = {
+      'hash': new Hash,
+      'map': new (Map || ListCache),
+      'string': new Hash
+    };
+  }
+
+  /**
+   * Checks if `value` is suitable for use as unique object key.
+   *
+   * @private
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is suitable, else `false`.
+   */
+  function isKeyable(value) {
+    var type = typeof value;
+    return (type == 'string' || type == 'number' || type == 'symbol' || type == 'boolean')
+      ? (value !== '__proto__')
+      : (value === null);
+  }
+
+  /**
+   * Gets the data for `map`.
+   *
+   * @private
+   * @param {Object} map The map to query.
+   * @param {string} key The reference key.
+   * @returns {*} Returns the map data.
+   */
+  function getMapData(map, key) {
+    var data = map.__data__;
+    return isKeyable(key)
+      ? data[typeof key == 'string' ? 'string' : 'hash']
+      : data.map;
+  }
+
+  /**
+   * Removes `key` and its value from the map.
+   *
+   * @private
+   * @name delete
+   * @memberOf MapCache
+   * @param {string} key The key of the value to remove.
+   * @returns {boolean} Returns `true` if the entry was removed, else `false`.
+   */
+  function mapCacheDelete(key) {
+    var result = getMapData(this, key)['delete'](key);
+    this.size -= result ? 1 : 0;
+    return result;
+  }
+
+  /**
+   * Gets the map value for `key`.
+   *
+   * @private
+   * @name get
+   * @memberOf MapCache
+   * @param {string} key The key of the value to get.
+   * @returns {*} Returns the entry value.
+   */
+  function mapCacheGet(key) {
+    return getMapData(this, key).get(key);
+  }
+
+  /**
+   * Checks if a map value for `key` exists.
+   *
+   * @private
+   * @name has
+   * @memberOf MapCache
+   * @param {string} key The key of the entry to check.
+   * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
+   */
+  function mapCacheHas(key) {
+    return getMapData(this, key).has(key);
+  }
+
+  /**
+   * Sets the map `key` to `value`.
+   *
+   * @private
+   * @name set
+   * @memberOf MapCache
+   * @param {string} key The key of the value to set.
+   * @param {*} value The value to set.
+   * @returns {Object} Returns the map cache instance.
+   */
+  function mapCacheSet(key, value) {
+    var data = getMapData(this, key),
+        size = data.size;
+
+    data.set(key, value);
+    this.size += data.size == size ? 0 : 1;
+    return this;
+  }
+
+  /**
+   * Creates a map cache object to store key-value pairs.
+   *
+   * @private
+   * @constructor
+   * @param {Array} [entries] The key-value pairs to cache.
+   */
+  function MapCache(entries) {
+    var index = -1,
+        length = entries == null ? 0 : entries.length;
+
+    this.clear();
+    while (++index < length) {
+      var entry = entries[index];
+      this.set(entry[0], entry[1]);
+    }
+  }
+
+  // Add methods to `MapCache`.
+  MapCache.prototype.clear = mapCacheClear;
+  MapCache.prototype['delete'] = mapCacheDelete;
+  MapCache.prototype.get = mapCacheGet;
+  MapCache.prototype.has = mapCacheHas;
+  MapCache.prototype.set = mapCacheSet;
+
+  /** Error message constants. */
+  var FUNC_ERROR_TEXT$2 = 'Expected a function';
+
+  /**
+   * Creates a function that memoizes the result of `func`. If `resolver` is
+   * provided, it determines the cache key for storing the result based on the
+   * arguments provided to the memoized function. By default, the first argument
+   * provided to the memoized function is used as the map cache key. The `func`
+   * is invoked with the `this` binding of the memoized function.
+   *
+   * **Note:** The cache is exposed as the `cache` property on the memoized
+   * function. Its creation may be customized by replacing the `_.memoize.Cache`
+   * constructor with one whose instances implement the
+   * [`Map`](http://ecma-international.org/ecma-262/7.0/#sec-properties-of-the-map-prototype-object)
+   * method interface of `clear`, `delete`, `get`, `has`, and `set`.
+   *
+   * @static
+   * @memberOf _
+   * @since 0.1.0
+   * @category Function
+   * @param {Function} func The function to have its output memoized.
+   * @param {Function} [resolver] The function to resolve the cache key.
+   * @returns {Function} Returns the new memoized function.
+   * @example
+   *
+   * var object = { 'a': 1, 'b': 2 };
+   * var other = { 'c': 3, 'd': 4 };
+   *
+   * var values = _.memoize(_.values);
+   * values(object);
+   * // => [1, 2]
+   *
+   * values(other);
+   * // => [3, 4]
+   *
+   * object.a = 2;
+   * values(object);
+   * // => [1, 2]
+   *
+   * // Modify the result cache.
+   * values.cache.set(object, ['a', 'b']);
+   * values(object);
+   * // => ['a', 'b']
+   *
+   * // Replace `_.memoize.Cache`.
+   * _.memoize.Cache = WeakMap;
+   */
+  function memoize(func, resolver) {
+    if (typeof func != 'function' || (resolver != null && typeof resolver != 'function')) {
+      throw new TypeError(FUNC_ERROR_TEXT$2);
+    }
+    var memoized = function() {
+      var args = arguments,
+          key = resolver ? resolver.apply(this, args) : args[0],
+          cache = memoized.cache;
+
+      if (cache.has(key)) {
+        return cache.get(key);
+      }
+      var result = func.apply(this, args);
+      memoized.cache = cache.set(key, result) || cache;
+      return result;
+    };
+    memoized.cache = new (memoize.Cache || MapCache);
+    return memoized;
+  }
+
+  // Expose `MapCache`.
+  memoize.Cache = MapCache;
+
+  /**
+   * The base implementation of `_.clamp` which doesn't coerce arguments.
+   *
+   * @private
+   * @param {number} number The number to clamp.
+   * @param {number} [lower] The lower bound.
+   * @param {number} upper The upper bound.
+   * @returns {number} Returns the clamped number.
+   */
+  function baseClamp(number, lower, upper) {
+    if (number === number) {
+      if (upper !== undefined) {
+        number = number <= upper ? number : upper;
+      }
+      if (lower !== undefined) {
+        number = number >= lower ? number : lower;
+      }
+    }
+    return number;
+  }
+
+  /**
+   * Clamps `number` within the inclusive `lower` and `upper` bounds.
+   *
+   * @static
+   * @memberOf _
+   * @since 4.0.0
+   * @category Number
+   * @param {number} number The number to clamp.
+   * @param {number} [lower] The lower bound.
+   * @param {number} upper The upper bound.
+   * @returns {number} Returns the clamped number.
+   * @example
+   *
+   * _.clamp(-10, -5, 5);
+   * // => -5
+   *
+   * _.clamp(10, -5, 5);
+   * // => 5
+   */
+  function clamp(number, lower, upper) {
+    if (upper === undefined) {
+      upper = lower;
+      lower = undefined;
+    }
+    if (upper !== undefined) {
+      upper = toNumber(upper);
+      upper = upper === upper ? upper : 0;
+    }
+    if (lower !== undefined) {
+      lower = toNumber(lower);
+      lower = lower === lower ? lower : 0;
+    }
+    return baseClamp(toNumber(number), lower, upper);
+  }
+
+  /**
+   * Gets the timestamp of the number of milliseconds that have elapsed since
+   * the Unix epoch (1 January 1970 00:00:00 UTC).
+   *
+   * @static
+   * @memberOf _
+   * @since 2.4.0
+   * @category Date
+   * @returns {number} Returns the timestamp.
+   * @example
+   *
+   * _.defer(function(stamp) {
+   *   console.log(_.now() - stamp);
+   * }, _.now());
+   * // => Logs the number of milliseconds it took for the deferred invocation.
+   */
+  var now = function() {
+    return root.Date.now();
+  };
 
   /** Error message constants. */
   var FUNC_ERROR_TEXT$1 = 'Expected a function';
@@ -723,6 +1307,128 @@
     });
   }
 
+  function createTest(target) {
+    return (test) => typeof test === "function" ? test() : typeof test === "string" ? target.includes(test) || test === "*" : test.test(target);
+  }
+  class Runtime {
+    constructor() {
+      this.getTopLocationHref = memoize(
+        async () => {
+          if (parent === self)
+            return window.location.href;
+          return new Promise((resolve) => {
+            window.addEventListener("message", function once(e) {
+              var _a;
+              if (((_a = e.data) == null ? void 0 : _a.key) === "getLocationHref") {
+                window.removeEventListener("message", once);
+                resolve(e.data.url);
+              }
+            });
+            parent.postMessage({ key: "getLocationHref" }, "*");
+          });
+        },
+        () => window.location.href
+      );
+      this.list = [
+        {
+          domains: [],
+          opts: [],
+          search: {
+            name: "[BT]\u871C\u67D1\u8BA1\u5212",
+            search: (name) => `https://mikanani.me/Home/Search?searchstr=${name}`
+          }
+        }
+      ];
+      if (parent === self) {
+        window.addEventListener("message", (e) => {
+          var _a, _b;
+          if (((_a = e.data) == null ? void 0 : _a.key) === "getLocationHref") {
+            (_b = e.source) == null ? void 0 : _b.postMessage(
+              { key: "getLocationHref", url: location.href },
+              { targetOrigin: "*" }
+            );
+          }
+        });
+      }
+    }
+    register(item) {
+      this.list.push(item);
+    }
+    async getSearchActions() {
+      const isInIframe = parent !== self;
+      const searchs = this.list.map((o) => o.search).filter(Boolean).filter((o) => !(isInIframe && o.disabledInIframe));
+      const register = this.getActiveRegister();
+      const info = await this.getCurrentVideoNameAndEpisode();
+      if (!(info == null ? void 0 : info.name))
+        return [];
+      let name = info.name;
+      return searchs.filter((search) => search !== register.search && search.search).map((search) => ({
+        name: search.name,
+        search: () => {
+          const url = search.search(encodeURIComponent(name));
+          if (!url)
+            return;
+          if (isInIframe)
+            parent.postMessage({ key: "openLink", url }, "*");
+          else
+            window.open(url);
+        }
+      }));
+    }
+    async getCurrentVideoNameAndEpisode() {
+      var _a, _b, _c, _d;
+      const register = this.getActiveRegister();
+      if (!((_a = register.search) == null ? void 0 : _a.getSearchName))
+        return;
+      let rawName = await register.search.getSearchName();
+      let episode = await ((_c = (_b = register.search).getEpisode) == null ? void 0 : _c.call(_b)) || "";
+      if (!rawName)
+        return;
+      let name = rawName.replace(/第.季/, "").replace(/[<>《》''‘’""“”\[\]]/g, "").trim();
+      episode = ((_d = episode.match(/([0-9.]+)[集话]/)) == null ? void 0 : _d[1].replace(/^0+/, "")) || episode.replace(/[第集话()（）]/g, "") || episode;
+      return { name, rawName, episode };
+    }
+    getActiveRegister() {
+      const registers = this.list.filter(
+        ({ domains }) => domains.some(createTest(location.origin))
+      );
+      if (registers.length !== 1) {
+        console.log(window.location, registers);
+        throw new Error(`\u6FC0\u6D3B\u7684\u57DF\u540D\u5E94\u8BE5\u5C31\u4E00\u4E2A`);
+      }
+      return registers[0];
+    }
+    getActiveOpts() {
+      const register = this.getActiveRegister();
+      return register.opts.filter(({ test }) => {
+        const testArr = Array.isArray(test) ? test : [test];
+        return testArr.some(createTest(location.pathname + location.search));
+      });
+    }
+    run() {
+      let setupList = [];
+      let runList = [];
+      const opts = this.getActiveOpts();
+      opts.forEach(({ run, runInIframe, setup }) => {
+        let needRun = runInIframe ? parent !== self : parent === self;
+        if (needRun) {
+          setup && setupList.push(setup);
+          runList.push(run);
+        }
+      });
+      const init = () => {
+        setupList.forEach((setup) => setup());
+        runList.forEach((run) => run());
+      };
+      if (document.readyState !== "loading") {
+        init();
+      } else {
+        window.addEventListener("DOMContentLoaded", init);
+      }
+    }
+  }
+  const runtime = new Runtime();
+
   var css$b = "#k-player-message {\n  z-index: 999;\n  position: absolute;\n  left: 20px;\n  bottom: 60px;\n}\n#k-player-message .k-player-message-item {\n  display: block;\n  width: max-content;\n  padding: 8px 16px;\n  background: var(--k-player-background);\n  border-radius: 4px;\n  color: white;\n  font-size: 14px;\n  white-space: nowrap;\n  overflow: hidden;\n  box-sizing: border-box;\n  margin-top: 4px;\n}\n#k-player-message .k-player-message-item:hover {\n  background: var(--k-player-background-highlight);\n  transition: all 0.3s;\n}";
   n(css$b,{});
 
@@ -819,62 +1525,6 @@
       });
     }
     return $target;
-  }
-
-  /**
-   * The base implementation of `_.clamp` which doesn't coerce arguments.
-   *
-   * @private
-   * @param {number} number The number to clamp.
-   * @param {number} [lower] The lower bound.
-   * @param {number} upper The upper bound.
-   * @returns {number} Returns the clamped number.
-   */
-  function baseClamp(number, lower, upper) {
-    if (number === number) {
-      if (upper !== undefined) {
-        number = number <= upper ? number : upper;
-      }
-      if (lower !== undefined) {
-        number = number >= lower ? number : lower;
-      }
-    }
-    return number;
-  }
-
-  /**
-   * Clamps `number` within the inclusive `lower` and `upper` bounds.
-   *
-   * @static
-   * @memberOf _
-   * @since 4.0.0
-   * @category Number
-   * @param {number} number The number to clamp.
-   * @param {number} [lower] The lower bound.
-   * @param {number} upper The upper bound.
-   * @returns {number} Returns the clamped number.
-   * @example
-   *
-   * _.clamp(-10, -5, 5);
-   * // => -5
-   *
-   * _.clamp(10, -5, 5);
-   * // => 5
-   */
-  function clamp(number, lower, upper) {
-    if (upper === undefined) {
-      upper = lower;
-      lower = undefined;
-    }
-    if (upper !== undefined) {
-      upper = toNumber(upper);
-      upper = upper === upper ? upper : 0;
-    }
-    if (lower !== undefined) {
-      lower = toNumber(lower);
-      lower = lower === lower ? lower : 0;
-    }
-    return baseClamp(toNumber(number), lower, upper);
   }
 
   const isMac$1 = /macintosh|mac os x/i.test(navigator.userAgent);
@@ -1372,7 +2022,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.39.0"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.39.1"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1477,7 +2127,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.39.0"}
+\u811A\u672C\u7248\u672C: ${"1.39.1"}
 `;
 
   const GlobalKey = "show-help-info";
