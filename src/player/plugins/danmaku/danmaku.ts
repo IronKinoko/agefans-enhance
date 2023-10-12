@@ -340,7 +340,6 @@ const initEvents = (name: string) => {
     .prop('checked', player.localConfig.danmakuMerge)
     .on('change', (e) => {
       const chekced = e.target.checked
-      $pbp.toggle(chekced)
       player.configSaveToLocal('danmakuMerge', chekced)
       if (core) core.merge = chekced
     })
@@ -349,7 +348,6 @@ const initEvents = (name: string) => {
     .prop('checked', player.localConfig.danmakuOverlap)
     .on('change', (e) => {
       const chekced = e.target.checked
-      $pbp.toggle(chekced)
       player.configSaveToLocal('danmakuOverlap', chekced)
       if (core) core.overlap = chekced
     })
