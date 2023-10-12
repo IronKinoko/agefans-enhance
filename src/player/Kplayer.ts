@@ -1,6 +1,6 @@
 import Hls from 'hls.js'
-import throttle from 'lodash-es/throttle'
 import debounce from 'lodash-es/debounce'
+import throttle from 'lodash-es/throttle'
 import Plyr from 'plyr'
 import { runtime } from '../runtime'
 import { Message } from '../utils/message'
@@ -8,6 +8,7 @@ import { parseTime } from '../utils/parseTime'
 import { gm, local, session } from '../utils/storage'
 import {
   errorHTML,
+  i18n,
   loadingHTML,
   pipHTML,
   progressHTML,
@@ -15,7 +16,6 @@ import {
   settingsHTML,
   speedHTML,
   speedList,
-  i18n,
 } from './html'
 import './index.scss'
 import { Shortcuts } from './plugins/shortcuts'
@@ -31,7 +31,6 @@ const MediaErrorMessage: Record<number, string> = {
 type Opts = {
   video?: HTMLVideoElement
   eventToParentWindow?: boolean
-  logTimeId?: string | (() => string)
 } & Plyr.Options
 
 type CustomEventMap =
@@ -200,33 +199,27 @@ export class KPlayer {
     this.plguinList.push(setup)
   }
 
-  setCurrentTimeLog(time?: number) {
+  async setCurrentTimeLog(time?: number) {
     time = Math.floor(time ?? this.currentTime)
 
     const store = local.getItem<LocalPlayTimeStore>(this.localPlayTimeKey, {})
-    store[this.playTimeStoreKey] = time
+    const key = await this.playTimeStoreKey()
+    store[key] = time
     local.setItem(this.localPlayTimeKey, store)
   }
   setCurrentTimeLogThrottled = throttle(() => {
-    // 该函数🈶由 timeupdate 触发，只记录 3s 后的时间
+    // 该函数由 timeupdate 触发，只记录 3s 后的时间
     if (this.currentTime > 3) this.setCurrentTimeLog()
   }, 1000)
 
-  getCurrentTimeLog(): number | undefined {
+  async getCurrentTimeLog() {
     const store = local.getItem<LocalPlayTimeStore>(this.localPlayTimeKey, {})
-    return store[this.playTimeStoreKey]
+    const key = await this.playTimeStoreKey()
+    return store[key]
   }
 
-  get playTimeStoreKey() {
-    if (typeof this.opts.logTimeId === 'string') {
-      return this.opts.logTimeId
-    } else if (typeof this.opts.logTimeId === 'function') {
-      return this.opts.logTimeId()
-    } else if (this.src.startsWith('blob')) {
-      return location.origin + location.pathname + location.search
-    } else {
-      return this.src
-    }
+  async playTimeStoreKey() {
+    return await runtime.getTopLocationHref()
   }
 
   hideControlsDebounced = debounce(() => {
@@ -241,12 +234,12 @@ export class KPlayer {
 
   private isJumped = false
 
-  jumpToLogTime = () => {
+  async jumpToLogTime() {
     if (this.isJumped) return
     // 只有视频前三秒才需要执行自动跳转
     if (this.currentTime < 3) {
       this.isJumped = true
-      const logTime = this.getCurrentTimeLog()
+      const logTime = await this.getCurrentTimeLog()
       // 如果视频还未看完，剩余时间超过 10s，执行自动跳转
       if (logTime && this.plyr.duration - logTime > 10) {
         this.message.info(`已自动跳转至历史播放位置 ${parseTime(logTime)}`)
@@ -282,7 +275,26 @@ export class KPlayer {
     this.on('canplay', () => {
       this.$loading.hide()
       if (this.localConfig.autoplay) {
-        this.plyr.play()
+        ;(async () => {
+          try {
+            // try autoplay first
+            await this.plyr.play()
+          } catch (error) {
+          } finally {
+            if (this.media.paused) {
+              // autoplay fallback: listen any click to play
+              window.addEventListener(
+                'click',
+                () => {
+                  setTimeout(() => {
+                    if (this.media.paused) this.plyr.play()
+                  }, 100)
+                },
+                { capture: true, once: true }
+              )
+            }
+          }
+        })()
       }
       if (this.localConfig.continuePlay) {
         this.jumpToLogTime()

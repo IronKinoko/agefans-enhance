@@ -26,6 +26,31 @@ function createTest(target: string) {
       : test.test(target)
 }
 class Runtime {
+  constructor() {
+    window.addEventListener('message', (e) => {
+      if (e.data?.key === 'getLocationHref') {
+        e.source?.postMessage(
+          { key: 'getLocationHref', url: location.href },
+          { targetOrigin: '*' }
+        )
+      }
+    })
+  }
+
+  async getTopLocationHref() {
+    if (parent === self) return window.location.href
+
+    return new Promise<string>((resolve) => {
+      window.addEventListener('message', function once(e) {
+        if (e.data?.key === 'getLocationHref') {
+          window.removeEventListener('message', once)
+          resolve(e.data.url)
+        }
+      })
+      parent.postMessage({ key: 'getLocationHref' }, '*')
+    })
+  }
+
   private list: RegisteredItem[] = [
     {
       domains: [],
