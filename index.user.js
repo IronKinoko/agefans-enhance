@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.38.6
+// @version      1.38.7
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -74,6 +74,29 @@
           }
         }
       ];
+      window.addEventListener("message", (e) => {
+        var _a, _b;
+        if (((_a = e.data) == null ? void 0 : _a.key) === "getLocationHref") {
+          (_b = e.source) == null ? void 0 : _b.postMessage(
+            { key: "getLocationHref", url: location.href },
+            { targetOrigin: "*" }
+          );
+        }
+      });
+    }
+    async getTopLocationHref() {
+      if (parent === self)
+        return window.location.href;
+      return new Promise((resolve) => {
+        window.addEventListener("message", function once(e) {
+          var _a;
+          if (((_a = e.data) == null ? void 0 : _a.key) === "getLocationHref") {
+            window.removeEventListener("message", once);
+            resolve(e.data.url);
+          }
+        });
+        parent.postMessage({ key: "getLocationHref" }, "*");
+      });
     }
     register(item) {
       this.list.push(item);
@@ -1333,7 +1356,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.38.6"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.38.7"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -1438,7 +1461,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.38.6"}
+\u811A\u672C\u7248\u672C: ${"1.38.7"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -1910,18 +1933,6 @@ ${[...speedList].reverse().map(
         dom == null ? void 0 : dom.classList.add("plyr--hide-cursor");
       }, 1e3);
       this.isJumped = false;
-      this.jumpToLogTime = () => {
-        if (this.isJumped)
-          return;
-        if (this.currentTime < 3) {
-          this.isJumped = true;
-          const logTime = this.getCurrentTimeLog();
-          if (logTime && this.plyr.duration - logTime > 10) {
-            this.message.info(`\u5DF2\u81EA\u52A8\u8DF3\u8F6C\u81F3\u5386\u53F2\u64AD\u653E\u4F4D\u7F6E ${parseTime(logTime)}`);
-            this.currentTime = logTime;
-          }
-        }
-      };
       this.opts = opts;
       this.$wrapper = $('<div id="k-player-wrapper"/>').replaceAll(selector);
       this.$loading = $(loadingHTML);
@@ -1964,7 +1975,8 @@ ${[...speedList].reverse().map(
         tooltips: {
           controls: true,
           seek: true
-        }
+        },
+        disableContextMenu: false
       }, opts));
       this.$videoWrapper = this.$wrapper.find(".plyr");
       this.$videoWrapper.find(".plyr__time--duration").after('<div class="plyr__controls__item k-player-controls-spacer"/>');
@@ -2003,25 +2015,31 @@ ${[...speedList].reverse().map(
     static register(setup) {
       this.plguinList.push(setup);
     }
-    setCurrentTimeLog(time) {
+    async setCurrentTimeLog(time) {
       time = Math.floor(time != null ? time : this.currentTime);
       const store = local.getItem(this.localPlayTimeKey, {});
-      store[this.playTimeStoreKey] = time;
+      const key = await this.playTimeStoreKey();
+      store[key] = time;
       local.setItem(this.localPlayTimeKey, store);
     }
-    getCurrentTimeLog() {
+    async getCurrentTimeLog() {
       const store = local.getItem(this.localPlayTimeKey, {});
-      return store[this.playTimeStoreKey];
+      const key = await this.playTimeStoreKey();
+      return store[key];
     }
-    get playTimeStoreKey() {
-      if (typeof this.opts.logTimeId === "string") {
-        return this.opts.logTimeId;
-      } else if (typeof this.opts.logTimeId === "function") {
-        return this.opts.logTimeId();
-      } else if (this.src.startsWith("blob")) {
-        return location.origin + location.pathname + location.search;
-      } else {
-        return this.src;
+    async playTimeStoreKey() {
+      return await runtime.getTopLocationHref();
+    }
+    async jumpToLogTime() {
+      if (this.isJumped)
+        return;
+      if (this.currentTime < 3) {
+        this.isJumped = true;
+        const logTime = await this.getCurrentTimeLog();
+        if (logTime && this.plyr.duration - logTime > 10) {
+          this.message.info(`\u5DF2\u81EA\u52A8\u8DF3\u8F6C\u81F3\u5386\u53F2\u64AD\u653E\u4F4D\u7F6E ${parseTime(logTime)}`);
+          this.currentTime = logTime;
+        }
       }
     }
     initEvent() {
@@ -2047,7 +2065,25 @@ ${[...speedList].reverse().map(
       this.on("canplay", () => {
         this.$loading.hide();
         if (this.localConfig.autoplay) {
-          this.plyr.play();
+          (async () => {
+            try {
+              await this.plyr.play();
+            } catch (error) {
+            } finally {
+              if (this.media.paused) {
+                window.addEventListener(
+                  "click",
+                  () => {
+                    setTimeout(() => {
+                      if (this.media.paused)
+                        this.plyr.play();
+                    }, 100);
+                  },
+                  { capture: true, once: true }
+                );
+              }
+            }
+          })();
         }
         if (this.localConfig.continuePlay) {
           this.jumpToLogTime();
@@ -4247,8 +4283,7 @@ ${[...speedList].reverse().map(
   function replacePlayer() {
     new KPlayer("#player", {
       video: $("video")[0],
-      eventToParentWindow: true,
-      logTimeId: parent.location.href
+      eventToParentWindow: true
     });
   }
   function switchPart$1(next) {
