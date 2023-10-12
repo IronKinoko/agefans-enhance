@@ -43,7 +43,7 @@
 
 ## 预览
 
-![预览图片](https://github.com/IronKinoko/asset/raw/master/agefans-enhance/preview.jpg)
+![预览图片](./preview.png)
 
 ## 待做事项
 
