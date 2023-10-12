@@ -1,3 +1,5 @@
+import { memoize } from 'lodash-es'
+
 interface RegisterOpts {
   runInIframe?: boolean
   test: string | RegExp | (string | RegExp)[] | (() => boolean)
@@ -27,29 +29,34 @@ function createTest(target: string) {
 }
 class Runtime {
   constructor() {
-    window.addEventListener('message', (e) => {
-      if (e.data?.key === 'getLocationHref') {
-        e.source?.postMessage(
-          { key: 'getLocationHref', url: location.href },
-          { targetOrigin: '*' }
-        )
-      }
-    })
-  }
-
-  async getTopLocationHref() {
-    if (parent === self) return window.location.href
-
-    return new Promise<string>((resolve) => {
-      window.addEventListener('message', function once(e) {
+    if (parent === self) {
+      window.addEventListener('message', (e) => {
         if (e.data?.key === 'getLocationHref') {
-          window.removeEventListener('message', once)
-          resolve(e.data.url)
+          e.source?.postMessage(
+            { key: 'getLocationHref', url: location.href },
+            { targetOrigin: '*' }
+          )
         }
       })
-      parent.postMessage({ key: 'getLocationHref' }, '*')
-    })
+    }
   }
+
+  getTopLocationHref = memoize(
+    async () => {
+      if (parent === self) return window.location.href
+
+      return new Promise<string>((resolve) => {
+        window.addEventListener('message', function once(e) {
+          if (e.data?.key === 'getLocationHref') {
+            window.removeEventListener('message', once)
+            resolve(e.data.url)
+          }
+        })
+        parent.postMessage({ key: 'getLocationHref' }, '*')
+      })
+    },
+    () => window.location.href
+  )
 
   private list: RegisteredItem[] = [
     {
