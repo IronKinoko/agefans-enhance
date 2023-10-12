@@ -172,6 +172,10 @@
   --color: white;
 }
 
+.k-popover-active .plyr__tooltip {
+  display: none;
+}
+
 .k-player-danmaku-list {
   * {
     box-sizing: border-box;
