@@ -11,6 +11,8 @@
   text-align: left;
   animation: fadeIn 0.3s ease forwards;
   color: rgba(0, 0, 0, 0.85);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 
   @keyframes fadeIn {
     from {
@@ -70,6 +72,7 @@
     align-items: center;
     &-title {
       padding: 16px;
+      font-weight: 500;
     }
   }
 

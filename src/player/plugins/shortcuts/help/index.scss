@@ -16,7 +16,7 @@
 
   tbody tr td:first-child {
     white-space: nowrap;
-    width: 77px;
+    width: 85px;
   }
   th,
   td {
@@ -42,6 +42,7 @@
   }
 
   a:hover {
+    color: var(--k-player-primary-color);
     text-decoration: underline;
     background-color: var(--k-player-primary-color-highlight);
   }
