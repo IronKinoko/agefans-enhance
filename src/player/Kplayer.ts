@@ -144,6 +144,7 @@ export class KPlayer {
         controls: true,
         seek: true,
       },
+      disableContextMenu: false,
       ...opts,
     })
 
