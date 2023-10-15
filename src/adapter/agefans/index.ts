@@ -1,6 +1,6 @@
 import { runtime } from '../../runtime/index'
 import './index.scss'
-import { playModule } from './play'
+import { playModule, playModuleInIframe } from './play'
 
 runtime.register({
   domains: ['age.tv', 'agemys', 'agefans', 'agedm'],
@@ -12,6 +12,7 @@ runtime.register({
       },
     },
     { test: '/play', run: playModule },
+    { test: '/play', run: playModuleInIframe, runInIframe: true },
   ],
   search: {
     name: 'agefans',

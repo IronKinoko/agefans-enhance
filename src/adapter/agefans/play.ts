@@ -92,7 +92,7 @@ function activeScrollIntoView() {
 }
 function insertFocusBtn() {
   const html = `
-  <button type="button" class="btn btn-sm btn-outline-light btn-playlist-order">聚焦</button>
+  <button id="k-focus" type="button" class="btn btn-sm btn-outline-light btn-playlist-order">聚焦</button>
   `
 
   $(html)
@@ -118,12 +118,23 @@ function getActive() {
   return $('.video_detail_episode .video_detail_spisode_playing').parent()
 }
 function switchPart(next: boolean) {
+  if ($('#ready-to-change-iframe-src').length) return
+
   const $active = getActive()
   const sortDirection = getSortDirection()
 
-  if (sortDirection === 'asc')
-    $active[next ? 'next' : 'prev']().find('a')[0]?.click()
-  else $active[next ? 'prev' : 'next']().find('a')[0]?.click()
+  let $nextActive: JQuery<HTMLElement>
+
+  if (sortDirection === 'asc') $nextActive = $active[next ? 'next' : 'prev']()
+  else $nextActive = $active[next ? 'prev' : 'next']()
+
+  const url = $nextActive.find('a').attr('href')
+
+  if (url) {
+    window.history.pushState(window.history.state, '', url)
+    $('.video_detail_spisode_playing').appendTo($nextActive)
+    createIframeReadyToChangeIframeSrc(url)
+  }
 }
 
 const iframeSelector = '.video_play_wrapper iframe'
@@ -173,6 +184,13 @@ function initPlayer() {
     if (key === 'openLink') {
       window.open(e.data.url)
     }
+
+    if (key === 'changeIframeSrc') {
+      const iframe = $<HTMLIFrameElement>(iframeSelector)[0]
+      iframe.contentWindow?.location.replace(e.data.url)
+      document.title = e.data.title
+      $('#ready-to-change-iframe-src').remove()
+    }
   })
 
   window.addEventListener('keydown', (e) => {
@@ -182,13 +200,62 @@ function initPlayer() {
   })
 
   $(iframeSelector).attr({ gesture: 'media', allow: 'autoplay; fullscreen' })
+
+  window.addEventListener('popstate', () => {
+    const url = window.location.href
+    createIframeReadyToChangeIframeSrc(window.location.href)
+    $('.video_detail_episode a').each((_, el) => {
+      const $el = $(el)
+      const href = $el.attr('href')
+      if (href === url) {
+        $('.video_detail_spisode_playing').appendTo($el.parent())
+        $('#k-focus').trigger('click')
+      }
+    })
+  })
+
+  $('.video_detail_episode a').each((_, el) => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault()
+      if ($('#ready-to-change-iframe-src').length) return
+      const $el = $(el)
+      const url = $el.attr('href')
+      const $nextActive = $el.parent()
+
+      if (!url) return
+      window.history.pushState(window.history.state, '', url)
+      $('.video_detail_spisode_playing').appendTo($nextActive)
+      createIframeReadyToChangeIframeSrc(url)
+    })
+  })
 }
 
 export function playModule() {
+  $<HTMLAnchorElement>('.video_detail_episode a').each((_, el) => {
+    if (el.href) el.href = el.href.replace('http://', 'https://')
+  })
   initPlayer()
 
   rememberSortDirection()
   restoreSortDirection()
   insertFocusBtn()
   activeScrollIntoView()
+}
+export function playModuleInIframe() {
+  top?.postMessage(
+    {
+      key: 'changeIframeSrc',
+      url: $(iframeSelector).attr('src'),
+      title: document.title,
+    },
+    '*'
+  )
+}
+function createIframeReadyToChangeIframeSrc(url: string) {
+  const iframe = document.createElement('iframe')
+  iframe.id = 'ready-to-change-iframe-src'
+  iframe.style.cssText =
+    'position:fixed;left:0;right:0;z-index:9999;opacity:0;pointer-events:none;'
+  iframe.src = url
+  document.body.appendChild(iframe)
 }
