@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.39.1
+// @version      1.39.2
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -2022,7 +2022,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.39.1"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.39.2"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2127,7 +2127,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.39.1"}
+\u811A\u672C\u7248\u672C: ${"1.39.2"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -4352,7 +4352,7 @@ ${[...speedList].reverse().map(
   }
   function insertFocusBtn() {
     const html = `
-  <button type="button" class="btn btn-sm btn-outline-light btn-playlist-order">\u805A\u7126</button>
+  <button id="k-focus" type="button" class="btn btn-sm btn-outline-light btn-playlist-order">\u805A\u7126</button>
   `;
     $(html).on("click", async () => {
       const idx = getActiveTabIndex();
@@ -4372,18 +4372,26 @@ ${[...speedList].reverse().map(
     return $(".video_detail_episode .video_detail_spisode_playing").parent();
   }
   function switchPart$8(next) {
-    var _a, _b;
+    if ($("#ready-to-change-iframe-src").length)
+      return;
     const $active = getActive();
     const sortDirection = getSortDirection();
+    let $nextActive;
     if (sortDirection === "asc")
-      (_a = $active[next ? "next" : "prev"]().find("a")[0]) == null ? void 0 : _a.click();
+      $nextActive = $active[next ? "next" : "prev"]();
     else
-      (_b = $active[next ? "prev" : "next"]().find("a")[0]) == null ? void 0 : _b.click();
+      $nextActive = $active[next ? "prev" : "next"]();
+    const url = $nextActive.find("a").attr("href");
+    if (url) {
+      window.history.pushState(window.history.state, "", url);
+      $(".video_detail_spisode_playing").appendTo($nextActive);
+      createIframeReadyToChangeIframeSrc(url);
+    }
   }
   const iframeSelector$1 = ".video_play_wrapper iframe";
   function initPlayer() {
     window.addEventListener("message", (e) => {
-      var _a, _b, _c;
+      var _a, _b, _c, _d;
       if (!((_a = e.data) == null ? void 0 : _a.key))
         return;
       const { key, video } = e.data;
@@ -4426,6 +4434,12 @@ ${[...speedList].reverse().map(
       if (key === "openLink") {
         window.open(e.data.url);
       }
+      if (key === "changeIframeSrc") {
+        const iframe = $(iframeSelector$1)[0];
+        (_d = iframe.contentWindow) == null ? void 0 : _d.location.replace(e.data.url);
+        document.title = e.data.title;
+        $("#ready-to-change-iframe-src").remove();
+      }
     });
     window.addEventListener("keydown", (e) => {
       if (document.activeElement !== document.body)
@@ -4435,13 +4449,61 @@ ${[...speedList].reverse().map(
         e.preventDefault();
     });
     $(iframeSelector$1).attr({ gesture: "media", allow: "autoplay; fullscreen" });
+    window.addEventListener("popstate", () => {
+      const url = window.location.href;
+      createIframeReadyToChangeIframeSrc(window.location.href);
+      $(".video_detail_episode a").each((_, el) => {
+        const $el = $(el);
+        const href = $el.attr("href");
+        if (href === url) {
+          $(".video_detail_spisode_playing").appendTo($el.parent());
+          $("#k-focus").trigger("click");
+        }
+      });
+    });
+    $(".video_detail_episode a").each((_, el) => {
+      el.addEventListener("click", (e) => {
+        e.preventDefault();
+        if ($("#ready-to-change-iframe-src").length)
+          return;
+        const $el = $(el);
+        const url = $el.attr("href");
+        const $nextActive = $el.parent();
+        if (!url)
+          return;
+        window.history.pushState(window.history.state, "", url);
+        $(".video_detail_spisode_playing").appendTo($nextActive);
+        createIframeReadyToChangeIframeSrc(url);
+      });
+    });
   }
   function playModule$9() {
+    $(".video_detail_episode a").each((_, el) => {
+      if (el.href)
+        el.href = el.href.replace("http://", "https://");
+    });
     initPlayer();
     rememberSortDirection();
     restoreSortDirection();
     insertFocusBtn();
     activeScrollIntoView();
+  }
+  function playModuleInIframe() {
+    top == null ? void 0 : top.postMessage(
+      {
+        key: "changeIframeSrc",
+        url: $(iframeSelector$1).attr("src"),
+        title: document.title
+      },
+      "*"
+    );
+  }
+  function createIframeReadyToChangeIframeSrc(url) {
+    const iframe = document.createElement("iframe");
+    iframe.id = "ready-to-change-iframe-src";
+    iframe.style.cssText = "position:fixed;left:0;right:0;z-index:9999;opacity:0;pointer-events:none;";
+    iframe.src = url;
+    document.body.appendChild(iframe);
   }
 
   runtime.register({
@@ -4453,7 +4515,8 @@ ${[...speedList].reverse().map(
           $("body").addClass("agefans-wrapper");
         }
       },
-      { test: "/play", run: playModule$9 }
+      { test: "/play", run: playModule$9 },
+      { test: "/play", run: playModuleInIframe, runInIframe: true }
     ],
     search: {
       name: "agefans",
