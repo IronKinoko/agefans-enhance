@@ -85,7 +85,7 @@ const DefaultKeyBindings: KeyBinding[] = [
   {
     command: Commands.toggleMute,
     key: 'M',
-    description: '切换禁用',
+    description: '切换静音',
   },
   {
     command: Commands.internal,
