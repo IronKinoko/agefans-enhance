@@ -1,9 +1,12 @@
 import { runtime } from '../../runtime'
-import { playModule } from './play'
+import { iframePlayer } from './play'
 
 runtime.register({
   domains: ['.ntdm9.'],
-  opts: [{ test: '/play', run: playModule }],
+  opts: [
+    { test: '/play', run: iframePlayer.runInTop },
+    { test: '/play', run: iframePlayer.runInIframe, runInIframe: true },
+  ],
   search: {
     name: 'NT动漫',
     search: (name) =>

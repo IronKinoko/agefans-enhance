@@ -1,5 +1,6 @@
 import { sleep } from '../../utils/sleep'
 import { local } from '../../utils/storage'
+import { defineIframePlayer } from '../common/defineIframePlayer'
 
 function calcSortDirection() {
   const $active = getActive()
@@ -118,8 +119,6 @@ function getActive() {
   return $('.video_detail_episode .video_detail_spisode_playing').parent()
 }
 function switchPart(next: boolean) {
-  if ($('#ready-to-change-iframe-src').length) return
-
   const $active = getActive()
   const sortDirection = getSortDirection()
 
@@ -128,113 +127,35 @@ function switchPart(next: boolean) {
   if (sortDirection === 'asc') $nextActive = $active[next ? 'next' : 'prev']()
   else $nextActive = $active[next ? 'prev' : 'next']()
 
-  const url = $nextActive.find('a').attr('href')
-
-  if (url) {
-    window.history.pushState(window.history.state, '', url)
-    $('.video_detail_spisode_playing').appendTo($nextActive)
-    createIframeReadyToChangeIframeSrc(url)
-  }
+  return $nextActive.find('a')[0]?.href
 }
 
-const iframeSelector = '.video_play_wrapper iframe'
-
-function initPlayer() {
-  window.addEventListener('message', (e) => {
-    if (!e.data?.key) return
-    const { key, video } = e.data
-    if (key === 'prev') switchPart(false)
-    if (key === 'next') switchPart(true)
-    if (key === 'enterwidescreen') {
-      $('body').css('overflow', 'hidden')
-      $(iframeSelector).css({
-        position: 'fixed',
-        left: 0,
-        right: 0,
-        bottom: 0,
-        top: 0,
-        zIndex: 9999,
-      })
-    }
-    if (key === 'exitwidescreen') {
-      $('body').css('overflow', '')
-      $(iframeSelector).removeAttr('style')
-    }
-
-    // 这里的事件由 vip.sp-flv.com 触发
-    if (key === 'getSearchName') {
-      const iframe = $<HTMLIFrameElement>(iframeSelector)[0]
-
-      iframe.contentWindow?.postMessage(
-        {
-          key: 'getSearchName',
-          name: $('.video_detail_wrapper .cata_video_item .card-title').text(),
-        },
-        '*'
-      )
-    }
-    if (key === 'getEpisode') {
-      const iframe = $<HTMLIFrameElement>(iframeSelector)[0]
-
-      iframe.contentWindow?.postMessage(
-        { key: 'getEpisode', name: getActive().text() },
-        '*'
-      )
-    }
-    if (key === 'openLink') {
-      window.open(e.data.url)
-    }
-
-    if (key === 'changeIframeSrc') {
-      const iframe = $<HTMLIFrameElement>(iframeSelector)[0]
-      iframe.contentWindow?.location.replace(e.data.url)
-      document.title = e.data.title
-      $('#ready-to-change-iframe-src').remove()
-    }
-  })
-
-  window.addEventListener('keydown', (e) => {
-    if (document.activeElement !== document.body) return
-    $(iframeSelector)[0].focus()
-    if (e.key === ' ') e.preventDefault()
-  })
-
-  $(iframeSelector).attr({ gesture: 'media', allow: 'autoplay; fullscreen' })
-
-  window.addEventListener('popstate', () => {
-    const url = window.location.href
-    createIframeReadyToChangeIframeSrc(window.location.href)
-    $('.video_detail_episode a').each((_, el) => {
+const iframePlayer = defineIframePlayer({
+  iframeSelector: '.video_play_wrapper iframe',
+  getActive,
+  setActive: (href) => {
+    $<HTMLAnchorElement>('.video_detail_episode a').each((_, el) => {
       const $el = $(el)
-      const href = $el.attr('href')
-      if (href === url) {
+      if (el.href === href) {
         $('.video_detail_spisode_playing').appendTo($el.parent())
-        $('#k-focus').trigger('click')
       }
     })
-  })
-
-  $('.video_detail_episode a').each((_, el) => {
-    el.addEventListener('click', (e) => {
-      e.preventDefault()
-      if ($('#ready-to-change-iframe-src').length) return
-      const $el = $(el)
-      const url = $el.attr('href')
-      const $nextActive = $el.parent()
-
-      if (!url) return
-      window.history.pushState(window.history.state, '', url)
-      $('.video_detail_spisode_playing').appendTo($nextActive)
-      createIframeReadyToChangeIframeSrc(url)
-    })
-  })
-}
+    $('#k-focus').trigger('click')
+  },
+  search: {
+    getSearchName: () =>
+      $('.video_detail_wrapper .cata_video_item .card-title').text(),
+    getEpisode: () => getActive().text(),
+  },
+  getEpisodeList: () => $('.video_detail_episode a'),
+  switchEpisode: (next) => switchPart(next),
+})
 
 export function playModule() {
   $<HTMLAnchorElement>('.video_detail_episode a').each((_, el) => {
     if (el.href) el.href = el.href.replace('http://', 'https://')
   })
-  initPlayer()
+  iframePlayer.runInTop()
 
   rememberSortDirection()
   restoreSortDirection()
@@ -242,20 +163,5 @@ export function playModule() {
   activeScrollIntoView()
 }
 export function playModuleInIframe() {
-  top?.postMessage(
-    {
-      key: 'changeIframeSrc',
-      url: $(iframeSelector).attr('src'),
-      title: document.title,
-    },
-    '*'
-  )
-}
-function createIframeReadyToChangeIframeSrc(url: string) {
-  const iframe = document.createElement('iframe')
-  iframe.id = 'ready-to-change-iframe-src'
-  iframe.style.cssText =
-    'position:fixed;left:0;right:0;z-index:9999;opacity:0;pointer-events:none;'
-  iframe.src = url
-  document.body.appendChild(iframe)
+  iframePlayer.runInIframe()
 }
