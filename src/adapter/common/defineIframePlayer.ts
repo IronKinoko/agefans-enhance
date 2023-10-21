@@ -30,8 +30,9 @@ export function defineIframePlayer(config: Config) {
   }
 
   function setActive(url: string) {
-    if (window.location.href === url) return
-    window.history.pushState(window.history.state, '', url)
+    if (window.location.href !== url) {
+      window.history.pushState(window.history.state, '', url)
+    }
     config.setActive(url)
     createIframeReadyToChangeIframeSrc(url)
   }
