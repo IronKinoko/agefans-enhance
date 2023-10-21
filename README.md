@@ -54,14 +54,10 @@
 \* 标记为推荐的网站
 
 - [\*agefans](http://www.age.tv/)
-- [樱花动漫 1](https://www.yhdmp.net/)
-- [樱花动漫 2](http://www.yinghuacd.com/)
-- [樱花动漫 3](https://www.odcoc.com/)
-- [\*acgnya](https://www.acgnya.com/)
+- [\*NT 动漫](http://www.ntdm9.com/)
+- [acgnya](https://www.acgnya.com/)
 - [bimiacg](https://www.bimiacg10.net/)
-- [dm233](https://www.dm233.org/)
 - [アニメ新番組](https://bangumi.online/)
-- [NT 动漫](http://www.ntdm9.com/)
 
 ## 注意事项
 
