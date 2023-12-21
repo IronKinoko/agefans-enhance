@@ -19,10 +19,10 @@
 // @include      https://*43.240.74.134*
 // @include      https://anime1.me/*
 // @run-at       document-end
-// @require      https://unpkg.com/jquery@3.6.0/dist/jquery.min.js
-// @require      https://unpkg.com/plyr@3.6.4/dist/plyr.min.js
-// @require      https://unpkg.com/hls.js@1.0.9/dist/hls.min.js
-// @require      https://unpkg.com/@ironkinoko/danmaku@1.4.1/dist/danmaku.umd.js
+// @require      https://registry.npmmirror.com/jquery/3.6.0/files/dist/jquery.min.js
+// @require      https://registry.npmmirror.com/plyr/3.6.4/files/dist/plyr.min.js
+// @require      https://registry.npmmirror.com/hls.js/1.0.9/files/dist/hls.min.js
+// @require      https://registry.npmmirror.com/@ironkinoko/danmaku/1.4.1/files/dist/danmaku.umd.js
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
