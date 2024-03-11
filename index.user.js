@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.39.5
+// @version      1.39.6
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -17,6 +17,7 @@
 // @include      https://danmu.yhdmjx.com/*
 // @include      https://*.sp-flv.com*
 // @include      https://*43.240.74.134*
+// @include      https://*43.240.156.118*
 // @include      https://anime1.me/*
 // @run-at       document-end
 // @require      https://registry.npmmirror.com/jquery/3.6.0/files/dist/jquery.min.js
@@ -2018,7 +2019,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.39.5"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.39.6"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2123,7 +2124,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.39.5"}
+\u811A\u672C\u7248\u672C: ${"1.39.6"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -4204,7 +4205,8 @@ ${[...speedList].reverse().map(
       "pro.ascepan.top",
       "danmu.yhdmjx.com",
       "sp-flv.com",
-      "43.240.74.134"
+      "43.240.74.134",
+      "43.240.156.118"
     ],
     opts: [
       {
@@ -4224,12 +4226,16 @@ ${[...speedList].reverse().map(
         run: parser["sp-flv.com"]
       },
       {
-        test: () => !!window.location.href.match(/43.240.74.134.*vip.*url=/),
+        test: () => !!window.location.href.match(
+          /((43.240.74.134)|(43.240.156.118)).*vip.*url=/
+        ),
         runInIframe: true,
         run: parser["agefans-01"]
       },
       {
-        test: () => !!window.location.href.match(/43.240.74.134.*m3u8.*url=/),
+        test: () => !!window.location.href.match(
+          /((43.240.74.134)|(43.240.156.118)).*m3u8.*url=/
+        ),
         runInIframe: true,
         run: parser["agefans-02"]
       }
