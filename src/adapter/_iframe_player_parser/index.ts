@@ -9,6 +9,7 @@ runtime.register({
     'danmu.yhdmjx.com',
     'sp-flv.com',
     '43.240.74.134',
+    '43.240.156.118',
   ],
   opts: [
     {
@@ -28,12 +29,18 @@ runtime.register({
       run: parser['sp-flv.com'],
     },
     {
-      test: () => !!window.location.href.match(/43.240.74.134.*vip.*url=/),
+      test: () =>
+        !!window.location.href.match(
+          /((43.240.74.134)|(43.240.156.118)).*vip.*url=/
+        ),
       runInIframe: true,
       run: parser['agefans-01'],
     },
     {
-      test: () => !!window.location.href.match(/43.240.74.134.*m3u8.*url=/),
+      test: () =>
+        !!window.location.href.match(
+          /((43.240.74.134)|(43.240.156.118)).*m3u8.*url=/
+        ),
       runInIframe: true,
       run: parser['agefans-02'],
     },
