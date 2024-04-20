@@ -2,7 +2,7 @@
 // @name         agefans Enhance - Dev
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.39.5
+// @version      1.39.6
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -11,7 +11,7 @@
 // @include      https://www.agedm.*
 // @include      https://bangumi.online/*
 // @include      http*://www.ntdm9.*
-// @include      https://www.bimiacg10.net*
+// @include      http*://www.bimiacg1*.net*
 // @include      https://www.acgnya.com/*
 // @include      https://pro.ascepan.top/*
 // @include      https://danmu.yhdmjx.com/*
