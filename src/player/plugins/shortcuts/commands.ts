@@ -23,6 +23,31 @@ Shortcuts.registerCommand(Commands.backward60, seekTime(-60))
 Shortcuts.registerCommand(Commands.forward90, seekTime(90))
 Shortcuts.registerCommand(Commands.backward90, seekTime(-90))
 
+Shortcuts.registerCommand(Commands.forwardCustom, function (e) {
+  seekTime(+this.localConfig.customSeekTime).call(this, e)
+})
+Shortcuts.registerCommand(Commands.backwardCustom, function (e) {
+  seekTime(-this.localConfig.customSeekTime).call(this, e)
+})
+Shortcuts.registerCommand(
+  Commands.recordCustomSeekTime,
+  (() => {
+    let start: number | null = null
+    return function () {
+      if (start === null) {
+        start = this.currentTime
+        this.message.info('开始记录自定义跳转时间')
+      } else {
+        this.localConfig.customSeekTime = Math.round(this.currentTime - start)
+        this.message.info(
+          `记录成功，自定义跳转时间为${this.localConfig.customSeekTime}s`
+        )
+        start = null
+      }
+    }
+  })()
+)
+
 Shortcuts.registerCommand(Commands.prev, function () {
   this.trigger('prev')
 })

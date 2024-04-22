@@ -44,6 +44,7 @@ type CustomEventMap =
 
 type LocalPlayTimeStore = Record<string, number>
 export interface LocalConfig {
+  customSeekTime: number
   speed: number
   continuePlay: boolean
   autoNext: boolean
@@ -55,6 +56,7 @@ export interface LocalConfig {
 }
 
 export const defaultConfig = {
+  customSeekTime: 89,
   speed: 1,
   continuePlay: true,
   autoNext: true,

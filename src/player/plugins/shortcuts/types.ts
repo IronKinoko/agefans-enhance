@@ -47,4 +47,7 @@ export enum Commands {
   decreaseVolume = 'decreaseVolume',
   increaseVolume = 'increaseVolume',
   toggleMute = 'toggleMute',
+  forwardCustom = 'forwardCustom',
+  backwardCustom = 'backwardCustom',
+  recordCustomSeekTime = 'recordCustomSeekTime',
 }

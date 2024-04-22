@@ -47,6 +47,17 @@ const DefaultKeyBindings: KeyBinding[] = [
     mac: 'meta ArrowRight',
     description: '步进90s',
   },
+  {
+    command: Commands.backwardCustom,
+    key: 'shift J',
+    description: '步退[记忆时间]',
+  },
+  { command: Commands.forwardCustom, key: 'J', description: '步进[记忆时间]' },
+  {
+    command: Commands.recordCustomSeekTime,
+    key: 'K',
+    description: '记录步进时间',
+  },
   { command: Commands.prevFrame, key: '', description: '上一帧' },
   { command: Commands.nextFrame, key: '', description: '下一帧' },
   { command: Commands.prev, key: 'P', description: '上一集' },
