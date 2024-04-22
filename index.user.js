@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.39.7
+// @version      1.39.8
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1577,6 +1577,9 @@
     Commands2["decreaseVolume"] = "decreaseVolume";
     Commands2["increaseVolume"] = "increaseVolume";
     Commands2["toggleMute"] = "toggleMute";
+    Commands2["forwardCustom"] = "forwardCustom";
+    Commands2["backwardCustom"] = "backwardCustom";
+    Commands2["recordCustomSeekTime"] = "recordCustomSeekTime";
     return Commands2;
   })(Commands$1 || {});
 
@@ -1643,6 +1646,17 @@
       key: "ctrl ArrowRight",
       mac: "meta ArrowRight",
       description: "\u6B65\u8FDB90s"
+    },
+    {
+      command: Commands$1.backwardCustom,
+      key: "shift J",
+      description: "\u6B65\u9000[\u8BB0\u5FC6\u65F6\u95F4]"
+    },
+    { command: Commands$1.forwardCustom, key: "J", description: "\u6B65\u8FDB[\u8BB0\u5FC6\u65F6\u95F4]" },
+    {
+      command: Commands$1.recordCustomSeekTime,
+      key: "K",
+      description: "\u8BB0\u5F55\u6B65\u8FDB\u65F6\u95F4"
     },
     { command: Commands$1.prevFrame, key: "", description: "\u4E0A\u4E00\u5E27" },
     { command: Commands$1.nextFrame, key: "", description: "\u4E0B\u4E00\u5E27" },
@@ -2019,7 +2033,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.39.7"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.39.8"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2124,7 +2138,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.39.7"}
+\u811A\u672C\u7248\u672C: ${"1.39.8"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -2179,6 +2193,30 @@ userAgent: ${navigator.userAgent}
   Shortcuts.registerCommand(Commands$1.backward60, seekTime(-60));
   Shortcuts.registerCommand(Commands$1.forward90, seekTime(90));
   Shortcuts.registerCommand(Commands$1.backward90, seekTime(-90));
+  Shortcuts.registerCommand(Commands$1.forwardCustom, function(e) {
+    seekTime(+this.localConfig.customSeekTime).call(this, e);
+  });
+  Shortcuts.registerCommand(Commands$1.backwardCustom, function(e) {
+    seekTime(-this.localConfig.customSeekTime).call(this, e);
+  });
+  Shortcuts.registerCommand(
+    Commands$1.recordCustomSeekTime,
+    (() => {
+      let start = null;
+      return function() {
+        if (start === null) {
+          start = this.currentTime;
+          this.message.info("\u5F00\u59CB\u8BB0\u5F55\u81EA\u5B9A\u4E49\u8DF3\u8F6C\u65F6\u95F4");
+        } else {
+          this.localConfig.customSeekTime = Math.round(this.currentTime - start);
+          this.message.info(
+            `\u8BB0\u5F55\u6210\u529F\uFF0C\u81EA\u5B9A\u4E49\u8DF3\u8F6C\u65F6\u95F4\u4E3A${this.localConfig.customSeekTime}s`
+          );
+          start = null;
+        }
+      };
+    })()
+  );
   Shortcuts.registerCommand(Commands$1.prev, function() {
     this.trigger("prev");
   });
@@ -2569,6 +2607,7 @@ ${[...speedList].reverse().map(
     5: "\u8D44\u6E90\u88AB\u52A0\u5BC6\u4E86"
   };
   const defaultConfig = {
+    customSeekTime: 89,
     speed: 1,
     continuePlay: true,
     autoNext: true,
