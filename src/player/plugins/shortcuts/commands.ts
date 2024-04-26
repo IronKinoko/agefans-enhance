@@ -38,7 +38,10 @@ Shortcuts.registerCommand(
         start = this.currentTime
         this.message.info('开始记录自定义跳转时间')
       } else {
-        this.localConfig.customSeekTime = Math.round(this.currentTime - start)
+        this.configSaveToLocal(
+          'customSeekTime',
+          Math.abs(Math.round(this.currentTime - start))
+        )
         this.message.info(
           `记录成功，自定义跳转时间为${this.localConfig.customSeekTime}s`
         )
