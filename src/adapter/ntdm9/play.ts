@@ -25,7 +25,7 @@ export const iframePlayer = defineIframePlayer({
     })
   },
   search: {
-    getSearchName: () => $('#detailname').text(),
+    getSearchName: () => $('#detailname a:nth-child(1)').text(),
     getEpisode: () => getActive().text(),
   },
   getEpisodeList: () => $('.movurl a'),
