@@ -1,10 +1,12 @@
 import { runtime } from '../../runtime'
-import { iframePlayer } from './play'
+import { renderFavoriteList } from './favorite'
+import { iframePlayer, runInTop } from './play'
 
 runtime.register({
   domains: ['.ntdm9.'],
   opts: [
-    { test: '/play', run: iframePlayer.runInTop },
+    { test: '/', run: renderFavoriteList },
+    { test: '/play', run: runInTop },
     { test: '/play', run: iframePlayer.runInIframe, runInIframe: true },
   ],
   search: {
