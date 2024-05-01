@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.39.9
+// @version      1.40.0
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -2033,7 +2033,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.39.9"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.40.0"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2138,7 +2138,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.39.9"}
+\u811A\u672C\u7248\u672C: ${"1.40.0"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -4633,11 +4633,108 @@ ${[...speedList].reverse().map(
     }
   });
 
+  const favoriteKey = "favorite";
+  function getFavorite(id) {
+    const favorites = local.getItem(favoriteKey, []);
+    if (id) {
+      return favorites.find((f) => f.id === id);
+    }
+    return favorites;
+  }
+  function setFavorite(favorite) {
+    const favorites = getFavorite();
+    const index = favorites.findIndex((f) => f.id === favorite.id);
+    if (index === -1) {
+      favorites.push(favorite);
+    } else {
+      favorites[index] = favorite;
+    }
+    local.setItem(favoriteKey, favorites.slice(-100));
+  }
+  function removeFavorite(id) {
+    const favorites = getFavorite();
+    const index = favorites.findIndex((f) => f.id === id);
+    if (index !== -1) {
+      favorites.splice(index, 1);
+      local.setItem(favoriteKey, favorites);
+    }
+  }
+  function renderFavoriteList() {
+    const favorites = getFavorite();
+    const $root = $(".div_right.baseblock");
+    const $content = $(`<div class="blockcontent">
+    <ul id="anime_update"></ul>
+  </div>`);
+    $root.prepend(`<div class="blocktitle">\u8BA2\u9605</div>`, $content);
+    let groups = $(".mod").map((idx, el) => {
+      let list = [];
+      $(el).find(".one_new_anime").each((_, el2) => {
+        const $el = $(el2);
+        const id = $el.find("a").attr("href").match(/\/(\d+).html/)[1];
+        const title = $el.find(".one_new_anime_name").text();
+        const update = $el.find(".one_new_anime_ji").text();
+        const favorite = favorites.find((f) => f.id === id);
+        if (favorite) {
+          list.push({ favorite, title, update });
+        }
+      });
+      return { idx, list };
+    }).get();
+    const day = new Date().getDay() - 1;
+    groups = [...groups.slice(day), ...groups.slice(0, day)];
+    groups.filter((o) => o.list.length > 0).forEach(({ idx, list }, index) => {
+      const $ul = $(`<ul id="new_anime_page"></ul>`);
+      list.forEach(({ favorite, title: title2, update }) => {
+        $ul.append(
+          `<li class="one_new_anime" style="display:flex; justify-content:space-between;">
+            <a class="one_new_anime_name" href="${favorite.current.url}">${title2}</a>
+            <a class="one_new_anime_ji" style="flex-shrink:0;" href="${favorite.current.url}">${favorite.current.name}/${update}</a>
+          </li>`
+        );
+      });
+      const title = $("#new_anime_btns .new_anime_btn").eq(idx).text();
+      $content.find("#anime_update").append(
+        `<div style="margin-top:${index !== 0 ? 8 : 0}px;">${title}</div>`,
+        $ul
+      );
+    });
+  }
+  function renderFavoriteBtn() {
+    const $btn = $(`<a href="javascript:void(0)" style="float:right;">\u8BA2\u9605</a>`);
+    $btn.on("click", () => {
+      if (getFavorite(id)) {
+        removeFavorite(id);
+        $btn.text("\u8BA2\u9605");
+        return;
+      } else {
+        updateFavoriteCurrent(true);
+        $btn.text("\u5DF2\u8BA2\u9605");
+      }
+    });
+    const id = location.pathname.match(/\/(\d+)-/)[1];
+    if (getFavorite().find((f) => f.id === id)) {
+      $btn.text("\u5DF2\u8BA2\u9605");
+    }
+    $("#detailname").append($btn);
+  }
+  function updateFavoriteCurrent(push) {
+    const id = location.pathname.match(/\/(\d+)-/)[1];
+    if (!push && !getFavorite(id))
+      return;
+    const name = $(".active-play").text();
+    const url = location.pathname;
+    setFavorite({ id, current: { name, url } });
+  }
+
   function getActive() {
     return $(".active-play");
   }
   function switchPart$2(next) {
     return $(".active-play").parent()[next ? "next" : "prev"]().find("a")[0].href;
+  }
+  function runInTop() {
+    iframePlayer.runInTop();
+    renderFavoriteBtn();
   }
   const iframePlayer = defineIframePlayer({
     iframeSelector: "#playleft iframe",
@@ -4663,6 +4760,7 @@ ${[...speedList].reverse().map(
         const width = $("#ageframediv").width();
         if (width)
           $("#ageframediv").height(video.height / video.width * width);
+        updateFavoriteCurrent(false);
       }
     }
   });
@@ -4670,7 +4768,8 @@ ${[...speedList].reverse().map(
   runtime.register({
     domains: [".ntdm9."],
     opts: [
-      { test: "/play", run: iframePlayer.runInTop },
+      { test: "/", run: renderFavoriteList },
+      { test: "/play", run: runInTop },
       { test: "/play", run: iframePlayer.runInIframe, runInIframe: true }
     ],
     search: {
