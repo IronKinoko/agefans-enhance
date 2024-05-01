@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.40.0
+// @version      1.40.1
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -2033,7 +2033,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.40.0"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.40.1"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2138,7 +2138,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.40.0"}
+\u811A\u672C\u7248\u672C: ${"1.40.1"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -4749,7 +4749,7 @@ ${[...speedList].reverse().map(
       });
     },
     search: {
-      getSearchName: () => $("#detailname").text(),
+      getSearchName: () => $("#detailname a:nth-child(1)").text(),
       getEpisode: () => getActive().text()
     },
     getEpisodeList: () => $(".movurl a"),
