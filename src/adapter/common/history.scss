@@ -1,0 +1,18 @@
+.k-episode-anchor:visited {
+  color: rgb(220, 53, 69) !important;
+}
+.k-his-table {
+  width: 100%;
+  line-height: 1.4;
+  border-spacing: 0;
+  border-collapse: separate;
+  th,
+  td {
+    padding: 4px 8px;
+    transition: background 0.3s ease;
+  }
+
+  tr:hover td {
+    background: #f1f1f1;
+  }
+}

@@ -30,6 +30,14 @@ export const iframePlayer = defineIframePlayer({
   },
   getEpisodeList: () => $('.movurl a'),
   switchEpisode: (next) => switchPart(next),
+  history: {
+    creator: (renderHistory) => {
+      const $btn = $(`<a class="nav_button">历史</a>`)
+      $btn.on('click', renderHistory)
+      $btn.insertBefore('#top_search_from')
+    },
+    getId: () => location.pathname.match(/\/(\d+)-/)![1],
+  },
   onIframeMessage: (key, data) => {
     if (key === 'canplay') {
       const video = data.video

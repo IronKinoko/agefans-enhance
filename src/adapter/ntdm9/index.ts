@@ -5,6 +5,7 @@ import { iframePlayer, runInTop } from './play'
 runtime.register({
   domains: ['.ntdm9.'],
   opts: [
+    { test: '*', run: iframePlayer.createHistrory },
     { test: '/', run: renderFavoriteList },
     { test: '/play', run: runInTop },
     { test: '/play', run: iframePlayer.runInIframe, runInIframe: true },

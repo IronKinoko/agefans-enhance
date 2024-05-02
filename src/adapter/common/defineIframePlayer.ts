@@ -1,3 +1,5 @@
+import { renderHistroy, logHis } from './history'
+
 interface Config {
   iframeSelector: string
   /** 获取激活的节点 */
@@ -15,6 +17,11 @@ interface Config {
     getSearchName(): string | Promise<string>
     /** 弹幕搜索用到 获取番剧章节 */
     getEpisode(): string | Promise<string>
+  }
+  /** 内置的历史功能，可生成历史按钮，点击后展开观看历史记录 */
+  history?: {
+    creator: (renderHistory: typeof renderHistroy) => void
+    getId: () => string | Promise<string>
   }
 }
 export function defineIframePlayer(config: Config) {
@@ -37,6 +44,12 @@ export function defineIframePlayer(config: Config) {
     createIframeReadyToChangeIframeSrc(url)
   }
 
+  function createHistrory() {
+    if (config.history) {
+      config.history.creator(renderHistroy)
+    }
+  }
+
   function runInTop() {
     window.addEventListener('keydown', (e) => {
       if (document.activeElement !== document.body) return
@@ -51,6 +64,7 @@ export function defineIframePlayer(config: Config) {
     })
 
     config.getEpisodeList().each((_, el) => {
+      el.classList.add('k-episode-anchor')
       el.addEventListener('click', (e) => {
         e.preventDefault()
         if ($('.ready-to-change-iframe-src').length) return
@@ -119,6 +133,20 @@ export function defineIframePlayer(config: Config) {
           $(iframeSelector).removeAttr('style')
           break
         }
+        case 'timeupdate': {
+          if (config.history) {
+            logHis(
+              {
+                animeName: await search.getSearchName(),
+                episodeName: await search.getEpisode(),
+                id: await config.history.getId(),
+                url: window.location.href,
+              },
+              e.data.video.currentTime
+            )
+          }
+          break
+        }
       }
       config.onIframeMessage?.(e.data.key, e.data, e)
     })
@@ -135,5 +163,5 @@ export function defineIframePlayer(config: Config) {
     )
   }
 
-  return { runInTop, runInIframe }
+  return { runInTop, runInIframe, createHistrory }
 }
