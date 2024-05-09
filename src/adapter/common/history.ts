@@ -54,8 +54,8 @@ export function renderHistroy() {
       <thead>
         <tr>
           <th>标题</th>
-          <th>章节</th>
-          <th style="width:100px">时间</th>
+          <th style="width:80px">章节</th>
+          <th style="width:80px">时间</th>
         </tr>
       </thead>
       <tbody>
