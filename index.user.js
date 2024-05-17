@@ -2,13 +2,14 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.41.0
+// @version      1.41.1
 // @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
 // @author       IronKinoko
 // @include      https://www.age.tv/*
 // @include      https://www.agefans.*
 // @include      https://www.agemys.*
 // @include      https://www.agedm.*
+// @include      https://m.agedm.*
 // @include      https://bangumi.online/*
 // @include      http*://www.ntdm9.*
 // @include      http*://www.bimiacg1*.net*
@@ -1395,6 +1396,7 @@
         console.log(window.location, registers);
         throw new Error(`\u6FC0\u6D3B\u7684\u57DF\u540D\u5E94\u8BE5\u5C31\u4E00\u4E2A`);
       }
+      console.log("\u6FC0\u6D3B\u7684Register", registers[0]);
       return registers[0];
     }
     getActiveOpts() {
@@ -1408,9 +1410,11 @@
       let setupList = [];
       let runList = [];
       const opts = this.getActiveOpts();
-      opts.forEach(({ run, runInIframe, setup }) => {
+      opts.forEach((opt) => {
+        const { run, setup, runInIframe } = opt;
         let needRun = runInIframe ? parent !== self : parent === self;
         if (needRun) {
+          console.log("\u6FC0\u6D3B\u7684opt", opt);
           setup && setupList.push(setup);
           runList.push(run);
         }
@@ -2035,7 +2039,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.41.0"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.41.1"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2140,7 +2144,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.41.0"}
+\u811A\u672C\u7248\u672C: ${"1.41.1"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -4229,7 +4233,7 @@ ${[...speedList].reverse().map(
       while (!url) {
         url = await execInUnsafeWindow(() => {
           var _a, _b;
-          return (_b = (_a = window.art) == null ? void 0 : _a.hls) == null ? void 0 : _b.url;
+          return ((_b = (_a = window.art) == null ? void 0 : _a.hls) == null ? void 0 : _b.url) || window.Vurl;
         });
         await sleep(100);
       }
@@ -4529,6 +4533,33 @@ ${[...speedList].reverse().map(
     return { runInTop, runInIframe, createHistrory };
   }
 
+  function getActive$3() {
+    return $(".van-grid-item.van-grid-item--active");
+  }
+  function switchPart$6(next) {
+    var _a;
+    const $active = getActive$3();
+    let $nextActive = $active[next ? "next" : "prev"]();
+    (_a = $nextActive[0]) == null ? void 0 : _a.click();
+    return null;
+  }
+  const iframePlayer$3 = defineIframePlayer({
+    iframeSelector: "#playerIFrame iframe",
+    getActive: getActive$3,
+    setActive: (href) => {
+    },
+    search: {
+      getSearchName: () => $(".detail-box h2").text(),
+      getEpisode: () => getActive$3().text()
+    },
+    getEpisodeList: () => $(".video-source-box .van-grid-item"),
+    switchEpisode: (next) => switchPart$6(next)
+  });
+  async function mobilePlayModule() {
+    await wait(() => getActive$3().length > 0);
+    iframePlayer$3.runInTop();
+  }
+
   function calcSortDirection() {
     var _a, _b, _c;
     const $active = getActive$2();
@@ -4681,7 +4712,8 @@ ${[...speedList].reverse().map(
         }
       },
       { test: "/play", run: playModule$3 },
-      { test: "/play", run: playModuleInIframe, runInIframe: true }
+      { test: "/play", run: playModuleInIframe, runInIframe: true },
+      { test: () => location.hash.includes("/play/"), run: mobilePlayModule }
     ],
     search: {
       name: "agefans",
