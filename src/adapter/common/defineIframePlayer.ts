@@ -50,9 +50,17 @@ export function defineIframePlayer(config: Config) {
     }
   }
 
+  function isFocusInputElement() {
+    if (!document.activeElement) return false
+    return ['input', 'textarea', 'select'].includes(
+      document.activeElement.tagName.toLowerCase()
+    )
+  }
+
   function runInTop() {
     window.addEventListener('keydown', (e) => {
-      if (document.activeElement !== document.body) return
+      if (isFocusInputElement()) return
+      $(iframeSelector)[0].blur()
       $(iframeSelector)[0].focus()
       if (e.key === ' ') e.preventDefault()
     })
@@ -118,6 +126,7 @@ export function defineIframePlayer(config: Config) {
         }
         case 'enterwidescreen': {
           $('body').css('overflow', 'hidden')
+          $('body').addClass('widescreen')
           $(iframeSelector).css({
             position: 'fixed',
             left: 0,
@@ -130,6 +139,7 @@ export function defineIframePlayer(config: Config) {
         }
         case 'exitwidescreen': {
           $('body').css('overflow', '')
+          $('body').removeClass('widescreen')
           $(iframeSelector).removeAttr('style')
           break
         }

@@ -1,0 +1,8 @@
+.mutefun.widescreen {
+  .header,
+  .module-player-side,
+  .fixedGroup {
+    visibility: hidden;
+    pointer-events: none;
+  }
+}

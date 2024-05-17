@@ -19,6 +19,8 @@
 // @include      https://*43.240.74.134*
 // @include      https://*43.240.156.118*
 // @include      https://anime1.me/*
+// @include      https://www.mutedm.com/*
+// @include      https://www.mutean.com/*
 // @run-at       document-end
 // @require      https://registry.npmmirror.com/jquery/3.6.0/files/dist/jquery.min.js
 // @require      https://registry.npmmirror.com/plyr/3.6.4/files/dist/plyr.min.js
