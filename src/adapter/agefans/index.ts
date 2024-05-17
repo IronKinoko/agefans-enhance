@@ -1,5 +1,6 @@
 import { runtime } from '../../runtime/index'
 import './index.scss'
+import { mobilePlayModule } from './mobilePlay'
 import { playModule, playModuleInIframe } from './play'
 
 runtime.register({
@@ -13,6 +14,7 @@ runtime.register({
     },
     { test: '/play', run: playModule },
     { test: '/play', run: playModuleInIframe, runInIframe: true },
+    { test: () => location.hash.includes('/play/'), run: mobilePlayModule },
   ],
   search: {
     name: 'agefans',

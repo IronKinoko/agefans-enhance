@@ -7,7 +7,7 @@ interface Config {
   /** 根据href设置激活的节点 */
   setActive(href: string): void
   /** 切换剧集 */
-  switchEpisode(next: boolean): string | undefined
+  switchEpisode(next: boolean): string | undefined | null
   /** 监听player事件 */
   onIframeMessage?(key: string, data: any, e: MessageEvent): void
   /** 获取剧集列表 用于修改 anchor 的点击表现 */

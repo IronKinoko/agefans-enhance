@@ -2,6 +2,7 @@ import { memoize } from 'lodash-es'
 
 interface RegisterOpts {
   runInIframe?: boolean
+  /** 仅包含 pathname + search */
   test: string | RegExp | (string | RegExp)[] | (() => boolean)
   setup?: Function
   run: Function
@@ -132,6 +133,8 @@ class Runtime {
       console.log(window.location, registers)
       throw new Error(`激活的域名应该就一个`)
     }
+
+    console.log('激活的Register', registers[0])
     return registers[0]
   }
 
@@ -149,9 +152,11 @@ class Runtime {
 
     const opts = this.getActiveOpts()
 
-    opts.forEach(({ run, runInIframe, setup }) => {
+    opts.forEach((opt) => {
+      const { run, setup, runInIframe } = opt
       let needRun = runInIframe ? parent !== self : parent === self
       if (needRun) {
+        console.log('激活的opt', opt)
         setup && setupList.push(setup)
         runList.push(run)
       }

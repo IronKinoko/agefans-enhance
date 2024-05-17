@@ -72,7 +72,7 @@ export const parser = {
   'agefans-02': async () => {
     let url: string = ''
     while (!url) {
-      url = await execInUnsafeWindow(() => window.art?.hls?.url)
+      url = await execInUnsafeWindow(() => window.art?.hls?.url || window.Vurl)
       await sleep(100)
     }
 
