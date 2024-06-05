@@ -104,9 +104,8 @@ class Runtime {
   async getCurrentVideoNameAndEpisode() {
     const register = this.getActiveRegister()
     if (!register.search?.getSearchName) return
-    let rawName = await register.search.getSearchName()
+    let rawName = (await register.search.getSearchName()) || ''
     let episode = (await register.search.getEpisode?.()) || ''
-    if (!rawName) return
 
     let name = rawName
       .replace(/第.季/, '')
