@@ -53,11 +53,10 @@
 
 \* 标记为推荐的网站
 
-- [\*agefans](http://www.age.tv/)
-- [\*NT 动漫](http://www.ntdm9.com/)
-- [acgnya](https://www.acgnya.com/)
-- [bimiacg](https://www.bimiacg10.net/)
-- [アニメ新番組](https://bangumi.online/)
+- [\*agefans](http://www.age.tv)
+- [\*NT 动漫](http://www.ntdm9.com)
+- [bimiacg](https://www.bimiacg10.net)
+- [mutean](https://www.mutean.com)
 
 ## 注意事项
 
