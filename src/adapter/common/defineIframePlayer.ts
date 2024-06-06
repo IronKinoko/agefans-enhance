@@ -60,6 +60,8 @@ export function defineIframePlayer(config: Config) {
   function runInTop() {
     window.addEventListener('keydown', (e) => {
       if (isFocusInputElement()) return
+      if (window.getSelection()?.toString()) return
+      if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) return
       $(iframeSelector)[0].blur()
       $(iframeSelector)[0].focus()
       if (e.key === ' ') e.preventDefault()
