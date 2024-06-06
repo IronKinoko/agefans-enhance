@@ -94,4 +94,14 @@
       font-family: consolas, monospace;
     }
   }
+
+  .feature {
+    margin-bottom: 8px;
+    &-title {
+      font-weight: 500;
+    }
+    &-description {
+      color: #666;
+    }
+  }
 }

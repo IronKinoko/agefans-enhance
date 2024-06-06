@@ -129,6 +129,22 @@ export const scriptInfo = (video: HTMLVideoElement | undefined) => {
         return $root
       },
     },
+    {
+      name: '实验性功能',
+      className: 'feature-wrapper',
+      content: () => `
+      <div>
+        ${alert('实验性功能可能存在问题，仅供尝试')}
+
+        <ul class="features">
+          <li class="feature">
+            <div class="feature-title">播放本地文件</div>
+            <div class="feature-desc">将本地文件拖入到视频区域，可以播放本地文件，常用于播放本地更高清的视频</div>
+          </li>
+        <ul>
+      </div>
+      `,
+    },
   ])
 }
 
