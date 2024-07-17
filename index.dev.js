@@ -2,26 +2,25 @@
 // @name         agefans Enhance - Dev
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.41.0
-// @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
+// @version      1.41.1
+// @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城
 // @author       IronKinoko
 // @include      https://www.age.tv/*
 // @include      https://www.agefans.*
 // @include      https://www.agemys.*
 // @include      https://www.agedm.*
 // @include      https://m.agedm.*
-// @include      https://bangumi.online/*
 // @include      http*://www.ntdm9.*
 // @include      http*://www.bimiacg1*.net*
-// @include      https://www.acgnya.com/*
 // @include      https://pro.ascepan.top/*
 // @include      https://danmu.yhdmjx.com/*
 // @include      https://*.sp-flv.com*
 // @include      https://*43.240.74.134*
 // @include      https://*43.240.156.118*
-// @include      https://anime1.me/*
 // @include      https://www.mutedm.com/*
 // @include      https://www.mutean.com/*
+// @include      https://www.cycanime.com/*
+// @include      https://player.cycanime.com/*
 // @run-at       document-end
 // @require      https://registry.npmmirror.com/jquery/3.6.0/files/dist/jquery.min.js
 // @require      https://registry.npmmirror.com/plyr/3.6.4/files/dist/plyr.min.js
@@ -34,7 +33,7 @@
 // @license      MIT
 // @downloadURL  https://github.com/IronKinoko/agefans-enhance/raw/gh-pages/index.user.js
 // @updateURL    https://github.com/IronKinoko/agefans-enhance/raw/gh-pages/index.user.js
-// @require      file://C:\GitHub\agefans-enhance\dist\index.user.js
+// @require      file:///Users/kinoko/Developer/Github/agefans/dist/index.user.js
 // ==/UserScript==
 
 /**

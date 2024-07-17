@@ -2,26 +2,25 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.41.1
-// @description  增强agefans播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能
+// @version      1.42.0
+// @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城
 // @author       IronKinoko
 // @include      https://www.age.tv/*
 // @include      https://www.agefans.*
 // @include      https://www.agemys.*
 // @include      https://www.agedm.*
 // @include      https://m.agedm.*
-// @include      https://bangumi.online/*
 // @include      http*://www.ntdm9.*
 // @include      http*://www.bimiacg1*.net*
-// @include      https://www.acgnya.com/*
 // @include      https://pro.ascepan.top/*
 // @include      https://danmu.yhdmjx.com/*
 // @include      https://*.sp-flv.com*
 // @include      https://*43.240.74.134*
 // @include      https://*43.240.156.118*
-// @include      https://anime1.me/*
 // @include      https://www.mutedm.com/*
 // @include      https://www.mutean.com/*
+// @include      https://www.cycanime.com/*
+// @include      https://player.cycanime.com/*
 // @run-at       document-end
 // @require      https://registry.npmmirror.com/jquery/3.6.0/files/dist/jquery.min.js
 // @require      https://registry.npmmirror.com/plyr/3.6.4/files/dist/plyr.min.js
@@ -1380,10 +1379,8 @@
       const register = this.getActiveRegister();
       if (!((_a = register.search) == null ? void 0 : _a.getSearchName))
         return;
-      let rawName = await register.search.getSearchName();
+      let rawName = await register.search.getSearchName() || "";
       let episode = await ((_c = (_b = register.search).getEpisode) == null ? void 0 : _c.call(_b)) || "";
-      if (!rawName)
-        return;
       let name = rawName.replace(/第.季/, "").replace(/[<>《》''‘’""“”\[\]]/g, "").trim();
       episode = ((_d = episode.match(/([0-9.]+)[集话]/)) == null ? void 0 : _d[1].replace(/^0+/, "")) || episode.replace(/[第集话()（）]/g, "") || episode;
       return { name, rawName, episode };
@@ -2017,7 +2014,7 @@
     return $root;
   }
 
-  var css$8 = ".script-info .k-modal-body {\n  padding: 0;\n}\n.script-info .k-modal-body * {\n  box-sizing: border-box;\n  font-size: 14px;\n  line-height: normal;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n}\n.script-info .k-modal-body table {\n  width: 100%;\n  border-spacing: 0;\n  border-collapse: separate;\n}\n.script-info .k-modal-body tbody tr td:first-child {\n  white-space: nowrap;\n  width: 85px;\n}\n.script-info .k-modal-body th,\n.script-info .k-modal-body td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n}\n.script-info .k-modal-body .info-title {\n  font-weight: 600;\n  padding-top: 24px;\n}\n.script-info .k-modal-body a {\n  color: var(--k-player-primary-color);\n  margin: -4px 0 -4px -8px;\n  padding: 4px 8px;\n  border-radius: 4px;\n  text-decoration: none;\n  cursor: pointer;\n  display: inline-block;\n  white-space: nowrap;\n}\n.script-info .k-modal-body a:hover {\n  color: var(--k-player-primary-color);\n  text-decoration: underline;\n  background-color: var(--k-player-primary-color-highlight);\n}\n.script-info .k-modal-body .k-tabs {\n  border-bottom: 1px solid #f1f1f1;\n}\n.script-info .k-modal-body .shortcuts {\n  padding: 8px;\n}\n.script-info .k-modal-body .shortcuts-wrapper {\n  height: 400px;\n  padding: 0;\n  overflow-y: scroll;\n  position: relative;\n}\n.script-info .k-modal-body .shortcuts-wrapper::-webkit-scrollbar {\n  width: 8px;\n}\n.script-info .k-modal-body .shortcuts-wrapper::-webkit-scrollbar-thumb {\n  background: rgba(0, 0, 0, 0.15);\n  border-radius: 4px;\n}\n.script-info .k-modal-body .shortcuts-wrapper::-webkit-scrollbar-thumb:hover {\n  background-color: rgba(0, 0, 0, 0.45);\n}\n.script-info .k-modal-body .shortcuts th {\n  position: sticky;\n  background-color: white;\n  top: 0;\n  z-index: 1;\n}\n.script-info .k-modal-body .shortcuts .shortcuts-input-wrapper {\n  display: flex;\n  align-items: center;\n}\n.script-info .k-modal-body .shortcuts .k-input {\n  flex: 1;\n  padding: 4px 8px;\n  border-radius: 4px;\n}\n.script-info .k-modal-body .shortcuts a {\n  margin-left: 8px;\n}\n.script-info .k-modal-body .shortcuts .k-font-kbd {\n  font-family: consolas, monospace;\n}";
+  var css$8 = ".script-info .k-modal-body {\n  padding: 0;\n}\n.script-info .k-modal-body * {\n  box-sizing: border-box;\n  font-size: 14px;\n  line-height: normal;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n}\n.script-info .k-modal-body table {\n  width: 100%;\n  border-spacing: 0;\n  border-collapse: separate;\n}\n.script-info .k-modal-body tbody tr td:first-child {\n  white-space: nowrap;\n  width: 85px;\n}\n.script-info .k-modal-body th,\n.script-info .k-modal-body td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n}\n.script-info .k-modal-body .info-title {\n  font-weight: 600;\n  padding-top: 24px;\n}\n.script-info .k-modal-body a {\n  color: var(--k-player-primary-color);\n  margin: -4px 0 -4px -8px;\n  padding: 4px 8px;\n  border-radius: 4px;\n  text-decoration: none;\n  cursor: pointer;\n  display: inline-block;\n  white-space: nowrap;\n}\n.script-info .k-modal-body a:hover {\n  color: var(--k-player-primary-color);\n  text-decoration: underline;\n  background-color: var(--k-player-primary-color-highlight);\n}\n.script-info .k-modal-body .k-tabs {\n  border-bottom: 1px solid #f1f1f1;\n}\n.script-info .k-modal-body .shortcuts {\n  padding: 8px;\n}\n.script-info .k-modal-body .shortcuts-wrapper {\n  height: 400px;\n  padding: 0;\n  overflow-y: scroll;\n  position: relative;\n}\n.script-info .k-modal-body .shortcuts-wrapper::-webkit-scrollbar {\n  width: 8px;\n}\n.script-info .k-modal-body .shortcuts-wrapper::-webkit-scrollbar-thumb {\n  background: rgba(0, 0, 0, 0.15);\n  border-radius: 4px;\n}\n.script-info .k-modal-body .shortcuts-wrapper::-webkit-scrollbar-thumb:hover {\n  background-color: rgba(0, 0, 0, 0.45);\n}\n.script-info .k-modal-body .shortcuts th {\n  position: sticky;\n  background-color: white;\n  top: 0;\n  z-index: 1;\n}\n.script-info .k-modal-body .shortcuts .shortcuts-input-wrapper {\n  display: flex;\n  align-items: center;\n}\n.script-info .k-modal-body .shortcuts .k-input {\n  flex: 1;\n  padding: 4px 8px;\n  border-radius: 4px;\n}\n.script-info .k-modal-body .shortcuts a {\n  margin-left: 8px;\n}\n.script-info .k-modal-body .shortcuts .k-font-kbd {\n  font-family: consolas, monospace;\n}\n.script-info .k-modal-body .feature {\n  margin-bottom: 8px;\n}\n.script-info .k-modal-body .feature-title {\n  font-weight: 500;\n}\n.script-info .k-modal-body .feature-description {\n  color: #666;\n}";
   n(css$8,{});
 
   function genIssueURL({ title, body }) {
@@ -2039,7 +2036,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.41.1"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.42.0"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2129,6 +2126,22 @@
           });
           return $root;
         }
+      },
+      {
+        name: "\u5B9E\u9A8C\u6027\u529F\u80FD",
+        className: "feature-wrapper",
+        content: () => `
+      <div>
+        ${alert("\u5B9E\u9A8C\u6027\u529F\u80FD\u53EF\u80FD\u5B58\u5728\u95EE\u9898\uFF0C\u4EC5\u4F9B\u5C1D\u8BD5")}
+
+        <ul class="features">
+          <li class="feature">
+            <div class="feature-title">\u64AD\u653E\u672C\u5730\u6587\u4EF6</div>
+            <div class="feature-desc">\u5C06\u672C\u5730\u6587\u4EF6\u62D6\u5165\u5230\u89C6\u9891\u533A\u57DF\uFF0C\u53EF\u4EE5\u64AD\u653E\u672C\u5730\u6587\u4EF6\uFF0C\u5E38\u7528\u4E8E\u64AD\u653E\u672C\u5730\u66F4\u9AD8\u6E05\u7684\u89C6\u9891</div>
+          </li>
+        <ul>
+      </div>
+      `
       }
     ]);
   };
@@ -2144,7 +2157,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.41.1"}
+\u811A\u672C\u7248\u672C: ${"1.42.0"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -3723,7 +3736,7 @@ ${[...speedList].reverse().map(
   const $danmakuMode = $danmaku.find("[name='danmakuMode']");
   let core;
   let comments;
-  let player$2;
+  let player$1;
   let videoInfo;
   let syncDiff = 0;
   function refreshDanmaku() {
@@ -3738,30 +3751,30 @@ ${[...speedList].reverse().map(
   };
   const start = () => {
     function run() {
-      if (!player$2.media.duration)
+      if (!player$1.media.duration)
         return requestAnimationFrame(run);
       if (!comments)
         return;
       const nextComments = adjustCommentCount(comments);
       $openDanmakuList.find('[data-id="count"]').text(`(${nextComments.length}/${comments.length})`);
-      if (player$2.localConfig.showDanmaku) {
+      if (player$1.localConfig.showDanmaku) {
         if (!core) {
           core = new Danmaku({
             container: $danmakuContainer[0],
-            media: player$2.media,
+            media: player$1.media,
             comments: nextComments,
-            merge: player$2.localConfig.danmakuMerge,
-            scrollAreaPercent: player$2.localConfig.danmakuScrollAreaPercent,
-            overlap: player$2.localConfig.danmakuOverlap
+            merge: player$1.localConfig.danmakuMerge,
+            scrollAreaPercent: player$1.localConfig.danmakuScrollAreaPercent,
+            overlap: player$1.localConfig.danmakuOverlap
           });
         } else {
           core.reload(nextComments);
           core.show();
         }
-        core.speed = baseDanmkuSpeed * player$2.localConfig.danmakuSpeed;
+        core.speed = baseDanmkuSpeed * player$1.localConfig.danmakuSpeed;
       }
-      if (player$2.localConfig.showPbp) {
-        createProgressBarPower(player$2.media.duration, nextComments);
+      if (player$1.localConfig.showPbp) {
+        createProgressBarPower(player$1.media.duration, nextComments);
       }
     }
     requestAnimationFrame(run);
@@ -3769,7 +3782,7 @@ ${[...speedList].reverse().map(
   const adjustCommentCount = (comments2) => {
     let ret = comments2;
     ret = ret.filter((cmt) => {
-      const isFilterMatch = player$2.localConfig.danmakuFilter.some((filter) => {
+      const isFilterMatch = player$1.localConfig.danmakuFilter.some((filter) => {
         if (/^\/.*\/$/.test(filter)) {
           const re = new RegExp(filter.slice(1, -1));
           return re.test(cmt.text);
@@ -3780,10 +3793,10 @@ ${[...speedList].reverse().map(
       return !isFilterMatch;
     });
     ret = ret.filter((cmt) => {
-      const isDisabledSource = player$2.localConfig.danmakuSourceDisabledList.includes(cmt.user.source);
+      const isDisabledSource = player$1.localConfig.danmakuSourceDisabledList.includes(cmt.user.source);
       return !isDisabledSource;
     });
-    const mode = player$2.localConfig.danmakuMode;
+    const mode = player$1.localConfig.danmakuMode;
     if (!mode.includes("color")) {
       ret = ret.filter(
         (cmt) => cmt.style.color === "#ffffff"
@@ -3796,7 +3809,7 @@ ${[...speedList].reverse().map(
       ret = ret.filter((cmt) => cmt.mode !== "top");
     }
     const maxLength = Math.round(
-      3e3 / (24 * 60) * player$2.media.duration * player$2.localConfig.danmakuDensity
+      3e3 / (24 * 60) * player$1.media.duration * player$1.localConfig.danmakuDensity
     );
     if (ret.length > maxLength) {
       let ratio = ret.length / maxLength;
@@ -3810,9 +3823,9 @@ ${[...speedList].reverse().map(
     syncDiff = 0;
     state = 3 /* getComments */;
     start();
-    player$2.message.info(`\u756A\u5267\uFF1A${$animes.find(":selected").text()}`, 2e3);
-    player$2.message.info(`\u7AE0\u8282\uFF1A${$episodes.find(":selected").text()}`, 2e3);
-    player$2.message.info(`\u5DF2\u52A0\u8F7D ${comments.length} \u6761\u5F39\u5E55`, 2e3);
+    player$1.message.info(`\u756A\u5267\uFF1A${$animes.find(":selected").text()}`, 2e3);
+    player$1.message.info(`\u7AE0\u8282\uFF1A${$episodes.find(":selected").text()}`, 2e3);
+    player$1.message.info(`\u5DF2\u52A0\u8F7D ${comments.length} \u6761\u5F39\u5E55`, 2e3);
   };
   const searchAnime = async (name) => {
     state = 1 /* searched */;
@@ -3864,7 +3877,7 @@ ${[...speedList].reverse().map(
         return;
       }
     }
-    player$2.message.info("\u5F39\u5E55\u672A\u80FD\u81EA\u52A8\u5339\u914D\u6570\u636E\u6E90\uFF0C\u8BF7\u624B\u52A8\u641C\u7D22");
+    player$1.message.info("\u5F39\u5E55\u672A\u80FD\u81EA\u52A8\u5339\u914D\u6570\u636E\u6E90\uFF0C\u8BF7\u624B\u52A8\u641C\u7D22");
   };
   const initEvents = (name) => {
     $animeName.val(name);
@@ -3899,7 +3912,7 @@ ${[...speedList].reverse().map(
       storageEpisodeName(`${videoInfo.rawName}.${videoInfo.episode}`, episodeId);
       loadEpisode(episodeId);
     });
-    $danmakuSwitch.toggleClass("plyr__control--pressed", player$2.localConfig.showDanmaku).on("click", () => {
+    $danmakuSwitch.toggleClass("plyr__control--pressed", player$1.localConfig.showDanmaku).on("click", () => {
       switchDanmaku();
     });
     const resizeOb = new ResizeObserver(() => {
@@ -3911,35 +3924,35 @@ ${[...speedList].reverse().map(
       state = 1 /* searched */;
       autoStart();
     });
-    mutationOb.observe(player$2.media, { attributeFilter: ["src"] });
-    player$2.initInputEvent();
-    $showDanmaku.prop("checked", player$2.localConfig.showDanmaku).on("change", (e) => {
+    mutationOb.observe(player$1.media, { attributeFilter: ["src"] });
+    player$1.initInputEvent();
+    $showDanmaku.prop("checked", player$1.localConfig.showDanmaku).on("change", (e) => {
       switchDanmaku(e.target.checked);
     });
-    $showPbp.prop("checked", player$2.localConfig.showPbp).on("change", (e) => {
+    $showPbp.prop("checked", player$1.localConfig.showPbp).on("change", (e) => {
       const chekced = e.target.checked;
       $pbp.toggle(chekced);
-      player$2.configSaveToLocal("showPbp", chekced);
+      player$1.configSaveToLocal("showPbp", chekced);
       if (chekced)
         autoStart();
     });
-    $pbp.toggle(player$2.localConfig.showPbp || false);
+    $pbp.toggle(player$1.localConfig.showPbp || false);
     const $pbpPlayed = $pbp.find("#k-player-pbp-played-path");
-    player$2.on("timeupdate", () => {
+    player$1.on("timeupdate", () => {
       $pbpPlayed.attr(
         "width",
-        (player$2.currentTime / player$2.plyr.duration || 0) * 100 + "%"
+        (player$1.currentTime / player$1.plyr.duration || 0) * 100 + "%"
       );
     });
-    $danmakuMerge.prop("checked", player$2.localConfig.danmakuMerge).on("change", (e) => {
+    $danmakuMerge.prop("checked", player$1.localConfig.danmakuMerge).on("change", (e) => {
       const chekced = e.target.checked;
-      player$2.configSaveToLocal("danmakuMerge", chekced);
+      player$1.configSaveToLocal("danmakuMerge", chekced);
       if (core)
         core.merge = chekced;
     });
-    $danmakuOverlap.prop("checked", player$2.localConfig.danmakuOverlap).on("change", (e) => {
+    $danmakuOverlap.prop("checked", player$1.localConfig.danmakuOverlap).on("change", (e) => {
       const chekced = e.target.checked;
-      player$2.configSaveToLocal("danmakuOverlap", chekced);
+      player$1.configSaveToLocal("danmakuOverlap", chekced);
       if (core)
         core.overlap = chekced;
     });
@@ -3949,7 +3962,7 @@ ${[...speedList].reverse().map(
       onInput: (v) => {
         $danmakuContainer.css({ opacity: v });
       },
-      player: player$2
+      player: player$1
     });
     addRangeListener({
       $dom: $danmakuFontSize,
@@ -3957,7 +3970,7 @@ ${[...speedList].reverse().map(
       onInput: (v) => {
         $danmakuContainer.css("--danmaku-font-size-scale", v);
       },
-      player: player$2
+      player: player$1
     });
     addRangeListener({
       $dom: $danmakuSpeed,
@@ -3966,13 +3979,13 @@ ${[...speedList].reverse().map(
         if (core)
           core.speed = baseDanmkuSpeed * v;
       },
-      player: player$2
+      player: player$1
     });
     addRangeListener({
       $dom: $danmakuDensity,
       name: "danmakuDensity",
       onChange: refreshDanmaku,
-      player: player$2
+      player: player$1
     });
     addRangeListener({
       $dom: $danmakuScrollAreaPercent,
@@ -3981,25 +3994,25 @@ ${[...speedList].reverse().map(
         if (core)
           core.scrollAreaPercent = val;
       },
-      player: player$2
+      player: player$1
     });
-    setCheckboxGroupValue($danmakuMode, player$2.localConfig.danmakuMode);
+    setCheckboxGroupValue($danmakuMode, player$1.localConfig.danmakuMode);
     $danmakuMode.on("change", () => {
       const modes = getCheckboxGroupValue($danmakuMode);
-      player$2.configSaveToLocal("danmakuMode", modes);
+      player$1.configSaveToLocal("danmakuMode", modes);
       if (core) {
         refreshDanmaku();
       }
     });
-    createFilter(player$2, refreshDanmaku);
-    createDanmakuList(player$2, () => comments, refreshDanmaku);
+    createFilter(player$1, refreshDanmaku);
+    createDanmakuList(player$1, () => comments, refreshDanmaku);
   };
   function switchDanmaku(bool) {
-    bool != null ? bool : bool = !player$2.localConfig.showDanmaku;
-    player$2.configSaveToLocal("showDanmaku", bool);
+    bool != null ? bool : bool = !player$1.localConfig.showDanmaku;
+    player$1.configSaveToLocal("showDanmaku", bool);
     $danmakuSwitch.toggleClass("plyr__control--pressed", bool);
     $showDanmaku.prop("checked", bool);
-    player$2.message.info(`\u5F39\u5E55${bool ? "\u5F00\u542F" : "\u5173\u95ED"}`);
+    player$1.message.info(`\u5F39\u5E55${bool ? "\u5F00\u542F" : "\u5173\u95ED"}`);
     if (bool) {
       autoStart();
     } else {
@@ -4083,7 +4096,7 @@ ${[...speedList].reverse().map(
     $episodes.val("");
   };
   function autoStart() {
-    if (!(player$2.localConfig.showDanmaku || player$2.localConfig.showPbp))
+    if (!(player$1.localConfig.showDanmaku || player$1.localConfig.showPbp))
       return;
     switch (state) {
       case 0 /* unSearched */:
@@ -4101,13 +4114,13 @@ ${[...speedList].reverse().map(
     }
   }
   async function setup(_player) {
-    player$2 = _player;
+    player$1 = _player;
     const info = await runtime.getCurrentVideoNameAndEpisode();
     if (!info)
       return;
     videoInfo = info;
-    player$2.$videoWrapper.append($danmakuContainer);
-    $danmaku.insertBefore(player$2.$searchActions);
+    player$1.$videoWrapper.append($danmakuContainer);
+    $danmaku.insertBefore(player$1.$searchActions);
     $danmaku.before($danmakuSwitch);
     let defaultSearchName = storageAnimeName(videoInfo.rawName) || videoInfo.name;
     initEvents(
@@ -4176,21 +4189,21 @@ ${[...speedList].reverse().map(
     }
   }
 
-  let player$1;
-  const parser$1 = {
+  let player;
+  const parser$2 = {
     "danmu.yhdmjx.com": async () => {
       const video = await queryDom("video");
       video.src = "";
-      player$1 = new KPlayer("#player", { eventToParentWindow: true });
-      player$1.src = await execInUnsafeWindow(
+      player = new KPlayer("#player", { eventToParentWindow: true });
+      player.src = await execInUnsafeWindow(
         () => window.v_decrypt(window.config.url, window._token_key, window.key_token)
       );
     },
     "pro.ascepan.top": async () => {
       const video = await queryDom("video");
       video.src = "";
-      player$1 = new KPlayer("#player", { eventToParentWindow: true });
-      player$1.src = await execInUnsafeWindow(() => window.config.url);
+      player = new KPlayer("#player", { eventToParentWindow: true });
+      player.src = await execInUnsafeWindow(() => window.config.url);
     },
     "sp-flv.com": async () => {
       const video = await queryDom("video");
@@ -4200,17 +4213,17 @@ ${[...speedList].reverse().map(
         url = await execInUnsafeWindow(() => window.video_url);
         if (url) {
           video.src = "";
-          player$1 = new KPlayer("#mplayer-media-wrapper", {
+          player = new KPlayer("#mplayer-media-wrapper", {
             eventToParentWindow: true
           });
-          player$1.src = url;
+          player.src = url;
         }
       } else {
         video.src = "";
-        player$1 = new KPlayer("#mplayer-media-wrapper", {
+        player = new KPlayer("#mplayer-media-wrapper", {
           eventToParentWindow: true
         });
-        player$1.src = url;
+        player.src = url;
       }
       console.log("\u{1F680} ~ file: parser.ts:29 ~ 'vip.sp-flv.com': ~ url:", url);
     },
@@ -4225,8 +4238,8 @@ ${[...speedList].reverse().map(
       }
       $("#artplayer").remove();
       $("body").append('<div id="k-player-container"/>');
-      player$1 = new KPlayer("#k-player-container", { eventToParentWindow: true });
-      player$1.src = url;
+      player = new KPlayer("#k-player-container", { eventToParentWindow: true });
+      player.src = url;
     },
     "agefans-02": async () => {
       let url = "";
@@ -4240,8 +4253,8 @@ ${[...speedList].reverse().map(
       await execInUnsafeWindow(() => window.art.destroy(false));
       $("#loading").remove();
       $("body").append('<div id="k-player-container"/>');
-      player$1 = new KPlayer("#k-player-container", { eventToParentWindow: true });
-      player$1.src = url;
+      player = new KPlayer("#k-player-container", { eventToParentWindow: true });
+      player.src = url;
     }
   };
 
@@ -4260,32 +4273,32 @@ ${[...speedList].reverse().map(
       {
         test: () => window.location.href.includes("danmu.yhdmjx.com/m3u8.php"),
         runInIframe: true,
-        run: parser$1["danmu.yhdmjx.com"]
+        run: parser$2["danmu.yhdmjx.com"]
       },
       {
         test: () => window.location.href.includes("pro.ascepan.top/player"),
         runInIframe: true,
-        run: parser$1["pro.ascepan.top"],
+        run: parser$2["pro.ascepan.top"],
         setup: () => $("body").addClass("pro-ascepan-top")
       },
       {
         test: () => !!window.location.href.match(/sp-flv\.com.*url=/),
         runInIframe: true,
-        run: parser$1["sp-flv.com"]
+        run: parser$2["sp-flv.com"]
       },
       {
         test: () => !!window.location.href.match(
           /((43.240.74.134)|(43.240.156.118)).*vip.*url=/
         ),
         runInIframe: true,
-        run: parser$1["agefans-01"]
+        run: parser$2["agefans-01"]
       },
       {
         test: () => !!window.location.href.match(
           /((43.240.74.134)|(43.240.156.118)).*m3u8.*url=/
         ),
         runInIframe: true,
-        run: parser$1["agefans-02"]
+        run: parser$2["agefans-02"]
       }
     ],
     search: {
@@ -4419,7 +4432,12 @@ ${[...speedList].reverse().map(
     }
     function runInTop() {
       window.addEventListener("keydown", (e) => {
+        var _a;
         if (isFocusInputElement())
+          return;
+        if ((_a = window.getSelection()) == null ? void 0 : _a.toString())
+          return;
+        if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey)
           return;
         $(iframeSelector)[0].blur();
         $(iframeSelector)[0].focus();
@@ -4533,36 +4551,36 @@ ${[...speedList].reverse().map(
     return { runInTop, runInIframe, createHistrory };
   }
 
-  function getActive$3() {
+  function getActive$4() {
     return $(".van-grid-item.van-grid-item--active");
   }
-  function switchPart$6(next) {
+  function switchPart$5(next) {
     var _a;
-    const $active = getActive$3();
+    const $active = getActive$4();
     let $nextActive = $active[next ? "next" : "prev"]();
     (_a = $nextActive[0]) == null ? void 0 : _a.click();
     return null;
   }
-  const iframePlayer$3 = defineIframePlayer({
+  const iframePlayer$4 = defineIframePlayer({
     iframeSelector: "#playerIFrame iframe",
-    getActive: getActive$3,
+    getActive: getActive$4,
     setActive: (href) => {
     },
     search: {
       getSearchName: () => $(".detail-box h2").text(),
-      getEpisode: () => getActive$3().text()
+      getEpisode: () => getActive$4().text()
     },
     getEpisodeList: () => $(".video-source-box .van-grid-item"),
-    switchEpisode: (next) => switchPart$6(next)
+    switchEpisode: (next) => switchPart$5(next)
   });
   async function mobilePlayModule() {
-    await wait(() => getActive$3().length > 0);
-    iframePlayer$3.runInTop();
+    await wait(() => getActive$4().length > 0);
+    iframePlayer$4.runInTop();
   }
 
   function calcSortDirection() {
     var _a, _b, _c;
-    const $active = getActive$2();
+    const $active = getActive$3();
     const $prev = $active.prev();
     const $next = $active.next();
     const prevText = (_a = $prev.text().match(/\d+/)) == null ? void 0 : _a[0];
@@ -4619,7 +4637,7 @@ ${[...speedList].reverse().map(
     }
   }
   function activeScrollIntoView() {
-    const $active = getActive$2();
+    const $active = getActive$3();
     function getScrollParent() {
       let parent = $active.parent()[0];
       while (parent && parent.tagName !== "BODY") {
@@ -4654,12 +4672,12 @@ ${[...speedList].reverse().map(
       activeScrollIntoView();
     }).prependTo(".playlist-source-tab .float-end");
   }
-  function getActive$2() {
+  function getActive$3() {
     return $(".video_detail_episode .video_detail_spisode_playing").parent();
   }
-  function switchPart$5(next) {
+  function switchPart$4(next) {
     var _a;
-    const $active = getActive$2();
+    const $active = getActive$3();
     const sortDirection = getSortDirection();
     let $nextActive;
     if (sortDirection === "asc")
@@ -4668,9 +4686,9 @@ ${[...speedList].reverse().map(
       $nextActive = $active[next ? "prev" : "next"]();
     return (_a = $nextActive.find("a")[0]) == null ? void 0 : _a.href;
   }
-  const iframePlayer$2 = defineIframePlayer({
+  const iframePlayer$3 = defineIframePlayer({
     iframeSelector: ".video_play_wrapper iframe",
-    getActive: getActive$2,
+    getActive: getActive$3,
     setActive: (href) => {
       $(".video_detail_episode a").each((_, el) => {
         const $el = $(el);
@@ -4682,24 +4700,24 @@ ${[...speedList].reverse().map(
     },
     search: {
       getSearchName: () => $(".video_detail_wrapper .cata_video_item .card-title").text(),
-      getEpisode: () => getActive$2().text()
+      getEpisode: () => getActive$3().text()
     },
     getEpisodeList: () => $(".video_detail_episode a"),
-    switchEpisode: (next) => switchPart$5(next)
+    switchEpisode: (next) => switchPart$4(next)
   });
-  function playModule$3() {
+  function playModule$1() {
     $(".video_detail_episode a").each((_, el) => {
       if (el.href)
         el.href = el.href.replace("http://", "https://");
     });
-    iframePlayer$2.runInTop();
+    iframePlayer$3.runInTop();
     rememberSortDirection();
     restoreSortDirection();
     insertFocusBtn();
     activeScrollIntoView();
   }
   function playModuleInIframe() {
-    iframePlayer$2.runInIframe();
+    iframePlayer$3.runInIframe();
   }
 
   runtime.register({
@@ -4711,59 +4729,13 @@ ${[...speedList].reverse().map(
           $("body").addClass("agefans-wrapper");
         }
       },
-      { test: "/play", run: playModule$3 },
+      { test: "/play", run: playModule$1 },
       { test: "/play", run: playModuleInIframe, runInIframe: true },
       { test: () => location.hash.includes("/play/"), run: mobilePlayModule }
     ],
     search: {
       name: "agefans",
       search: (name) => `https://www.agefans.com/search?query=${name}`
-    }
-  });
-
-  let player;
-  function switchPart$4(next) {
-    player.on("prev", () => {
-      var _a;
-      (_a = $(".meida-content-main-window-right-series-list-volume-active")[next ? "next" : "prev"]().prev().find("a")[0]) == null ? void 0 : _a.click();
-    });
-  }
-  function injectEvent() {
-    player.on("prev", () => switchPart$4(false));
-    player.on("next", () => switchPart$4(true));
-  }
-  function replacePlayer$1(video) {
-    const fn = () => {
-      if (!video.src || video.src === location.href)
-        return;
-      console.log(video);
-      player = new KPlayer(document.querySelector(".bangumi-player-box"), {
-        video
-      });
-      injectEvent();
-    };
-    const ob = new MutationObserver(fn);
-    ob.observe(video, { attributes: true, attributeFilter: ["src"] });
-    fn();
-  }
-  function resizeWrapper() {
-    const wrapper = $(".bangumi-player.watch-content-player");
-    const w = wrapper.width();
-    wrapper.height(w / 16 * 9);
-  }
-  async function playModule$2() {
-    const video = await queryDom('video:not([src=""])');
-    resizeWrapper();
-    window.addEventListener("resize", resizeWrapper);
-    replacePlayer$1(video);
-  }
-
-  runtime.register({
-    domains: ["bangumi.online"],
-    opts: [{ test: "/watch", run: playModule$2 }],
-    search: {
-      getSearchName: () => $(".watch-content-info-text-title-name").text(),
-      getEpisode: () => $(".watch-right-series-block-volumes-active").text()
     }
   });
 
@@ -4860,17 +4832,17 @@ ${[...speedList].reverse().map(
     setFavorite({ id, current: { name, url } });
   }
 
-  function getActive$1() {
+  function getActive$2() {
     return $(".active-play");
   }
   function switchPart$3(next) {
     return $(".active-play").parent()[next ? "next" : "prev"]().find("a")[0].href;
   }
-  function runInTop$1() {
-    iframePlayer$1.runInTop();
+  function runInTop$2() {
+    iframePlayer$2.runInTop();
     renderFavoriteBtn();
   }
-  const iframePlayer$1 = defineIframePlayer({
+  const iframePlayer$2 = defineIframePlayer({
     iframeSelector: "#playleft iframe",
     getActive: () => $(".active-play"),
     setActive: (href) => {
@@ -4884,7 +4856,7 @@ ${[...speedList].reverse().map(
     },
     search: {
       getSearchName: () => $("#detailname a:nth-child(1)").text(),
-      getEpisode: () => getActive$1().text()
+      getEpisode: () => getActive$2().text()
     },
     getEpisodeList: () => $(".movurl a"),
     switchEpisode: (next) => switchPart$3(next),
@@ -4910,10 +4882,10 @@ ${[...speedList].reverse().map(
   runtime.register({
     domains: [".ntdm9."],
     opts: [
-      { test: "*", run: iframePlayer$1.createHistrory },
+      { test: "*", run: iframePlayer$2.createHistrory },
       { test: "/", run: renderFavoriteList },
-      { test: "/play", run: runInTop$1 },
-      { test: "/play", run: iframePlayer$1.runInIframe, runInIframe: true }
+      { test: "/play", run: runInTop$2 },
+      { test: "/play", run: iframePlayer$2.runInIframe, runInIframe: true }
     ],
     search: {
       name: "NT\u52A8\u6F2B",
@@ -5030,7 +5002,7 @@ ${[...speedList].reverse().map(
     const id = location.pathname.match(new RegExp("\\/(?<id>\\d+)\\/play")).groups.id;
     return { id, url, animeName, episodeName };
   }
-  async function playModule$1() {
+  async function playModule() {
     var _a;
     $("#bkcl").remove();
     const info = getPlayInfo();
@@ -5120,7 +5092,7 @@ ${[...speedList].reverse().map(
         setup: () => $("body").addClass("bimi-wrapper"),
         run: histroyModule
       },
-      { test: ["/play/"], run: playModule$1 },
+      { test: ["/play/"], run: playModule },
       { test: [/.*/], runInIframe: true, run: playInIframeModule }
     ],
     search: {
@@ -5153,97 +5125,67 @@ ${[...speedList].reverse().map(
     }
   });
 
-  function switchPart$1(next) {
-    if (next) {
-      execInUnsafeWindow(() => {
-        if (window.MacPlayer.PlayLinkNext)
-          window.location.href = window.MacPlayer.PlayLinkNext;
-      });
-    } else {
-      execInUnsafeWindow(() => {
-        if (window.MacPlayer.PlayLinkPre)
-          window.location.href = window.MacPlayer.PlayLinkPre;
-      });
-    }
+  function getActive$1() {
+    return $(".module-play-list .module-play-list-link.active");
   }
-  async function playModule() {
-    const iframe = await queryDom(
-      `#playleft iframe[src*='url=']`
-    );
-    iframe.allow = "autoplay; fullscreen; picture-in-picture;";
-    window.addEventListener("message", (e) => {
-      var _a, _b, _c;
-      if (!((_a = e.data) == null ? void 0 : _a.key))
-        return;
-      const key = e.data.key;
-      if (key === "prev")
-        switchPart$1(false);
-      if (key === "next")
-        switchPart$1(true);
-      if (key === "enterwidescreen") {
-        $("body").css("overflow", "hidden");
-        $("body").addClass("widescreen");
-        $(iframe).css({
-          position: "fixed",
-          left: 0,
-          right: 0,
-          bottom: 0,
-          top: 0,
-          zIndex: 99999
-        });
-      }
-      if (key === "exitwidescreen") {
-        $("body").css("overflow", "");
-        $("body").removeClass("widescreen");
-        $(iframe).removeAttr("style");
-      }
-      if (key === "getSearchName") {
-        (_b = iframe.contentWindow) == null ? void 0 : _b.postMessage(
-          { key: "getSearchName", name: $(".module-info-heading h1 a").text() },
-          "*"
-        );
-      }
-      if (key === "getEpisode") {
-        (_c = iframe.contentWindow) == null ? void 0 : _c.postMessage(
-          {
-            key: "getEpisode",
-            name: $(".module-play-list-link.active > span").text()
-          },
-          "*"
-        );
-      }
-      if (key === "openLink") {
-        window.open(e.data.url);
-      }
+  function switchPart$1(next) {
+    var _a;
+    return (_a = getActive$1()[next ? "next" : "prev"]().get(0)) == null ? void 0 : _a.href;
+  }
+  function runInTop$1() {
+    $("body").addClass("mutefun");
+    iframePlayer$1.runInTop();
+  }
+  const iframePlayer$1 = defineIframePlayer({
+    iframeSelector: "#playleft iframe",
+    getActive: getActive$1,
+    setActive: (href) => {
+      $(".module-play-list-link").each((_, el) => {
+        if (el.href === href) {
+          el.classList.add("active");
+          $(".playon").insertAfter($(el).find("span"));
+        } else {
+          el.classList.remove("active");
+        }
+      });
+    },
+    search: {
+      getSearchName: () => $(".module-info-heading h1").text(),
+      getEpisode: () => getActive$1().text()
+    },
+    getEpisodeList: () => $(".module-play-list-link"),
+    switchEpisode: (next) => switchPart$1(next)
+  });
+  async function parser$1() {
+    const video = await queryDom("video");
+    await wait(() => !!video.currentSrc);
+    let url = video.currentSrc;
+    url = await execInUnsafeWindow(() => window.config.url);
+    video.src = "";
+    const player = new KPlayer("#player", {
+      eventToParentWindow: true
     });
-    iframe.focus();
-    window.addEventListener("keydown", (e) => {
-      if (document.activeElement !== document.body)
-        return;
-      iframe.focus();
-      if (e.key === " ")
-        e.preventDefault();
-    });
-    $("#buffer").hide();
+    player.src = url;
+    $("#ADplayer,#ADtip").remove();
   }
 
-  var css$1 = ".acgnya-wrapper.widescreen * {\n  visibility: hidden;\n}\n.acgnya-wrapper.widescreen iframe {\n  visibility: initial;\n}";
+  var css$1 = ".mutefun.widescreen .header,\n.mutefun.widescreen .module-player-side,\n.mutefun.widescreen .fixedGroup {\n  visibility: hidden;\n  pointer-events: none;\n}";
   n(css$1,{});
 
   runtime.register({
-    domains: ["acgnya"],
+    domains: [".mutedm.", ".mutean."],
     opts: [
+      { test: "/vodplay", run: runInTop$1 },
+      { test: "/vodplay", run: iframePlayer$1.runInIframe, runInIframe: true },
       {
-        test: ["/vodplay/"],
-        setup: () => {
-          $("body").addClass("acgnya-wrapper");
-        },
-        run: playModule
+        test: ["/addons/dp/player/dp.php"],
+        run: parser$1,
+        runInIframe: true
       }
     ],
     search: {
-      name: "acgnya",
-      search: (name) => `https://www.acgnya.com/vodsearch/-------------/?wd=${name}`,
+      name: "MuteFun",
+      search: (name) => `https://www.mutedm.com/vodsearch/${name}-------------.html`,
       getSearchName: () => {
         return new Promise((resolve) => {
           const fn = (e) => {
@@ -5272,66 +5214,64 @@ ${[...speedList].reverse().map(
   });
 
   function getActive() {
-    return $(".module-play-list .module-play-list-link.active");
+    return $(".anthology-list-play li.on > a");
   }
   function switchPart(next) {
     var _a;
-    return (_a = getActive()[next ? "next" : "prev"]().get(0)) == null ? void 0 : _a.href;
+    return (_a = getActive().parent()[next ? "next" : "prev"]().find("a")[0]) == null ? void 0 : _a.href;
   }
   function runInTop() {
-    $("body").addClass("mutefun");
+    $("body").addClass("cycanime");
     iframePlayer.runInTop();
   }
   const iframePlayer = defineIframePlayer({
     iframeSelector: "#playleft iframe",
     getActive,
     setActive: (href) => {
-      $(".module-play-list-link").each((_, el) => {
+      $(".anthology-list-play li a").each((_, el) => {
         if (el.href === href) {
-          el.classList.add("active");
-          $(".playon").insertAfter($(el).find("span"));
+          el.parentElement.classList.add("ecnav-dt", "on");
+          $(".play-on").insertAfter($(el).find("span"));
         } else {
-          el.classList.remove("active");
+          el.parentElement.classList.remove("ecnav-dt", "on");
         }
       });
     },
     search: {
-      getSearchName: () => $(".module-info-heading h1").text(),
+      getSearchName: () => $(".player-title-link").text(),
       getEpisode: () => getActive().text()
     },
-    getEpisodeList: () => $(".module-play-list-link"),
+    getEpisodeList: () => $(".anthology-list-play li a"),
     switchEpisode: (next) => switchPart(next)
   });
   async function parser() {
     const video = await queryDom("video");
     await wait(() => !!video.currentSrc);
     let url = video.currentSrc;
-    url = await execInUnsafeWindow(() => window.config.url);
     video.src = "";
-    const player = new KPlayer("#player", {
+    const player = new KPlayer("#mui-player", {
       eventToParentWindow: true
     });
     player.src = url;
-    $("#ADplayer,#ADtip").remove();
   }
 
-  var css = ".mutefun.widescreen .header,\n.mutefun.widescreen .module-player-side,\n.mutefun.widescreen .fixedGroup {\n  visibility: hidden;\n  pointer-events: none;\n}";
+  var css = ".cycanime.widescreen .header_nav0,\n.cycanime.widescreen .top-back.hoa,\n.cycanime.widescreen .fixedGroup {\n  visibility: hidden;\n  pointer-events: none;\n}";
   n(css,{});
 
   runtime.register({
-    domains: [".mutedm.", ".mutean."],
+    domains: [".cycanime."],
     opts: [
-      { test: "/vodplay", run: runInTop },
-      { test: "/vodplay", run: iframePlayer.runInIframe, runInIframe: true },
+      { test: "/watch", run: runInTop },
+      { test: "/watch", run: iframePlayer.runInIframe, runInIframe: true },
       {
-        test: ["/addons/dp/player/dp.php"],
+        test: () => location.hostname.includes("player.cycanime"),
         run: parser,
         runInIframe: true
       }
     ],
     search: {
-      name: "MuteFun",
-      search: (name) => `https://www.mutedm.com/vodsearch/${name}-------------.html`,
+      name: "\u6B21\u5143\u57CE",
+      search: (name) => `https://www.cycanime.com/search.html?wd=${name}`,
       getSearchName: () => {
         return new Promise((resolve) => {
           const fn = (e) => {
