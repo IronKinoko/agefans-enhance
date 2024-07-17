@@ -1,6 +1,14 @@
 # agefans enhance
 
-增强 agefans 等网站播放功能，实现自动换集、画中画、历史记录、断点续播、弹幕等功能
+增强网站播放功能，实现自动换集、画中画、历史记录、断点续播、弹幕等功能
+
+## 网站适配列表
+
+- [agefans](http://www.age.tv)
+- [NT 动漫](http://www.ntdm9.com)
+- [bimiacg](https://www.bimiacg10.net)
+- [mutean](https://www.mutean.com)
+- [次元城](https://www.cycanime.com)
 
 **请使用 <kbd>?</kbd> 键查看脚本信息与快捷键**
 
@@ -19,7 +27,6 @@
 - 调整播放器外边框，适配视频比例
 - 记录播放位置，自动续播
 - 可以按 <kbd>?</kbd> 键调出脚本信息窗口，查看**视频信息**与**快捷键**
-- 按 <kbd>esc</kbd> 键可以更快的退出全屏/宽屏/弹窗
 - 多站点适配，可搜索相同视频资源/种子
 
 ## 安装
@@ -44,45 +51,6 @@
 ## 预览
 
 ![预览图片](https://raw.githubusercontent.com/IronKinoko/asset/master/agefans-enhance/preview.jpg)
-
-## 待做事项
-
-- 暂无，欢迎提交意见（[issue](https://github.com/IronKinoko/agefans-enhance/issues)）
-
-## 网站适配列表
-
-\* 标记为推荐的网站
-
-- [\*agefans](http://www.age.tv)
-- [\*NT 动漫](http://www.ntdm9.com)
-- [bimiacg](https://www.bimiacg10.net)
-- [mutean](https://www.mutean.com)
-
-## 注意事项
-
-### agefans 防止打开`devtools`时自动跳转主页
-
-为实现这个功能，会替换掉用户自己的登录状态。当然你可以之后再重新登录自己的账号
-
-在首页打开控制台，输入下面这段代码
-
-```javascript
-document.cookie = 'username=admin; path=/;max-age=9000000'
-```
-
-## 常见问题
-
-### 1. 为什么我点击视频链接是直接打开了新页面，而不是下载？
-
-因为`agefans`提供的链接都是第三方资源，浏览器的安全策略是禁止直接下载的。
-
-所以请用右键**链接另存为**下载资源。
-
-### 2. 为什么部分视频资源加载失败了？
-
-目前这种情况大多数是因为`agefans`本身提供的资源就有问题。可以尝试暂时关闭脚本，测试链接是否正常。
-
-如果关闭脚本后能正常观看，欢迎提交 issue 给我。（按 <kbd>?</kbd> 键选择提交 issue）
 
 ## 特别鸣谢
 
