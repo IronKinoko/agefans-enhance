@@ -20,7 +20,8 @@
 // @include      https://www.mutedm.com/*
 // @include      https://www.mutean.com/*
 // @include      https://www.cycanime.com/*
-// @include      https://player.cycanime.com/*
+// @include      https://dick.xfani.com/*
+// @include      https://player.moedot.net/*
 // @run-at       document-end
 // @require      https://registry.npmmirror.com/jquery/3.6.0/files/dist/jquery.min.js
 // @require      https://registry.npmmirror.com/plyr/3.6.4/files/dist/plyr.min.js
