@@ -2,7 +2,7 @@
 // @name         agefans Enhance - Dev
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.41.1
+// @version      1.42.0
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -20,7 +20,8 @@
 // @include      https://www.mutedm.com/*
 // @include      https://www.mutean.com/*
 // @include      https://www.cycanime.com/*
-// @include      https://player.cycanime.com/*
+// @include      https://dick.xfani.com/*
+// @include      https://player.moedot.net/*
 // @run-at       document-end
 // @require      https://registry.npmmirror.com/jquery/3.6.0/files/dist/jquery.min.js
 // @require      https://registry.npmmirror.com/plyr/3.6.4/files/dist/plyr.min.js
@@ -33,7 +34,7 @@
 // @license      MIT
 // @downloadURL  https://github.com/IronKinoko/agefans-enhance/raw/gh-pages/index.user.js
 // @updateURL    https://github.com/IronKinoko/agefans-enhance/raw/gh-pages/index.user.js
-// @require      file:///Users/kinoko/Developer/Github/agefans/dist/index.user.js
+// @require      file://C:\GitHub\agefans-enhance\dist\index.user.js
 // ==/UserScript==
 
 /**
