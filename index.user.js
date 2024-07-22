@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.43.0
+// @version      1.43.1
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -20,6 +20,7 @@
 // @include      https://www.mutedm.com/*
 // @include      https://www.mutean.com/*
 // @include      https://www.cycanime.com/*
+// @include      https://player.cycanime.com/*
 // @include      https://dick.xfani.com/*
 // @include      https://player.moedot.net/*
 // @run-at       document-end
@@ -2037,7 +2038,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.43.0"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.43.1"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2158,7 +2159,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.43.0"}
+\u811A\u672C\u7248\u672C: ${"1.43.1"}
 `;
 
   const GlobalKey = "show-help-info";
