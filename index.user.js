@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.43.1
+// @version      1.43.2
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -24,10 +24,10 @@
 // @include      https://dick.xfani.com/*
 // @include      https://player.moedot.net/*
 // @run-at       document-end
-// @require      https://registry.npmmirror.com/jquery/3.6.0/files/dist/jquery.min.js
-// @require      https://registry.npmmirror.com/plyr/3.6.4/files/dist/plyr.min.js
-// @require      https://registry.npmmirror.com/hls.js/1.0.9/files/dist/hls.min.js
-// @require      https://registry.npmmirror.com/@ironkinoko/danmaku/1.4.1/files/dist/danmaku.umd.js
+// @require      https://unpkg.com/jquery@3.6.0/dist/jquery.min.js
+// @require      https://unpkg.com/plyr@3.6.4/dist/plyr.min.js
+// @require      https://unpkg.com/hls.js@1.0.9/dist/hls.min.js
+// @require      https://unpkg.com/@ironkinoko/danmaku@1.4.1/dist/danmaku.umd.js
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
@@ -2038,7 +2038,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.43.1"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.43.2"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2159,7 +2159,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.43.1"}
+\u811A\u672C\u7248\u672C: ${"1.43.2"}
 `;
 
   const GlobalKey = "show-help-info";
