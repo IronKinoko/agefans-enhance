@@ -169,12 +169,15 @@ Shortcuts.registerCommand(Commands.toggleFullscreen, function () {
 })
 
 Shortcuts.registerCommand(Commands.increaseVolume, function () {
-  this.plyr.increaseVolume(0.1)
+  this.plyr.increaseVolume(0.05)
+  this.message.info(`音量${Math.round(this.plyr.volume * 100)}%`)
 })
 Shortcuts.registerCommand(Commands.decreaseVolume, function () {
-  this.plyr.decreaseVolume(0.1)
+  this.plyr.decreaseVolume(0.05)
+  this.message.info(`音量${Math.round(this.plyr.volume * 100)}%`)
 })
 
 Shortcuts.registerCommand(Commands.toggleMute, function () {
   this.plyr.muted = !this.plyr.muted
+  this.message.info(this.plyr.muted ? '静音' : '取消静音')
 })
