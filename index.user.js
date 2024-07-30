@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.43.2
+// @version      1.43.3
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -11,7 +11,7 @@
 // @include      https://www.agedm.*
 // @include      https://m.agedm.*
 // @include      http*://www.ntdm9.*
-// @include      http*://www.bimiacg1*.net*
+// @include      http*://www.bimiacg*.net*
 // @include      https://pro.ascepan.top/*
 // @include      https://danmu.yhdmjx.com/*
 // @include      https://*.sp-flv.com*
@@ -1436,10 +1436,14 @@
 
   class Message {
     constructor(selector) {
+      this.MaxLength = 5;
       this.$message = $('<div id="k-player-message">');
       this.$message.appendTo($(selector));
     }
     info(message, ms = 1500) {
+      if (this.$message.children().length > this.MaxLength) {
+        this.$message.children().first().remove();
+      }
       return new Promise((resolve) => {
         $(`<div class="k-player-message-item"></div>`).append(message).hide().appendTo(this.$message).show(150).delay(ms).hide(150, function() {
           $(this).remove();
@@ -2038,7 +2042,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.43.2"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.43.3"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2159,7 +2163,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.43.2"}
+\u811A\u672C\u7248\u672C: ${"1.43.3"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -2348,13 +2352,16 @@ userAgent: ${navigator.userAgent}
     this.plyr.fullscreen.toggle();
   });
   Shortcuts.registerCommand(Commands$1.increaseVolume, function() {
-    this.plyr.increaseVolume(0.1);
+    this.plyr.increaseVolume(0.05);
+    this.message.info(`\u97F3\u91CF${Math.round(this.plyr.volume * 100)}%`);
   });
   Shortcuts.registerCommand(Commands$1.decreaseVolume, function() {
-    this.plyr.decreaseVolume(0.1);
+    this.plyr.decreaseVolume(0.05);
+    this.message.info(`\u97F3\u91CF${Math.round(this.plyr.volume * 100)}%`);
   });
   Shortcuts.registerCommand(Commands$1.toggleMute, function() {
     this.plyr.muted = !this.plyr.muted;
+    this.message.info(this.plyr.muted ? "\u9759\u97F3" : "\u53D6\u6D88\u9759\u97F3");
   });
 
   const icons = `
