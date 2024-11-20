@@ -2,7 +2,7 @@
 // @name         agefans Enhance - Dev
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.43.2
+// @version      1.43.3
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -19,7 +19,9 @@
 // @include      https://*43.240.156.118*
 // @include      https://www.mutedm.com/*
 // @include      https://www.mutean.com/*
+// @include      https://www.mute01.com/*
 // @include      https://www.cycanime.com/*
+// @include      https://www.cyc-anime.net/*
 // @include      https://player.cycanime.com/*
 // @include      https://dick.xfani.com/*
 // @include      https://player.moedot.net/*

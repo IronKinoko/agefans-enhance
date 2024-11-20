@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.43.3
+// @version      1.43.4
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -19,7 +19,9 @@
 // @include      https://*43.240.156.118*
 // @include      https://www.mutedm.com/*
 // @include      https://www.mutean.com/*
+// @include      https://www.mute01.com/*
 // @include      https://www.cycanime.com/*
+// @include      https://www.cyc-anime.net/*
 // @include      https://player.cycanime.com/*
 // @include      https://dick.xfani.com/*
 // @include      https://player.moedot.net/*
@@ -2042,7 +2044,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.43.3"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.43.4"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2163,7 +2165,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.43.3"}
+\u811A\u672C\u7248\u672C: ${"1.43.4"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -5182,7 +5184,7 @@ ${[...speedList].reverse().map(
   n(css$2,{});
 
   runtime.register({
-    domains: [".mutedm.", ".mutean."],
+    domains: [".mutedm.", ".mutean.", ".mute01."],
     opts: [
       { test: "/vodplay", run: runInTop$2 },
       { test: "/vodplay", run: iframePlayer$2.runInIframe, runInIframe: true },
@@ -5194,7 +5196,7 @@ ${[...speedList].reverse().map(
     ],
     search: {
       name: "MuteFun",
-      search: (name) => `https://www.mutedm.com/vodsearch/${name}-------------.html`,
+      search: (name) => `https://www.mutean.com/vodsearch/${name}-------------.html`,
       getSearchName: () => {
         return new Promise((resolve) => {
           const fn = (e) => {
@@ -5268,7 +5270,7 @@ ${[...speedList].reverse().map(
   n(css$1,{});
 
   runtime.register({
-    domains: [".cycanime."],
+    domains: [".cycanime.", ".cyc-anime."],
     opts: [
       { test: "/watch", run: runInTop$1 },
       { test: "/watch", run: iframePlayer$1.runInIframe, runInIframe: true },
@@ -5280,7 +5282,7 @@ ${[...speedList].reverse().map(
     ],
     search: {
       name: "\u6B21\u5143\u57CE",
-      search: (name) => `https://www.cycanime.com/search.html?wd=${name}`,
+      search: (name) => `https://www.cyc-anime.net/search.html?wd=${name}`,
       getSearchName: () => {
         return new Promise((resolve) => {
           const fn = (e) => {
