@@ -3,7 +3,7 @@ import { iframePlayer, runInTop, parser } from './play'
 import './index.scss'
 
 runtime.register({
-  domains: ['.mutedm.', '.mutean.'],
+  domains: ['.mutedm.', '.mutean.', '.mute01.'],
   opts: [
     { test: '/vodplay', run: runInTop },
     { test: '/vodplay', run: iframePlayer.runInIframe, runInIframe: true },
@@ -16,7 +16,7 @@ runtime.register({
   search: {
     name: 'MuteFun',
     search: (name) =>
-      `https://www.mutedm.com/vodsearch/${name}-------------.html`,
+      `https://www.mutean.com/vodsearch/${name}-------------.html`,
     getSearchName: () => {
       return new Promise((resolve) => {
         const fn = (e: MessageEvent<any>) => {

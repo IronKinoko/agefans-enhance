@@ -8,7 +8,7 @@
 - [NT 动漫](https://www.ntdm9.com)
 - [bimiacg](http://www.bimiacg10.net)
 - [mutean](https://www.mutean.com)
-- [次元城](https://www.cycanime.com)
+- [次元城](https://www.cyc-anime.net)
 - [稀饭动漫](https://dick.xfani.com)
 
 **请使用 <kbd>?</kbd> 键查看脚本信息与快捷键**
