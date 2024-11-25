@@ -244,8 +244,10 @@ const findEpisode = async (animes?: Anime[]) => {
       )
     }
     if (!episode && !isNaN(+episodeName)) {
-      episode = anime.episodes.find((episode) =>
-        episode.episodeTitle.includes(episodeName)
+      episode = anime.episodes.find(
+        (episode) =>
+          new RegExp(`${episodeName}[话集]`).test(episodeName) ||
+          episode.episodeTitle.includes(episodeName)
       )
     }
     if (episode) {
