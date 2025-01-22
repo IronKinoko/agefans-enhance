@@ -1,8 +1,19 @@
 import { popover } from '../../../utils/popover'
 import { tabs } from '../../../utils/tabs'
 import { Commands } from './types'
+import banner from '../../assets/NachoNeko2.png'
 
 const $danmakuOverlay = tabs([
+  {
+    name: '通知',
+    content: `<div id="k-player-danmaku-notification">
+      <img src="${banner}" />
+      <div class="title">弹幕服务暂时下架</div>
+      <p>因 <a target="_blank" rel="noreferrer" href="https://www.dandanplay.com/">弹弹play</a> 服务规则变动导致功能暂不可用</p>
+      <p>近期修改完后会重新上线弹幕服务</p>
+      <p>如果需要弹幕服务可使用 <a target="_blank" rel="noreferrer" href="https://www.dandanplay.com/">弹弹play</a> 官网播放器观看视频。</p>
+    </div>`,
+  },
   {
     name: '搜索',
     content: `<div id="k-player-danmaku-search-form">
