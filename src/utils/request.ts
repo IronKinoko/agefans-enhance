@@ -2,6 +2,7 @@ export interface Opts {
   url: string
   method?: 'GET' | 'POST'
   params?: any
+  headers?: Record<string, string>
 }
 
 export function request(opts: Opts) {
@@ -23,6 +24,7 @@ export function request(opts: Opts) {
       url,
       method: method || 'GET',
       responseType: 'json',
+      headers: opts.headers,
       onload: (res: any) => {
         if (process.env.NODE_ENV === 'development') {
           console.log(res, res.response)

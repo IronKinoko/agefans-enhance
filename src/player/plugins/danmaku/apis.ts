@@ -4,11 +4,16 @@ import { convert32ToHex, parseUid } from './utils'
 
 // https://api.dandanplay.net/swagger/ui/index#/
 
+const KEY =
+  'eyJYLUFwcElkIjoiaHZmNnB6dnhjbSIsIlgtQXBwU2VjcmV0IjoiSVpoY1VJYWtveEZhSzl4QkJESjlCczFPVTJzNGtLNXQifQ=='
+const headers = JSON.parse(atob(KEY))
+
 export async function getComments(
   episodeId: number | string
 ): Promise<Comment[]> {
   const res: RawComments = await request({
     url: `https://api.dandanplay.net/api/v2/comment/${episodeId}?withRelated=true&chConvert=1`,
+    headers,
   })
 
   return res.comments
@@ -34,6 +39,7 @@ export async function searchAnimeWithEpisode(
   const res = await request({
     url: 'https://api.dandanplay.net/api/v2/search/episodes',
     params: { anime, episode },
+    headers,
   })
 
   return res.animes
