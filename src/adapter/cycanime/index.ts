@@ -3,7 +3,7 @@ import { iframePlayer, runInTop, parser } from './play'
 import './index.scss'
 
 runtime.register({
-  domains: ['.cycanime.', '.cyc-anime.'],
+  domains: ['.cycanime.', '.cyc-anime.', '.cycani.'],
   opts: [
     { test: '/watch', run: runInTop },
     { test: '/watch', run: iframePlayer.runInIframe, runInIframe: true },
