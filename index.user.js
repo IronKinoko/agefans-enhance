@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.43.9
+// @version      1.44.0
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -2045,7 +2045,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.43.9"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.44.0"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2145,8 +2145,12 @@
 
         <ul class="features">
           <li class="feature">
-            <div class="feature-title">\u64AD\u653E\u672C\u5730\u6587\u4EF6</div>
-            <div class="feature-desc">\u5C06\u672C\u5730\u6587\u4EF6\u62D6\u5165\u5230\u89C6\u9891\u533A\u57DF\uFF0C\u53EF\u4EE5\u64AD\u653E\u672C\u5730\u6587\u4EF6\uFF0C\u5E38\u7528\u4E8E\u64AD\u653E\u672C\u5730\u66F4\u9AD8\u6E05\u7684\u89C6\u9891</div>
+            <div class="feature-title">\u64AD\u653E\u672C\u5730\u89C6\u9891</div>
+            <div class="feature-desc">\u5C06\u672C\u5730\u89C6\u9891\u6587\u4EF6\u62D6\u5165\u5230\u89C6\u9891\u533A\u57DF\uFF0C\u5E38\u7528\u4E8E\u64AD\u653E\u672C\u5730\u66F4\u9AD8\u6E05\u7684\u89C6\u9891</div>
+          </li>
+          <li class="feature">
+            <div class="feature-title">\u652F\u6301\u5BFC\u5165 <a target="_blank" rel="noreferrer" href="https://github.com/xmcp/pakku.js">Pakku\u54D4\u54E9\u54D4\u54E9\u5F39\u5E55\u8FC7\u6EE4\u5668</a>\u751F\u6210\u7684\u5F39\u5E55\u6587\u4EF6</div>
+            <div class="feature-desc">\u5C06 Pakku \u751F\u6210\u7684XML\u5F39\u5E55\u6587\u4EF6\u62D6\u5165\u5230\u89C6\u9891\u533A\u57DF\uFF0C\u4F1A\u8986\u76D6\u5185\u7F6E\u7684\u5F39\u5E55\u6570\u636E</div>
           </li>
         <ul>
       </div>
@@ -2166,7 +2170,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.43.9"}
+\u811A\u672C\u7248\u672C: ${"1.44.0"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -2786,7 +2790,7 @@ ${[...speedList].reverse().map(
         const e = _e.originalEvent;
         e.preventDefault();
         const file = (_a = e.dataTransfer) == null ? void 0 : _a.files[0];
-        if (file) {
+        if (file && file.type.includes("video")) {
           this.src = URL.createObjectURL(file);
         }
       });
@@ -3712,6 +3716,31 @@ ${[...speedList].reverse().map(
     );
   }
 
+  function parsePakkuDanmakuXML(xml) {
+    const $xml = $(xml);
+    return $xml.find("d").map((_, el) => {
+      const p = el.getAttribute("p");
+      const [
+        time,
+        type,
+        fontSize,
+        color,
+        sendTime,
+        pool,
+        senderHash,
+        id,
+        weight
+      ] = p.split(",");
+      return {
+        mode: { 1: "rtl", 4: "bottom", 5: "top" }[type] || "rtl",
+        text: el.textContent,
+        time: parseFloat(time),
+        style: { color: convert32ToHex(color) },
+        user: { source: "Pakku", id: senderHash }
+      };
+    }).toArray();
+  }
+
   Object.assign(defaultConfig, {
     showDanmaku: false,
     opacity: 0.6,
@@ -3901,6 +3930,28 @@ ${[...speedList].reverse().map(
     }
     player$1.message.info("\u5F39\u5E55\u672A\u80FD\u81EA\u52A8\u5339\u914D\u6570\u636E\u6E90\uFF0C\u8BF7\u624B\u52A8\u641C\u7D22");
   };
+  const injectDanmakuDropEvent = () => {
+    player$1.$video.on("dragover", (e) => {
+      e.preventDefault();
+    }).on("drop", (_e) => {
+      var _a;
+      const e = _e.originalEvent;
+      e.preventDefault();
+      const file = (_a = e.dataTransfer) == null ? void 0 : _a.files[0];
+      if ((file == null ? void 0 : file.type) === "text/xml") {
+        const reader = new FileReader();
+        reader.onload = async () => {
+          stop();
+          comments = parsePakkuDanmakuXML(reader.result);
+          syncDiff = 0;
+          state = 3 /* getComments */;
+          start();
+          player$1.message.info(`\u5DF2\u52A0\u8F7D ${comments.length} \u6761\u5F39\u5E55`, 2e3);
+        };
+        reader.readAsText(file);
+      }
+    });
+  };
   const initEvents = (name) => {
     $animeName.val(name);
     $animeName.on("keypress", (e) => {
@@ -4028,6 +4079,7 @@ ${[...speedList].reverse().map(
     });
     createFilter(player$1, refreshDanmaku);
     createDanmakuList(player$1, () => comments, refreshDanmaku);
+    injectDanmakuDropEvent();
   };
   function switchDanmaku(bool) {
     bool != null ? bool : bool = !player$1.localConfig.showDanmaku;
