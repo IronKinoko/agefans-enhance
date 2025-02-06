@@ -138,8 +138,12 @@ export const scriptInfo = (video: HTMLVideoElement | undefined) => {
 
         <ul class="features">
           <li class="feature">
-            <div class="feature-title">播放本地文件</div>
-            <div class="feature-desc">将本地文件拖入到视频区域，可以播放本地文件，常用于播放本地更高清的视频</div>
+            <div class="feature-title">播放本地视频</div>
+            <div class="feature-desc">将本地视频文件拖入到视频区域，常用于播放本地更高清的视频</div>
+          </li>
+          <li class="feature">
+            <div class="feature-title">支持导入 <a target="_blank" rel="noreferrer" href="https://github.com/xmcp/pakku.js">Pakku哔哩哔哩弹幕过滤器</a>生成的弹幕文件</div>
+            <div class="feature-desc">将 Pakku 生成的XML弹幕文件拖入到视频区域，会覆盖内置的弹幕数据</div>
           </li>
         <ul>
       </div>

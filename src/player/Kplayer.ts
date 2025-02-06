@@ -259,7 +259,7 @@ export class KPlayer {
         const e = _e.originalEvent!
         e.preventDefault()
         const file = e.dataTransfer?.files[0]
-        if (file) {
+        if (file && file.type.includes('video')) {
           this.src = URL.createObjectURL(file)
         }
       })

@@ -16,6 +16,7 @@ import {
   storageAnimeName,
   storageEpisodeName,
 } from './utils'
+import { parsePakkuDanmakuXML } from './parser'
 
 type DanmakuMode = ('top' | 'bottom' | 'color')[]
 interface DanmakuConfig {
@@ -265,6 +266,32 @@ const findEpisode = async (animes?: Anime[]) => {
   player.message.info('弹幕未能自动匹配数据源，请手动搜索')
 }
 
+const injectDanmakuDropEvent = () => {
+  player.$video
+    .on('dragover', (e) => {
+      e.preventDefault()
+    })
+    .on('drop', (_e) => {
+      const e = _e.originalEvent!
+      e.preventDefault()
+      const file = e.dataTransfer?.files[0]
+
+      if (file?.type === 'text/xml') {
+        const reader = new FileReader()
+        reader.onload = async () => {
+          stop()
+          comments = parsePakkuDanmakuXML(reader.result as string)
+          syncDiff = 0
+          state = State.getComments
+          start()
+
+          player.message.info(`已加载 ${comments.length} 条弹幕`, 2000)
+        }
+        reader.readAsText(file)
+      }
+    })
+}
+
 const initEvents = (name: string) => {
   $animeName.val(name)
   $animeName.on('keypress', (e) => {
@@ -411,6 +438,8 @@ const initEvents = (name: string) => {
   createFilter(player, refreshDanmaku)
 
   createDanmakuList(player, () => comments, refreshDanmaku)
+
+  injectDanmakuDropEvent()
 }
 
 function switchDanmaku(bool?: boolean) {
