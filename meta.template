@@ -26,6 +26,8 @@
 // @include      https://player.cycanime.com/*
 // @include      https://dick.xfani.com/*
 // @include      https://player.moedot.net/*
+// @include      http://127.0.0.1:5500/*
+// @include      https://ironkinoko.github.io/agefans-enhance/*
 // @run-at       document-end
 // @require      https://unpkg.com/jquery@3.6.0/dist/jquery.min.js
 // @require      https://unpkg.com/plyr@3.6.4/dist/plyr.min.js

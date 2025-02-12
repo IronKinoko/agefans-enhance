@@ -19,6 +19,7 @@ import {
 } from './html'
 import './index.scss'
 import { Shortcuts } from './plugins/shortcuts'
+import { isUrl } from '../utils/isUrl'
 
 const MediaErrorMessage: Record<number, string> = {
   1: '你中止了媒体播放',
@@ -251,18 +252,18 @@ export class KPlayer {
   }
 
   private initEvent() {
-    this.$video
-      .on('dragover', (e) => {
-        e.preventDefault()
-      })
-      .on('drop', (_e) => {
-        const e = _e.originalEvent!
-        e.preventDefault()
-        const file = e.dataTransfer?.files[0]
-        if (file && file.type.includes('video')) {
-          this.src = URL.createObjectURL(file)
-        }
-      })
+    this.onDrop((e) => {
+      e.preventDefault()
+      const file = e.dataTransfer?.files[0]
+      if (file && file.type.includes('video')) {
+        this.src = URL.createObjectURL(file)
+      }
+
+      const text = e.dataTransfer?.getData('text')
+      if (text && isUrl(text)) {
+        this.src = text
+      }
+    })
 
     this.on('loadstart', () => {
       this.$loading.show()
@@ -333,15 +334,7 @@ export class KPlayer {
           session.removeItem(countKey)
         }
       } else {
-        const $dom = $(
-          '<div>视频播放失败，点击此处暂时关闭脚本功能，使用原生播放器观看</div>'
-        ).css('cursor', 'pointer')
-        $dom.on('click', () => {
-          this.message.destroy()
-          session.setItem('stop-use', true)
-          window.location.reload()
-        })
-        this.message.info($dom, 10000)
+        this.message.info('视频播放失败，链接资源可能失效了', 4000)
       }
     })
     this.on('pause', () => {
@@ -456,6 +449,17 @@ export class KPlayer {
     fnList.forEach((fn) => {
       fn(this, params)
     })
+  }
+
+  onDrop(callback: (e: DragEvent) => void) {
+    this.$video
+      .on('dragover', (e) => {
+        e.preventDefault()
+      })
+      .on('drop', (_e) => {
+        const e = _e.originalEvent!
+        callback(e)
+      })
   }
 
   private injectSettings() {

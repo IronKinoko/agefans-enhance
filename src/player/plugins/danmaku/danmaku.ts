@@ -267,29 +267,24 @@ const findEpisode = async (animes?: Anime[]) => {
 }
 
 const injectDanmakuDropEvent = () => {
-  player.$video
-    .on('dragover', (e) => {
-      e.preventDefault()
-    })
-    .on('drop', (_e) => {
-      const e = _e.originalEvent!
-      e.preventDefault()
-      const file = e.dataTransfer?.files[0]
+  player.onDrop((e) => {
+    e.preventDefault()
+    const file = e.dataTransfer?.files[0]
 
-      if (file?.type === 'text/xml') {
-        const reader = new FileReader()
-        reader.onload = async () => {
-          stop()
-          comments = parsePakkuDanmakuXML(reader.result as string)
-          syncDiff = 0
-          state = State.getComments
-          start()
+    if (file?.type === 'text/xml') {
+      const reader = new FileReader()
+      reader.onload = async () => {
+        stop()
+        comments = parsePakkuDanmakuXML(reader.result as string)
+        syncDiff = 0
+        state = State.getComments
+        start()
 
-          player.message.info(`已加载 ${comments.length} 条弹幕`, 2000)
-        }
-        reader.readAsText(file)
+        player.message.info(`已加载 ${comments.length} 条弹幕`, 2000)
       }
-    })
+      reader.readAsText(file)
+    }
+  })
 }
 
 const initEvents = (name: string) => {
