@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.45.0
+// @version      1.45.1
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -2114,20 +2114,21 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.45.0"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.45.1"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
       </tr>
       <tr>
-        <td>\u811A\u672C\u6E90\u7801</td>
+        <td>\u811A\u672C\u94FE\u63A5</td>
         <td>
-          <a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko/agefans-enhance">GitHub</a>
+          <a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko/agefans-enhance">GitHub \u6E90\u7801</a>
           <a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko/agefans-enhance/releases">\u66F4\u65B0\u8BB0\u5F55</a>
-          </td>
+          <a target="_blank" rel="noreferrer" href="https://ironkinoko.github.io/agefans-enhance/">\u5728\u7EBF\u64AD\u653E\u5668</a>
+        </td>
       </tr>
       <tr>
-        <td>\u62A5\u9519/\u610F\u89C1</td>
+        <td>\u811A\u672C\u53CD\u9988</td>
         <td>
           <a target="_blank" rel="noreferrer" href="${githubIssueURL}">GitHub Issues</a>
           <a target="_blank" rel="noreferrer" href="https://greasyfork.org/scripts/424023/feedback">Greasy Fork \u53CD\u9988</a>
@@ -2239,7 +2240,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.45.0"}
+\u811A\u672C\u7248\u672C: ${"1.45.1"}
 `;
 
   const GlobalKey = "show-help-info";
