@@ -10,6 +10,7 @@
 - [mutean](https://www.mutean.com)
 - [次元城](https://www.cyc-anime.net)
 - [稀饭动漫](https://dick.xfani.com)
+- [GitHub Pages](https://ironkinoko.github.io/agefans-enhance/)
 
 **请使用 <kbd>?</kbd> 键查看脚本信息与快捷键**
 
