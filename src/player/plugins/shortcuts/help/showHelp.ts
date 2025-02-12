@@ -32,14 +32,15 @@ export const scriptInfo = (video: HTMLVideoElement | undefined) => {
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
       </tr>
       <tr>
-        <td>脚本源码</td>
+        <td>脚本链接</td>
         <td>
-          <a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko/agefans-enhance">GitHub</a>
+          <a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko/agefans-enhance">GitHub 源码</a>
           <a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko/agefans-enhance/releases">更新记录</a>
-          </td>
+          <a target="_blank" rel="noreferrer" href="https://ironkinoko.github.io/agefans-enhance/">在线播放器</a>
+        </td>
       </tr>
       <tr>
-        <td>报错/意见</td>
+        <td>脚本反馈</td>
         <td>
           <a target="_blank" rel="noreferrer" href="${githubIssueURL}">GitHub Issues</a>
           <a target="_blank" rel="noreferrer" href="https://greasyfork.org/scripts/424023/feedback">Greasy Fork 反馈</a>
