@@ -16,10 +16,12 @@ function createStorage<T = string>(storageKey: string) {
   }
   return storage
 }
-export const storageAnimeName = createStorage<
-  Pick<Anime, 'animeId' | 'animeTitle'> & { keyword: string }
->('k-player-danmaku-anime-name-v2')
-export const storageEpisodeName = createStorage('k-player-danmaku-episode-name')
+export const storageAnimeName = createStorage<Anime & { keyword: string }>(
+  'k-player-danmaku-anime-name-v3'
+)
+export const storageEpisodeName = createStorage(
+  'k-player-danmaku-episode-name-v3'
+)
 export function convert32ToHex(color: string) {
   return '#' + parseInt(color).toString(16)
 }

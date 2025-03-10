@@ -14,14 +14,12 @@ export interface Comment extends BaseComment {
 }
 
 export interface Anime {
-  animeId: number
-  animeTitle: string
-  type: string
-  episodes: Episode[]
+  id: string
+  name: string
 }
 export interface Episode {
-  episodeId: number
-  episodeTitle: string
+  id: number
+  name: string
 }
 
 export enum Commands {

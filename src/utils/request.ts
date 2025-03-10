@@ -5,7 +5,7 @@ export interface Opts {
   headers?: Record<string, string>
 }
 
-export function request(opts: Opts) {
+export function request<T = any>(opts: Opts) {
   let { url, method, params } = opts
 
   if (params) {
@@ -19,7 +19,7 @@ export function request(opts: Opts) {
     url = u.toString()
   }
 
-  return new Promise<any>((resolve, reject) => {
+  return new Promise<T>((resolve, reject) => {
     GM_xmlhttpRequest({
       url,
       method: method || 'GET',

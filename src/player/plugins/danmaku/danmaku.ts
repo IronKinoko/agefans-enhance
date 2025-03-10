@@ -2,11 +2,12 @@ import Danmaku from '@ironkinoko/danmaku'
 import { runtime } from '../../../runtime'
 import { defaultConfig, KPlayer } from '../../Kplayer'
 import { Shortcuts } from '../shortcuts'
-import { getComments, searchAnimeWithEpisode } from './apis'
+import { getComments, queryAnimes, queryEpisodes } from './apis'
 import { createDanmakuList } from './danmakuList'
 import { createFilter } from './filter'
 import { $danmaku, $danmakuContainer, $danmakuSwitch, $pbp } from './html'
 import './index.scss'
+import { parsePakkuDanmakuXML } from './parser'
 import { createProgressBarPower } from './progressBarPower'
 import { Anime, Commands, Comment, Episode } from './types'
 import {
@@ -16,7 +17,6 @@ import {
   storageAnimeName,
   storageEpisodeName,
 } from './utils'
-import { parsePakkuDanmakuXML } from './parser'
 
 type DanmakuMode = ('top' | 'bottom' | 'color')[]
 interface DanmakuConfig {
@@ -54,8 +54,8 @@ Object.assign(defaultConfig, {
 
 enum State {
   unSearched,
-  searched,
-  findEpisode,
+  searchedAnimes,
+  findEpisodes,
   getComments,
 }
 
@@ -89,6 +89,8 @@ const $danmakuScrollAreaPercent = $danmaku.find<HTMLInputElement>(
 const $danmakuMode = $danmaku.find<HTMLInputElement>("[name='danmakuMode']")
 
 let core: Danmaku | undefined
+let animes: Anime[] = []
+let episodes: Episode[] = []
 let comments: Comment[] | undefined
 let player: KPlayer
 let videoInfo: NonNullable<
@@ -205,65 +207,87 @@ const loadEpisode = async (episodeId: string) => {
   player.message.info(`已加载 ${comments.length} 条弹幕`, 2000)
 }
 
-const searchAnime = async (name?: string) => {
-  state = State.searched
-
-  name ||= $animeName.val() as string
+const searchAnime = async (name: string) => {
   if (!name || name.length < 2) return showTips('番剧名称不少于2个字')
 
   try {
-    const animes = await searchAnimeWithEpisode(name)
+    animes = []
+    episodes = []
+    renderSelectOptions($animes, animes)
+    renderSelectOptions($episodes, episodes)
+    showTips('正在搜索番剧中...')
+    animes = await queryAnimes(name)
     if (animes.length === 0) return showTips('未搜索到番剧')
-    updateAnimes(animes)
-    findEpisode(animes)
-  } catch (error) {
-    showTips('弹幕服务异常，稍后再试', 3000)
+    renderSelectOptions($animes, animes)
+    showTips(`找到 ${animes.length} 部番剧`)
+
+    state = State.searchedAnimes
+    autoMatchAnime()
+  } catch (error: any) {
+    showTips('弹幕服务异常，' + error.message, 3000)
   }
 }
 
-const findEpisode = async (animes?: Anime[]) => {
-  if (!animes) return
-  const anime = animes.find((anime) => {
+const searchEpisodes = async (animeId: string) => {
+  try {
+    episodes = []
+    renderSelectOptions($episodes, episodes)
+    showTips('正在搜索剧集中...')
+    episodes = await queryEpisodes(animeId)
+    if (episodes.length === 0) return showTips('未搜索到剧集')
+    renderSelectOptions($episodes, episodes)
+    showTips(`找到 ${episodes.length} 集`)
+
+    state = State.findEpisodes
+    autoMatchEpisode()
+  } catch (error: any) {
+    showTips('弹幕服务异常，' + error.message, 3000)
+  }
+}
+
+function autoMatchAnime() {
+  let anime = animes.find((anime) => {
     const storeAnime = storageAnimeName(videoInfo.rawName)
     if (storeAnime) {
-      return anime.animeId === storeAnime.animeId
+      return anime.id === storeAnime.id
     }
 
-    return anime.animeTitle === videoInfo.rawName
+    return anime.name === videoInfo.rawName
   })
 
-  if (anime) {
-    let episodeName = videoInfo.episode
-    let episode: Episode | undefined
+  if (!anime) {
+    player.message.info('弹幕未能自动匹配数据源，请手动搜索')
+    anime = animes[0]
+  }
 
-    let storedEpisodeId = storageEpisodeName(
-      `${videoInfo.rawName}.${videoInfo.episode}`
+  $animes.val(anime.id)
+  $animes.trigger('change')
+}
+
+const autoMatchEpisode = async () => {
+  let episodeName = videoInfo.episode
+  let episode: Episode | undefined
+
+  let storedEpisodeId = storageEpisodeName(
+    `${videoInfo.rawName}.${videoInfo.episode}`
+  )
+  if (storedEpisodeId) {
+    episode = episodes.find((episode) => String(episode.id) === storedEpisodeId)
+  }
+  if (!episode && !isNaN(+episodeName)) {
+    episode = episodes.find((episode) =>
+      new RegExp(`${episodeName}[话集]`).test(episode.name)
     )
-    if (storedEpisodeId) {
-      episode = anime.episodes.find(
-        (episode) => String(episode.episodeId) === storedEpisodeId
-      )
-    }
-    if (!episode && !isNaN(+episodeName)) {
-      episode = anime.episodes.find((episode) =>
-        new RegExp(`${episodeName}[话集]`).test(episode.episodeTitle)
-      )
-      if (!episode) {
-        episode = anime.episodes.find((episode) =>
-          episode.episodeTitle.includes(episodeName)
-        )
-      }
-    }
-    if (episode) {
-      state = State.findEpisode
-      $animes.val(anime.animeId)
-      $animes.trigger('change')
-      $episodes.val(episode.episodeId)
-      $episodes.trigger('change')
-      return
+    if (!episode) {
+      episode = episodes.find((episode) => episode.name.includes(episodeName))
     }
   }
-  player.message.info('弹幕未能自动匹配数据源，请手动搜索')
+  if (episode) {
+    $episodes.val(episode.id)
+    $episodes.trigger('change')
+  } else {
+    player.message.info('弹幕未能自动匹配数据源，请手动搜索')
+  }
 }
 
 const injectDanmakuDropEvent = () => {
@@ -297,23 +321,25 @@ const initEvents = (name: string) => {
   })
 
   $animes.on('change', (e) => {
-    const animeId = $(e.target).val() as string
-    const animes: Anime[] = $animes.data('animes')
-    const anime = animes.find((anime) => String(anime.animeId) === animeId)
+    const animeId = $animes.val() as string
+    const anime = animes.find((anime) => anime.id === animeId)
     if (!anime) return
     storageAnimeName(videoInfo.rawName, {
-      animeId: anime.animeId,
-      animeTitle: anime.animeTitle,
+      id: anime.id,
+      name: anime.name,
       keyword: $animeName.val() as string,
     })
-    updateEpisodes(anime)
+    searchEpisodes(anime.id)
   })
   $episodes.on('change', (e) => {
-    const episodeId = $(e.target).val() as string
-    const anime = $episodes.data('anime')
+    const episodeId = $episodes.val() as string
+    const animeId = $animes.val() as string
+    const anime = animes.find((anime) => anime.id === animeId)
+    if (!anime) return
+
     storageAnimeName(videoInfo.rawName, {
-      animeId: anime.animeId,
-      animeTitle: anime.animeTitle,
+      id: anime.id,
+      name: anime.name,
       keyword: $animeName.val() as string,
     })
     storageEpisodeName(`${videoInfo.rawName}.${videoInfo.episode}`, episodeId)
@@ -333,7 +359,7 @@ const initEvents = (name: string) => {
 
   const mutationOb = new MutationObserver(async () => {
     Object.assign(videoInfo, await runtime.getCurrentVideoNameAndEpisode())
-    state = State.searched
+    state = State.searchedAnimes
     autoStart()
   })
 
@@ -506,32 +532,13 @@ Shortcuts.registerCommand(Commands.danmakuSyncRestore, function () {
 })
 
 // 更新 anime select
-const updateAnimes = (animes: Anime[]) => {
-  const html = animes.reduce(
-    (html, anime) =>
-      html + `<option value="${anime.animeId}">${anime.animeTitle}</option>`,
+const renderSelectOptions = (target: JQuery, options: (Anime | Episode)[]) => {
+  const html = options.reduce(
+    (html, option) =>
+      html + `<option value="${option.id}">${option.name}</option>`,
     ''
   )
-  $animes.data('animes', animes)
-  $animes.html(html)
-  updateEpisodes(animes[0])
-  showTips(`找到 ${animes.length} 部番剧`)
-}
-
-// 更新 episode select
-const updateEpisodes = (anime: Anime) => {
-  const { episodes } = anime
-  const html = episodes.reduce(
-    (html, episode) =>
-      html +
-      `<option value="${episode.episodeId}">${episode.episodeTitle}</option>`,
-    ''
-  )
-
-  $episodes.data('anime', anime)
-  $episodes.html(html)
-
-  $episodes.val('')
+  target.html(html)
 }
 
 function autoStart() {
@@ -539,15 +546,15 @@ function autoStart() {
 
   switch (state) {
     case State.unSearched:
-      searchAnime()
+      searchAnime($animeName.val() as string)
       break
 
-    case State.searched:
-      findEpisode($animes.data('animes'))
+    case State.searchedAnimes:
+      searchEpisodes($animes.val() as string)
       break
 
-    case State.findEpisode:
-      $episodes.trigger('change')
+    case State.findEpisodes:
+      autoMatchEpisode()
       break
 
     case State.getComments:

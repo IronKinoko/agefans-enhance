@@ -1,4 +1,4 @@
-import clamp from 'lodash-es/clamp'
+import { clamp } from 'lodash-es'
 import { Shortcuts } from './shortcuts'
 import { CommandEvent, Commands } from './types'
 import './help'

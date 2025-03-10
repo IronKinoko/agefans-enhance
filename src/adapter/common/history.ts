@@ -1,4 +1,4 @@
-import throttle from 'lodash-es/throttle'
+import { throttle } from 'lodash-es'
 import { modal } from '../../utils/modal'
 import { parseTime } from '../../utils/parseTime'
 import { local } from '../../utils/storage'

@@ -1,5 +1,6 @@
+import { memoize } from 'lodash-es'
 import { request } from '../../../utils/request'
-import { Anime, RawComments, Comment } from './types'
+import { Comment, RawComments } from './types'
 import { convert32ToHex, parseUid } from './utils'
 
 // https://api.dandanplay.net/swagger/ui/index#/
@@ -32,15 +33,56 @@ export async function getComments(
     })
     .sort((a, b) => a.time - b.time)
 }
-export async function searchAnimeWithEpisode(
-  anime: string,
-  episode?: string
-): Promise<Anime[]> {
-  const res = await request({
-    url: 'https://api.dandanplay.net/api/v2/search/episodes',
-    params: { anime, episode },
+
+type DDPResult<T> = {
+  errorCode: number
+  success: boolean
+  errorMessage: string
+} & T
+type DDPSearchAnimeResponse = DDPResult<{
+  animes: {
+    animeId: number
+    bangumiId: string
+    animeTitle: string
+  }[]
+}>
+
+export async function queryAnimes(anime: string) {
+  const res = await request<DDPSearchAnimeResponse>({
+    url: 'https://api.dandanplay.net/api/v2/search/anime',
+    params: { keyword: anime },
     headers,
   })
 
-  return res.animes
+  if (!res.success) throw new Error(res.errorMessage)
+
+  return res.animes.map((o) => ({
+    id: o.bangumiId,
+    name: o.animeTitle,
+  }))
 }
+
+type DDPBangumiResponse = DDPResult<{
+  bangumi: {
+    episodes: {
+      episodeId: number
+      episodeTitle: string
+    }[]
+  }
+}>
+
+export const queryEpisodes = memoize(async function (animeId: string) {
+  const res = await request<DDPBangumiResponse>({
+    url: `https://api.dandanplay.net/api/v2/bangumi/${animeId}`,
+    headers,
+  })
+
+  if (!res.success) {
+    setTimeout(() => queryEpisodes.cache.clear?.(), 100)
+    throw new Error(res.errorMessage)
+  }
+  return res.bangumi.episodes.map((o) => ({
+    id: o.episodeId,
+    name: o.episodeTitle,
+  }))
+})
