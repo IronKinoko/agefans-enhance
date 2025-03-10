@@ -13,6 +13,7 @@ import { Anime, Commands, Comment, Episode } from './types'
 import {
   addRangeListener,
   getCheckboxGroupValue,
+  lockWrap,
   setCheckboxGroupValue,
   storageAnimeName,
   storageEpisodeName,
@@ -104,7 +105,7 @@ function refreshDanmaku() {
 }
 
 const showTips = (message: string, duration = 1500) => {
-  $tips.text(message).fadeIn('fast').delay(duration).fadeOut('fast')
+  $tips.finish().text(message).fadeIn('fast').delay(duration).fadeOut('fast')
 }
 
 const stop = () => {
@@ -207,7 +208,7 @@ const loadEpisode = async (episodeId: string) => {
   player.message.info(`已加载 ${comments.length} 条弹幕`, 2000)
 }
 
-const searchAnime = async (name: string) => {
+const searchAnime = lockWrap(async (name: string) => {
   if (!name || name.length < 2) return showTips('番剧名称不少于2个字')
 
   try {
@@ -226,7 +227,7 @@ const searchAnime = async (name: string) => {
   } catch (error: any) {
     showTips('弹幕服务异常，' + error.message, 3000)
   }
-}
+})
 
 const searchEpisodes = async (animeId: string) => {
   try {

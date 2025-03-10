@@ -92,3 +92,16 @@ export function setCheckboxGroupValue(
     }
   })
 }
+
+export function lockWrap<T extends (...args: any[]) => any>(fn: T) {
+  let lock = false
+  return (async (...args: any[]) => {
+    if (lock) return
+    try {
+      lock = true
+      await fn(...args)
+    } finally {
+      lock = false
+    }
+  }) as T
+}
