@@ -144,6 +144,10 @@
     }
   }
 
+  .plyr__poster {
+    pointer-events: none;
+  }
+
   .plyr {
     width: 100%;
     height: 100%;

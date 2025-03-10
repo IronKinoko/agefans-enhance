@@ -39,7 +39,7 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@ironkinoko/danmaku": "1.4.1",
+    "@ironkinoko/danmaku": "1.4.2",
     "hls.js": "1.0.9",
     "lodash-es": "^4.17.21",
     "plyr": "3.6.4"
