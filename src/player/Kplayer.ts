@@ -19,6 +19,8 @@ import {
 import './index.scss'
 import { Shortcuts } from './plugins/shortcuts'
 import { isUrl } from '../utils/isUrl'
+import { parseSubtitles } from '../utils/subtitles'
+import { sleep } from '../utils/sleep'
 
 const MediaErrorMessage: Record<number, string> = {
   1: '你中止了媒体播放',
@@ -134,6 +136,7 @@ export class KPlayer {
         'pip',
         'fullscreen',
       ],
+      captions: { update: true, language: 'zh', active: true },
       storage: { enabled: false },
       volume: this.localConfig.volume,
       fullscreen: {
@@ -253,9 +256,30 @@ export class KPlayer {
   private initEvent() {
     this.onDrop((e) => {
       e.preventDefault()
-      const file = e.dataTransfer?.files[0]
-      if (file && file.type.includes('video')) {
-        this.src = URL.createObjectURL(file)
+      const rawFiles = e.dataTransfer?.files
+
+      if (rawFiles) {
+        const files = Array.from(rawFiles)
+
+        const video = files.find((file) => file.type.includes('video'))
+        if (video) {
+          this.src = URL.createObjectURL(video)
+        }
+
+        const videoName = video?.name.split('.')[0]
+
+        const subtitles = files.filter((file) =>
+          file.name.match(/\.(ass|vtt|srt)$/i)
+        )
+
+        if (subtitles.length) {
+          let subtitle: File | undefined
+          if (videoName) {
+            subtitle = subtitles.find((o) => o.name.includes(videoName))
+          }
+          if (!subtitle) subtitle = subtitles[0]
+          this.loadSubtitles(subtitle)
+        }
       }
 
       const text = e.dataTransfer?.getData('text')
@@ -585,6 +609,20 @@ export class KPlayer {
         ).on('click', search)
       })
     )
+  }
+
+  private async loadSubtitles(file: File) {
+    const blob = await parseSubtitles(file)
+    const nextTrack = this.plyr.currentTrack + 1
+
+    const track = document.createElement('track')
+    track.kind = 'subtitles'
+    track.src = URL.createObjectURL(blob)
+    track.srclang = 'zh'
+    this.media.append(track)
+
+    await sleep(10)
+    this.plyr.currentTrack = nextTrack
   }
 
   toggleWidescreen(bool = !this.isWideScreen) {

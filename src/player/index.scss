@@ -21,6 +21,26 @@
   --plyr-range-thumb-height: 18px;
   --plyr-color-main: var(--k-player-primary-color);
 
+  .plyr__captions {
+    padding-bottom: 4.4vh;
+    padding-bottom: max(20px, 4.4vh);
+  }
+  .plyr__caption {
+    font-size: 2.4vw; // 你可以根据需要调整这个值
+    color: white; // 确保字幕颜色与背景有足够的对比度
+    --w: 2px;
+    --b: 2px;
+    --c: black;
+    text-shadow: var(--w) var(--w) var(--b) var(--c),
+      calc(-1 * var(--w)) calc(-1 * var(--w)) var(--b) var(--c),
+      var(--w) calc(-1 * var(--w)) var(--b) var(--c),
+      calc(-1 * var(--w)) var(--w) var(--b) var(--c);
+    background: transparent;
+    @media (max-width: 576px) {
+      font-size: 3vw; // 在小屏幕上调整字体大小
+    }
+  }
+
   .plyr--full-ui.plyr--video input[type='range'] {
     cursor: pointer;
     &::-webkit-slider-thumb {

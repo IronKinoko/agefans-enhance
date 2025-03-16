@@ -1,0 +1,19 @@
+0
+00:00:00,000 --> 00:00:01,000
+[SRT] We are in New York City
+
+1
+00:00:01,000 --> 00:00:02,000
+[SRT] We're actually at the Lucern Hotel, just down the street
+
+2
+00:00:02,000 --> 00:00:03,000
+[SRT] 三十年河东 三十年河西
+
+3
+00:00:03,000 --> 00:00:04,000
+[SRT] And with me is Neil deGrasse Tyson
+
+4
+00:00:04,000 --> 00:00:10,000
+[SRT] Astrophysicist, Director of the Hayden Planetarium
