@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.47.0
+// @version      1.47.1
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -10,7 +10,7 @@
 // @include      https://www.agemys.*
 // @include      https://www.agedm.*
 // @include      https://m.agedm.*
-// @include      http*://www.ntdm9.*
+// @include      http*://www.ntdm*.com/*
 // @include      http*://www.bimiacg*.net*
 // @include      https://pro.ascepan.top/*
 // @include      https://danmu.yhdmjx.com/*
@@ -1885,6 +1885,7 @@
           this.invoke(command, e);
         }
       };
+      player.shortcuts = this;
       window.addEventListener("keydown", this.handleKeyEvent);
       window.addEventListener("keyup", this.handleKeyEvent);
     }
@@ -2114,7 +2115,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.47.0"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.47.1"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2240,7 +2241,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.47.0"}
+\u811A\u672C\u7248\u672C: ${"1.47.1"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -2582,7 +2583,7 @@ aria-hidden="true"
   </div>
 </div>`;
   const speedList = [0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3, 3.5, 4];
-  const speedHTML = popover(
+  const createSpeedHTML = () => popover(
     `
 <div id="k-speed" class="plyr__controls__item k-popover k-text-btn">
   <span id="k-speed-text" class="k-text-btn-text">\u500D\u901F</span>
@@ -2594,7 +2595,7 @@ ${[...speedList].reverse().map(
   ).join("")}
 </ul>`
   );
-  const settingsHTML = popover(
+  const createSettingsHTML = () => popover(
     `
 <button id="k-settings" type="button" class="plyr__control plyr__controls__item">
   <svg><use href="#plyr-settings" /></svg>
@@ -2629,7 +2630,7 @@ ${[...speedList].reverse().map(
 </div>
 `
   );
-  const searchActionsHTML = popover(
+  const createSearchActionsHTML = () => popover(
     `
 <div class="plyr__controls__item k-popover k-text-btn">
   <span class="k-text-btn-text">\u753B\u8D28</span>
@@ -2819,7 +2820,7 @@ ${text}
     4: "\u8D44\u6E90\u6709\u95EE\u9898\u770B\u4E0D\u4E86",
     5: "\u8D44\u6E90\u88AB\u52A0\u5BC6\u4E86"
   };
-  const defaultConfig = {
+  const defaultConfig$1 = {
     customSeekTime: 89,
     speed: 1,
     continuePlay: true,
@@ -2862,7 +2863,7 @@ ${text}
       this.localPlayTimeKey = "k-player-play-time";
       this.localConfig = Object.assign(
         {},
-        defaultConfig,
+        defaultConfig$1,
         gm.getItem(this.localConfigKey)
       );
       const isIOS = /ip(hone|od)/i.test(navigator.userAgent);
@@ -3153,7 +3154,7 @@ ${text}
       });
     }
     injectSettings() {
-      this.$settings = $(settingsHTML);
+      this.$settings = createSettingsHTML();
       this.$settings.find("[name=showPlayLarge]").prop("checked", this.localConfig.showPlayLarge).on("change", (e) => {
         const checked = e.target.checked;
         this.configSaveToLocal("showPlayLarge", checked);
@@ -3191,7 +3192,7 @@ ${text}
       gm.setItem(this.localConfigKey, this.localConfig);
     }
     injectSpeed() {
-      this.$speed = $(speedHTML);
+      this.$speed = createSpeedHTML();
       const speedItems = this.$speed.find(".k-speed-item");
       const localSpeed = this.localConfig.speed;
       speedItems.each((_, el) => {
@@ -3218,7 +3219,7 @@ ${text}
       });
     }
     async injectSearchActions() {
-      this.$searchActions = $(searchActionsHTML).toggle(
+      this.$searchActions = createSearchActionsHTML().toggle(
         this.localConfig.showSearchActions
       );
       this.$searchActions.insertBefore(this.$speed);
@@ -3764,10 +3765,12 @@ ${text}
     return Commands2;
   })(Commands || {});
 
-  const $danmakuOverlay = tabs([
-    {
-      name: "\u641C\u7D22",
-      content: `<div id="k-player-danmaku-search-form">
+  class DanmakuElements {
+    constructor() {
+      this.$danmakuOverlay = tabs([
+        {
+          name: "\u641C\u7D22",
+          content: `<div id="k-player-danmaku-search-form">
       <label>
         <span>\u641C\u7D22\u756A\u5267\u540D\u79F0</span>
         <input type="text" id="animeName" class="k-input" />
@@ -3791,10 +3794,10 @@ ${text}
       
       <span class="specific-thanks">\u5F39\u5E55\u670D\u52A1\u7531 \u5F39\u5F39play \u63D0\u4F9B</span>
     </div>`
-    },
-    {
-      name: "\u8BBE\u7F6E",
-      content: `
+        },
+        {
+          name: "\u8BBE\u7F6E",
+          content: `
     <div id="k-player-danmaku-setting-form" class="k-settings-list">
       <label class="k-settings-item">
         <input type="checkbox" name="showDanmaku" />
@@ -3851,10 +3854,10 @@ ${text}
       </div>
     </div>
     `
-    },
-    {
-      name: "\u8FC7\u6EE4",
-      content: `
+        },
+        {
+          name: "\u8FC7\u6EE4",
+          content: `
     <div id="k-player-danmaku-filter-form">
       <div class="ft-input-wrapper">
         <div>
@@ -3874,10 +3877,9 @@ ${text}
       </div>
     </div>
     `
-    }
-  ]);
-  $danmakuOverlay.attr("id", "k-player-danmaku-overlay");
-  const $danmakuSwitch = $(`
+        }
+      ]);
+      this.$danmakuSwitch = $(`
 <button
   class="plyr__controls__item plyr__control plyr__switch-danmaku plyr__custom"
   type="button"
@@ -3889,13 +3891,13 @@ ${text}
   <span class="label--not-pressed plyr__tooltip">\u5F00\u542F\u5F39\u5E55(<k-shortcuts-tip command="${Commands.danmakuSwitch}"></k-shortcuts-tip>)</span>
   <span class="label--pressed plyr__tooltip">\u5173\u95ED\u5F39\u5E55(<k-shortcuts-tip command="${Commands.danmakuSwitch}"></k-shortcuts-tip>)</span>
 </button>`);
-  const $danmakuSettingButton = $(`<button class="plyr__controls__item plyr__control" type="button" data-plyr="danmaku-setting">
+      this.$danmakuSettingButton = $(`<button class="plyr__controls__item plyr__control" type="button" data-plyr="danmaku-setting">
 <svg class="icon--not-pressed" focusable="false" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" id="bpx-svg-sprite-new-danmu-setting"><path fill-rule="evenodd" clip-rule="evenodd" d="M15.645 4.881l1.06-1.473a.998.998 0 10-1.622-1.166L13.22 4.835a110.67 110.67 0 00-1.1-.007h-.131c-.47 0-.975.004-1.515.012L8.783 2.3A.998.998 0 007.12 3.408l.988 1.484c-.688.019-1.418.042-2.188.069a4.013 4.013 0 00-3.83 3.44c-.165 1.15-.245 2.545-.245 4.185 0 1.965.115 3.67.35 5.116a4.012 4.012 0 003.763 3.363c1.903.094 3.317.141 5.513.141a.988.988 0 000-1.975 97.58 97.58 0 01-5.416-.139 2.037 2.037 0 01-1.91-1.708c-.216-1.324-.325-2.924-.325-4.798 0-1.563.076-2.864.225-3.904.14-.977.96-1.713 1.945-1.747 2.444-.087 4.465-.13 6.063-.131 1.598 0 3.62.044 6.064.13.96.034 1.71.81 1.855 1.814.075.524.113 1.962.141 3.065v.002c.005.183.01.07.014-.038.004-.096.008-.189.011-.081a.987.987 0 101.974-.069c-.004-.105-.007-.009-.011.09-.002.056-.004.112-.007.135l-.002.01a.574.574 0 01-.005-.091v-.027c-.03-1.118-.073-2.663-.16-3.276-.273-1.906-1.783-3.438-3.74-3.507-.905-.032-1.752-.058-2.543-.079zm-3.113 4.703h-1.307v4.643h2.2v.04l.651-1.234c.113-.215.281-.389.482-.509v-.11h.235c.137-.049.283-.074.433-.074h1.553V9.584h-1.264a8.5 8.5 0 00.741-1.405l-1.078-.381c-.24.631-.501 1.23-.806 1.786h-1.503l.686-.305c-.228-.501-.5-.959-.806-1.394l-1.034.348c.294.392.566.839.817 1.35zm-1.7 5.502h2.16l-.564 1.068h-1.595v-1.068zm-2.498-1.863l.152-1.561h1.96V8.289H7.277v.969h2.048v1.435h-1.84l-.306 3.51h2.254c0 1.155-.043 1.906-.12 2.255-.076.348-.38.523-.925.523-.305 0-.61-.022-.893-.055l.294 1.056.061.005c.282.02.546.039.81.039.991-.065 1.547-.414 1.677-1.046.11-.631.175-1.883.175-3.757H8.334zm5.09-.8v.85h-1.188v-.85h1.187zm-1.188-.955h1.187v-.893h-1.187v.893zm2.322.007v-.893h1.241v.893h-1.241zm.528 2.757a1.26 1.26 0 011.087-.627l4.003-.009a1.26 1.26 0 011.094.63l1.721 2.982c.226.39.225.872-.001 1.263l-1.743 3a1.26 1.26 0 01-1.086.628l-4.003.009a1.26 1.26 0 01-1.094-.63l-1.722-2.982a1.26 1.26 0 01.002-1.263l1.742-3zm1.967.858a1.26 1.26 0 00-1.08.614l-.903 1.513a1.26 1.26 0 00-.002 1.289l.885 1.492c.227.384.64.62 1.086.618l2.192-.005a1.26 1.26 0 001.08-.615l.904-1.518a1.26 1.26 0 00.001-1.288l-.884-1.489a1.26 1.26 0 00-1.086-.616l-2.193.005zm2.517 2.76a1.4 1.4 0 11-2.8 0 1.4 1.4 0 012.8 0z"></path></svg>
 <span class="label--not-pressed plyr__tooltip">\u5F39\u5E55\u8BBE\u7F6E</span>
 </button>`);
-  const $danmaku = popover($danmakuSettingButton, $danmakuOverlay, "click");
-  const $danmakuContainer = $('<div id="k-player-danmaku"></div>');
-  const $pbp = $(`
+      this.$danmaku = popover(this.$danmakuSettingButton, this.$danmakuOverlay, "click");
+      this.$danmakuContainer = $('<div id="k-player-danmaku"></div>');
+      this.$pbp = $(`
 <svg
   viewBox="0 0 1000 100"
   preserveAspectRatio="none"
@@ -3917,6 +3919,32 @@ ${text}
   </g>
 </svg>
 `);
+      this.$animeName = this.$danmaku.find("#animeName");
+      this.$animes = this.$danmaku.find("#animes");
+      this.$episodes = this.$danmaku.find("#episodes");
+      this.$openDanmakuList = this.$danmaku.find(".open-danmaku-list");
+      this.$tips = this.$danmaku.find("#tips");
+      this.$showDanmaku = this.$danmaku.find("[name='showDanmaku']");
+      this.$showPbp = this.$danmaku.find("[name='showPbp']");
+      this.$danmakuMerge = this.$danmaku.find("[name='danmakuMerge']");
+      this.$danmakuOverlap = this.$danmaku.find(
+        "[name='danmakuOverlap']"
+      );
+      this.$opacity = this.$danmaku.find("[name='opacity']");
+      this.$danmakuSpeed = this.$danmaku.find("[name='danmakuSpeed']");
+      this.$danmakuFontSize = this.$danmaku.find(
+        "[name='danmakuFontSize']"
+      );
+      this.$danmakuDensity = this.$danmaku.find(
+        "[name='danmakuDensity']"
+      );
+      this.$danmakuScrollAreaPercent = this.$danmaku.find(
+        "[name='danmakuScrollAreaPercent']"
+      );
+      this.$danmakuMode = this.$danmaku.find("[name='danmakuMode']");
+      this.$danmakuOverlay.attr("id", "k-player-danmaku-overlay");
+    }
+  }
 
   var css$7 = "#k-player-danmaku {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  pointer-events: none;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n}\n#k-player-danmaku-notification {\n  line-height: 1.6;\n}\n#k-player-danmaku-notification .title {\n  text-align: center;\n  font-weight: 500;\n  font-size: 16px;\n}\n#k-player-danmaku-notification img {\n  width: 40%;\n  display: block;\n  margin: 0 auto 8px;\n}\n#k-player-danmaku-notification a {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-notification p {\n  margin: 0;\n}\n#k-player-danmaku-notification p:not(:last-child) {\n  margin-bottom: 8px;\n}\n#k-player-danmaku .danmaku {\n  font-size: calc(var(--danmaku-font-size, 24px) * var(--danmaku-font-size-scale, 1));\n  font-family: SimHei, \"Microsoft JhengHei\", Arial, Helvetica, sans-serif;\n  font-weight: bold;\n  text-shadow: black 1px 0px 1px, black 0px 1px 1px, black 0px -1px 1px, black -1px 0px 1px;\n  line-height: 1.3;\n}\n@media (max-width: 576px) {\n  #k-player-danmaku .danmaku {\n    --danmaku-font-size: 16px;\n  }\n}\n#k-player-danmaku-overlay {\n  width: 210px;\n}\n#k-player-danmaku-search-form > * {\n  font-size: 14px;\n  box-sizing: border-box;\n  text-align: left;\n}\n#k-player-danmaku-search-form input,\n#k-player-danmaku-search-form select {\n  display: block;\n  margin-top: 4px;\n  width: 100%;\n}\n#k-player-danmaku-search-form label {\n  display: block;\n}\n#k-player-danmaku-search-form label span {\n  line-height: 1.4;\n}\n#k-player-danmaku-search-form label + label {\n  margin-top: 8px;\n}\n#k-player-danmaku-search-form .open-danmaku-list {\n  cursor: pointer;\n  transition: color 0.15s;\n}\n#k-player-danmaku-search-form .open-danmaku-list:hover * {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-search-form .specific-thanks {\n  color: #757575;\n  font-size: 12px;\n  position: absolute;\n  left: 8px;\n  bottom: 8px;\n  user-select: none;\n}\n#k-player-danmaku-setting-form {\n  padding: 0;\n}\n#k-player-danmaku-setting-form input {\n  margin: 0;\n}\n#k-player-danmaku-filter-form {\n  padding: 0;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper {\n  display: flex;\n  align-items: center;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper > div {\n  flex: 1;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper > div input {\n  width: 100%;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper label {\n  margin-left: 8px;\n  border: 0;\n  color: white;\n  cursor: pointer;\n  transition: color 0.15s;\n  white-space: nowrap;\n  user-select: none;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper label:hover {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-filter-table {\n  margin-top: 8px;\n}\n#k-player-danmaku-filter-table .ft-body {\n  height: 200px;\n  overflow: auto;\n}\n#k-player-danmaku-filter-table .ft-body::-webkit-scrollbar {\n  display: none;\n}\n#k-player-danmaku-filter-table .ft-row {\n  display: flex;\n  border-radius: 4px;\n  transition: all 0.15s;\n}\n#k-player-danmaku-filter-table .ft-row:hover {\n  background: var(--k-player-background-highlight);\n}\n#k-player-danmaku-filter-table .ft-content {\n  padding: 4px 8px;\n  flex: 1px;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n#k-player-danmaku-filter-table .ft-op {\n  flex-shrink: 0;\n  padding: 4px 8px;\n}\n#k-player-danmaku-filter-table a {\n  color: white;\n  cursor: pointer;\n  transition: color 0.15s;\n  user-select: none;\n}\n#k-player-danmaku-filter-table a:hover {\n  color: var(--k-player-primary-color);\n}\n\n#k-player-pbp {\n  position: absolute;\n  top: -17px;\n  height: 28px;\n  -webkit-appearance: none;\n  appearance: none;\n  left: 0;\n  position: absolute;\n  margin-left: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  margin-right: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  width: calc(100% + var(--plyr-range-thumb-height, 13px));\n  pointer-events: none;\n}\n\n#k-player-pbp-played-path {\n  color: var(--k-player-primary-color);\n}\n\n.plyr__controls__item.plyr__progress__container:hover #k-player-pbp {\n  top: -18px;\n}\n\n.plyr__switch-danmaku .icon--pressed {\n  --color: var(--k-player-primary-color);\n  transition: 0.3s all ease;\n}\n\n.plyr__switch-danmaku:hover .icon--pressed {\n  --color: white;\n}\n\n.k-popover-active .plyr__tooltip {\n  display: none;\n}\n\n.k-player-danmaku-list * {\n  box-sizing: border-box;\n  font-size: 14px;\n  line-height: normal;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n}\n.k-player-danmaku-list .k-modal-body {\n  padding: 0;\n}\n.k-player-danmaku-list-wrapper {\n  height: 500px;\n  max-height: 80vh;\n  display: flex;\n  flex-direction: column;\n}\n.k-player-danmaku-list-source-filter {\n  display: flex;\n  align-items: center;\n  white-space: nowrap;\n  padding: 16px;\n}\n.k-player-danmaku-list-source {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  flex-wrap: wrap;\n  gap: 8px;\n}\n.k-player-danmaku-list-table-wrapper {\n  flex: 1;\n  min-height: 0;\n  overflow-y: scroll;\n  position: relative;\n}\n.k-player-danmaku-list-table-wrapper::-webkit-scrollbar {\n  width: 8px;\n}\n.k-player-danmaku-list-table-wrapper::-webkit-scrollbar-thumb {\n  background: rgba(0, 0, 0, 0.15);\n  border-radius: 4px;\n}\n.k-player-danmaku-list-table-wrapper::-webkit-scrollbar-thumb:hover {\n  background-color: rgba(0, 0, 0, 0.45);\n}\n.k-player-danmaku-list-table {\n  width: 100%;\n  border-spacing: 0;\n  border-collapse: separate;\n  table-layout: fixed;\n}\n.k-player-danmaku-list-table th,\n.k-player-danmaku-list-table td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n  white-space: nowrap;\n}\n.k-player-danmaku-list-table th {\n  position: sticky;\n  background-color: white;\n  top: 0;\n  z-index: 1;\n}\n.k-player-danmaku-list-table th:nth-child(1) {\n  width: 55px;\n}\n.k-player-danmaku-list-table td:nth-child(2) {\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.k-player-danmaku-list-table th:nth-child(3) {\n  width: 100px;\n}";
   injectCss(css$7,{});
@@ -3946,7 +3974,7 @@ ${text}
     }).toArray();
   }
 
-  function createProgressBarPower(duration, comments) {
+  function createProgressBarPower($pbp, duration, comments) {
     const data = comments.map((cmt) => cmt.time);
     const svgMaxLength = 1e3;
     const size = 100;
@@ -3985,7 +4013,7 @@ ${text}
     );
   }
 
-  Object.assign(defaultConfig, {
+  const defaultConfig = {
     showDanmaku: false,
     opacity: 0.6,
     showPbp: false,
@@ -3998,362 +4026,419 @@ ${text}
     danmakuDensity: 1,
     danmakuOverlap: false,
     danmakuSourceDisabledList: []
-  });
-  const baseDanmkuSpeed = 130;
-  let state = 0 /* unSearched */;
-  const $animeName = $danmaku.find("#animeName");
-  const $animes = $danmaku.find("#animes");
-  const $episodes = $danmaku.find("#episodes");
-  const $openDanmakuList = $danmaku.find(".open-danmaku-list");
-  const $tips = $danmaku.find("#tips");
-  const $showDanmaku = $danmaku.find("[name='showDanmaku']");
-  const $showPbp = $danmaku.find("[name='showPbp']");
-  const $danmakuMerge = $danmaku.find("[name='danmakuMerge']");
-  const $danmakuOverlap = $danmaku.find(
-    "[name='danmakuOverlap']"
-  );
-  const $opacity = $danmaku.find("[name='opacity']");
-  const $danmakuSpeed = $danmaku.find("[name='danmakuSpeed']");
-  const $danmakuFontSize = $danmaku.find(
-    "[name='danmakuFontSize']"
-  );
-  const $danmakuDensity = $danmaku.find(
-    "[name='danmakuDensity']"
-  );
-  const $danmakuScrollAreaPercent = $danmaku.find(
-    "[name='danmakuScrollAreaPercent']"
-  );
-  const $danmakuMode = $danmaku.find("[name='danmakuMode']");
-  let core;
-  let animes = [];
-  let episodes = [];
-  let comments;
-  let player$1;
-  let videoInfo;
-  let syncDiff = 0;
-  function refreshDanmaku() {
-    stop();
-    autoStart();
-  }
-  const showTips = (message, duration = 1500) => {
-    $tips.finish().text(message).fadeIn("fast").delay(duration).fadeOut("fast");
   };
-  const stop = () => {
-    core == null ? void 0 : core.hide();
-  };
-  const start = () => {
-    function run() {
-      if (!player$1.media.duration)
-        return requestAnimationFrame(run);
-      if (!comments)
-        return;
-      const nextComments = adjustCommentCount(comments);
-      $openDanmakuList.find('[data-id="count"]').text(`(${nextComments.length}/${comments.length})`);
-      if (player$1.localConfig.showDanmaku) {
-        if (!core) {
-          core = new Danmaku({
-            container: $danmakuContainer[0],
-            media: player$1.media,
-            comments: nextComments,
-            merge: player$1.localConfig.danmakuMerge,
-            scrollAreaPercent: player$1.localConfig.danmakuScrollAreaPercent,
-            overlap: player$1.localConfig.danmakuOverlap
-          });
-        } else {
-          core.reload(nextComments);
-          core.show();
-        }
-        core.speed = baseDanmkuSpeed * player$1.localConfig.danmakuSpeed;
-      }
-      if (player$1.localConfig.showPbp) {
-        createProgressBarPower(player$1.media.duration, nextComments);
-      }
-    }
-    requestAnimationFrame(run);
-  };
-  const adjustCommentCount = (comments2) => {
-    let ret = comments2;
-    ret = ret.filter((cmt) => {
-      const isFilterMatch = player$1.localConfig.danmakuFilter.some((filter) => {
-        if (/^\/.*\/$/.test(filter)) {
-          const re = new RegExp(filter.slice(1, -1));
-          return re.test(cmt.text);
-        } else {
-          return cmt.text.includes(filter);
-        }
-      });
-      return !isFilterMatch;
-    });
-    ret = ret.filter((cmt) => {
-      const isDisabledSource = player$1.localConfig.danmakuSourceDisabledList.includes(cmt.user.source);
-      return !isDisabledSource;
-    });
-    const mode = player$1.localConfig.danmakuMode;
-    if (!mode.includes("color")) {
-      ret = ret.filter(
-        (cmt) => cmt.style.color === "#ffffff"
-      );
-    }
-    if (!mode.includes("bottom")) {
-      ret = ret.filter((cmt) => cmt.mode !== "bottom");
-    }
-    if (!mode.includes("top")) {
-      ret = ret.filter((cmt) => cmt.mode !== "top");
-    }
-    const maxLength = Math.round(
-      3e3 / (24 * 60) * player$1.media.duration * player$1.localConfig.danmakuDensity
-    );
-    if (ret.length > maxLength) {
-      let ratio = ret.length / maxLength;
-      ret = [...new Array(maxLength)].map((_, i) => ret[Math.floor(i * ratio)]);
-    }
-    return ret;
-  };
-  const loadEpisode = async (episodeId) => {
-    stop();
-    comments = await getComments(episodeId);
-    syncDiff = 0;
-    state = 3 /* getComments */;
-    start();
-    player$1.message.info(`\u756A\u5267\uFF1A${$animes.find(":selected").text()}`, 2e3);
-    player$1.message.info(`\u7AE0\u8282\uFF1A${$episodes.find(":selected").text()}`, 2e3);
-    player$1.message.info(`\u5DF2\u52A0\u8F7D ${comments.length} \u6761\u5F39\u5E55`, 2e3);
-  };
-  const searchAnime = lockWrap(async (name) => {
-    if (!name || name.length < 2)
-      return showTips("\u756A\u5267\u540D\u79F0\u4E0D\u5C11\u4E8E2\u4E2A\u5B57");
-    try {
-      animes = [];
-      episodes = [];
-      renderSelectOptions($animes, animes);
-      renderSelectOptions($episodes, episodes);
-      showTips("\u6B63\u5728\u641C\u7D22\u756A\u5267\u4E2D...");
-      animes = await queryAnimes(name);
-      if (animes.length === 0)
-        return showTips("\u672A\u641C\u7D22\u5230\u756A\u5267");
-      renderSelectOptions($animes, animes);
-      showTips(`\u627E\u5230 ${animes.length} \u90E8\u756A\u5267`);
-      state = 1 /* searchedAnimes */;
-      autoMatchAnime();
-    } catch (error) {
-      showTips("\u5F39\u5E55\u670D\u52A1\u5F02\u5E38\uFF0C" + error.message, 3e3);
-    }
-  });
-  const searchEpisodes = async (animeId) => {
-    try {
-      episodes = [];
-      renderSelectOptions($episodes, episodes);
-      showTips("\u6B63\u5728\u641C\u7D22\u5267\u96C6\u4E2D...");
-      episodes = await queryEpisodes(animeId);
-      if (episodes.length === 0)
-        return showTips("\u672A\u641C\u7D22\u5230\u5267\u96C6");
-      renderSelectOptions($episodes, episodes);
-      showTips(`\u627E\u5230 ${episodes.length} \u96C6`);
-      state = 2 /* findEpisodes */;
-      autoMatchEpisode();
-    } catch (error) {
-      showTips("\u5F39\u5E55\u670D\u52A1\u5F02\u5E38\uFF0C" + error.message, 3e3);
-    }
-  };
-  function autoMatchAnime() {
-    let anime = animes.find((anime2) => {
-      const storeAnime = storageAnimeName(videoInfo.rawName);
-      if (storeAnime) {
-        return anime2.id === storeAnime.id;
-      }
-      return anime2.name === videoInfo.rawName;
-    });
-    if (!anime) {
-      player$1.message.info("\u5F39\u5E55\u672A\u80FD\u81EA\u52A8\u5339\u914D\u6570\u636E\u6E90\uFF0C\u8BF7\u624B\u52A8\u641C\u7D22");
-      anime = animes[0];
-    }
-    $animes.val(anime.id);
-    $animes.trigger("change");
-  }
-  const autoMatchEpisode = async () => {
-    let episodeName = videoInfo.episode;
-    let episode;
-    let storedEpisodeId = storageEpisodeName(
-      `${videoInfo.rawName}.${videoInfo.episode}`
-    );
-    if (storedEpisodeId) {
-      episode = episodes.find((episode2) => String(episode2.id) === storedEpisodeId);
-    }
-    if (!episode && !isNaN(+episodeName)) {
-      episode = episodes.find(
-        (episode2) => new RegExp(`${episodeName}[\u8BDD\u96C6]`).test(episode2.name)
-      );
-      if (!episode) {
-        episode = episodes.find((episode2) => episode2.name.includes(episodeName));
-      }
-    }
-    if (episode) {
-      $episodes.val(episode.id);
-      $episodes.trigger("change");
-    } else {
-      player$1.message.info("\u5F39\u5E55\u672A\u80FD\u81EA\u52A8\u5339\u914D\u6570\u636E\u6E90\uFF0C\u8BF7\u624B\u52A8\u641C\u7D22");
-    }
-  };
-  const injectDanmakuDropEvent = () => {
-    player$1.onDrop((e) => {
-      var _a;
-      e.preventDefault();
-      const file = (_a = e.dataTransfer) == null ? void 0 : _a.files[0];
-      if ((file == null ? void 0 : file.type) === "text/xml") {
-        const reader = new FileReader();
-        reader.onload = async () => {
-          stop();
-          comments = parsePakkuDanmakuXML(reader.result);
-          syncDiff = 0;
-          state = 3 /* getComments */;
-          start();
-          player$1.message.info(`\u5DF2\u52A0\u8F7D ${comments.length} \u6761\u5F39\u5E55`, 2e3);
+  class DanmakuPlugin {
+    constructor(player, videoInfo) {
+      this.elements = new DanmakuElements();
+      this.baseDanmkuSpeed = 130;
+      this.refreshDanmaku = () => {
+        this.stop();
+        this.autoStart();
+      };
+      this.showTips = (message, duration = 1500) => {
+        this.elements.$tips.finish().text(message).fadeIn("fast").delay(duration).fadeOut("fast");
+      };
+      this.stop = () => {
+        var _a;
+        (_a = this.core) == null ? void 0 : _a.hide();
+      };
+      this.start = () => {
+        const run = () => {
+          if (!this.player.media.duration)
+            return requestAnimationFrame(run);
+          if (!this.state.comments)
+            return;
+          const nextComments = this.adjustCommentCount(this.state.comments);
+          this.elements.$openDanmakuList.find('[data-id="count"]').text(`(${nextComments.length}/${this.state.comments.length})`);
+          if (this.player.localConfig.showDanmaku) {
+            if (!this.core) {
+              this.core = new Danmaku({
+                container: this.elements.$danmakuContainer[0],
+                media: this.player.media,
+                comments: nextComments,
+                merge: this.player.localConfig.danmakuMerge,
+                scrollAreaPercent: this.player.localConfig.danmakuScrollAreaPercent,
+                overlap: this.player.localConfig.danmakuOverlap
+              });
+            } else {
+              this.core.reload(nextComments);
+              this.core.show();
+            }
+            this.core.speed = this.baseDanmkuSpeed * this.player.localConfig.danmakuSpeed;
+          }
+          if (this.player.localConfig.showPbp) {
+            createProgressBarPower(
+              this.elements.$pbp,
+              this.player.media.duration,
+              nextComments
+            );
+          }
         };
-        reader.readAsText(file);
-      }
-    });
-  };
-  const initEvents = (name) => {
-    $animeName.val(name);
-    $animeName.on("keypress", (e) => {
-      if (e.key === "Enter")
-        searchAnime($animeName.val());
-    });
-    $animeName.on("blur", (e) => {
-      searchAnime($animeName.val());
-    });
-    $animes.on("change", (e) => {
-      const animeId = $animes.val();
-      const anime = animes.find((anime2) => anime2.id === animeId);
-      if (!anime)
-        return;
-      storageAnimeName(videoInfo.rawName, {
-        id: anime.id,
-        name: anime.name,
-        keyword: $animeName.val()
+        requestAnimationFrame(run);
+      };
+      this.adjustCommentCount = (comments) => {
+        let ret = comments;
+        ret = ret.filter((cmt) => {
+          const isFilterMatch = this.player.localConfig.danmakuFilter.some(
+            (filter) => {
+              if (/^\/.*\/$/.test(filter)) {
+                const re = new RegExp(filter.slice(1, -1));
+                return re.test(cmt.text);
+              } else {
+                return cmt.text.includes(filter);
+              }
+            }
+          );
+          return !isFilterMatch;
+        });
+        ret = ret.filter((cmt) => {
+          const isDisabledSource = this.player.localConfig.danmakuSourceDisabledList.includes(
+            cmt.user.source
+          );
+          return !isDisabledSource;
+        });
+        const mode = this.player.localConfig.danmakuMode;
+        if (!mode.includes("color")) {
+          ret = ret.filter(
+            (cmt) => cmt.style.color === "#ffffff"
+          );
+        }
+        if (!mode.includes("bottom")) {
+          ret = ret.filter((cmt) => cmt.mode !== "bottom");
+        }
+        if (!mode.includes("top")) {
+          ret = ret.filter((cmt) => cmt.mode !== "top");
+        }
+        const maxLength = Math.round(
+          3e3 / (24 * 60) * this.player.media.duration * this.player.localConfig.danmakuDensity
+        );
+        if (ret.length > maxLength) {
+          let ratio = ret.length / maxLength;
+          ret = [...new Array(maxLength)].map((_, i) => ret[Math.floor(i * ratio)]);
+        }
+        return ret;
+      };
+      this.loadEpisode = async (episodeId) => {
+        this.stop();
+        this.state.comments = await getComments(episodeId);
+        this.state.syncDiff = 0;
+        this.state.state = 3 /* getComments */;
+        this.start();
+        this.player.message.info(
+          `\u756A\u5267\uFF1A${this.elements.$animes.find(":selected").text()}`,
+          2e3
+        );
+        this.player.message.info(
+          `\u7AE0\u8282\uFF1A${this.elements.$episodes.find(":selected").text()}`,
+          2e3
+        );
+        this.player.message.info(
+          `\u5DF2\u52A0\u8F7D ${this.state.comments.length} \u6761\u5F39\u5E55`,
+          2e3
+        );
+      };
+      this.searchAnime = lockWrap(async (name) => {
+        if (!name || name.length < 2)
+          return this.showTips("\u756A\u5267\u540D\u79F0\u4E0D\u5C11\u4E8E2\u4E2A\u5B57");
+        try {
+          this.state.animes = [];
+          this.state.episodes = [];
+          renderSelectOptions(this.elements.$animes, this.state.animes);
+          renderSelectOptions(this.elements.$episodes, this.state.episodes);
+          this.showTips("\u6B63\u5728\u641C\u7D22\u756A\u5267\u4E2D...");
+          this.state.animes = await queryAnimes(name);
+          if (this.state.animes.length === 0)
+            return this.showTips("\u672A\u641C\u7D22\u5230\u756A\u5267");
+          renderSelectOptions(this.elements.$animes, this.state.animes);
+          this.showTips(`\u627E\u5230 ${this.state.animes.length} \u90E8\u756A\u5267`);
+          this.state.state = 1 /* searchedAnimes */;
+          this.autoMatchAnime();
+        } catch (error) {
+          this.showTips("\u5F39\u5E55\u670D\u52A1\u5F02\u5E38\uFF0C" + error.message, 3e3);
+        }
       });
-      searchEpisodes(anime.id);
-    });
-    $episodes.on("change", (e) => {
-      const episodeId = $episodes.val();
-      const animeId = $animes.val();
-      const anime = animes.find((anime2) => anime2.id === animeId);
-      if (!anime)
-        return;
-      storageAnimeName(videoInfo.rawName, {
-        id: anime.id,
-        name: anime.name,
-        keyword: $animeName.val()
-      });
-      storageEpisodeName(`${videoInfo.rawName}.${videoInfo.episode}`, episodeId);
-      loadEpisode(episodeId);
-    });
-    $danmakuSwitch.toggleClass("plyr__control--pressed", player$1.localConfig.showDanmaku).on("click", () => {
-      switchDanmaku();
-    });
-    const resizeOb = new ResizeObserver(() => {
-      core == null ? void 0 : core.resize();
-    });
-    resizeOb.observe($danmakuContainer[0]);
-    const mutationOb = new MutationObserver(async () => {
-      Object.assign(videoInfo, await runtime.getCurrentVideoNameAndEpisode());
-      state = 1 /* searchedAnimes */;
-      autoStart();
-    });
-    mutationOb.observe(player$1.media, { attributeFilter: ["src"] });
-    player$1.initInputEvent();
-    $showDanmaku.prop("checked", player$1.localConfig.showDanmaku).on("change", (e) => {
-      switchDanmaku(e.target.checked);
-    });
-    $showPbp.prop("checked", player$1.localConfig.showPbp).on("change", (e) => {
-      const chekced = e.target.checked;
-      $pbp.toggle(chekced);
-      player$1.configSaveToLocal("showPbp", chekced);
-      if (chekced)
-        autoStart();
-    });
-    $pbp.toggle(player$1.localConfig.showPbp || false);
-    const $pbpPlayed = $pbp.find("#k-player-pbp-played-path");
-    player$1.on("timeupdate", () => {
-      $pbpPlayed.attr(
-        "width",
-        (player$1.currentTime / player$1.plyr.duration || 0) * 100 + "%"
+      this.searchEpisodes = async (animeId) => {
+        try {
+          this.state.episodes = [];
+          renderSelectOptions(this.elements.$episodes, this.state.episodes);
+          this.showTips("\u6B63\u5728\u641C\u7D22\u5267\u96C6\u4E2D...");
+          this.state.episodes = await queryEpisodes(animeId);
+          if (this.state.episodes.length === 0)
+            return this.showTips("\u672A\u641C\u7D22\u5230\u5267\u96C6");
+          renderSelectOptions(this.elements.$episodes, this.state.episodes);
+          this.showTips(`\u627E\u5230 ${this.state.episodes.length} \u96C6`);
+          this.state.state = 2 /* findEpisodes */;
+          this.autoMatchEpisode();
+        } catch (error) {
+          this.showTips("\u5F39\u5E55\u670D\u52A1\u5F02\u5E38\uFF0C" + error.message, 3e3);
+        }
+      };
+      this.autoMatchAnime = () => {
+        let anime = this.state.animes.find((anime2) => {
+          const storeAnime = storageAnimeName(this.state.videoInfo.rawName);
+          if (storeAnime) {
+            return anime2.id === storeAnime.id;
+          }
+          return anime2.name === this.state.videoInfo.rawName;
+        });
+        if (!anime) {
+          this.player.message.info("\u5F39\u5E55\u672A\u80FD\u81EA\u52A8\u5339\u914D\u6570\u636E\u6E90\uFF0C\u8BF7\u624B\u52A8\u641C\u7D22");
+          anime = this.state.animes[0];
+        }
+        this.elements.$animes.val(anime.id);
+        this.elements.$animes.trigger("change");
+      };
+      this.autoMatchEpisode = async () => {
+        let episodeName = this.state.videoInfo.episode;
+        let episode;
+        let storedEpisodeId = storageEpisodeName(
+          `${this.state.videoInfo.rawName}.${this.state.videoInfo.episode}`
+        );
+        if (storedEpisodeId) {
+          episode = this.state.episodes.find(
+            (episode2) => String(episode2.id) === storedEpisodeId
+          );
+        }
+        if (!episode && !isNaN(+episodeName)) {
+          episode = this.state.episodes.find(
+            (episode2) => new RegExp(`${episodeName}[\u8BDD\u96C6]`).test(episode2.name)
+          );
+          if (!episode) {
+            episode = this.state.episodes.find(
+              (episode2) => episode2.name.includes(episodeName)
+            );
+          }
+        }
+        if (episode) {
+          this.elements.$episodes.val(episode.id);
+          this.elements.$episodes.trigger("change");
+        } else {
+          this.player.message.info("\u5F39\u5E55\u672A\u80FD\u81EA\u52A8\u5339\u914D\u6570\u636E\u6E90\uFF0C\u8BF7\u624B\u52A8\u641C\u7D22");
+        }
+      };
+      this.injectDanmakuDropEvent = () => {
+        this.player.onDrop((e) => {
+          var _a;
+          e.preventDefault();
+          const file = (_a = e.dataTransfer) == null ? void 0 : _a.files[0];
+          if ((file == null ? void 0 : file.type) === "text/xml") {
+            const reader = new FileReader();
+            reader.onload = async () => {
+              this.stop();
+              this.state.comments = parsePakkuDanmakuXML(reader.result);
+              this.state.syncDiff = 0;
+              this.state.state = 3 /* getComments */;
+              this.start();
+              this.player.message.info(
+                `\u5DF2\u52A0\u8F7D ${this.state.comments.length} \u6761\u5F39\u5E55`,
+                2e3
+              );
+            };
+            reader.readAsText(file);
+          }
+        });
+      };
+      this.initEvents = (name) => {
+        this.elements.$animeName.val(name);
+        this.elements.$animeName.on("keypress", (e) => {
+          if (e.key === "Enter")
+            this.searchAnime(this.elements.$animeName.val());
+        });
+        this.elements.$animeName.on("blur", (e) => {
+          this.searchAnime(this.elements.$animeName.val());
+        });
+        this.elements.$animes.on("change", (e) => {
+          const animeId = this.elements.$animes.val();
+          const anime = this.state.animes.find((anime2) => anime2.id === animeId);
+          if (!anime)
+            return;
+          storageAnimeName(this.state.videoInfo.rawName, {
+            id: anime.id,
+            name: anime.name,
+            keyword: this.elements.$animeName.val()
+          });
+          this.searchEpisodes(anime.id);
+        });
+        this.elements.$episodes.on("change", (e) => {
+          const episodeId = this.elements.$episodes.val();
+          const animeId = this.elements.$animes.val();
+          const anime = this.state.animes.find((anime2) => anime2.id === animeId);
+          if (!anime)
+            return;
+          storageAnimeName(this.state.videoInfo.rawName, {
+            id: anime.id,
+            name: anime.name,
+            keyword: this.elements.$animeName.val()
+          });
+          storageEpisodeName(
+            `${this.state.videoInfo.rawName}.${this.state.videoInfo.episode}`,
+            episodeId
+          );
+          this.loadEpisode(episodeId);
+        });
+        this.elements.$danmakuSwitch.toggleClass(
+          "plyr__control--pressed",
+          this.player.localConfig.showDanmaku
+        ).on("click", () => {
+          this.switchDanmaku();
+        });
+        const resizeOb = new ResizeObserver(() => {
+          var _a;
+          (_a = this.core) == null ? void 0 : _a.resize();
+        });
+        resizeOb.observe(this.elements.$danmakuContainer[0]);
+        const mutationOb = new MutationObserver(async () => {
+          Object.assign(
+            this.state.videoInfo,
+            await runtime.getCurrentVideoNameAndEpisode()
+          );
+          this.state.state = 1 /* searchedAnimes */;
+          this.autoStart();
+        });
+        mutationOb.observe(this.player.media, { attributeFilter: ["src"] });
+        this.player.initInputEvent();
+        this.elements.$showDanmaku.prop("checked", this.player.localConfig.showDanmaku).on("change", (e) => {
+          this.switchDanmaku(e.target.checked);
+        });
+        this.elements.$showPbp.prop("checked", this.player.localConfig.showPbp).on("change", (e) => {
+          const chekced = e.target.checked;
+          this.elements.$pbp.toggle(chekced);
+          this.player.configSaveToLocal("showPbp", chekced);
+          if (chekced)
+            this.autoStart();
+        });
+        this.elements.$pbp.toggle(this.player.localConfig.showPbp || false);
+        const $pbpPlayed = this.elements.$pbp.find("#k-player-pbp-played-path");
+        this.player.on("timeupdate", () => {
+          $pbpPlayed.attr(
+            "width",
+            (this.player.currentTime / this.player.plyr.duration || 0) * 100 + "%"
+          );
+        });
+        this.elements.$danmakuMerge.prop("checked", this.player.localConfig.danmakuMerge).on("change", (e) => {
+          const chekced = e.target.checked;
+          this.player.configSaveToLocal("danmakuMerge", chekced);
+          if (this.core)
+            this.core.merge = chekced;
+        });
+        this.elements.$danmakuOverlap.prop("checked", this.player.localConfig.danmakuOverlap).on("change", (e) => {
+          const chekced = e.target.checked;
+          this.player.configSaveToLocal("danmakuOverlap", chekced);
+          if (this.core)
+            this.core.overlap = chekced;
+        });
+        addRangeListener({
+          $dom: this.elements.$opacity,
+          name: "opacity",
+          onInput: (v) => {
+            this.elements.$danmakuContainer.css({ opacity: v });
+          },
+          player: this.player
+        });
+        addRangeListener({
+          $dom: this.elements.$danmakuFontSize,
+          name: "danmakuFontSize",
+          onInput: (v) => {
+            this.elements.$danmakuContainer.css("--danmaku-font-size-scale", v);
+          },
+          player: this.player
+        });
+        addRangeListener({
+          $dom: this.elements.$danmakuSpeed,
+          name: "danmakuSpeed",
+          onChange: (v) => {
+            if (this.core)
+              this.core.speed = this.baseDanmkuSpeed * v;
+          },
+          player: this.player
+        });
+        addRangeListener({
+          $dom: this.elements.$danmakuDensity,
+          name: "danmakuDensity",
+          onChange: this.refreshDanmaku,
+          player: this.player
+        });
+        addRangeListener({
+          $dom: this.elements.$danmakuScrollAreaPercent,
+          name: "danmakuScrollAreaPercent",
+          onChange: (val) => {
+            if (this.core)
+              this.core.scrollAreaPercent = val;
+          },
+          player: this.player
+        });
+        setCheckboxGroupValue(
+          this.elements.$danmakuMode,
+          this.player.localConfig.danmakuMode
+        );
+        this.elements.$danmakuMode.on("change", () => {
+          const modes = getCheckboxGroupValue(this.elements.$danmakuMode);
+          this.player.configSaveToLocal("danmakuMode", modes);
+          if (this.core) {
+            this.refreshDanmaku();
+          }
+        });
+        createFilter(this.player, this.refreshDanmaku);
+        createDanmakuList(
+          this.player,
+          () => this.state.comments,
+          this.refreshDanmaku
+        );
+        this.injectDanmakuDropEvent();
+      };
+      this.switchDanmaku = (bool) => {
+        bool != null ? bool : bool = !this.player.localConfig.showDanmaku;
+        this.player.configSaveToLocal("showDanmaku", bool);
+        this.elements.$danmakuSwitch.toggleClass("plyr__control--pressed", bool);
+        this.elements.$showDanmaku.prop("checked", bool);
+        this.player.message.info(`\u5F39\u5E55${bool ? "\u5F00\u542F" : "\u5173\u95ED"}`);
+        if (bool) {
+          this.autoStart();
+        } else {
+          this.stop();
+        }
+      };
+      this.autoStart = () => {
+        if (!(this.player.localConfig.showDanmaku || this.player.localConfig.showPbp))
+          return;
+        switch (this.state.state) {
+          case 0 /* unSearched */:
+            this.searchAnime(this.elements.$animeName.val());
+            break;
+          case 1 /* searchedAnimes */:
+            this.searchEpisodes(this.elements.$animes.val());
+            break;
+          case 2 /* findEpisodes */:
+            this.autoMatchEpisode();
+            break;
+          case 3 /* getComments */:
+            this.start();
+            break;
+        }
+      };
+      this.player = player;
+      this.player.danmaku = this;
+      this.state = {
+        state: 0 /* unSearched */,
+        animes: [],
+        episodes: [],
+        comments: [],
+        videoInfo,
+        syncDiff: 0
+      };
+      this.player.localConfig = Object.assign(
+        {},
+        defaultConfig,
+        this.player.localConfig
       );
-    });
-    $danmakuMerge.prop("checked", player$1.localConfig.danmakuMerge).on("change", (e) => {
-      const chekced = e.target.checked;
-      player$1.configSaveToLocal("danmakuMerge", chekced);
-      if (core)
-        core.merge = chekced;
-    });
-    $danmakuOverlap.prop("checked", player$1.localConfig.danmakuOverlap).on("change", (e) => {
-      const chekced = e.target.checked;
-      player$1.configSaveToLocal("danmakuOverlap", chekced);
-      if (core)
-        core.overlap = chekced;
-    });
-    addRangeListener({
-      $dom: $opacity,
-      name: "opacity",
-      onInput: (v) => {
-        $danmakuContainer.css({ opacity: v });
-      },
-      player: player$1
-    });
-    addRangeListener({
-      $dom: $danmakuFontSize,
-      name: "danmakuFontSize",
-      onInput: (v) => {
-        $danmakuContainer.css("--danmaku-font-size-scale", v);
-      },
-      player: player$1
-    });
-    addRangeListener({
-      $dom: $danmakuSpeed,
-      name: "danmakuSpeed",
-      onChange: (v) => {
-        if (core)
-          core.speed = baseDanmkuSpeed * v;
-      },
-      player: player$1
-    });
-    addRangeListener({
-      $dom: $danmakuDensity,
-      name: "danmakuDensity",
-      onChange: refreshDanmaku,
-      player: player$1
-    });
-    addRangeListener({
-      $dom: $danmakuScrollAreaPercent,
-      name: "danmakuScrollAreaPercent",
-      onChange: (val) => {
-        if (core)
-          core.scrollAreaPercent = val;
-      },
-      player: player$1
-    });
-    setCheckboxGroupValue($danmakuMode, player$1.localConfig.danmakuMode);
-    $danmakuMode.on("change", () => {
-      const modes = getCheckboxGroupValue($danmakuMode);
-      player$1.configSaveToLocal("danmakuMode", modes);
-      if (core) {
-        refreshDanmaku();
-      }
-    });
-    createFilter(player$1, refreshDanmaku);
-    createDanmakuList(player$1, () => comments, refreshDanmaku);
-    injectDanmakuDropEvent();
-  };
-  function switchDanmaku(bool) {
-    bool != null ? bool : bool = !player$1.localConfig.showDanmaku;
-    player$1.configSaveToLocal("showDanmaku", bool);
-    $danmakuSwitch.toggleClass("plyr__control--pressed", bool);
-    $showDanmaku.prop("checked", bool);
-    player$1.message.info(`\u5F39\u5E55${bool ? "\u5F00\u542F" : "\u5173\u95ED"}`);
-    if (bool) {
-      autoStart();
-    } else {
-      stop();
+      this.player.$videoWrapper.append(this.elements.$danmakuContainer);
+      this.elements.$danmaku.insertBefore(player.$searchActions);
+      this.elements.$danmaku.before(this.elements.$danmakuSwitch);
+      let defaultSearchName = storageAnimeName(videoInfo.rawName) || videoInfo.name;
+      this.initEvents(
+        typeof defaultSearchName === "object" ? defaultSearchName.keyword : defaultSearchName
+      );
+      this.autoStart();
     }
   }
   Shortcuts.keyBindings.registerKeyBinding({
@@ -4362,7 +4447,8 @@ ${text}
     key: "D"
   });
   Shortcuts.registerCommand(Commands.danmakuSwitch, function() {
-    switchDanmaku();
+    var _a;
+    (_a = this.danmaku) == null ? void 0 : _a.switchDanmaku();
   });
   Shortcuts.keyBindings.registerKeyBinding({
     command: Commands.danmakuSyncBack,
@@ -4370,15 +4456,16 @@ ${text}
     key: ","
   });
   Shortcuts.registerCommand(Commands.danmakuSyncBack, function() {
-    if (!comments)
+    var _a;
+    if (!((_a = this.danmaku) == null ? void 0 : _a.state.comments))
       return;
-    comments.forEach((comment) => {
+    this.danmaku.state.comments.forEach((comment) => {
       comment.time += 0.5;
     });
-    syncDiff += 0.5;
+    this.danmaku.state.syncDiff += 0.5;
     this.message.destroy();
-    this.message.info(`\u5F39\u5E55\u540C\u6B65\uFF1A\u6EDE\u540E\u4E860.5s\uFF08${syncDiff}s\uFF09`);
-    refreshDanmaku();
+    this.message.info(`\u5F39\u5E55\u540C\u6B65\uFF1A\u6EDE\u540E\u4E860.5s\uFF08${this.danmaku.state.syncDiff}s\uFF09`);
+    this.danmaku.refreshDanmaku();
   });
   Shortcuts.keyBindings.registerKeyBinding({
     command: Commands.danmakuSyncForward,
@@ -4386,15 +4473,16 @@ ${text}
     key: "."
   });
   Shortcuts.registerCommand(Commands.danmakuSyncForward, function() {
-    if (!comments)
+    var _a;
+    if (!((_a = this.danmaku) == null ? void 0 : _a.state.comments))
       return;
-    comments.forEach((comment) => {
+    this.danmaku.state.comments.forEach((comment) => {
       comment.time += -0.5;
     });
-    syncDiff += -0.5;
+    this.danmaku.state.syncDiff += -0.5;
     this.message.destroy();
-    this.message.info(`\u5F39\u5E55\u540C\u6B65\uFF1A\u8D85\u524D\u4E860.5s\uFF08${syncDiff}s\uFF09`);
-    refreshDanmaku();
+    this.message.info(`\u5F39\u5E55\u540C\u6B65\uFF1A\u8D85\u524D\u4E860.5s\uFF08${this.danmaku.state.syncDiff}s\uFF09`);
+    this.danmaku.refreshDanmaku();
   });
   Shortcuts.keyBindings.registerKeyBinding({
     command: Commands.danmakuSyncRestore,
@@ -4402,15 +4490,16 @@ ${text}
     key: "/"
   });
   Shortcuts.registerCommand(Commands.danmakuSyncRestore, function() {
-    if (!comments)
+    var _a;
+    if (!((_a = this.danmaku) == null ? void 0 : _a.state.comments))
       return;
-    comments.forEach((comment) => {
-      comment.time += -syncDiff;
+    this.danmaku.state.comments.forEach((comment) => {
+      comment.time += -this.danmaku.state.syncDiff;
     });
-    syncDiff = 0;
+    this.danmaku.state.syncDiff = 0;
     this.message.destroy();
     this.message.info("\u5F39\u5E55\u540C\u6B65\uFF1A\u5DF2\u590D\u4F4D");
-    refreshDanmaku();
+    this.danmaku.refreshDanmaku();
   });
   const renderSelectOptions = (target, options) => {
     const html = options.reduce(
@@ -4419,38 +4508,11 @@ ${text}
     );
     target.html(html);
   };
-  function autoStart() {
-    if (!(player$1.localConfig.showDanmaku || player$1.localConfig.showPbp))
-      return;
-    switch (state) {
-      case 0 /* unSearched */:
-        searchAnime($animeName.val());
-        break;
-      case 1 /* searchedAnimes */:
-        searchEpisodes($animes.val());
-        break;
-      case 2 /* findEpisodes */:
-        autoMatchEpisode();
-        break;
-      case 3 /* getComments */:
-        start();
-        break;
-    }
-  }
-  async function setup(_player) {
-    player$1 = _player;
+  async function setup(player) {
     const info = await runtime.getCurrentVideoNameAndEpisode();
     if (!info)
       return;
-    videoInfo = info;
-    player$1.$videoWrapper.append($danmakuContainer);
-    $danmaku.insertBefore(player$1.$searchActions);
-    $danmaku.before($danmakuSwitch);
-    let defaultSearchName = storageAnimeName(videoInfo.rawName) || videoInfo.name;
-    initEvents(
-      typeof defaultSearchName === "object" ? defaultSearchName.keyword : defaultSearchName
-    );
-    autoStart();
+    new DanmakuPlugin(player, info);
   }
 
   KPlayer.register(setup);
@@ -5193,7 +5255,7 @@ ${text}
   });
 
   runtime.register({
-    domains: [".ntdm9."],
+    domains: [".ntdm8."],
     opts: [
       { test: "*", run: iframePlayer$3.createHistrory },
       { test: "/", run: renderFavoriteList },
@@ -5202,7 +5264,7 @@ ${text}
     ],
     search: {
       name: "NT\u52A8\u6F2B",
-      search: (name) => `http://www.ntdm9.com/search/-------------.html?wd=${name}&page=1`
+      search: (name) => `http://www.ntdm8.com/search/-------------.html?wd=${name}&page=1`
     }
   });
 
