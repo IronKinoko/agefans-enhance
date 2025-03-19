@@ -3,7 +3,7 @@ import { renderFavoriteList } from './favorite'
 import { iframePlayer, runInTop } from './play'
 
 runtime.register({
-  domains: ['.ntdm9.'],
+  domains: ['.ntdm8.'],
   opts: [
     { test: '*', run: iframePlayer.createHistrory },
     { test: '/', run: renderFavoriteList },
@@ -13,6 +13,6 @@ runtime.register({
   search: {
     name: 'NT动漫',
     search: (name) =>
-      `http://www.ntdm9.com/search/-------------.html?wd=${name}&page=1`,
+      `http://www.ntdm8.com/search/-------------.html?wd=${name}&page=1`,
   },
 })

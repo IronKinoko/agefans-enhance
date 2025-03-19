@@ -26,8 +26,8 @@ devDependencies:
     specifier: ^4.17.6
     version: 4.17.6
   bocchi:
-    specifier: ^1.2.0
-    version: 1.2.0
+    specifier: ^1.2.1
+    version: 1.2.1
   gh-pages:
     specifier: ^3.2.3
     version: 3.2.3
@@ -482,10 +482,10 @@ packages:
     engines: { node: '>=8' }
     dev: true
 
-  /bocchi@1.2.0:
+  /bocchi@1.2.1:
     resolution:
       {
-        integrity: sha512-jbQADsmmoKzBVNOGU1790NuBWUJ+rQRiiCqlLJj9ue/uBiywpadoUpNHSmjPdWDvwYlhk6LZu1kNh2tdjYGJ0w==,
+        integrity: sha512-icHsOJ5ta3QmlkBGusJ2Aftt55Yskf+H0o8BtZNd8ggB3OBEit4DkOlS3qFK4Pk71UZUyHz13uxa/Hd5PT6WOg==,
       }
     hasBin: true
     dependencies:
@@ -643,7 +643,7 @@ packages:
     engines: { node: '>= 8.10.0' }
     dependencies:
       anymatch: 3.1.2
-      braces: 3.0.2
+      braces: 3.0.3
       glob-parent: 5.1.2
       is-binary-path: 2.1.0
       is-glob: 4.0.3
