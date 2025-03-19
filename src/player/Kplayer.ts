@@ -11,9 +11,9 @@ import {
   loadingHTML,
   pipHTML,
   progressHTML,
-  searchActionsHTML,
-  settingsHTML,
-  speedHTML,
+  createSearchActionsHTML,
+  createSettingsHTML,
+  createSpeedHTML,
   speedList,
 } from './html'
 import './index.scss'
@@ -57,7 +57,7 @@ export interface LocalConfig {
   showPlayLarge: boolean
 }
 
-export const defaultConfig = {
+const defaultConfig = {
   customSeekTime: 89,
   speed: 1,
   continuePlay: true,
@@ -89,8 +89,8 @@ export class KPlayer {
   tsumaLength: number
   curentTsuma: number
   private isHoverControls = false
-  $settings!: JQuery<HTMLDivElement>
-  $speed!: JQuery<HTMLDivElement>
+  $settings!: JQuery<HTMLElement>
+  $speed!: JQuery<HTMLElement>
   localPlayTimeKey: string
   $searchActions!: JQuery<HTMLElement>
   static plguinList: ((player: KPlayer) => void)[] = []
@@ -486,7 +486,7 @@ export class KPlayer {
   }
 
   private injectSettings() {
-    this.$settings = $(settingsHTML) as JQuery<HTMLDivElement>
+    this.$settings = createSettingsHTML()
 
     this.$settings
       .find<HTMLInputElement>('[name=showPlayLarge]')
@@ -557,7 +557,7 @@ export class KPlayer {
   }
 
   private injectSpeed() {
-    this.$speed = $(speedHTML) as JQuery<HTMLDivElement>
+    this.$speed = createSpeedHTML()
     const speedItems = this.$speed.find('.k-speed-item')
     const localSpeed = this.localConfig.speed
     speedItems.each((_, el) => {
@@ -594,7 +594,7 @@ export class KPlayer {
   }
 
   private async injectSearchActions() {
-    this.$searchActions = $(searchActionsHTML).toggle(
+    this.$searchActions = createSearchActionsHTML().toggle(
       this.localConfig.showSearchActions
     )
     this.$searchActions.insertBefore(this.$speed)

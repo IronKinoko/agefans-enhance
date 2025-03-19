@@ -2,10 +2,15 @@ import { popover } from '../../../utils/popover'
 import { tabs } from '../../../utils/tabs'
 import { Commands } from './types'
 
-const $danmakuOverlay = tabs([
-  {
-    name: '搜索',
-    content: `<div id="k-player-danmaku-search-form">
+export class DanmakuElements {
+  constructor() {
+    this.$danmakuOverlay.attr('id', 'k-player-danmaku-overlay')
+  }
+
+  $danmakuOverlay = tabs([
+    {
+      name: '搜索',
+      content: `<div id="k-player-danmaku-search-form">
       <label>
         <span>搜索番剧名称</span>
         <input type="text" id="animeName" class="k-input" />
@@ -29,10 +34,10 @@ const $danmakuOverlay = tabs([
       
       <span class="specific-thanks">弹幕服务由 弹弹play 提供</span>
     </div>`,
-  },
-  {
-    name: '设置',
-    content: `
+    },
+    {
+      name: '设置',
+      content: `
     <div id="k-player-danmaku-setting-form" class="k-settings-list">
       <label class="k-settings-item">
         <input type="checkbox" name="showDanmaku" />
@@ -89,10 +94,10 @@ const $danmakuOverlay = tabs([
       </div>
     </div>
     `,
-  },
-  {
-    name: '过滤',
-    content: `
+    },
+    {
+      name: '过滤',
+      content: `
     <div id="k-player-danmaku-filter-form">
       <div class="ft-input-wrapper">
         <div>
@@ -112,10 +117,10 @@ const $danmakuOverlay = tabs([
       </div>
     </div>
     `,
-  },
-])
-$danmakuOverlay.attr('id', 'k-player-danmaku-overlay')
-export const $danmakuSwitch = $(`
+    },
+  ])
+
+  $danmakuSwitch = $(`
 <button
   class="plyr__controls__item plyr__control plyr__switch-danmaku plyr__custom"
   type="button"
@@ -127,16 +132,16 @@ export const $danmakuSwitch = $(`
   <span class="label--not-pressed plyr__tooltip">开启弹幕(<k-shortcuts-tip command="${Commands.danmakuSwitch}"></k-shortcuts-tip>)</span>
   <span class="label--pressed plyr__tooltip">关闭弹幕(<k-shortcuts-tip command="${Commands.danmakuSwitch}"></k-shortcuts-tip>)</span>
 </button>`)
-export const $danmakuSettingButton =
-  $(`<button class="plyr__controls__item plyr__control" type="button" data-plyr="danmaku-setting">
+  $danmakuSettingButton =
+    $(`<button class="plyr__controls__item plyr__control" type="button" data-plyr="danmaku-setting">
 <svg class="icon--not-pressed" focusable="false" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" id="bpx-svg-sprite-new-danmu-setting"><path fill-rule="evenodd" clip-rule="evenodd" d="M15.645 4.881l1.06-1.473a.998.998 0 10-1.622-1.166L13.22 4.835a110.67 110.67 0 00-1.1-.007h-.131c-.47 0-.975.004-1.515.012L8.783 2.3A.998.998 0 007.12 3.408l.988 1.484c-.688.019-1.418.042-2.188.069a4.013 4.013 0 00-3.83 3.44c-.165 1.15-.245 2.545-.245 4.185 0 1.965.115 3.67.35 5.116a4.012 4.012 0 003.763 3.363c1.903.094 3.317.141 5.513.141a.988.988 0 000-1.975 97.58 97.58 0 01-5.416-.139 2.037 2.037 0 01-1.91-1.708c-.216-1.324-.325-2.924-.325-4.798 0-1.563.076-2.864.225-3.904.14-.977.96-1.713 1.945-1.747 2.444-.087 4.465-.13 6.063-.131 1.598 0 3.62.044 6.064.13.96.034 1.71.81 1.855 1.814.075.524.113 1.962.141 3.065v.002c.005.183.01.07.014-.038.004-.096.008-.189.011-.081a.987.987 0 101.974-.069c-.004-.105-.007-.009-.011.09-.002.056-.004.112-.007.135l-.002.01a.574.574 0 01-.005-.091v-.027c-.03-1.118-.073-2.663-.16-3.276-.273-1.906-1.783-3.438-3.74-3.507-.905-.032-1.752-.058-2.543-.079zm-3.113 4.703h-1.307v4.643h2.2v.04l.651-1.234c.113-.215.281-.389.482-.509v-.11h.235c.137-.049.283-.074.433-.074h1.553V9.584h-1.264a8.5 8.5 0 00.741-1.405l-1.078-.381c-.24.631-.501 1.23-.806 1.786h-1.503l.686-.305c-.228-.501-.5-.959-.806-1.394l-1.034.348c.294.392.566.839.817 1.35zm-1.7 5.502h2.16l-.564 1.068h-1.595v-1.068zm-2.498-1.863l.152-1.561h1.96V8.289H7.277v.969h2.048v1.435h-1.84l-.306 3.51h2.254c0 1.155-.043 1.906-.12 2.255-.076.348-.38.523-.925.523-.305 0-.61-.022-.893-.055l.294 1.056.061.005c.282.02.546.039.81.039.991-.065 1.547-.414 1.677-1.046.11-.631.175-1.883.175-3.757H8.334zm5.09-.8v.85h-1.188v-.85h1.187zm-1.188-.955h1.187v-.893h-1.187v.893zm2.322.007v-.893h1.241v.893h-1.241zm.528 2.757a1.26 1.26 0 011.087-.627l4.003-.009a1.26 1.26 0 011.094.63l1.721 2.982c.226.39.225.872-.001 1.263l-1.743 3a1.26 1.26 0 01-1.086.628l-4.003.009a1.26 1.26 0 01-1.094-.63l-1.722-2.982a1.26 1.26 0 01.002-1.263l1.742-3zm1.967.858a1.26 1.26 0 00-1.08.614l-.903 1.513a1.26 1.26 0 00-.002 1.289l.885 1.492c.227.384.64.62 1.086.618l2.192-.005a1.26 1.26 0 001.08-.615l.904-1.518a1.26 1.26 0 00.001-1.288l-.884-1.489a1.26 1.26 0 00-1.086-.616l-2.193.005zm2.517 2.76a1.4 1.4 0 11-2.8 0 1.4 1.4 0 012.8 0z"></path></svg>
 <span class="label--not-pressed plyr__tooltip">弹幕设置</span>
 </button>`)
-export const $danmaku = popover($danmakuSettingButton, $danmakuOverlay, 'click')
+  $danmaku = popover(this.$danmakuSettingButton, this.$danmakuOverlay, 'click')
 
-export const $danmakuContainer = $('<div id="k-player-danmaku"></div>')
+  $danmakuContainer = $('<div id="k-player-danmaku"></div>')
 
-export const $pbp = $(`
+  $pbp = $(`
 <svg
   viewBox="0 0 1000 100"
   preserveAspectRatio="none"
@@ -158,3 +163,28 @@ export const $pbp = $(`
   </g>
 </svg>
 `)
+
+  $animeName = this.$danmaku.find('#animeName')
+  $animes = this.$danmaku.find('#animes')
+  $episodes = this.$danmaku.find('#episodes')
+  $openDanmakuList = this.$danmaku.find('.open-danmaku-list')
+  $tips = this.$danmaku.find('#tips')
+  $showDanmaku = this.$danmaku.find<HTMLInputElement>("[name='showDanmaku']")
+  $showPbp = this.$danmaku.find<HTMLInputElement>("[name='showPbp']")
+  $danmakuMerge = this.$danmaku.find<HTMLInputElement>("[name='danmakuMerge']")
+  $danmakuOverlap = this.$danmaku.find<HTMLInputElement>(
+    "[name='danmakuOverlap']"
+  )
+  $opacity = this.$danmaku.find<HTMLInputElement>("[name='opacity']")
+  $danmakuSpeed = this.$danmaku.find<HTMLInputElement>("[name='danmakuSpeed']")
+  $danmakuFontSize = this.$danmaku.find<HTMLInputElement>(
+    "[name='danmakuFontSize']"
+  )
+  $danmakuDensity = this.$danmaku.find<HTMLInputElement>(
+    "[name='danmakuDensity']"
+  )
+  $danmakuScrollAreaPercent = this.$danmaku.find<HTMLInputElement>(
+    "[name='danmakuScrollAreaPercent']"
+  )
+  $danmakuMode = this.$danmaku.find<HTMLInputElement>("[name='danmakuMode']")
+}

@@ -1,4 +1,3 @@
-import { $pbp } from './html'
 import { Comment } from './types'
 
 type Point = { x: string; y: string }
@@ -6,7 +5,11 @@ type Point = { x: string; y: string }
 /**
  * 逻辑源自 bilibili 高能进度条 svg path 规则
  */
-export function createProgressBarPower(duration: number, comments: Comment[]) {
+export function createProgressBarPower(
+  $pbp: JQuery<HTMLElement>,
+  duration: number,
+  comments: Comment[]
+) {
   const data = comments.map((cmt) => cmt.time!)
   // svg总长度
   const svgMaxLength = 1000

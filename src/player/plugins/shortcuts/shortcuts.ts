@@ -4,8 +4,15 @@ import { KeyBindings } from './keybindings'
 import { Command, Commands } from './types'
 import { normalizeKeyEvent } from './utils'
 
+declare module '../../KPlayer' {
+  interface KPlayer {
+    shortcuts: Shortcuts
+  }
+}
+
 export class Shortcuts {
   constructor(private player: KPlayer) {
+    player.shortcuts = this
     window.addEventListener('keydown', this.handleKeyEvent)
     window.addEventListener('keyup', this.handleKeyEvent)
   }
