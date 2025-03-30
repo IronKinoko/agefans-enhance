@@ -326,6 +326,8 @@ class DanmakuPlugin {
         )
       }
     }
+
+    this.elements.$episodes.val('')
     if (episode) {
       this.elements.$episodes.val(episode.id)
       this.elements.$episodes.trigger('change')
@@ -383,7 +385,7 @@ class DanmakuPlugin {
       const episodeId = this.elements.$episodes.val() as string
       const animeId = this.elements.$animes.val() as string
       const anime = this.state.animes.find((anime) => anime.id === animeId)
-      if (!anime) return
+      if (!anime || !episodeId) return
 
       storageAnimeName(this.state.videoInfo.rawName, {
         id: anime.id,
