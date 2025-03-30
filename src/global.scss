@@ -74,6 +74,10 @@
     margin: 0;
     padding: 8px;
     text-align: left;
+
+    label {
+      cursor: pointer;
+    }
   }
   &-item {
     width: 100%;
