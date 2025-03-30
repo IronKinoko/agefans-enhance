@@ -2,10 +2,12 @@ import { local } from '../../utils/storage'
 
 export type Favorite = {
   id: string
+  title: string
+  lastUpdate: string
   current: { name: string; url: string }
 }
 
-const favoriteKey = 'favorite'
+const favoriteKey = 'favorite.v2'
 
 function getFavorite(id: string): Favorite | undefined
 function getFavorite(): Favorite[]
@@ -17,7 +19,7 @@ function getFavorite(id?: string) {
   return favorites
 }
 
-export function setFavorite(favorite: Favorite) {
+function setFavorite(favorite: Favorite) {
   const favorites = getFavorite()
   const index = favorites.findIndex((f) => f.id === favorite.id)
   if (index === -1) {
@@ -47,51 +49,48 @@ export function renderFavoriteList() {
 
   $root.prepend(`<div class="blocktitle">订阅</div>`, $content)
 
-  let groups = $('.mod')
-    .map((idx, el) => {
-      let list: { favorite: Favorite; title: string; update: string }[] = []
-      $(el)
-        .find('.one_new_anime')
-        .each((_, el) => {
-          const $el = $(el)
-          const id = $el
-            .find('a')
-            .attr('href')!
-            .match(/\/(\d+).html/)![1]
-          const title = $el.find('.one_new_anime_name').text()
-          const update = $el.find('.one_new_anime_ji').text()
-          const favorite = favorites.find((f) => f.id === id)
+  type AnimeUpdateInfo = { favorite: Favorite; update?: string }
+  const list: AnimeUpdateInfo[] = favorites.map((favorite) => {
+    const update = $(
+      `.mod .one_new_anime a[href$='/${favorite.id}.html'].one_new_anime_ji`
+    ).text()
+    return { favorite, update }
+  })
 
-          if (favorite) {
-            list.push({ favorite, title, update })
-          }
-        })
-
-      return { idx, list }
+  const daysInChinese = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+  let groups: { day: string; list: AnimeUpdateInfo[] }[] = Array.from(
+    { length: 7 },
+    (_, idx) => ({
+      day: daysInChinese[idx],
+      list: list.filter(
+        (item) => new Date(item.favorite.lastUpdate).getDay() === idx
+      ),
     })
-    .get()
+  )
 
-  const day = new Date().getDay() - 1
+  const day = new Date().getDay()
   groups = [...groups.slice(day), ...groups.slice(0, day)]
   groups
     .filter((o) => o.list.length > 0)
-    .forEach(({ idx, list }, index) => {
+    .forEach(({ day, list }, index) => {
       const $ul = $(`<ul id="new_anime_page"></ul>`)
-      list.forEach(({ favorite, title, update }) => {
+      list.forEach(({ favorite, update }) => {
         $ul.append(
           `<li class="one_new_anime" style="display:flex; justify-content:space-between;">
-            <a class="one_new_anime_name" href="${favorite.current.url}">${title}</a>
-            <a class="one_new_anime_ji" style="flex-shrink:0;" href="${favorite.current.url}">${favorite.current.name}/${update}</a>
+            <a class="one_new_anime_name" href="${favorite.current.url}">${
+            favorite.title
+          }</a>
+            <a class="one_new_anime_ji" style="flex-shrink:0;" href="${
+              favorite.current.url
+            }">${favorite.current.name}/${update || '-'}</a>
           </li>`
         )
       })
 
-      const title = $('#new_anime_btns .new_anime_btn').eq(idx).text()
-
       $content
         .find('#anime_update')
         .append(
-          `<div style="margin-top:${index !== 0 ? 8 : 0}px;">${title}</div>`,
+          `<div style="margin-top:${index !== 0 ? 8 : 0}px;">${day}</div>`,
           $ul
         )
     })
@@ -103,9 +102,8 @@ export function renderFavoriteBtn() {
     if (getFavorite(id)) {
       removeFavorite(id)
       $btn.text('订阅')
-      return
     } else {
-      updateFavoriteCurrent(true)
+      updateFavorite()
       $btn.text('已订阅')
     }
   })
@@ -118,13 +116,14 @@ export function renderFavoriteBtn() {
   $('#detailname').append($btn)
 }
 
-export function updateFavoriteCurrent(push: boolean) {
+export function updateFavorite() {
   const id = location.pathname.match(/\/(\d+)-/)![1]
-
-  if (!push && !getFavorite(id)) return
 
   const name = $('.active-play').text()
   const url = location.pathname
-
-  setFavorite({ id, current: { name, url } })
+  const title = $('#detailname a:nth-child(1)').text()
+  const lastUpdate = $('.play_imform_kv .play_imform_tag:contains("更新时间")')
+    .next('.play_imform_val')
+    .text()
+  setFavorite({ id, title, lastUpdate, current: { name, url } })
 }
