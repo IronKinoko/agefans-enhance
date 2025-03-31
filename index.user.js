@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.47.2
+// @version      1.47.3
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1557,7 +1557,25 @@
   const local = createStorage$1(window.localStorage);
   let gm;
   try {
-    gm = { getItem: GM_getValue, setItem: GM_setValue };
+    let getItem = function(key, defaultValue) {
+      var _a, _b;
+      try {
+        return (_b = (_a = GM_getValue(key)) != null ? _a : local.getItem(key)) != null ? _b : defaultValue;
+      } catch (error) {
+        return defaultValue;
+      }
+    };
+    if (typeof GM_getValue === "undefined")
+      throw new Error("GM_getValue is not defined");
+    if (typeof GM_setValue === "undefined")
+      throw new Error("GM_setValue is not defined");
+    gm = {
+      getItem,
+      setItem(key, value) {
+        local.setItem(key, value);
+        GM_setValue(key, value);
+      }
+    };
   } catch (error) {
     gm = local;
   }
@@ -2115,7 +2133,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.47.2"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.47.3"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2241,7 +2259,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.47.2"}
+\u811A\u672C\u7248\u672C: ${"1.47.3"}
 `;
 
   const GlobalKey = "show-help-info";
