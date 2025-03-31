@@ -26,7 +26,28 @@ export const local = createStorage(window.localStorage)
 
 let gm: Pick<ReturnType<typeof createStorage>, 'getItem' | 'setItem'>
 try {
-  gm = { getItem: GM_getValue, setItem: GM_setValue }
+  if (typeof GM_getValue === 'undefined')
+    throw new Error('GM_getValue is not defined')
+  if (typeof GM_setValue === 'undefined')
+    throw new Error('GM_setValue is not defined')
+
+  function getItem<T = any>(key: string): T | undefined
+  function getItem<T = any>(key: string, defaultValue: T): T
+  function getItem<T = any>(key: string, defaultValue?: T): T | undefined {
+    try {
+      return GM_getValue(key) ?? local.getItem(key) ?? defaultValue
+    } catch (error) {
+      return defaultValue
+    }
+  }
+
+  gm = {
+    getItem,
+    setItem(key: string, value: any) {
+      local.setItem(key, value)
+      GM_setValue(key, value)
+    },
+  }
 } catch (error) {
   gm = local
 }
