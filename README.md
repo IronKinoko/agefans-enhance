@@ -5,12 +5,12 @@
 ## 网站适配列表
 
 - [agefans](http://www.age.tv)
-- [NT 动漫](https://www.ntdm9.com)
+- [NT 动漫](https://www.ntdm8.com)
 - [bimiacg](http://www.bimiacg10.net)
 - [mutean](https://www.mutean.com)
-- [次元城](https://www.cyc-anime.net)
+- [次元城](https://www.cycani.org)
 - [稀饭动漫](https://dick.xfani.com)
-- [GitHub Pages](https://ironkinoko.github.io/agefans-enhance/)
+- [独立播放器](https://ironkinoko.github.io/agefans-enhance/)
 
 **请使用 <kbd>?</kbd> 键查看脚本信息与快捷键**
 
