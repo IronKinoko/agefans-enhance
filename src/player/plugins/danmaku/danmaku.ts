@@ -264,7 +264,8 @@ class DanmakuPlugin {
       this.state.state = RunState.searchedAnimes
       this.autoMatchAnime()
     } catch (error: any) {
-      this.showTips('弹幕服务异常，' + error.message, 3000)
+      console.error(error)
+      this.player.message.info('弹幕服务异常，' + error.message, 3000)
     }
   })
 
@@ -281,7 +282,8 @@ class DanmakuPlugin {
       this.state.state = RunState.findEpisodes
       this.autoMatchEpisode()
     } catch (error: any) {
-      this.showTips('弹幕服务异常，' + error.message, 3000)
+      console.error(error)
+      this.player.message.info('弹幕服务异常，' + error.message, 3000)
     }
   }
 
