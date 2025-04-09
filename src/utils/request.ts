@@ -20,13 +20,14 @@ export function request<T = any>(opts: Opts) {
   }
 
   return new Promise<T>((resolve, reject) => {
+    console.log('[agefans-enhance]', url)
     GM_xmlhttpRequest({
       url,
       method: method || 'GET',
       responseType: 'json',
       headers: opts.headers,
       onload: (res: any) => {
-        console.log(res, res.response)
+        console.log('[agefans-enhance]', res, res.response)
         resolve(res.response)
       },
       onerror: reject,

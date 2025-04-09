@@ -112,6 +112,8 @@ class DanmakuPlugin {
         ? defaultSearchName.keyword
         : defaultSearchName
     )
+
+    this.log('当前视频信息', { videoInfo, searchInfo: defaultSearchName })
     this.autoStart()
   }
 
@@ -120,13 +122,36 @@ class DanmakuPlugin {
     this.autoStart()
   }
 
-  showTips = (message: string, duration = 1500) => {
-    this.elements.$tips
-      .finish()
-      .text(message)
-      .fadeIn('fast')
-      .delay(duration)
-      .fadeOut('fast')
+  showTips = (message: string, duration = 3000) => {
+    this.elements.$tips.finish().text(message).fadeIn('fast')
+    if (duration > 0) this.elements.$tips.delay(duration).fadeOut('fast')
+  }
+
+  messageLog(message: string, duration = 3000, detail?: any) {
+    this.showTips(message, duration)
+    this.player.message.info(message, duration)
+    this.log(message, detail)
+  }
+
+  count = 0
+  log(message: string, detail?: any) {
+    const $details = $('<div class="k-player-danmaku-log-item"></div>')
+
+    const $title = $('<div class="k-player-danmaku-log-title"></div>')
+    $title.text(`[${this.count++}] ${message}`)
+    $details.append($title)
+
+    if (detail) {
+      const $content = $('<div class="k-player-danmaku-log-content"></div>')
+      const $code = $('<div class="k-player-danmaku-log-code"></div>')
+      $code.text(JSON.stringify(detail))
+      $code.attr('title', JSON.stringify(detail, null, 2))
+      $content.append($code)
+
+      $details.append($content)
+    }
+
+    this.elements.$log.append($details)
   }
 
   stop = () => {
@@ -233,21 +258,20 @@ class DanmakuPlugin {
     this.state.state = RunState.getComments
     this.start()
 
-    this.player.message.info(
+    this.player.message.destroy()
+    this.messageLog(
       `番剧：${this.elements.$animes.find(':selected').text()}`,
       2000
     )
-    this.player.message.info(
+    this.messageLog(
       `章节：${this.elements.$episodes.find(':selected').text()}`,
       2000
     )
-    this.player.message.info(
-      `已加载 ${this.state.comments.length} 条弹幕`,
-      2000
-    )
+    this.messageLog(`已加载 ${this.state.comments.length} 条弹幕`, 2000)
   }
 
   searchAnime = lockWrap(async (name: string) => {
+    this.log(`搜索番剧: ${name}`)
     if (!name || name.length < 2) return this.showTips('番剧名称不少于2个字')
 
     try {
@@ -255,35 +279,40 @@ class DanmakuPlugin {
       this.state.episodes = []
       renderSelectOptions(this.elements.$animes, this.state.animes)
       renderSelectOptions(this.elements.$episodes, this.state.episodes)
-      this.showTips('正在搜索番剧中...')
+      this.messageLog('正在搜索番剧中...')
       this.state.animes = await queryAnimes(name)
-      if (this.state.animes.length === 0) return this.showTips('未搜索到番剧')
+      this.log('搜索到的番剧数据', this.state.animes)
+      this.messageLog(`找到 ${this.state.animes.length} 部番剧`)
+      if (this.state.animes.length === 0) return
       renderSelectOptions(this.elements.$animes, this.state.animes)
-      this.showTips(`找到 ${this.state.animes.length} 部番剧`)
 
       this.state.state = RunState.searchedAnimes
       this.autoMatchAnime()
     } catch (error: any) {
       console.error(error)
-      this.player.message.info('弹幕服务异常，' + error.message, 3000)
+      this.log('弹幕服务异常', error)
+      this.messageLog('弹幕服务异常，' + error.message, 3000)
     }
   })
 
   searchEpisodes = async (animeId: string) => {
+    this.log('搜索剧集', { animeId })
     try {
       this.state.episodes = []
       renderSelectOptions(this.elements.$episodes, this.state.episodes)
-      this.showTips('正在搜索剧集中...')
+      this.messageLog('正在搜索剧集中...', 0)
       this.state.episodes = await queryEpisodes(animeId)
-      if (this.state.episodes.length === 0) return this.showTips('未搜索到剧集')
+      this.log('搜索到的剧集数据', this.state.episodes)
+      this.messageLog(`找到 ${this.state.episodes.length} 集`)
+      if (this.state.episodes.length === 0) return
       renderSelectOptions(this.elements.$episodes, this.state.episodes)
-      this.showTips(`找到 ${this.state.episodes.length} 集`)
 
       this.state.state = RunState.findEpisodes
       this.autoMatchEpisode()
     } catch (error: any) {
       console.error(error)
-      this.player.message.info('弹幕服务异常，' + error.message, 3000)
+      this.log('弹幕服务异常', error)
+      this.messageLog('弹幕服务异常，' + error.message, 3000)
     }
   }
 
@@ -298,7 +327,7 @@ class DanmakuPlugin {
     })
 
     if (!anime) {
-      this.player.message.info('弹幕未能自动匹配数据源，请手动搜索')
+      this.messageLog('弹幕未能自动匹配数据源，请手动搜索')
       anime = this.state.animes[0]
     }
 
@@ -334,7 +363,7 @@ class DanmakuPlugin {
       this.elements.$episodes.val(episode.id)
       this.elements.$episodes.trigger('change')
     } else {
-      this.player.message.info('弹幕未能自动匹配数据源，请手动搜索')
+      this.messageLog('弹幕未能自动匹配数据源，请手动搜索')
     }
   }
 
@@ -352,10 +381,7 @@ class DanmakuPlugin {
           this.state.state = RunState.getComments
           this.start()
 
-          this.player.message.info(
-            `已加载 ${this.state.comments.length} 条弹幕`,
-            2000
-          )
+          this.messageLog(`已加载 ${this.state.comments.length} 条弹幕`, 2000)
         }
         reader.readAsText(file)
       }
@@ -539,7 +565,7 @@ class DanmakuPlugin {
     this.player.configSaveToLocal('showDanmaku', bool)
     this.elements.$danmakuSwitch.toggleClass('plyr__control--pressed', bool)
     this.elements.$showDanmaku.prop('checked', bool)
-    this.player.message.info(`弹幕${bool ? '开启' : '关闭'}`)
+    this.messageLog(`弹幕${bool ? '开启' : '关闭'}`)
     if (bool) {
       this.autoStart()
     } else {

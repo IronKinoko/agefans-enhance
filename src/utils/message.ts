@@ -7,7 +7,7 @@ export class Message {
     this.$message.appendTo($(selector as any))
   }
 
-  info(message: JQuery | string, ms = 1500) {
+  info(message: JQuery | string, ms = 2000) {
     if (this.$message.children().length > this.MaxLength) {
       this.$message.children().first().remove()
     }

@@ -118,6 +118,12 @@ export class DanmakuElements {
     </div>
     `,
     },
+    {
+      name: '日志',
+      content: `
+    <div id="k-player-danmaku-log"></div>
+    `,
+    },
   ])
 
   $danmakuSwitch = $(`
@@ -187,4 +193,5 @@ export class DanmakuElements {
     "[name='danmakuScrollAreaPercent']"
   )
   $danmakuMode = this.$danmaku.find<HTMLInputElement>("[name='danmakuMode']")
+  $log = this.$danmakuOverlay.find('#k-player-danmaku-log')
 }

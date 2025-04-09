@@ -167,6 +167,40 @@
       }
     }
   }
+
+  &-log {
+    position: absolute;
+    inset: 0;
+    padding: 8px;
+    overflow: auto;
+    .k-player-danmaku-log {
+      &-item {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        padding-bottom: 4px;
+        margin-bottom: 4px;
+        line-height: 1.4;
+      }
+
+      &-content {
+        padding: 4px 8px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.2);
+        margin-top: 4px;
+      }
+      &-code {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-height: 60px;
+        font-size: 12px;
+      }
+    }
+  }
 }
 
 #k-player-pbp {
