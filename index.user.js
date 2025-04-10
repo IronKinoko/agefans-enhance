@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.47.3
+// @version      1.47.4
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1512,7 +1512,7 @@
       this.$message = $('<div id="k-player-message">');
       this.$message.appendTo($(selector));
     }
-    info(message, ms = 1500) {
+    info(message, ms = 2e3) {
       if (this.$message.children().length > this.MaxLength) {
         this.$message.children().first().remove();
       }
@@ -2133,7 +2133,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.47.3"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.47.4"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2259,7 +2259,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.47.3"}
+\u811A\u672C\u7248\u672C: ${"1.47.4"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -3404,12 +3404,14 @@ ${text}
       url = u.toString();
     }
     return new Promise((resolve, reject) => {
+      console.log("[agefans-enhance]", url);
       GM_xmlhttpRequest({
         url,
         method: method || "GET",
         responseType: "json",
         headers: opts.headers,
         onload: (res) => {
+          console.log("[agefans-enhance]", res, res.response);
           resolve(res.response);
         },
         onerror: reject
@@ -3895,6 +3897,12 @@ ${text}
       </div>
     </div>
     `
+        },
+        {
+          name: "\u65E5\u5FD7",
+          content: `
+    <div id="k-player-danmaku-log"></div>
+    `
         }
       ]);
       this.$danmakuSwitch = $(`
@@ -3960,11 +3968,12 @@ ${text}
         "[name='danmakuScrollAreaPercent']"
       );
       this.$danmakuMode = this.$danmaku.find("[name='danmakuMode']");
+      this.$log = this.$danmakuOverlay.find("#k-player-danmaku-log");
       this.$danmakuOverlay.attr("id", "k-player-danmaku-overlay");
     }
   }
 
-  var css$7 = "#k-player-danmaku {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  pointer-events: none;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n}\n#k-player-danmaku-notification {\n  line-height: 1.6;\n}\n#k-player-danmaku-notification .title {\n  text-align: center;\n  font-weight: 500;\n  font-size: 16px;\n}\n#k-player-danmaku-notification img {\n  width: 40%;\n  display: block;\n  margin: 0 auto 8px;\n}\n#k-player-danmaku-notification a {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-notification p {\n  margin: 0;\n}\n#k-player-danmaku-notification p:not(:last-child) {\n  margin-bottom: 8px;\n}\n#k-player-danmaku .danmaku {\n  font-size: calc(var(--danmaku-font-size, 24px) * var(--danmaku-font-size-scale, 1));\n  font-family: SimHei, \"Microsoft JhengHei\", Arial, Helvetica, sans-serif;\n  font-weight: bold;\n  text-shadow: black 1px 0px 1px, black 0px 1px 1px, black 0px -1px 1px, black -1px 0px 1px;\n  line-height: 1.3;\n}\n@media (max-width: 576px) {\n  #k-player-danmaku .danmaku {\n    --danmaku-font-size: 16px;\n  }\n}\n#k-player-danmaku-overlay {\n  width: 210px;\n}\n#k-player-danmaku-search-form > * {\n  font-size: 14px;\n  box-sizing: border-box;\n  text-align: left;\n}\n#k-player-danmaku-search-form input,\n#k-player-danmaku-search-form select {\n  display: block;\n  margin-top: 4px;\n  width: 100%;\n}\n#k-player-danmaku-search-form label {\n  display: block;\n}\n#k-player-danmaku-search-form label span {\n  line-height: 1.4;\n}\n#k-player-danmaku-search-form label + label {\n  margin-top: 8px;\n}\n#k-player-danmaku-search-form .open-danmaku-list {\n  cursor: pointer;\n  transition: color 0.15s;\n}\n#k-player-danmaku-search-form .open-danmaku-list:hover * {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-search-form .specific-thanks {\n  color: #757575;\n  font-size: 12px;\n  position: absolute;\n  left: 8px;\n  bottom: 8px;\n  user-select: none;\n}\n#k-player-danmaku-setting-form {\n  padding: 0;\n}\n#k-player-danmaku-setting-form input {\n  margin: 0;\n}\n#k-player-danmaku-filter-form {\n  padding: 0;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper {\n  display: flex;\n  align-items: center;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper > div {\n  flex: 1;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper > div input {\n  width: 100%;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper label {\n  margin-left: 8px;\n  border: 0;\n  color: white;\n  cursor: pointer;\n  transition: color 0.15s;\n  white-space: nowrap;\n  user-select: none;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper label:hover {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-filter-table {\n  margin-top: 8px;\n}\n#k-player-danmaku-filter-table .ft-body {\n  height: 200px;\n  overflow: auto;\n}\n#k-player-danmaku-filter-table .ft-body::-webkit-scrollbar {\n  display: none;\n}\n#k-player-danmaku-filter-table .ft-row {\n  display: flex;\n  border-radius: 4px;\n  transition: all 0.15s;\n}\n#k-player-danmaku-filter-table .ft-row:hover {\n  background: var(--k-player-background-highlight);\n}\n#k-player-danmaku-filter-table .ft-content {\n  padding: 4px 8px;\n  flex: 1px;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n#k-player-danmaku-filter-table .ft-op {\n  flex-shrink: 0;\n  padding: 4px 8px;\n}\n#k-player-danmaku-filter-table a {\n  color: white;\n  cursor: pointer;\n  transition: color 0.15s;\n  user-select: none;\n}\n#k-player-danmaku-filter-table a:hover {\n  color: var(--k-player-primary-color);\n}\n\n#k-player-pbp {\n  position: absolute;\n  top: -17px;\n  height: 28px;\n  -webkit-appearance: none;\n  appearance: none;\n  left: 0;\n  position: absolute;\n  margin-left: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  margin-right: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  width: calc(100% + var(--plyr-range-thumb-height, 13px));\n  pointer-events: none;\n}\n\n#k-player-pbp-played-path {\n  color: var(--k-player-primary-color);\n}\n\n.plyr__controls__item.plyr__progress__container:hover #k-player-pbp {\n  top: -18px;\n}\n\n.plyr__switch-danmaku .icon--pressed {\n  --color: var(--k-player-primary-color);\n  transition: 0.3s all ease;\n}\n\n.plyr__switch-danmaku:hover .icon--pressed {\n  --color: white;\n}\n\n.k-popover-active .plyr__tooltip {\n  display: none;\n}\n\n.k-player-danmaku-list * {\n  box-sizing: border-box;\n  font-size: 14px;\n  line-height: normal;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n}\n.k-player-danmaku-list .k-modal-body {\n  padding: 0;\n}\n.k-player-danmaku-list-wrapper {\n  height: 500px;\n  max-height: 80vh;\n  display: flex;\n  flex-direction: column;\n}\n.k-player-danmaku-list-source-filter {\n  display: flex;\n  align-items: center;\n  white-space: nowrap;\n  padding: 16px;\n}\n.k-player-danmaku-list-source {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  flex-wrap: wrap;\n  gap: 8px;\n}\n.k-player-danmaku-list-table-wrapper {\n  flex: 1;\n  min-height: 0;\n  overflow-y: scroll;\n  position: relative;\n}\n.k-player-danmaku-list-table-wrapper::-webkit-scrollbar {\n  width: 8px;\n}\n.k-player-danmaku-list-table-wrapper::-webkit-scrollbar-thumb {\n  background: rgba(0, 0, 0, 0.15);\n  border-radius: 4px;\n}\n.k-player-danmaku-list-table-wrapper::-webkit-scrollbar-thumb:hover {\n  background-color: rgba(0, 0, 0, 0.45);\n}\n.k-player-danmaku-list-table {\n  width: 100%;\n  border-spacing: 0;\n  border-collapse: separate;\n  table-layout: fixed;\n}\n.k-player-danmaku-list-table th,\n.k-player-danmaku-list-table td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n  white-space: nowrap;\n}\n.k-player-danmaku-list-table th {\n  position: sticky;\n  background-color: white;\n  top: 0;\n  z-index: 1;\n}\n.k-player-danmaku-list-table th:nth-child(1) {\n  width: 55px;\n}\n.k-player-danmaku-list-table td:nth-child(2) {\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.k-player-danmaku-list-table th:nth-child(3) {\n  width: 100px;\n}";
+  var css$7 = "#k-player-danmaku {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  pointer-events: none;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n}\n#k-player-danmaku-notification {\n  line-height: 1.6;\n}\n#k-player-danmaku-notification .title {\n  text-align: center;\n  font-weight: 500;\n  font-size: 16px;\n}\n#k-player-danmaku-notification img {\n  width: 40%;\n  display: block;\n  margin: 0 auto 8px;\n}\n#k-player-danmaku-notification a {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-notification p {\n  margin: 0;\n}\n#k-player-danmaku-notification p:not(:last-child) {\n  margin-bottom: 8px;\n}\n#k-player-danmaku .danmaku {\n  font-size: calc(var(--danmaku-font-size, 24px) * var(--danmaku-font-size-scale, 1));\n  font-family: SimHei, \"Microsoft JhengHei\", Arial, Helvetica, sans-serif;\n  font-weight: bold;\n  text-shadow: black 1px 0px 1px, black 0px 1px 1px, black 0px -1px 1px, black -1px 0px 1px;\n  line-height: 1.3;\n}\n@media (max-width: 576px) {\n  #k-player-danmaku .danmaku {\n    --danmaku-font-size: 16px;\n  }\n}\n#k-player-danmaku-overlay {\n  width: 210px;\n}\n#k-player-danmaku-search-form > * {\n  font-size: 14px;\n  box-sizing: border-box;\n  text-align: left;\n}\n#k-player-danmaku-search-form input,\n#k-player-danmaku-search-form select {\n  display: block;\n  margin-top: 4px;\n  width: 100%;\n}\n#k-player-danmaku-search-form label {\n  display: block;\n}\n#k-player-danmaku-search-form label span {\n  line-height: 1.4;\n}\n#k-player-danmaku-search-form label + label {\n  margin-top: 8px;\n}\n#k-player-danmaku-search-form .open-danmaku-list {\n  cursor: pointer;\n  transition: color 0.15s;\n}\n#k-player-danmaku-search-form .open-danmaku-list:hover * {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-search-form .specific-thanks {\n  color: #757575;\n  font-size: 12px;\n  position: absolute;\n  left: 8px;\n  bottom: 8px;\n  user-select: none;\n}\n#k-player-danmaku-setting-form {\n  padding: 0;\n}\n#k-player-danmaku-setting-form input {\n  margin: 0;\n}\n#k-player-danmaku-filter-form {\n  padding: 0;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper {\n  display: flex;\n  align-items: center;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper > div {\n  flex: 1;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper > div input {\n  width: 100%;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper label {\n  margin-left: 8px;\n  border: 0;\n  color: white;\n  cursor: pointer;\n  transition: color 0.15s;\n  white-space: nowrap;\n  user-select: none;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper label:hover {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-filter-table {\n  margin-top: 8px;\n}\n#k-player-danmaku-filter-table .ft-body {\n  height: 200px;\n  overflow: auto;\n}\n#k-player-danmaku-filter-table .ft-body::-webkit-scrollbar {\n  display: none;\n}\n#k-player-danmaku-filter-table .ft-row {\n  display: flex;\n  border-radius: 4px;\n  transition: all 0.15s;\n}\n#k-player-danmaku-filter-table .ft-row:hover {\n  background: var(--k-player-background-highlight);\n}\n#k-player-danmaku-filter-table .ft-content {\n  padding: 4px 8px;\n  flex: 1px;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n#k-player-danmaku-filter-table .ft-op {\n  flex-shrink: 0;\n  padding: 4px 8px;\n}\n#k-player-danmaku-filter-table a {\n  color: white;\n  cursor: pointer;\n  transition: color 0.15s;\n  user-select: none;\n}\n#k-player-danmaku-filter-table a:hover {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-log {\n  position: absolute;\n  inset: 0;\n  padding: 8px;\n  overflow: auto;\n}\n#k-player-danmaku-log .k-player-danmaku-log-item {\n  border-bottom: 1px solid rgba(255, 255, 255, 0.2);\n  padding-bottom: 4px;\n  margin-bottom: 4px;\n  line-height: 1.4;\n}\n#k-player-danmaku-log .k-player-danmaku-log-content {\n  padding: 4px 8px;\n  border-radius: 4px;\n  background: rgba(255, 255, 255, 0.2);\n  margin-top: 4px;\n}\n#k-player-danmaku-log .k-player-danmaku-log-code {\n  white-space: pre-wrap;\n  word-wrap: break-word;\n  display: -webkit-box;\n  -webkit-line-clamp: 3;\n  line-clamp: 3;\n  -webkit-box-orient: vertical;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  max-height: 60px;\n  font-size: 12px;\n}\n\n#k-player-pbp {\n  position: absolute;\n  top: -17px;\n  height: 28px;\n  -webkit-appearance: none;\n  appearance: none;\n  left: 0;\n  position: absolute;\n  margin-left: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  margin-right: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  width: calc(100% + var(--plyr-range-thumb-height, 13px));\n  pointer-events: none;\n}\n\n#k-player-pbp-played-path {\n  color: var(--k-player-primary-color);\n}\n\n.plyr__controls__item.plyr__progress__container:hover #k-player-pbp {\n  top: -18px;\n}\n\n.plyr__switch-danmaku .icon--pressed {\n  --color: var(--k-player-primary-color);\n  transition: 0.3s all ease;\n}\n\n.plyr__switch-danmaku:hover .icon--pressed {\n  --color: white;\n}\n\n.k-popover-active .plyr__tooltip {\n  display: none;\n}\n\n.k-player-danmaku-list * {\n  box-sizing: border-box;\n  font-size: 14px;\n  line-height: normal;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n}\n.k-player-danmaku-list .k-modal-body {\n  padding: 0;\n}\n.k-player-danmaku-list-wrapper {\n  height: 500px;\n  max-height: 80vh;\n  display: flex;\n  flex-direction: column;\n}\n.k-player-danmaku-list-source-filter {\n  display: flex;\n  align-items: center;\n  white-space: nowrap;\n  padding: 16px;\n}\n.k-player-danmaku-list-source {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  flex-wrap: wrap;\n  gap: 8px;\n}\n.k-player-danmaku-list-table-wrapper {\n  flex: 1;\n  min-height: 0;\n  overflow-y: scroll;\n  position: relative;\n}\n.k-player-danmaku-list-table-wrapper::-webkit-scrollbar {\n  width: 8px;\n}\n.k-player-danmaku-list-table-wrapper::-webkit-scrollbar-thumb {\n  background: rgba(0, 0, 0, 0.15);\n  border-radius: 4px;\n}\n.k-player-danmaku-list-table-wrapper::-webkit-scrollbar-thumb:hover {\n  background-color: rgba(0, 0, 0, 0.45);\n}\n.k-player-danmaku-list-table {\n  width: 100%;\n  border-spacing: 0;\n  border-collapse: separate;\n  table-layout: fixed;\n}\n.k-player-danmaku-list-table th,\n.k-player-danmaku-list-table td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n  white-space: nowrap;\n}\n.k-player-danmaku-list-table th {\n  position: sticky;\n  background-color: white;\n  top: 0;\n  z-index: 1;\n}\n.k-player-danmaku-list-table th:nth-child(1) {\n  width: 55px;\n}\n.k-player-danmaku-list-table td:nth-child(2) {\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.k-player-danmaku-list-table th:nth-child(3) {\n  width: 100px;\n}";
   injectCss(css$7,{});
 
   function parsePakkuDanmakuXML(xml) {
@@ -4053,8 +4062,32 @@ ${text}
         this.stop();
         this.autoStart();
       };
-      this.showTips = (message, duration = 1500) => {
-        this.elements.$tips.finish().text(message).fadeIn("fast").delay(duration).fadeOut("fast");
+      this.showTips = (message, duration = 3e3) => {
+        this.elements.$tips.finish().text(message).fadeIn("fast");
+        if (duration > 0)
+          this.elements.$tips.delay(duration).fadeOut("fast");
+      };
+      this.messageLog = (message, options) => {
+        const { duration = 3e3, detail } = options || {};
+        this.showTips(message, duration);
+        this.player.message.info(message, duration);
+        this.log(message, detail);
+      };
+      this.count = 0;
+      this.log = (message, detail) => {
+        const $details = $('<div class="k-player-danmaku-log-item"></div>');
+        const $title = $('<div class="k-player-danmaku-log-title"></div>');
+        $title.text(`[${this.count++}] ${message}`);
+        $details.append($title);
+        if (detail) {
+          const $content = $('<div class="k-player-danmaku-log-content"></div>');
+          const $code = $('<div class="k-player-danmaku-log-code"></div>');
+          $code.text(JSON.stringify(detail));
+          $code.attr("title", JSON.stringify(detail, null, 2));
+          $content.append($code);
+          $details.append($content);
+        }
+        this.elements.$log.append($details);
       };
       this.stop = () => {
         var _a;
@@ -4142,53 +4175,56 @@ ${text}
         this.state.syncDiff = 0;
         this.state.state = 3 /* getComments */;
         this.start();
-        this.player.message.info(
-          `\u756A\u5267\uFF1A${this.elements.$animes.find(":selected").text()}`,
-          2e3
-        );
-        this.player.message.info(
-          `\u7AE0\u8282\uFF1A${this.elements.$episodes.find(":selected").text()}`,
-          2e3
-        );
-        this.player.message.info(
-          `\u5DF2\u52A0\u8F7D ${this.state.comments.length} \u6761\u5F39\u5E55`,
-          2e3
-        );
+        this.player.message.destroy();
+        this.messageLog(`\u756A\u5267\uFF1A${this.elements.$animes.find(":selected").text()}`);
+        this.messageLog(`\u7AE0\u8282\uFF1A${this.elements.$episodes.find(":selected").text()}`);
+        this.messageLog(`\u5DF2\u52A0\u8F7D ${this.state.comments.length} \u6761\u5F39\u5E55`);
+      };
+      this.setAnimes = (animes) => {
+        this.state.animes = animes;
+        renderSelectOptions(this.elements.$animes, this.state.animes);
+      };
+      this.setEpisodes = (episodes) => {
+        this.state.episodes = episodes;
+        renderSelectOptions(this.elements.$episodes, this.state.episodes);
       };
       this.searchAnime = lockWrap(async (name) => {
+        this.log(`\u641C\u7D22\u756A\u5267: ${name}`);
         if (!name || name.length < 2)
-          return this.showTips("\u756A\u5267\u540D\u79F0\u4E0D\u5C11\u4E8E2\u4E2A\u5B57");
+          return this.messageLog("\u756A\u5267\u540D\u79F0\u4E0D\u5C11\u4E8E2\u4E2A\u5B57");
         try {
-          this.state.animes = [];
-          this.state.episodes = [];
-          renderSelectOptions(this.elements.$animes, this.state.animes);
-          renderSelectOptions(this.elements.$episodes, this.state.episodes);
-          this.showTips("\u6B63\u5728\u641C\u7D22\u756A\u5267\u4E2D...");
-          this.state.animes = await queryAnimes(name);
-          if (this.state.animes.length === 0)
-            return this.showTips("\u672A\u641C\u7D22\u5230\u756A\u5267");
-          renderSelectOptions(this.elements.$animes, this.state.animes);
-          this.showTips(`\u627E\u5230 ${this.state.animes.length} \u90E8\u756A\u5267`);
+          this.setAnimes([]);
+          this.setEpisodes([]);
+          this.messageLog("\u6B63\u5728\u641C\u7D22\u756A\u5267\u4E2D...");
+          this.setAnimes(await queryAnimes(name));
+          this.messageLog(`\u627E\u5230 ${this.state.animes.length} \u90E8\u756A\u5267`, {
+            detail: this.state.animes
+          });
           this.state.state = 1 /* searchedAnimes */;
           this.autoMatchAnime();
         } catch (error) {
-          this.showTips("\u5F39\u5E55\u670D\u52A1\u5F02\u5E38\uFF0C" + error.message, 3e3);
+          console.error(error);
+          this.messageLog("\u5F39\u5E55\u670D\u52A1\u5F02\u5E38\uFF0C" + error.message, {
+            detail: error.toString()
+          });
         }
       });
       this.searchEpisodes = async (animeId) => {
+        this.log("\u641C\u7D22\u5267\u96C6", { animeId });
         try {
-          this.state.episodes = [];
-          renderSelectOptions(this.elements.$episodes, this.state.episodes);
-          this.showTips("\u6B63\u5728\u641C\u7D22\u5267\u96C6\u4E2D...");
-          this.state.episodes = await queryEpisodes(animeId);
-          if (this.state.episodes.length === 0)
-            return this.showTips("\u672A\u641C\u7D22\u5230\u5267\u96C6");
-          renderSelectOptions(this.elements.$episodes, this.state.episodes);
-          this.showTips(`\u627E\u5230 ${this.state.episodes.length} \u96C6`);
+          this.setEpisodes([]);
+          this.messageLog("\u6B63\u5728\u641C\u7D22\u5267\u96C6\u4E2D...");
+          this.setEpisodes(await queryEpisodes(animeId));
+          this.messageLog(`\u627E\u5230 ${this.state.episodes.length} \u96C6`, {
+            detail: this.state.episodes
+          });
           this.state.state = 2 /* findEpisodes */;
           this.autoMatchEpisode();
         } catch (error) {
-          this.showTips("\u5F39\u5E55\u670D\u52A1\u5F02\u5E38\uFF0C" + error.message, 3e3);
+          console.error(error);
+          this.messageLog("\u5F39\u5E55\u670D\u52A1\u5F02\u5E38\uFF0C" + error.message, {
+            detail: error.toString()
+          });
         }
       };
       this.autoMatchAnime = () => {
@@ -4200,11 +4236,15 @@ ${text}
           return anime2.name === this.state.videoInfo.rawName;
         });
         if (!anime) {
-          this.player.message.info("\u5F39\u5E55\u672A\u80FD\u81EA\u52A8\u5339\u914D\u6570\u636E\u6E90\uFF0C\u8BF7\u624B\u52A8\u641C\u7D22");
           anime = this.state.animes[0];
         }
-        this.elements.$animes.val(anime.id);
-        this.elements.$animes.trigger("change");
+        this.elements.$animes.val("");
+        if (anime) {
+          this.elements.$animes.val(anime.id);
+          this.elements.$animes.trigger("change");
+        } else {
+          this.messageLog("\u5F39\u5E55\u672A\u80FD\u81EA\u52A8\u5339\u914D\u6570\u636E\u6E90\uFF0C\u8BF7\u624B\u52A8\u641C\u7D22");
+        }
       };
       this.autoMatchEpisode = async () => {
         let episodeName = this.state.videoInfo.episode;
@@ -4232,7 +4272,7 @@ ${text}
           this.elements.$episodes.val(episode.id);
           this.elements.$episodes.trigger("change");
         } else {
-          this.player.message.info("\u5F39\u5E55\u672A\u80FD\u81EA\u52A8\u5339\u914D\u6570\u636E\u6E90\uFF0C\u8BF7\u624B\u52A8\u641C\u7D22");
+          this.messageLog("\u5F39\u5E55\u672A\u80FD\u81EA\u52A8\u5339\u914D\u6570\u636E\u6E90\uFF0C\u8BF7\u624B\u52A8\u641C\u7D22");
         }
       };
       this.injectDanmakuDropEvent = () => {
@@ -4248,10 +4288,7 @@ ${text}
               this.state.syncDiff = 0;
               this.state.state = 3 /* getComments */;
               this.start();
-              this.player.message.info(
-                `\u5DF2\u52A0\u8F7D ${this.state.comments.length} \u6761\u5F39\u5E55`,
-                2e3
-              );
+              this.messageLog(`\u5DF2\u52A0\u8F7D ${this.state.comments.length} \u6761\u5F39\u5E55`);
             };
             reader.readAsText(file);
           }
@@ -4410,7 +4447,7 @@ ${text}
         this.player.configSaveToLocal("showDanmaku", bool);
         this.elements.$danmakuSwitch.toggleClass("plyr__control--pressed", bool);
         this.elements.$showDanmaku.prop("checked", bool);
-        this.player.message.info(`\u5F39\u5E55${bool ? "\u5F00\u542F" : "\u5173\u95ED"}`);
+        this.messageLog(`\u5F39\u5E55${bool ? "\u5F00\u542F" : "\u5173\u95ED"}`);
         if (bool) {
           this.autoStart();
         } else {
@@ -4457,6 +4494,7 @@ ${text}
       this.initEvents(
         typeof defaultSearchName === "object" ? defaultSearchName.keyword : defaultSearchName
       );
+      this.log("\u5F53\u524D\u89C6\u9891\u4FE1\u606F", { videoInfo, searchInfo: defaultSearchName });
       this.autoStart();
     }
   }
