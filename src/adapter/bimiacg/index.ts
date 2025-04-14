@@ -3,18 +3,18 @@ import { runtime } from '../../runtime/index'
 import { playModule, playInIframeModule } from './play'
 
 import { queryDom } from '../../utils/queryDom'
-import { histroyModule } from './history'
+import { historyModule } from './history'
 
 runtime.register({
   domains: [/bimiacg\d+.net/],
   opts: [
     {
-      test: /.*/,
+      test: '*',
       setup: () => $('body').addClass('bimi-wrapper'),
-      run: histroyModule,
+      run: historyModule,
     },
     { test: ['/play/'], run: playModule },
-    { test: [/.*/], runInIframe: true, run: playInIframeModule },
+    { test: '*', runInIframe: true, run: playInIframeModule },
   ],
   search: {
     name: 'BIMI动漫',

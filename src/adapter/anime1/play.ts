@@ -1,4 +1,5 @@
 import { KPlayer } from '../../player'
+import { logHis } from '../common/history'
 
 async function fetchVideoLinks(params: any) {
   const { apireq, tserver, vid } = params
@@ -48,6 +49,34 @@ export async function runInSingle() {
     )
       target.click()
     else player.message.info('没有下一集了')
+  })
+
+  player.on('timeupdate', () => {
+    try {
+      const animeName = $('.entry-title')
+        .text()
+        .replace(/\[\d+\]/, '')
+        .trim()
+
+      const episodeName = $('.entry-title')
+        .text()
+        .match(/\[(\d+)\]/)![1]
+        .replace(/^0+/, '')
+
+      const target = $<HTMLAnchorElement>('a:contains("全集連結")')[0]
+      const url = new URL(target.href)
+
+      const id = url.searchParams.get('cat')!
+      logHis(
+        {
+          animeName,
+          episodeName,
+          url: window.location.href,
+          id,
+        },
+        player.currentTime
+      )
+    } catch (error) {}
   })
 }
 

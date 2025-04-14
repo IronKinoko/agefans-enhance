@@ -49,7 +49,7 @@ function renderHistroy() {
   modal({
     title: '历史记录',
     content: `
-    <table class="bimi-his-table">
+    <table class="k-table bimi-his-table">
       <thead>
         <tr>
           <th>标题</th>
@@ -72,6 +72,6 @@ function createButton() {
   $('.header-top__nav ul').append($btn)
 }
 
-export function histroyModule() {
+export function historyModule() {
   createButton()
 }

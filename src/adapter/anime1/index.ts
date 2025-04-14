@@ -1,4 +1,5 @@
 import { runtime } from '../../runtime'
+import { historyModule } from './history'
 import './index.scss'
 import { runInSingle, runInCategory } from './play'
 
@@ -9,6 +10,7 @@ runtime.register({
       test: '*',
       run: () => {
         $('html').addClass('anime1')
+        historyModule()
       },
     },
     { test: 'category', run: runInCategory },

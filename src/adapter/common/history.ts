@@ -50,7 +50,7 @@ export function renderHistroy() {
   modal({
     title: '历史记录',
     content: `
-    <table class="k-his-table">
+    <table class="k-table k-his-table">
       <thead>
         <tr>
           <th>标题</th>
