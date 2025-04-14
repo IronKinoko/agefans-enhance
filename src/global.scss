@@ -91,3 +91,18 @@
     margin-top: 8px;
   }
 }
+
+.k-table {
+  width: 100%;
+  border-spacing: 0;
+  border-collapse: separate;
+
+  th,
+  td {
+    padding: 8px;
+    border: none;
+    border-bottom: 1px solid #f1f1f1;
+    word-wrap: break-word;
+    word-break: break-all;
+  }
+}

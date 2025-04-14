@@ -23,7 +23,7 @@ export function createDanmakuList(
       
         <div class="k-player-danmaku-list-table-wrapper">
           <div class="k-player-danmaku-list-table-content">
-            <table class="k-player-danmaku-list-table">
+            <table class="k-table k-player-danmaku-list-table">
               <thead>
                 <tr>
                   <th>时间</th>

@@ -196,7 +196,10 @@ export class KPlayer {
     const status = session.getItem(this.statusSessionKey)
     if (status) {
       session.removeItem(this.statusSessionKey)
-      this.toggleWidescreen(status)
+      // 初始化的时候外部的on还没有注册完，所以需要晚一点执行
+      setTimeout(() => {
+        this.toggleWidescreen(status)
+      })
     }
   }
 

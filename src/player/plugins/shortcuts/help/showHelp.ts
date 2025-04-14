@@ -24,7 +24,7 @@ export const scriptInfo = (video: HTMLVideoElement | undefined) => {
     {
       name: '脚本信息',
       content: `
-    <table>
+    <table class="k-table">
       <tbody>
       <tr><td>脚本版本</td><td>${process.env.APP_VERSION}</td></tr>
       <tr>
@@ -71,7 +71,7 @@ export const scriptInfo = (video: HTMLVideoElement | undefined) => {
           <div class="shortcuts">
             ${alert('自定义按键立即生效，请使用英文输入法')}
 
-            <table>
+            <table class="k-table">
               <thead>
                 <tr>
                   <th>动作</th>

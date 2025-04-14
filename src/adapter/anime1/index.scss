@@ -1,0 +1,93 @@
+.anime1 {
+  overflow: visible;
+
+  * {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+      Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
+      sans-serif;
+  }
+  .single-page {
+    @media screen and (min-width: 769px) {
+      .content-area {
+        width: 100%;
+        float: none;
+      }
+
+      .widget-area {
+        margin: 0 auto;
+        float: none;
+        .search-form {
+          text-align: center;
+        }
+      }
+
+      .vjscontainer {
+        width: 100%;
+        height: auto;
+        max-width: unset;
+
+        .video-js {
+          pointer-events: none;
+        }
+      }
+    }
+  }
+
+  .category {
+    .vjscontainer {
+      cursor: pointer;
+
+      .video-js {
+        pointer-events: none;
+      }
+    }
+  }
+
+  #k-player-wrapper,
+  .k-modal {
+    button,
+    input[type='text'],
+    input[type='checkbox'],
+    select,
+    textarea,
+    label {
+      color: inherit;
+      font-size: inherit;
+      line-height: inherit;
+      font-weight: 400;
+      word-wrap: break-word;
+    }
+    input[type='text'],
+    select {
+      color: #232323;
+      padding: unset;
+      background: white;
+    }
+
+    table {
+      border: none;
+    }
+
+    th,
+    td {
+      background: white;
+    }
+
+    .k-input,
+    .k-select {
+      background: white;
+      border: 1px solid #f1f1f1;
+      color: black;
+      outline: 0;
+      border-radius: 2px;
+      transition: all 0.15s ease;
+      &:focus,
+      &:hover {
+        border-color: var(--k-player-primary-color);
+      }
+      &::placeholder {
+        color: #999;
+      }
+    }
+  }
+}
