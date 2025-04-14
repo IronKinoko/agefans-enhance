@@ -4,6 +4,7 @@ export type Favorite = {
   id: string
   title: string
   lastUpdate: string
+  updateDesc?: string
   current: { name: string; url: string }
 }
 
@@ -28,7 +29,7 @@ function setFavorite(favorite: Favorite) {
     favorites[index] = favorite
   }
 
-  local.setItem(favoriteKey, favorites.slice(-100))
+  local.setItem(favoriteKey, favorites)
 }
 
 export function removeFavorite(id: string) {
@@ -76,14 +77,19 @@ export function renderFavoriteList() {
       const $ul = $(`<ul id="new_anime_page"></ul>`)
       list.forEach(({ favorite, update }) => {
         $ul.append(
-          `<li class="one_new_anime" style="display:flex; justify-content:space-between;">
-            <a class="one_new_anime_name" href="${favorite.current.url}">${
-            favorite.title
-          }</a>
-            <a class="one_new_anime_ji" style="flex-shrink:0;" href="${
-              favorite.current.url
-            }">${favorite.current.name}/${update || '-'}</a>
-          </li>`
+          `
+<li class="one_new_anime" style="display:flex; justify-content:space-between;">
+  <a 
+    class="one_new_anime_name" 
+    href="${favorite.current.url}" 
+    title="${favorite.title}"
+  >${favorite.title}</a>
+  <a 
+    class="one_new_anime_ji" 
+    style="flex-shrink:0;" 
+    href="${favorite.current.url}"
+  >${favorite.current.name}/${update || favorite.updateDesc || '-'}</a>
+</li>`
         )
       })
 
@@ -94,24 +100,33 @@ export function renderFavoriteList() {
           $ul
         )
     })
+
+  if (!list.length) {
+    $content
+      .find('#anime_update')
+      .append('<div>订阅喜欢的番剧，在播放页面标题右侧添加订阅</div>')
+  }
 }
 
 export function renderFavoriteBtn() {
   const $btn = $(`<a href="javascript:void(0)" style="float:right;">订阅</a>`)
+
+  const id = location.pathname.match(/\/(\d+)-/)![1]
+
+  const updateLabel = () => {
+    $btn.text(getFavorite(id) ? '已订阅' : '订阅')
+  }
+
   $btn.on('click', () => {
     if (getFavorite(id)) {
       removeFavorite(id)
-      $btn.text('订阅')
     } else {
       updateFavorite()
-      $btn.text('已订阅')
     }
+    updateLabel()
   })
 
-  const id = location.pathname.match(/\/(\d+)-/)![1]
-  if (getFavorite().find((f) => f.id === id)) {
-    $btn.text('已订阅')
-  }
+  updateLabel()
 
   $('#detailname').append($btn)
 }
@@ -125,5 +140,8 @@ export function updateFavorite() {
   const lastUpdate = $('.play_imform_kv .play_imform_tag:contains("更新时间")')
     .next('.play_imform_val')
     .text()
-  setFavorite({ id, title, lastUpdate, current: { name, url } })
+  const updateDesc = $('.play_imform_kv .play_imform_tag:contains("播放状态")')
+    .next('.play_imform_val')
+    .text()
+  setFavorite({ id, title, updateDesc, lastUpdate, current: { name, url } })
 }
