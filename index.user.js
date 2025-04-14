@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.47.4
+// @version      1.47.5
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -2133,7 +2133,7 @@
         content: `
     <table>
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.47.4"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.47.5"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2259,7 +2259,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.47.4"}
+\u811A\u672C\u7248\u672C: ${"1.47.5"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -5187,7 +5187,7 @@ ${text}
     } else {
       favorites[index] = favorite;
     }
-    local.setItem(favoriteKey, favorites.slice(-100));
+    local.setItem(favoriteKey, favorites);
   }
   function removeFavorite(id) {
     const favorites = getFavorite();
@@ -5226,10 +5226,19 @@ ${text}
       const $ul = $(`<ul id="new_anime_page"></ul>`);
       list2.forEach(({ favorite, update }) => {
         $ul.append(
-          `<li class="one_new_anime" style="display:flex; justify-content:space-between;">
-            <a class="one_new_anime_name" href="${favorite.current.url}">${favorite.title}</a>
-            <a class="one_new_anime_ji" style="flex-shrink:0;" href="${favorite.current.url}">${favorite.current.name}/${update || "-"}</a>
-          </li>`
+          `
+<li class="one_new_anime" style="display:flex; justify-content:space-between;">
+  <a 
+    class="one_new_anime_name" 
+    href="${favorite.current.url}" 
+    title="${favorite.title}"
+  >${favorite.title}</a>
+  <a 
+    class="one_new_anime_ji" 
+    style="flex-shrink:0;" 
+    href="${favorite.current.url}"
+  >${favorite.current.name}/${update || favorite.updateDesc || "-"}</a>
+</li>`
         );
       });
       $content.find("#anime_update").append(
@@ -5237,22 +5246,25 @@ ${text}
         $ul
       );
     });
+    if (!list.length) {
+      $content.find("#anime_update").append("<div>\u8BA2\u9605\u559C\u6B22\u7684\u756A\u5267\uFF0C\u5728\u64AD\u653E\u9875\u9762\u6807\u9898\u53F3\u4FA7\u6DFB\u52A0\u8BA2\u9605</div>");
+    }
   }
   function renderFavoriteBtn() {
     const $btn = $(`<a href="javascript:void(0)" style="float:right;">\u8BA2\u9605</a>`);
+    const id = location.pathname.match(/\/(\d+)-/)[1];
+    const updateLabel = () => {
+      $btn.text(getFavorite(id) ? "\u5DF2\u8BA2\u9605" : "\u8BA2\u9605");
+    };
     $btn.on("click", () => {
       if (getFavorite(id)) {
         removeFavorite(id);
-        $btn.text("\u8BA2\u9605");
       } else {
         updateFavorite();
-        $btn.text("\u5DF2\u8BA2\u9605");
       }
+      updateLabel();
     });
-    const id = location.pathname.match(/\/(\d+)-/)[1];
-    if (getFavorite().find((f) => f.id === id)) {
-      $btn.text("\u5DF2\u8BA2\u9605");
-    }
+    updateLabel();
     $("#detailname").append($btn);
   }
   function updateFavorite() {
@@ -5261,7 +5273,8 @@ ${text}
     const url = location.pathname;
     const title = $("#detailname a:nth-child(1)").text();
     const lastUpdate = $('.play_imform_kv .play_imform_tag:contains("\u66F4\u65B0\u65F6\u95F4")').next(".play_imform_val").text();
-    setFavorite({ id, title, lastUpdate, current: { name, url } });
+    const updateDesc = $('.play_imform_kv .play_imform_tag:contains("\u64AD\u653E\u72B6\u6001")').next(".play_imform_val").text();
+    setFavorite({ id, title, updateDesc, lastUpdate, current: { name, url } });
   }
 
   function getActive$3() {
