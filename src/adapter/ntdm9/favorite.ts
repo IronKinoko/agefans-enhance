@@ -121,7 +121,7 @@ export function renderFavoriteBtn() {
     if (getFavorite(id)) {
       removeFavorite(id)
     } else {
-      updateFavorite()
+      updateFavorite(true)
     }
     updateLabel()
   })
@@ -131,8 +131,10 @@ export function renderFavoriteBtn() {
   $('#detailname').append($btn)
 }
 
-export function updateFavorite() {
+export function updateFavorite(add: boolean) {
   const id = location.pathname.match(/\/(\d+)-/)![1]
+
+  if (!getFavorite(id) && !add) return
 
   const name = $('.active-play').text()
   const url = location.pathname

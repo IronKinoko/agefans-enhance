@@ -32,7 +32,7 @@ export const iframePlayer = defineIframePlayer({
   switchEpisode: (next) => switchPart(next),
   history: {
     creator: (renderHistory) => {
-      const $btn = $(`<a class="nav_button">历史</a>`)
+      const $btn = $(`<a class="nav_button" href="javascript:void(0)">历史</a>`)
       $btn.on('click', renderHistory)
       $btn.insertBefore('#top_search_from')
     },
@@ -44,7 +44,7 @@ export const iframePlayer = defineIframePlayer({
       const width = $('#ageframediv').width()
       if (width) $('#ageframediv').height((video.height / video.width) * width)
 
-      updateFavorite()
+      updateFavorite(false)
     }
   },
 })
