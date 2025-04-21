@@ -30,18 +30,24 @@
 }
 .k-btn {
   color: var(--k-player-primary-color);
-  background: var(--k-player-primary-color-highlight);
   padding: 4px 8px;
   border-radius: 4px;
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.15s;
   user-select: none;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--k-player-primary-color);
+    background: var(--k-player-primary-color-highlight);
+  }
 }
 
 .k-capsule {
   div {
     @extend .k-btn;
+    background: var(--k-player-primary-color-highlight);
   }
   input:not(:checked) + div {
     color: #999;

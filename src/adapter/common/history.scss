@@ -8,11 +8,26 @@
   border-collapse: separate;
   th,
   td {
-    padding: 4px 8px;
+    padding: 6px 8px;
+  }
+
+  tr {
     transition: background 0.3s ease;
   }
 
-  tr:hover td {
+  tr:hover {
     background: #f1f1f1;
+  }
+
+  a {
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  a:hover {
+    color: var(--k-player-primary-color);
+  }
+
+  .k-btn {
+    color: var(--k-player-primary-color);
   }
 }
