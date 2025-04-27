@@ -34,7 +34,7 @@ export function createProgressBarPower(
   }
 
   // 为了美观，100 高度的 svg，底部 20 预留显示出来，其他从 80 开始算
-  let start = 'M 0 100, L '
+  let start = 'M 0 100 L '
   let end = ' 1000.0 80.0 L 1000 100 Z'
 
   // 巅峰弹幕数量

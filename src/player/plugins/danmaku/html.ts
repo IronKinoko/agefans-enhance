@@ -162,7 +162,6 @@ export class DanmakuElements {
   <g
     fill-opacity="0.2"
     clip-path="url(#k-player-pbp-curve-path)"
-    hover-bind="1"
   >
     <rect x="0" y="0" width="100%" height="100%" fill="rgb(255,255,255)"></rect>
     <rect id="k-player-pbp-played-path" x="0" y="0" width="0" height="100%" fill="currentColor"></rect>
