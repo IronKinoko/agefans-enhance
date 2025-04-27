@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.48.2
+// @version      1.48.3
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1854,6 +1854,8 @@
     }
     getCommand(key) {
       var _a;
+      if (!key)
+        return;
       const keyBindings = this.getKeyBindings();
       return (_a = keyBindings.find((o) => o.key === key)) == null ? void 0 : _a.command;
     }
@@ -2135,7 +2137,7 @@
         content: `
     <table class="k-table">
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.48.2"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.48.3"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2261,7 +2263,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.48.2"}
+\u811A\u672C\u7248\u672C: ${"1.48.3"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -3942,7 +3944,6 @@ ${text}
   <g
     fill-opacity="0.2"
     clip-path="url(#k-player-pbp-curve-path)"
-    hover-bind="1"
   >
     <rect x="0" y="0" width="100%" height="100%" fill="rgb(255,255,255)"></rect>
     <rect id="k-player-pbp-played-path" x="0" y="0" width="0" height="100%" fill="currentColor"></rect>
@@ -4021,7 +4022,7 @@ ${text}
       }
       counts.push(count);
     }
-    let start = "M 0 100, L ";
+    let start = "M 0 100 L ";
     let end = " 1000.0 80.0 L 1000 100 Z";
     const maxCount = Math.max(Math.max(...counts), 1);
     const points = [];
