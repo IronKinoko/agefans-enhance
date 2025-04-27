@@ -42,7 +42,7 @@ export function popover(opts: {
       'click',
       (e) => {
         if (!$target[0].contains(e.target as any)) {
-          toggle(false)
+          if (isActive) toggle(false)
         }
       },
       { capture: true }
