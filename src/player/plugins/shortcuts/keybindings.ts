@@ -162,6 +162,7 @@ export class KeyBindings {
   }
 
   getCommand(key: string) {
+    if (!key) return
     const keyBindings = this.getKeyBindings()
     return keyBindings.find((o) => o.key === key)?.command
   }
