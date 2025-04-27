@@ -147,13 +147,13 @@ export const pipHTML = `
 
 export const speedList = [0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3, 3.5, 4]
 export const createSpeedHTML = () =>
-  popover(
-    `
+  popover({
+    target: `
 <div id="k-speed" class="plyr__controls__item k-popover k-text-btn">
   <span id="k-speed-text" class="k-text-btn-text">倍速</span>
 </div>
 `,
-    `<ul class="k-menu">
+    overlay: `<ul class="k-menu">
 ${[...speedList]
   .reverse()
   .map(
@@ -161,17 +161,17 @@ ${[...speedList]
       `<li class="k-menu-item k-speed-item" data-speed="${speed}">${speed}x</li>`
   )
   .join('')}
-</ul>`
-  )
+</ul>`,
+  })
 
 export const createSettingsHTML = () =>
-  popover(
-    `
+  popover({
+    target: `
 <button id="k-settings" type="button" class="plyr__control plyr__controls__item">
   <svg><use href="#plyr-settings" /></svg>
 </button>
 `,
-    `
+    overlay: `
 <div class="k-settings-list">
   <label class="k-settings-item">
     <input type="checkbox" name="showSearchActions" />
@@ -198,18 +198,18 @@ export const createSettingsHTML = () =>
     显示底部进度条
   </label>
 </div>
-`
-  )
+`,
+  })
 
 export const createSearchActionsHTML = () =>
-  popover(
-    `
+  popover({
+    target: `
 <div class="plyr__controls__item k-popover k-text-btn">
   <span class="k-text-btn-text">画质</span>
 </div>
 `,
-    `<ul class="k-menu"></ul>`
-  )
+    overlay: `<ul class="k-menu"></ul>`,
+  })
 
 export const progressHTML = `
 <div class="k-player-progress">

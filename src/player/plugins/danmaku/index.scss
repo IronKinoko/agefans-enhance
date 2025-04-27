@@ -235,6 +235,14 @@
   display: none;
 }
 
+.k-player-controls-force-show.plyr {
+  .plyr__controls {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+}
+
 .k-player-danmaku-list {
   * {
     box-sizing: border-box;

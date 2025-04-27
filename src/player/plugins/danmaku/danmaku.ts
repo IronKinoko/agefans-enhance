@@ -69,7 +69,7 @@ type VideoInfo = NonNullable<
 >
 
 class DanmakuPlugin {
-  elements = new DanmakuElements()
+  elements: DanmakuElements
   player: KPlayer
   core?: Danmaku
   state: {
@@ -86,6 +86,7 @@ class DanmakuPlugin {
 
   constructor(player: KPlayer, videoInfo: VideoInfo) {
     this.player = player
+    this.elements = new DanmakuElements(player)
     this.player.danmaku = this
     this.state = {
       state: RunState.unSearched,

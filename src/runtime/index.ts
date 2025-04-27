@@ -129,11 +129,11 @@ class Runtime {
     )
 
     if (registers.length !== 1) {
-      console.log(window.location, registers)
+      console.log('[agefans-enhance]', window.location, registers)
       throw new Error(`激活的域名应该就一个`)
     }
 
-    console.log('激活的Register', registers[0])
+    console.log('[agefans-enhance]', '激活的Register', registers[0])
     return registers[0]
   }
 
@@ -155,7 +155,7 @@ class Runtime {
       const { run, setup, runInIframe } = opt
       let needRun = runInIframe ? parent !== self : parent === self
       if (needRun) {
-        console.log('激活的opt', opt)
+        console.log('[agefans-enhance]', '激活的opt', opt)
         setup && setupList.push(setup)
         runList.push(run)
       }

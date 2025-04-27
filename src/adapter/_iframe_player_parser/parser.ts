@@ -47,8 +47,6 @@ export const parser = {
       })
       player.src = url
     }
-
-    console.log("🚀 ~ file: parser.ts:29 ~ 'vip.sp-flv.com': ~ url:", url)
   },
   /**
    * agefans-01

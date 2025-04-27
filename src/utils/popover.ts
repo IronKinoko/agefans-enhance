@@ -1,9 +1,11 @@
 import './popover.scss'
-export function popover(
-  target: string | JQuery,
-  overlay: string | JQuery,
-  trigger: 'hover' | 'click' = 'hover'
-) {
+export function popover(opts: {
+  target: string | JQuery
+  overlay: string | JQuery
+  trigger?: 'hover' | 'click'
+  onVisibleChange?: (visible: boolean) => void
+}) {
+  const { target, overlay, trigger = 'hover', onVisibleChange } = opts
   const $target = $(target as JQuery)
   const $content = $(
     `<div class="k-popover-overlay"><div class="k-popover-content"></div></div>`
@@ -13,32 +15,44 @@ export function popover(
   $target.addClass('k-popover')
   $target.append($content)
 
-  if (trigger === 'click') {
-    $target.on('click', () => {
-      $content.fadeIn('fast')
-      $target.addClass('k-popover-active')
-    })
-    window.addEventListener('click', (e) => {
-      if (!$target[0].contains(e.target as any)) {
-        $content.fadeOut('fast')
-        $target.removeClass('k-popover-active')
-      }
-    })
-  } else {
-    let timeID: number | undefined
-    $target.on('mouseenter', () => {
-      clearTimeout(timeID)
-      timeID = window.setTimeout(() => {
+  let isActive = false
+  let timeId: number | undefined
+  const toggle = (visible: boolean, delay?: number) => {
+    clearTimeout(timeId)
+    timeId = window.setTimeout(() => {
+      if (visible) {
+        isActive = true
         $content.fadeIn('fast')
         $target.addClass('k-popover-active')
-      }, 100)
-    })
-    $target.on('mouseleave', () => {
-      clearTimeout(timeID)
-      timeID = window.setTimeout(() => {
+        onVisibleChange?.(true)
+      } else {
+        isActive = false
         $content.fadeOut('fast')
         $target.removeClass('k-popover-active')
-      }, 100)
+        onVisibleChange?.(false)
+      }
+    }, delay)
+  }
+
+  if (trigger === 'click') {
+    $target.on('click', () => {
+      toggle(!isActive)
+    })
+    window.addEventListener(
+      'click',
+      (e) => {
+        if (!$target[0].contains(e.target as any)) {
+          toggle(false)
+        }
+      },
+      { capture: true }
+    )
+  } else {
+    $target.on('mouseenter', () => {
+      toggle(true, 100)
+    })
+    $target.on('mouseleave', () => {
+      toggle(false, 100)
     })
   }
 
