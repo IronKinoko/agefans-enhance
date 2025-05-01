@@ -6,7 +6,7 @@ runtime.register({
   domains: ['.ntdm8.'],
   opts: [
     { test: '*', run: iframePlayer.createHistrory },
-    { test: '/', run: renderFavoriteList },
+    { test: /^\/$/, run: renderFavoriteList },
     { test: '/play', run: runInTop },
     { test: '/play', run: iframePlayer.runInIframe, runInIframe: true },
   ],
