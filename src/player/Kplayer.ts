@@ -667,6 +667,9 @@ export class KPlayer {
     } else {
       this.$video.attr('src', src)
     }
+
+    this.speed = this.localConfig.speed
+    this.plyr.volume = this.localConfig.volume
   }
 
   get src() {
