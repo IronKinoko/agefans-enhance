@@ -42,8 +42,7 @@ function replacePlayer() {
 
   if (process.env.NODE_ENV === 'development') {
     // a test video link
-    player.src =
-      'https://138fada9-9e5f-4347-9ef1-12ac6bf71d43.mdnplay.dev/shared-assets/videos/flower.webm'
+    player.src = 'https://media.w3.org/2010/05/video/movie_300.mp4'
     player.plyr.loop = true
   }
 }
