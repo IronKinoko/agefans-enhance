@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.48.5
+// @version      1.48.6
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -34,7 +34,7 @@
 // @require      https://unpkg.com/jquery@3.6.0/dist/jquery.min.js
 // @require      https://unpkg.com/plyr@3.6.4/dist/plyr.min.js
 // @require      https://unpkg.com/hls.js@1.0.9/dist/hls.min.js
-// @require      https://unpkg.com/@ironkinoko/danmaku@1.4.2/dist/danmaku.umd.js
+// @require      https://unpkg.com/@ironkinoko/danmaku@1.4.3/dist/danmaku.umd.js
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
@@ -2150,7 +2150,7 @@
         content: `
     <table class="k-table">
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.48.5"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.48.6"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2276,7 +2276,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.48.5"}
+\u811A\u672C\u7248\u672C: ${"1.48.6"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -3317,6 +3317,8 @@ ${text}
       } else {
         this.$video.attr("src", src);
       }
+      this.speed = this.localConfig.speed;
+      this.plyr.volume = this.localConfig.volume;
     }
     get src() {
       return this.media.currentSrc;
@@ -5391,7 +5393,7 @@ ${text}
     domains: [".ntdm8."],
     opts: [
       { test: "*", run: iframePlayer$3.createHistrory },
-      { test: "/", run: renderFavoriteList },
+      { test: /^\/$/, run: renderFavoriteList },
       { test: "/play", run: runInTop$3 },
       { test: "/play", run: iframePlayer$3.runInIframe, runInIframe: true }
     ],
