@@ -28,7 +28,7 @@
 // @include      https://player.moedot.net/*
 // @include      https://www.anime1.me/*
 // @include      https://anime1.me/*
-// @include      http://127.0.0.1:5500/*
+// @include      http://127.0.0.1:5500/public/index.html*
 // @include      https://ironkinoko.github.io/agefans-enhance/*
 // @run-at       document-end
 // @require      https://unpkg.com/jquery@3.6.0/dist/jquery.min.js
