@@ -50,21 +50,28 @@ export function renderFavoriteList() {
 
   $root.prepend(`<div class="blocktitle">订阅</div>`, $content)
 
-  type AnimeUpdateInfo = { favorite: Favorite; update?: string }
-  const list: AnimeUpdateInfo[] = favorites.map((favorite) => {
-    const update = $(
-      `.mod .one_new_anime a[href$='/${favorite.id}.html'].one_new_anime_ji`
-    ).text()
-    return { favorite, update }
+  favorites.forEach((favorite) => {
+    const update =
+      $(
+        `.mod .one_new_anime a[href$='/${favorite.id}.html'].one_new_anime_ji`
+      ).text() ||
+      $(
+        `.div_left a[href$='/${favorite.id}.html'] > img + .anime_icon1_name1`
+      ).text()
+
+    if (update) {
+      favorite.updateDesc = update
+      updateFavoriteField(favorite.id, 'updateDesc', update)
+    }
   })
 
   const daysInChinese = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
-  let groups: { day: string; list: AnimeUpdateInfo[] }[] = Array.from(
+  let groups: { day: string; list: Favorite[] }[] = Array.from(
     { length: 7 },
     (_, idx) => ({
       day: daysInChinese[idx],
-      list: list.filter(
-        (item) => new Date(item.favorite.lastUpdate).getDay() === idx
+      list: favorites.filter(
+        (item) => new Date(item.lastUpdate).getDay() === idx
       ),
     })
   )
@@ -75,7 +82,7 @@ export function renderFavoriteList() {
     .filter((o) => o.list.length > 0)
     .forEach(({ day, list }, index) => {
       const $ul = $(`<ul id="new_anime_page"></ul>`)
-      list.forEach(({ favorite, update }) => {
+      list.forEach((favorite) => {
         $ul.append(
           `
 <li class="one_new_anime" style="display:flex; justify-content:space-between;">
@@ -88,7 +95,7 @@ export function renderFavoriteList() {
     class="one_new_anime_ji" 
     style="flex-shrink:0;" 
     href="${favorite.current.url}"
-  >${favorite.current.name}/${update || favorite.updateDesc || '-'}</a>
+  >${favorite.current.name}/${favorite.updateDesc || '-'}</a>
 </li>`
         )
       })
@@ -101,7 +108,7 @@ export function renderFavoriteList() {
         )
     })
 
-  if (!list.length) {
+  if (!favorites.length) {
     $content
       .find('#anime_update')
       .append('<div>订阅喜欢的番剧，在播放页面标题右侧添加订阅</div>')
@@ -111,7 +118,7 @@ export function renderFavoriteList() {
 export function renderFavoriteBtn() {
   const $btn = $(`<a href="javascript:void(0)" style="float:right;">订阅</a>`)
 
-  const id = location.pathname.match(/\/(\d+)-/)![1]
+  const id = getCurrentPageFavoriteId()
 
   const updateLabel = () => {
     $btn.text(getFavorite(id) ? '已订阅' : '订阅')
@@ -121,7 +128,7 @@ export function renderFavoriteBtn() {
     if (getFavorite(id)) {
       removeFavorite(id)
     } else {
-      updateFavorite(true)
+      addCurrentPageFavorite()
     }
     updateLabel()
   })
@@ -131,10 +138,29 @@ export function renderFavoriteBtn() {
   $('#detailname').append($btn)
 }
 
-export function updateFavorite(add: boolean) {
-  const id = location.pathname.match(/\/(\d+)-/)![1]
+function updateFavoriteField<K extends keyof Favorite>(
+  id: string,
+  field: K,
+  value: Favorite[K]
+) {
+  const favorite = getFavorite(id)
+  if (!favorite) return
 
-  if (!getFavorite(id) && !add) return
+  favorite[field] = value
+
+  setFavorite(favorite)
+}
+
+function getCurrentPageFavoriteId() {
+  return location.pathname.match(/\/(\d+)-/)![1]
+}
+
+function addCurrentPageFavorite() {
+  setFavorite(createCurrentPageFavorite())
+}
+
+function createCurrentPageFavorite(): Favorite {
+  const id = getCurrentPageFavoriteId()
 
   const name = $('.active-play').text()
   const url = location.pathname
@@ -145,5 +171,13 @@ export function updateFavorite(add: boolean) {
   const updateDesc = $('.play_imform_kv .play_imform_tag:contains("播放状态")')
     .next('.play_imform_val')
     .text()
-  setFavorite({ id, title, updateDesc, lastUpdate, current: { name, url } })
+
+  return { id, title, updateDesc, lastUpdate, current: { name, url } }
+}
+
+export function updateCurrentPageFavorite() {
+  const id = getCurrentPageFavoriteId()
+
+  if (!getFavorite(id)) return
+  setFavorite(createCurrentPageFavorite())
 }

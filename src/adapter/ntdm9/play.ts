@@ -1,5 +1,5 @@
 import { defineIframePlayer } from '../common/defineIframePlayer'
-import { renderFavoriteBtn, updateFavorite } from './favorite'
+import { renderFavoriteBtn, updateCurrentPageFavorite } from './favorite'
 function getActive() {
   return $('.active-play')
 }
@@ -44,7 +44,7 @@ export const iframePlayer = defineIframePlayer({
       const width = $('#ageframediv').width()
       if (width) $('#ageframediv').height((video.height / video.width) * width)
 
-      updateFavorite(false)
+      updateCurrentPageFavorite()
     }
   },
 })
