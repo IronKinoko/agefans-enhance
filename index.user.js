@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.48.6
+// @version      1.48.7
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -23,12 +23,13 @@
 // @include      https://www.cycanime.com/*
 // @include      https://www.cyc-anime.net/*
 // @include      https://www.cycani.org/*
+// @include      https://www.ciyuancheng.net/*
 // @include      https://player.cycanime.com/*
 // @include      https://dick.xfani.com/*
 // @include      https://player.moedot.net/*
 // @include      https://www.anime1.me/*
 // @include      https://anime1.me/*
-// @include      http://127.0.0.1:5500/*
+// @include      http://127.0.0.1:5500/public/index.html*
 // @include      https://ironkinoko.github.io/agefans-enhance/*
 // @run-at       document-end
 // @require      https://unpkg.com/jquery@3.6.0/dist/jquery.min.js
@@ -2150,7 +2151,7 @@
         content: `
     <table class="k-table">
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.48.6"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.48.7"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2276,7 +2277,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.48.6"}
+\u811A\u672C\u7248\u672C: ${"1.48.7"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -5267,27 +5268,32 @@ ${text}
     <ul id="anime_update"></ul>
   </div>`);
     $root.prepend(`<div class="blocktitle">\u8BA2\u9605</div>`, $content);
-    const list = favorites.map((favorite) => {
+    favorites.forEach((favorite) => {
       const update = $(
         `.mod .one_new_anime a[href$='/${favorite.id}.html'].one_new_anime_ji`
+      ).text() || $(
+        `.div_left a[href$='/${favorite.id}.html'] > img + .anime_icon1_name1`
       ).text();
-      return { favorite, update };
+      if (update) {
+        favorite.updateDesc = update;
+        updateFavoriteField(favorite.id, "updateDesc", update);
+      }
     });
     const daysInChinese = ["\u5468\u65E5", "\u5468\u4E00", "\u5468\u4E8C", "\u5468\u4E09", "\u5468\u56DB", "\u5468\u4E94", "\u5468\u516D"];
     let groups = Array.from(
       { length: 7 },
       (_, idx) => ({
         day: daysInChinese[idx],
-        list: list.filter(
-          (item) => new Date(item.favorite.lastUpdate).getDay() === idx
+        list: favorites.filter(
+          (item) => new Date(item.lastUpdate).getDay() === idx
         )
       })
     );
     const day = new Date().getDay();
     groups = [...groups.slice(day), ...groups.slice(0, day)];
-    groups.filter((o) => o.list.length > 0).forEach(({ day: day2, list: list2 }, index) => {
+    groups.filter((o) => o.list.length > 0).forEach(({ day: day2, list }, index) => {
       const $ul = $(`<ul id="new_anime_page"></ul>`);
-      list2.forEach(({ favorite, update }) => {
+      list.forEach((favorite) => {
         $ul.append(
           `
 <li class="one_new_anime" style="display:flex; justify-content:space-between;">
@@ -5300,7 +5306,7 @@ ${text}
     class="one_new_anime_ji" 
     style="flex-shrink:0;" 
     href="${favorite.current.url}"
-  >${favorite.current.name}/${update || favorite.updateDesc || "-"}</a>
+  >${favorite.current.name}/${favorite.updateDesc || "-"}</a>
 </li>`
         );
       });
@@ -5309,13 +5315,13 @@ ${text}
         $ul
       );
     });
-    if (!list.length) {
+    if (!favorites.length) {
       $content.find("#anime_update").append("<div>\u8BA2\u9605\u559C\u6B22\u7684\u756A\u5267\uFF0C\u5728\u64AD\u653E\u9875\u9762\u6807\u9898\u53F3\u4FA7\u6DFB\u52A0\u8BA2\u9605</div>");
     }
   }
   function renderFavoriteBtn() {
     const $btn = $(`<a href="javascript:void(0)" style="float:right;">\u8BA2\u9605</a>`);
-    const id = location.pathname.match(/\/(\d+)-/)[1];
+    const id = getCurrentPageFavoriteId();
     const updateLabel = () => {
       $btn.text(getFavorite(id) ? "\u5DF2\u8BA2\u9605" : "\u8BA2\u9605");
     };
@@ -5323,23 +5329,40 @@ ${text}
       if (getFavorite(id)) {
         removeFavorite(id);
       } else {
-        updateFavorite(true);
+        addCurrentPageFavorite();
       }
       updateLabel();
     });
     updateLabel();
     $("#detailname").append($btn);
   }
-  function updateFavorite(add) {
-    const id = location.pathname.match(/\/(\d+)-/)[1];
-    if (!getFavorite(id) && !add)
+  function updateFavoriteField(id, field, value) {
+    const favorite = getFavorite(id);
+    if (!favorite)
       return;
+    favorite[field] = value;
+    setFavorite(favorite);
+  }
+  function getCurrentPageFavoriteId() {
+    return location.pathname.match(/\/(\d+)-/)[1];
+  }
+  function addCurrentPageFavorite() {
+    setFavorite(createCurrentPageFavorite());
+  }
+  function createCurrentPageFavorite() {
+    const id = getCurrentPageFavoriteId();
     const name = $(".active-play").text();
     const url = location.pathname;
     const title = $("#detailname a:nth-child(1)").text();
     const lastUpdate = $('.play_imform_kv .play_imform_tag:contains("\u66F4\u65B0\u65F6\u95F4")').next(".play_imform_val").text();
     const updateDesc = $('.play_imform_kv .play_imform_tag:contains("\u64AD\u653E\u72B6\u6001")').next(".play_imform_val").text();
-    setFavorite({ id, title, updateDesc, lastUpdate, current: { name, url } });
+    return { id, title, updateDesc, lastUpdate, current: { name, url } };
+  }
+  function updateCurrentPageFavorite() {
+    const id = getCurrentPageFavoriteId();
+    if (!getFavorite(id))
+      return;
+    setFavorite(createCurrentPageFavorite());
   }
 
   function getActive$3() {
@@ -5384,7 +5407,7 @@ ${text}
         const width = $("#ageframediv").width();
         if (width)
           $("#ageframediv").height(video.height / video.width * width);
-        updateFavorite(false);
+        updateCurrentPageFavorite();
       }
     }
   });
@@ -5769,7 +5792,7 @@ ${text}
   injectCss(css$2,{});
 
   runtime.register({
-    domains: [".cycanime.", ".cyc-anime.", ".cycani."],
+    domains: [".cycanime.", ".cyc-anime.", ".cycani.", ".ciyuancheng."],
     opts: [
       { test: "/watch", run: runInTop$1 },
       { test: "/watch", run: iframePlayer$1.runInIframe, runInIframe: true },
@@ -5781,7 +5804,7 @@ ${text}
     ],
     search: {
       name: "\u6B21\u5143\u57CE",
-      search: (name) => `https://www.cycani.org/search.html?wd=${name}`,
+      search: (name) => `https://www.ciyuancheng.net/search.html?wd=${name}`,
       getSearchName: () => {
         return new Promise((resolve) => {
           const fn = (e) => {
