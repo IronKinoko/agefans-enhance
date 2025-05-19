@@ -8,7 +8,7 @@
 - [NT 动漫](https://www.ntdm8.com)
 - [bimiacg](http://www.bimiacg10.net)
 - [mutean](https://www.mutean.com)
-- [次元城](https://www.cycani.org)
+- [次元城](https://www.ciyuancheng.net)
 - [稀饭动漫](https://dick.xfani.com)
 - [Anime1](https://anime1.me)
 - [独立播放器](https://ironkinoko.github.io/agefans-enhance/)
