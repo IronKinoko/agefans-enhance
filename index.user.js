@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.48.7
+// @version      1.48.8
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -2151,7 +2151,7 @@
         content: `
     <table class="k-table">
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.48.7"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.48.8"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2277,7 +2277,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.48.7"}
+\u811A\u672C\u7248\u672C: ${"1.48.8"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -5294,6 +5294,9 @@ ${text}
     groups.filter((o) => o.list.length > 0).forEach(({ day: day2, list }, index) => {
       const $ul = $(`<ul id="new_anime_page"></ul>`);
       list.forEach((favorite) => {
+        const url = new URL(favorite.current.url, location.origin);
+        url.searchParams.set("jumpToLast", "1");
+        const lastUrl = url.toString();
         $ul.append(
           `
 <li class="one_new_anime" style="display:flex; justify-content:space-between;">
@@ -5304,9 +5307,17 @@ ${text}
   >${favorite.title}</a>
   <a 
     class="one_new_anime_ji" 
-    style="flex-shrink:0;" 
+    style="flex-shrink:0;margin:0" 
     href="${favorite.current.url}"
-  >${favorite.current.name}/${favorite.updateDesc || "-"}</a>
+    title="\u8DF3\u8F6C\u5230${favorite.current.name}\u7684\u64AD\u653E\u9875\u9762"
+  >${favorite.current.name}</a>
+  <span>&nbsp;/&nbsp;</span>
+  <a 
+    class="one_new_anime_ji" 
+    style="flex-shrink:0;" 
+    href="${lastUrl}"
+    title="\u8DF3\u8F6C\u5230\u6700\u540E\u4E00\u96C6\u64AD\u653E\u9875\u9762"
+  >${favorite.updateDesc || "-"}</a>
 </li>`
         );
       });
@@ -5372,8 +5383,16 @@ ${text}
     return $(".active-play").parent()[next ? "next" : "prev"]().find("a")[0].href;
   }
   function runInTop$3() {
+    parseURLJumpParams();
     iframePlayer$3.runInTop();
     renderFavoriteBtn();
+  }
+  function parseURLJumpParams() {
+    const url = new URL(window.location.href);
+    const jumpToLast = url.searchParams.get("jumpToLast");
+    if (jumpToLast) {
+      window.location.replace($(".movurl:visible a").last().attr("href"));
+    }
   }
   const iframePlayer$3 = defineIframePlayer({
     iframeSelector: "#playleft iframe",
