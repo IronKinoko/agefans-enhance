@@ -83,6 +83,9 @@ export function renderFavoriteList() {
     .forEach(({ day, list }, index) => {
       const $ul = $(`<ul id="new_anime_page"></ul>`)
       list.forEach((favorite) => {
+        const url = new URL(favorite.current.url, location.origin)
+        url.searchParams.set('jumpToLast', '1')
+        const lastUrl = url.toString()
         $ul.append(
           `
 <li class="one_new_anime" style="display:flex; justify-content:space-between;">
@@ -93,9 +96,17 @@ export function renderFavoriteList() {
   >${favorite.title}</a>
   <a 
     class="one_new_anime_ji" 
-    style="flex-shrink:0;" 
+    style="flex-shrink:0;margin:0" 
     href="${favorite.current.url}"
-  >${favorite.current.name}/${favorite.updateDesc || '-'}</a>
+    title="跳转到${favorite.current.name}的播放页面"
+  >${favorite.current.name}</a>
+  <span>&nbsp;/&nbsp;</span>
+  <a 
+    class="one_new_anime_ji" 
+    style="flex-shrink:0;" 
+    href="${lastUrl}"
+    title="跳转到最后一集播放页面"
+  >${favorite.updateDesc || '-'}</a>
 </li>`
         )
       })

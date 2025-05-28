@@ -8,8 +8,18 @@ function switchPart(next: boolean) {
 }
 
 export function runInTop() {
+  parseURLJumpParams()
+
   iframePlayer.runInTop()
   renderFavoriteBtn()
+}
+
+function parseURLJumpParams() {
+  const url = new URL(window.location.href)
+  const jumpToLast = url.searchParams.get('jumpToLast')
+  if (jumpToLast) {
+    window.location.replace($('.movurl:visible a').last().attr('href')!)
+  }
 }
 
 export const iframePlayer = defineIframePlayer({
