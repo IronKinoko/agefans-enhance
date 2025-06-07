@@ -3,7 +3,7 @@ import { iframePlayer, runInTop, parser } from './play'
 import './index.scss'
 
 runtime.register({
-  domains: ['.xfani.', 'player.moedot'],
+  domains: ['.xifanacg.', 'player.moedot'],
   opts: [
     { test: '/watch', run: runInTop },
     { test: '/watch', run: iframePlayer.runInIframe, runInIframe: true },
@@ -15,7 +15,7 @@ runtime.register({
   ],
   search: {
     name: '稀饭动漫',
-    search: (name) => `https://dick.xfani.com/search.html?wd=${name}`,
+    search: (name) => `https://dm.xifanacg.com/search.html?wd=${name}`,
     getSearchName: () => {
       return new Promise((resolve) => {
         const fn = (e: MessageEvent<any>) => {
