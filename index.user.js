@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.agemys.com/favicon.ico
-// @version      1.48.8
+// @version      1.48.9
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -25,7 +25,7 @@
 // @include      https://www.cycani.org/*
 // @include      https://www.ciyuancheng.net/*
 // @include      https://player.cycanime.com/*
-// @include      https://dick.xfani.com/*
+// @include      https://dm.xifanacg.com/*
 // @include      https://player.moedot.net/*
 // @include      https://www.anime1.me/*
 // @include      https://anime1.me/*
@@ -2151,7 +2151,7 @@
         content: `
     <table class="k-table">
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.48.8"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.48.9"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2277,7 +2277,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.48.8"}
+\u811A\u672C\u7248\u672C: ${"1.48.9"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -5902,7 +5902,7 @@ ${text}
   injectCss(css$1,{});
 
   runtime.register({
-    domains: [".xfani.", "player.moedot"],
+    domains: [".xifanacg.", "player.moedot"],
     opts: [
       { test: "/watch", run: runInTop },
       { test: "/watch", run: iframePlayer.runInIframe, runInIframe: true },
@@ -5914,7 +5914,7 @@ ${text}
     ],
     search: {
       name: "\u7A00\u996D\u52A8\u6F2B",
-      search: (name) => `https://dick.xfani.com/search.html?wd=${name}`,
+      search: (name) => `https://dm.xifanacg.com/search.html?wd=${name}`,
       getSearchName: () => {
         return new Promise((resolve) => {
           const fn = (e) => {
