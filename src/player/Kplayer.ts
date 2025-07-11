@@ -149,6 +149,7 @@ export class KPlayer {
         seek: true,
       },
       disableContextMenu: false,
+      loadSprite: false,
       ...opts,
     })
 
@@ -768,14 +769,5 @@ export class KPlayer {
         window.parent.postMessage({ key, video: info }, '*')
       })
     })
-  }
-}
-
-export function addReferrerMeta(content: 'same-origin' | 'no-referrer') {
-  if ($('meta[name=referrer]').length === 0) {
-    $('head').append(`<meta name="referrer" content="${content}">`)
-  } else {
-    const $meta = $('meta[name=referrer]')
-    $meta.attr('content', content)
   }
 }
