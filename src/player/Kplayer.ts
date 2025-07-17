@@ -30,10 +30,10 @@ const MediaErrorMessage: Record<number, string> = {
   5: '资源被加密了',
 }
 
-type Opts = {
+export interface KPlayerOpts extends Plyr.Options {
   video?: HTMLVideoElement
   eventToParentWindow?: boolean
-} & Plyr.Options
+}
 
 type CustomEventMap =
   | 'prev'
@@ -94,10 +94,10 @@ export class KPlayer {
   localPlayTimeKey: string
   $searchActions!: JQuery<HTMLElement>
   static plguinList: ((player: KPlayer) => void)[] = []
-  opts: Opts
+  opts: KPlayerOpts
   speedList = speedList
 
-  constructor(selector: string | Element, opts: Opts = {}) {
+  constructor(selector: string | Element, opts: KPlayerOpts = {}) {
     this.opts = opts
     this.$wrapper = $('<div id="k-player-wrapper"/>').replaceAll(selector)
     this.$loading = $(loadingHTML)

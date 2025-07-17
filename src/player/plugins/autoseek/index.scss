@@ -1,0 +1,45 @@
+#k-autoseek-config {
+  line-height: 32px;
+
+  .k-input {
+    height: 32px;
+    width: 84px;
+    border-radius: 4px;
+    padding: 0 8px;
+
+    -webkit-appearance: none;
+    appearance: none;
+    &[type='number'] {
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        -webkit-appearance: none; // Chrome, Safari
+        margin: 0;
+      }
+    }
+  }
+
+  .k-autoseek-config-tips {
+    font-size: 14px;
+    color: #666;
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+}
+
+#k-autoseek-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+
+  .k-autoseek-segment {
+    position: absolute;
+    background: white;
+    top: 50%;
+    transform: translateY(-50%);
+
+    width: calc(var(--plyr-range-track-height) + 2px);
+    height: calc(var(--plyr-range-track-height) + 2px);
+    border-radius: 50%;
+  }
+}

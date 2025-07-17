@@ -74,6 +74,15 @@
     color: #999;
   }
 }
+.k-checkbox {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  input {
+    margin: 0;
+    margin-right: 4px;
+  }
+}
 
 .k-settings {
   &-list {

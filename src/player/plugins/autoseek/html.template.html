@@ -1,0 +1,54 @@
+<div id="k-autoseek-config">
+  <form class="k-settings-list">
+    <div class="k-settings-item">
+      <label class="k-checkbox">
+        <input type="checkbox" name="enabled" />
+        启用自动跳过片段
+      </label>
+    </div>
+
+    <div class="k-settings-item">
+      <label class="k-checkbox">
+        <input type="checkbox" name="start.enabled" />
+        跳过片头
+      </label>
+      <input
+        type="number"
+        name="start.start"
+        class="k-input"
+        placeholder="起跳时间(秒)"
+      />
+      <input
+        type="number"
+        name="start.diff"
+        class="k-input"
+        min="0"
+        placeholder="长度(秒)"
+      />
+    </div>
+
+    <div class="k-settings-item">
+      <label class="k-checkbox">
+        <input type="checkbox" name="end.enabled" />
+        跳过片尾
+      </label>
+      <input
+        type="number"
+        name="end.start"
+        class="k-input"
+        placeholder="起跳时间(秒)"
+      />
+      <input
+        type="number"
+        name="end.diff"
+        class="k-input"
+        placeholder="长度(秒)"
+      />
+    </div>
+    <div class="k-autoseek-config-tips">
+      如果片尾起跳时间小于等于0，则表示跳过最后一段时间。
+    </div>
+  </form>
+</div>
+
+<div id="k-autoseek-overlay"></div>

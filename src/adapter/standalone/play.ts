@@ -20,7 +20,7 @@ function getUrlId(url: string) {
 }
 
 function replacePlayer() {
-  const player = new KPlayer('#player')
+  const player = new KPlayer('#player', { autoSeekScope: 'standalone' })
 
   player.message.info(
     '请使用Ctrl+V粘贴视频地址，或者拖拽视频文件/链接到页面',
