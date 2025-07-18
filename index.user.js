@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.48.12
+// @version      1.49.0
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -2615,7 +2615,7 @@
         content: `
     <table class="k-table">
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.48.12"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.49.0"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2741,7 +2741,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.48.12"}
+\u811A\u672C\u7248\u672C: ${"1.49.0"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -5107,10 +5107,10 @@ ${text}
     new DanmakuPlugin(player, info);
   }
 
-  var css$8 = "#k-autoseek-config {\n  line-height: 32px;\n  font-size: 14px;\n}\n#k-autoseek-config .k-autoseek-config-tips {\n  font-size: 12px;\n  color: #666;\n  margin-top: 8px;\n  line-height: 1.5;\n}\n\n#k-autoseek-overlay {\n  position: absolute;\n  inset: 0;\n  pointer-events: none;\n  z-index: 1000;\n}\n#k-autoseek-overlay .k-autoseek-segment {\n  position: absolute;\n  background: white;\n  top: 50%;\n  transform: translateY(-50%);\n  width: calc(var(--plyr-range-track-height) + 2px);\n  height: calc(var(--plyr-range-track-height) + 2px);\n  border-radius: 50%;\n}";
+  var css$8 = "#k-autoseek-config {\n  line-height: 32px;\n  font-size: 14px;\n}\n#k-autoseek-config .k-autoseek-config-tips {\n  font-size: 12px;\n  color: #666;\n  margin-top: 8px;\n  line-height: 1.6;\n}\n#k-autoseek-config .k-autoseek-config-tips summary {\n  cursor: pointer;\n}\n#k-autoseek-config .k-autoseek-config-tips .k-autoseek-config-tips-title {\n  font-weight: 500;\n  margin-bottom: 4px;\n}\n\n#k-autoseek-overlay {\n  position: absolute;\n  inset: 0;\n  pointer-events: none;\n  z-index: 1000;\n}\n#k-autoseek-overlay .k-autoseek-segment {\n  position: absolute;\n  background: white;\n  top: 50%;\n  transform: translateY(-50%);\n  width: calc(var(--plyr-range-track-height) + 2px);\n  height: calc(var(--plyr-range-track-height) + 2px);\n  border-radius: 50%;\n}";
   injectCss(css$8,{});
 
-  var T = {"k-autoseek-config":"<div id=\"k-autoseek-config\">\n  <form class=\"k-settings-list\">\n    <div class=\"k-settings-item\">\n      <label class=\"k-checkbox\">\n        <input type=\"checkbox\" name=\"start.enabled\" >\n        跳过片头\n      </label>\n      <input         type=\"number\"\n        name=\"start.start\"\n        class=\"k-input-number\"\n        placeholder=\"起跳时间(秒)\"\n      >\n      <input         type=\"number\"\n        name=\"start.diff\"\n        class=\"k-input-number\"\n        min=\"0\"\n        placeholder=\"长度(秒)\"\n      >\n    </div>\n\n    <div class=\"k-settings-item\">\n      <label class=\"k-checkbox\">\n        <input type=\"checkbox\" name=\"end.enabled\" >\n        跳过片尾\n      </label>\n      <input         type=\"number\"\n        name=\"end.start\"\n        class=\"k-input-number\"\n        placeholder=\"起跳时间(秒)\"\n      >\n      <input         type=\"number\"\n        name=\"end.diff\"\n        class=\"k-input-number\"\n        placeholder=\"长度(秒)\"\n      >\n    </div>\n    <div class=\"k-autoseek-config-tips\">\n      片尾起跳时间小于等于0，可视作逆向的跳跃\n    </div>\n    <div class=\"k-autoseek-config-tips\">\n      仅在当前番剧播放页生效，其他番剧需要重新配置\n    </div>\n  </form>\n</div>","k-autoseek-overlay":"<div id=\"k-autoseek-overlay\"></div>"};
+  var T = {"k-autoseek-config":"<div id=\"k-autoseek-config\">\r\n  <form class=\"k-settings-list\">\r\n    <div class=\"k-settings-item\">\r\n      <label class=\"k-checkbox\">\r\n        <input type=\"checkbox\" name=\"start.enabled\" >\r\n        跳过片头\r\n      </label>\r\n      <input \n        type=\"number\"\r\n        name=\"start.start\"\r\n        class=\"k-input-number\"\r\n        placeholder=\"起跳时间(秒)\"\r\n      >\r\n      <input \n        type=\"number\"\r\n        name=\"start.diff\"\r\n        class=\"k-input-number\"\r\n        min=\"0\"\r\n        placeholder=\"长度(秒)\"\r\n      >\r\n    </div>\r\n\r\n    <div class=\"k-settings-item\">\r\n      <label class=\"k-checkbox\">\r\n        <input type=\"checkbox\" name=\"end.enabled\" >\r\n        跳过片尾\r\n      </label>\r\n      <input \n        type=\"number\"\r\n        name=\"end.start\"\r\n        class=\"k-input-number\"\r\n        placeholder=\"起跳时间(秒)\"\r\n      >\r\n      <input \n        type=\"number\"\r\n        name=\"end.diff\"\r\n        class=\"k-input-number\"\r\n        placeholder=\"长度(秒)\"\r\n      >\r\n    </div>\r\n    <div class=\"k-autoseek-config-tips\">\r\n      <details>\r\n        <summary>使用说明</summary>\r\n        <div class=\"k-autoseek-config-tips-title\">\r\n          第一个值表示“起跳时间”，二个值表示“跳过多少时间”\r\n        </div>\r\n        <div>\r\n          例如：在 60s 位置起跳，跳过 85s 时长，视频最终会在 145s 处播放\r\n        </div>\r\n        <br>\r\n        <div class=\"k-autoseek-config-tips-title\">\r\n          结尾的起跳时间可以是小于等于 0 的数字。\r\n        </div>\r\n        <div>\r\n          例子1：片尾填写 -10 与 60，那么视频倒数 10s 处再往前数 60s\r\n          的位置开始跳转，视频最终在倒数 10s 处播放\r\n        </div>\r\n        <div>\r\n          例子2：片尾填写 600 与 60，那么正数 600s 处开始跳转 60s，视频最终在\r\n          660s 处播放\r\n        </div>\r\n      </details>\r\n    </div>\r\n    <div class=\"k-autoseek-config-tips\">\r\n      仅在当前番剧播放页生效，其他番剧需要重新配置\r\n    </div>\r\n  </form>\r\n</div>","k-autoseek-overlay":"<div id=\"k-autoseek-overlay\"></div>"};
 
   var __defProp$2 = Object.defineProperty;
   var __defProps$2 = Object.defineProperties;
@@ -5274,7 +5274,7 @@ ${text}
           const currentTime = media.currentTime;
           const duration = media.duration;
           const enabled = this.config.start.enabled || this.config.end.enabled;
-          if (!enabled || isSeeking)
+          if (!enabled || isSeeking || currentTime >= duration - 3)
             return;
           if (this.config.start.enabled) {
             const start = this.config.start.start || 0;
