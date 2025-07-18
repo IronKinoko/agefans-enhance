@@ -212,7 +212,7 @@ export class KPlayer {
     time = Math.floor(time ?? this.currentTime)
 
     const store = local.getItem<LocalPlayTimeStore>(this.localPlayTimeKey, {})
-    const key = await this.playTimeStoreKey()
+    const key = await this.getPlayTimeStoreKey()
     store[key] = time
     local.setItem(this.localPlayTimeKey, store)
   }
@@ -223,12 +223,15 @@ export class KPlayer {
 
   async getCurrentTimeLog() {
     const store = local.getItem<LocalPlayTimeStore>(this.localPlayTimeKey, {})
-    const key = await this.playTimeStoreKey()
+    const key = await this.getPlayTimeStoreKey()
     return store[key]
   }
 
-  async playTimeStoreKey() {
+  async getPlayTimeStoreKey() {
     return await runtime.getTopLocationHref()
+  }
+  async getAnimeScope() {
+    return await runtime.getAnimeScope()
   }
 
   hideControlsDebounced = debounce(() => {

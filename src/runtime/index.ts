@@ -16,6 +16,7 @@ interface RegisteredItem {
     search?: (name: string) => string | void
     getSearchName?: () => Promise<string> | string
     getEpisode?: () => Promise<string> | string
+    getAnimeScope?: () => Promise<string> | string
     disabledInIframe?: boolean
   }
 }
@@ -39,6 +40,19 @@ class Runtime {
           )
         }
       })
+
+      window.addEventListener('message', (e) => {
+        if (e.data?.key === 'getAnimeScope') {
+          e.source?.postMessage(
+            {
+              key: 'getAnimeScope',
+              animeScope:
+                this.getActiveRegister().search?.getAnimeScope?.() || '',
+            },
+            { targetOrigin: '*' }
+          )
+        }
+      })
     }
   }
 
@@ -54,6 +68,24 @@ class Runtime {
           }
         })
         parent.postMessage({ key: 'getLocationHref' }, '*')
+      })
+    },
+    () => window.location.href
+  )
+
+  getAnimeScope = memoize(
+    async () => {
+      if (parent === self)
+        return this.getActiveRegister().search?.getAnimeScope?.() || ''
+
+      return new Promise<string>((resolve) => {
+        window.addEventListener('message', function once(e) {
+          if (e.data?.key === 'getAnimeScope') {
+            window.removeEventListener('message', once)
+            resolve(e.data.animeScope)
+          }
+        })
+        parent.postMessage({ key: 'getAnimeScope' }, '*')
       })
     },
     () => window.location.href

@@ -41,5 +41,7 @@ runtime.register({
         parent.postMessage({ key: 'getEpisode' }, '*')
       })
     },
+    getAnimeScope: () =>
+      window.location.href.match(/\/vodplay\/(\d+)-/)?.[1] || '',
   },
 })

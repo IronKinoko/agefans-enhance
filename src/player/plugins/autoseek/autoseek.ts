@@ -1,4 +1,4 @@
-import { get, isNil, set } from 'lodash-es'
+import { get, isNil, set, throttle } from 'lodash-es'
 import { modal } from '../../../utils/modal'
 import { KPlayer } from '../../Kplayer'
 import { Shortcuts } from '../shortcuts'
@@ -9,9 +9,6 @@ declare module '../../KPlayer' {
   interface KPlayer {
     autoSeek: AutoSeek
   }
-  interface KPlayerOpts {
-    autoSeekScope?: string // 用于标识自动跳过片段的作用域
-  }
 }
 
 // 所有时间都是秒
@@ -21,7 +18,6 @@ type AutoSeekConfigItem = {
   diff?: number // 跳过的时间
 }
 type AutoSeekConfig = {
-  enabled: boolean // 是否启用自动跳过
   start: AutoSeekConfigItem
   end: AutoSeekConfigItem
 }
@@ -81,11 +77,15 @@ Shortcuts.registerCommand(
 
       if (open) return
       open = true
+      this.plyr.pause()
       modal({
         width: 350,
         title: '跳过片段设置',
         content: setFormData(T['k-autoseek-config'], this.autoSeek.getConfig()),
-        afterClose: () => (open = false),
+        afterClose: () => {
+          open = false
+          this.plyr.play()
+        },
         onOk: () => {
           const config = getFormData($('#k-autoseek-config form'))
           if (
@@ -121,8 +121,7 @@ Shortcuts.registerCommand(
 )
 
 const DefaultConfig: AutoSeekConfig = {
-  enabled: false,
-  start: { enabled: false },
+  start: { enabled: false, start: 0, diff: 85 },
   end: { enabled: false },
 }
 
@@ -134,9 +133,9 @@ class AutoSeek {
   constructor(private player: KPlayer) {
     this.player.autoSeek = this
 
-    if (this.player.opts.autoSeekScope) {
-      this.init(this.player.opts.autoSeekScope)
-    }
+    this.player.getAnimeScope().then((scope) => {
+      this.init(scope)
+    })
   }
 
   getConfig() {
@@ -162,7 +161,7 @@ class AutoSeek {
     this.refresh()
   }
 
-  init(scope: string) {
+  private init(scope: string) {
     this.scope = scope
     this.config = this.getConfig()
 
@@ -170,47 +169,75 @@ class AutoSeek {
       this.refresh()
     })
 
-    this.player.on('timeupdate', () => {
-      const currentTime = this.player.media.currentTime
-      const duration = this.player.media.duration
-
-      if (!this.config.enabled) return
-      if (this.config.start.enabled) {
-        const start = this.config.start.start || 0
-        const diff = this.config.start.diff || 0
-
-        if (currentTime >= start && currentTime <= start + diff) {
-          this.player.media.currentTime = start + diff
-        }
+    let isSeeking = false
+    // 监听用户交互
+    const container = this.player.plyr.elements.controls
+    if (container) {
+      // 监听进度条相关的用户交互
+      const progressContainer = container.querySelector('.plyr__progress')
+      if (progressContainer) {
+        progressContainer.addEventListener('mousedown', () => {
+          isSeeking = true
+        })
+        progressContainer.addEventListener('mouseup', () => {
+          isSeeking = false
+        })
+        progressContainer.addEventListener('touchstart', () => {
+          isSeeking = true
+        })
+        progressContainer.addEventListener('touchend', () => {
+          isSeeking = false
+        })
       }
+    }
 
-      if (this.config.end.enabled) {
-        const start = this.config.end.start || 0
-        const diff = this.config.end.diff || 0
+    this.player.on(
+      'timeupdate',
+      throttle(() => {
+        const media = this.player.media
+        const currentTime = media.currentTime
+        const duration = media.duration
 
-        if (start <= 0) {
-          if (
-            currentTime >= start + duration - diff &&
-            currentTime <= start + duration
-          ) {
-            this.player.media.currentTime = start + duration
-          }
-        } else {
+        const enabled = this.config.start.enabled || this.config.end.enabled
+        if (!enabled || isSeeking) return
+        if (this.config.start.enabled) {
+          const start = this.config.start.start || 0
+          const diff = this.config.start.diff || 0
+
           if (currentTime >= start && currentTime <= start + diff) {
             this.player.media.currentTime = start + diff
           }
         }
-      }
-    })
+
+        if (this.config.end.enabled) {
+          const start = this.config.end.start || 0
+          const diff = this.config.end.diff || 0
+
+          if (start <= 0) {
+            if (
+              currentTime >= start + duration - diff &&
+              currentTime <= start + duration
+            ) {
+              this.player.media.currentTime = start + duration
+            }
+          } else {
+            if (currentTime >= start && currentTime <= start + diff) {
+              this.player.media.currentTime = start + diff
+            }
+          }
+        }
+      }, 300)
+    )
   }
 
-  refresh() {
+  private refresh() {
     const duration = this.player.media.duration
     if (!duration) return
 
     $('#k-autoseek-overlay').remove()
 
-    if (!this.config.enabled) return
+    const enabled = this.config.start.enabled || this.config.end.enabled
+    if (!enabled) return
     const $overlay = $(T['k-autoseek-overlay'])
 
     if (this.config.start.enabled) {

@@ -1,11 +1,14 @@
 #k-autoseek-config {
   line-height: 32px;
+  font-size: 14px;
 
   .k-input {
     height: 32px;
-    width: 84px;
+    width: 100px;
     border-radius: 4px;
     padding: 0 8px;
+    box-sizing: border-box;
+    font-size: 14px;
 
     -webkit-appearance: none;
     appearance: none;
@@ -19,7 +22,7 @@
   }
 
   .k-autoseek-config-tips {
-    font-size: 14px;
+    font-size: 12px;
     color: #666;
     margin-top: 8px;
     line-height: 1.5;

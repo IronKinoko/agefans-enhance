@@ -43,5 +43,6 @@ runtime.register({
         parent.postMessage({ key: 'getEpisode' }, '*')
       })
     },
+    getAnimeScope: () => window.location.href.match(/\/(\d+)\/play/)?.[1] || '',
   },
 })

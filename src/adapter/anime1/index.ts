@@ -35,5 +35,14 @@ runtime.register({
         return ''
       }
     },
+    getAnimeScope: () => {
+      try {
+        const target = $<HTMLAnchorElement>('a:contains("全集連結")')[0]
+        const url = new URL(target.href)
+        return url.searchParams.get('cat')!
+      } catch (error) {
+        return ''
+      }
+    },
   },
 })

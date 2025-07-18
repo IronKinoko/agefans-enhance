@@ -15,7 +15,7 @@ runtime.register({
   ],
   search: {
     name: '次元城',
-    search: (name) => `https://www.ciyuancheng.net/search.html?wd=${name}`,
+    search: (name) => `https://www.cycani.org/search.html?wd=${name}`,
     getSearchName: () => {
       return new Promise((resolve) => {
         const fn = (e: MessageEvent<any>) => {
@@ -40,5 +40,7 @@ runtime.register({
         parent.postMessage({ key: 'getEpisode' }, '*')
       })
     },
+    getAnimeScope: () =>
+      window.location.href.match(/\/watch\/(\d+)\//)?.[1] || '',
   },
 })
