@@ -2,6 +2,7 @@ import { clamp } from 'lodash-es'
 import { Shortcuts } from './shortcuts'
 import { CommandEvent, Commands } from './types'
 import './help'
+import { modal } from '../../../utils/modal'
 
 function seekTime(duration: number): CommandEvent {
   return function () {
@@ -32,21 +33,38 @@ Shortcuts.registerCommand(Commands.backwardCustom, function (e) {
 Shortcuts.registerCommand(
   Commands.recordCustomSeekTime,
   (() => {
-    let start: number | null = null
+    let open = false
     return function () {
-      if (start === null) {
-        start = this.currentTime
-        this.message.info('开始记录自定义跳转时间')
-      } else {
-        this.configSaveToLocal(
-          'customSeekTime',
-          Math.abs(Math.round(this.currentTime - start))
-        )
-        this.message.info(
-          `记录成功，自定义跳转时间为${this.localConfig.customSeekTime}s`
-        )
-        start = null
-      }
+      if (open) return
+      open = true
+
+      this.plyr.pause()
+      modal({
+        width: 250,
+        title: '自定义跳转时间',
+        content: `<label>
+          <span>自定义跳转时间</span>
+          <input id="k-customSeekTime" class="k-input-number" style="width:60px" type="number" value="${this.localConfig.customSeekTime}" />
+          <span>秒</span>
+        </label>
+          `,
+        afterClose: () => {
+          open = false
+          this.plyr.play()
+        },
+        onOk: () => {
+          const $input = $('#k-customSeekTime')
+          const value = $input.val()
+          if (!value || isNaN(+value)) {
+            this.message.info('请输入正确的数字')
+            return
+          }
+          this.configSaveToLocal('customSeekTime', +value)
+          this.message.info(
+            `记录成功，自定义跳转时间为${this.localConfig.customSeekTime}s`
+          )
+        },
+      })
     }
   })()
 )

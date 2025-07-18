@@ -58,7 +58,7 @@ export interface LocalConfig {
 }
 
 const defaultConfig = {
-  customSeekTime: 89,
+  customSeekTime: 85,
   speed: 1,
   continuePlay: true,
   autoNext: true,

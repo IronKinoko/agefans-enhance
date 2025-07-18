@@ -61,7 +61,7 @@
 .k-input,
 .k-select {
   background: white;
-  border: 1px solid #f1f1f1;
+  border: 1px solid #d9d9d9;
   color: black;
   outline: 0;
   border-radius: 2px;
@@ -119,5 +119,26 @@
     border-bottom: 1px solid #f1f1f1;
     word-wrap: break-word;
     word-break: break-all;
+  }
+}
+
+.k-input-number {
+  @extend .k-input;
+
+  height: 32px;
+  width: 100px;
+  border-radius: 4px;
+  padding: 0 8px;
+  box-sizing: border-box;
+  font-size: 14px;
+
+  -webkit-appearance: none;
+  appearance: none;
+  &[type='number'] {
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none; // Chrome, Safari
+      margin: 0;
+    }
   }
 }

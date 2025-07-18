@@ -56,7 +56,7 @@ const DefaultKeyBindings: KeyBinding[] = [
   {
     command: Commands.recordCustomSeekTime,
     key: 'K',
-    description: '记录步进时间',
+    description: '设置[记忆时间]',
   },
   { command: Commands.prevFrame, key: '', description: '上一帧' },
   { command: Commands.nextFrame, key: '', description: '下一帧' },
