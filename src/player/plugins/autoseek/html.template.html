@@ -39,7 +39,27 @@
       />
     </div>
     <div class="k-autoseek-config-tips">
-      片尾起跳时间小于等于0，可视作逆向的跳跃
+      <details>
+        <summary>使用说明</summary>
+        <div class="k-autoseek-config-tips-title">
+          第一个值表示“起跳时间”，二个值表示“跳过多少时间”
+        </div>
+        <div>
+          比如：在 60s 位置起跳，跳过 85s 时长，视频最终会在 145s 处播放
+        </div>
+        <br />
+        <div class="k-autoseek-config-tips-title">
+          结尾的起跳时间可以是小于等于 0 的数字。
+        </div>
+        <div>
+          例子1：片尾填写 -10 与 60，那么视频倒数 10s 处再往前数 60s
+          的位置开始跳转，视频最终在倒数 10s 处播放
+        </div>
+        <div>
+          例子2：片尾填写 600 与 60，那么正数 600s 处开始跳转 60s，视频最终在
+          660s 处播放
+        </div>
+      </details>
     </div>
     <div class="k-autoseek-config-tips">
       仅在当前番剧播放页生效，其他番剧需要重新配置
