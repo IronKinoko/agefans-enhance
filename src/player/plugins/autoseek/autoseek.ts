@@ -199,7 +199,14 @@ class AutoSeek {
         const duration = media.duration
 
         const enabled = this.config.start.enabled || this.config.end.enabled
-        if (!enabled || isSeeking) return
+        if (
+          !enabled ||
+          isSeeking ||
+          // 避免在片尾时触发
+          currentTime >= duration - 3
+        )
+          return
+
         if (this.config.start.enabled) {
           const start = this.config.start.start || 0
           const diff = this.config.start.diff || 0
