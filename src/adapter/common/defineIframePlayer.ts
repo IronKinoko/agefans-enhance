@@ -58,6 +58,10 @@ export function defineIframePlayer(config: Config) {
   }
 
   function runInTop() {
+    $(iframeSelector).replaceWith(
+      $(iframeSelector).clone().attr({ allow: 'autoplay; fullscreen' })
+    )
+
     window.addEventListener('keydown', (e) => {
       if (isFocusInputElement()) return
       if (window.getSelection()?.toString()) return
@@ -66,8 +70,6 @@ export function defineIframePlayer(config: Config) {
       $(iframeSelector)[0].focus()
       if (e.key === ' ') e.preventDefault()
     })
-
-    $(iframeSelector).attr({ allow: 'autoplay; fullscreen' })
 
     window.addEventListener('popstate', () => {
       setActive(window.location.href)
