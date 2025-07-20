@@ -197,6 +197,7 @@ class AutoSeek {
         const media = this.player.media
         const currentTime = media.currentTime
         const duration = media.duration
+        const safeMaxTime = duration - 0.1
 
         const enabled = this.config.start.enabled || this.config.end.enabled
         if (
@@ -212,7 +213,7 @@ class AutoSeek {
           const diff = this.config.start.diff || 0
 
           if (currentTime >= start && currentTime <= start + diff) {
-            this.player.media.currentTime = start + diff
+            this.player.media.currentTime = Math.min(start + diff, safeMaxTime)
           }
         }
 
@@ -225,11 +226,17 @@ class AutoSeek {
               currentTime >= start + duration - diff &&
               currentTime <= start + duration
             ) {
-              this.player.media.currentTime = start + duration
+              this.player.media.currentTime = Math.min(
+                start + duration,
+                safeMaxTime
+              )
             }
           } else {
             if (currentTime >= start && currentTime <= start + diff) {
-              this.player.media.currentTime = start + diff
+              this.player.media.currentTime = Math.min(
+                start + diff,
+                safeMaxTime
+              )
             }
           }
         }

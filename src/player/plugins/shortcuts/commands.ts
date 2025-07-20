@@ -6,7 +6,8 @@ import { modal } from '../../../utils/modal'
 
 function seekTime(duration: number): CommandEvent {
   return function () {
-    this.currentTime = clamp(this.currentTime + duration, 0, this.plyr.duration)
+    const safeMaxTime = this.plyr.duration - 0.1
+    this.currentTime = clamp(this.currentTime + duration, 0, safeMaxTime)
 
     this.message.info(`步${duration < 0 ? '退' : '进'}${Math.abs(duration)}s`)
   }
