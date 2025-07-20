@@ -27,10 +27,6 @@ interface Config {
 export function defineIframePlayer(config: Config) {
   const { iframeSelector, search } = config
 
-  let preload = {
-    isPreloadTriggered: false,
-  }
-
   function createIframeReadyToChangeIframeSrc(url: string) {
     const iframe = document.createElement('iframe')
     iframe.className = 'ready-to-change-iframe-src'
@@ -45,7 +41,6 @@ export function defineIframePlayer(config: Config) {
       window.history.pushState(window.history.state, '', url)
     }
     config.setActive(url)
-    preload.isPreloadTriggered = false
     createIframeReadyToChangeIframeSrc(url)
   }
 
@@ -53,14 +48,6 @@ export function defineIframePlayer(config: Config) {
     if (config.history) {
       config.history.creator(renderHistory)
     }
-  }
-
-  function checkPreload() {
-    if (preload.isPreloadTriggered) return
-    preload.isPreloadTriggered = true
-
-    const nextUrl = config.getSwitchEpisodeURL(true)
-    if (!nextUrl) return
   }
 
   function isFocusInputElement() {
@@ -161,12 +148,6 @@ export function defineIframePlayer(config: Config) {
           break
         }
         case 'timeupdate': {
-          const currentTime = e.data.video.currentTime
-          const duration = e.data.video.duration
-          if (currentTime / duration > 0.6) {
-            checkPreload()
-          }
-
           if (config.history) {
             logHis(
               {
@@ -196,5 +177,5 @@ export function defineIframePlayer(config: Config) {
     )
   }
 
-  return { runInTop, runInIframe, createHistrory: createHistory }
+  return { runInTop, runInIframe, createHistory }
 }
