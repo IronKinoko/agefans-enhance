@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.49.1
+// @version      1.49.2
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -2615,7 +2615,7 @@
         content: `
     <table class="k-table">
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.49.1"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.49.2"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2741,7 +2741,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.49.1"}
+\u811A\u672C\u7248\u672C: ${"1.49.2"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -2784,7 +2784,8 @@ userAgent: ${navigator.userAgent}
 
   function seekTime(duration) {
     return function() {
-      this.currentTime = clamp(this.currentTime + duration, 0, this.plyr.duration);
+      const safeMaxTime = this.plyr.duration - 0.1;
+      this.currentTime = clamp(this.currentTime + duration, 0, safeMaxTime);
       this.message.info(`\u6B65${duration < 0 ? "\u9000" : "\u8FDB"}${Math.abs(duration)}s`);
     };
   }
@@ -5273,6 +5274,7 @@ ${text}
           const media = this.player.media;
           const currentTime = media.currentTime;
           const duration = media.duration;
+          const safeMaxTime = duration - 0.1;
           const enabled = this.config.start.enabled || this.config.end.enabled;
           if (!enabled || isSeeking || currentTime >= duration - 3)
             return;
@@ -5280,7 +5282,7 @@ ${text}
             const start = this.config.start.start || 0;
             const diff = this.config.start.diff || 0;
             if (currentTime >= start && currentTime <= start + diff) {
-              this.player.media.currentTime = start + diff;
+              this.player.media.currentTime = Math.min(start + diff, safeMaxTime);
             }
           }
           if (this.config.end.enabled) {
@@ -5288,11 +5290,17 @@ ${text}
             const diff = this.config.end.diff || 0;
             if (start <= 0) {
               if (currentTime >= start + duration - diff && currentTime <= start + duration) {
-                this.player.media.currentTime = start + duration;
+                this.player.media.currentTime = Math.min(
+                  start + duration,
+                  safeMaxTime
+                );
               }
             } else {
               if (currentTime >= start && currentTime <= start + diff) {
-                this.player.media.currentTime = start + diff;
+                this.player.media.currentTime = Math.min(
+                  start + diff,
+                  safeMaxTime
+                );
               }
             }
           }
