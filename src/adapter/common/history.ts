@@ -34,7 +34,7 @@ const his = {
 
 export const logHis = throttle(his.log.bind(his), 1000)
 
-export function renderHistroy() {
+export function renderHistory() {
   const data = his.load()
 
   const $root = $(`

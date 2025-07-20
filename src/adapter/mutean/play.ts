@@ -33,7 +33,7 @@ export const iframePlayer = defineIframePlayer({
     getEpisode: () => getActive().text(),
   },
   getEpisodeList: () => $('.module-play-list-link'),
-  switchEpisode: (next) => switchPart(next),
+  getSwitchEpisodeURL: (next) => switchPart(next),
 })
 
 export async function parser() {

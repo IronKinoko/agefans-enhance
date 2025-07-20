@@ -127,7 +127,7 @@ function switchPart(next: boolean) {
   if (sortDirection === 'asc') $nextActive = $active[next ? 'next' : 'prev']()
   else $nextActive = $active[next ? 'prev' : 'next']()
 
-  return $nextActive.find('a')[0]?.href
+  return $nextActive.find('a').get(0)?.href
 }
 
 const iframePlayer = defineIframePlayer({
@@ -148,7 +148,7 @@ const iframePlayer = defineIframePlayer({
     getEpisode: () => getActive().text(),
   },
   getEpisodeList: () => $('.video_detail_episode a'),
-  switchEpisode: (next) => switchPart(next),
+  getSwitchEpisodeURL: (next) => switchPart(next),
 })
 
 export function playModule() {

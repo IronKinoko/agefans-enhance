@@ -1,4 +1,4 @@
-import { renderHistroy, logHis } from './history'
+import { renderHistory, logHis } from './history'
 
 interface Config {
   iframeSelector: string
@@ -6,10 +6,10 @@ interface Config {
   getActive(): JQuery
   /** 根据href设置激活的节点 */
   setActive(href: string): void
-  /** 切换剧集 */
-  switchEpisode(next: boolean): string | undefined | null
+  /** 获取上下集链接 */
+  getSwitchEpisodeURL(next: boolean): string | undefined
   /** 监听player事件 */
-  onIframeMessage?(key: string, data: any, e: MessageEvent): void
+  onPlayerMessage?(key: string, data: any, e: MessageEvent): void
   /** 获取剧集列表 用于修改 anchor 的点击表现 */
   getEpisodeList(): JQuery<HTMLAnchorElement>
   search: {
@@ -20,12 +20,16 @@ interface Config {
   }
   /** 内置的历史功能，可生成历史按钮，点击后展开观看历史记录 */
   history?: {
-    creator: (renderHistory: typeof renderHistroy) => void
+    creator: (renderHistory: () => void) => void
     getId: () => string | Promise<string>
   }
 }
 export function defineIframePlayer(config: Config) {
   const { iframeSelector, search } = config
+
+  let preload = {
+    isPreloadTriggered: false,
+  }
 
   function createIframeReadyToChangeIframeSrc(url: string) {
     const iframe = document.createElement('iframe')
@@ -41,13 +45,22 @@ export function defineIframePlayer(config: Config) {
       window.history.pushState(window.history.state, '', url)
     }
     config.setActive(url)
+    preload.isPreloadTriggered = false
     createIframeReadyToChangeIframeSrc(url)
   }
 
-  function createHistrory() {
+  function createHistory() {
     if (config.history) {
-      config.history.creator(renderHistroy)
+      config.history.creator(renderHistory)
     }
+  }
+
+  function checkPreload() {
+    if (preload.isPreloadTriggered) return
+    preload.isPreloadTriggered = true
+
+    const nextUrl = config.getSwitchEpisodeURL(true)
+    if (!nextUrl) return
   }
 
   function isFocusInputElement() {
@@ -124,7 +137,7 @@ export function defineIframePlayer(config: Config) {
         case 'prev':
         case 'next': {
           if ($('.ready-to-change-iframe-src').length) return
-          const url = config.switchEpisode(e.data.key === 'next')
+          const url = config.getSwitchEpisodeURL(e.data.key === 'next')
           if (url) setActive(url)
           break
         }
@@ -148,6 +161,12 @@ export function defineIframePlayer(config: Config) {
           break
         }
         case 'timeupdate': {
+          const currentTime = e.data.video.currentTime
+          const duration = e.data.video.duration
+          if (currentTime / duration > 0.6) {
+            checkPreload()
+          }
+
           if (config.history) {
             logHis(
               {
@@ -162,7 +181,7 @@ export function defineIframePlayer(config: Config) {
           break
         }
       }
-      config.onIframeMessage?.(e.data.key, e.data, e)
+      config.onPlayerMessage?.(e.data.key, e.data, e)
     })
   }
 
@@ -177,5 +196,5 @@ export function defineIframePlayer(config: Config) {
     )
   }
 
-  return { runInTop, runInIframe, createHistrory }
+  return { runInTop, runInIframe, createHistrory: createHistory }
 }

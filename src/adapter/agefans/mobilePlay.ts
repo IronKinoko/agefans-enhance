@@ -9,9 +9,9 @@ function switchPart(next: boolean) {
 
   let $nextActive = $active[next ? 'next' : 'prev']()
 
-  $nextActive[0]?.click()
+  $nextActive.get(0)?.click()
 
-  return null
+  return undefined
 }
 
 const iframePlayer = defineIframePlayer({
@@ -23,7 +23,7 @@ const iframePlayer = defineIframePlayer({
     getEpisode: () => getActive().text(),
   },
   getEpisodeList: () => $('.video-source-box .van-grid-item'),
-  switchEpisode: (next) => switchPart(next),
+  getSwitchEpisodeURL: (next) => switchPart(next),
 })
 
 export async function mobilePlayModule() {
