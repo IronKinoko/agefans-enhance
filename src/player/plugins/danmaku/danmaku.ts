@@ -357,7 +357,7 @@ class DanmakuPlugin {
     }
     if (!episode && !isNaN(+episodeName)) {
       episode = this.state.episodes.find((episode) =>
-        new RegExp(`${episodeName}[话集]`).test(episode.name)
+        new RegExp(`${+episodeName}[话集]`).test(episode.name)
       )
       if (!episode) {
         episode = this.state.episodes.find((episode) =>
