@@ -11,7 +11,7 @@ function switchPart(next: boolean) {
 }
 
 export function runInTop() {
-  $('body').addClass('gugufan')
+  $('body').addClass('girigirilove')
   $('.player-news,#buffer,#install').remove()
   iframePlayer.runInTop()
 }
@@ -43,18 +43,8 @@ export async function parser() {
   await wait(() => !!video.currentSrc)
   video.src = ''
 
-  $('#ADplayer').remove()
-  $('#ADtip').remove()
-
-  await execInUnsafeWindow(() => {
-    // @ts-ignore
-    EC.ad?.destroy()
-    // @ts-ignore
-    EC.dp?.destroy()
-  })
-
-  const player = new KPlayer('#player', {
+  const player = new KPlayer('#APlayer', {
     eventToParentWindow: true,
   })
-  player.src = await execInUnsafeWindow(() => window.config.url)
+  player.src = new URLSearchParams(location.search).get('url')!
 }

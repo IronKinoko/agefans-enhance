@@ -12,6 +12,7 @@
 - [稀饭动漫](https://dm.xifanacg.com)
 - [Anime1](https://anime1.me)
 - [咕咕番](https://wwww.gugu3.com)
+- [girigiri 爱](https://anime.girigirilove.com/)
 - [独立播放器](https://ironkinoko.github.io/agefans-enhance/)
 
 **请使用 <kbd>?</kbd> 键查看脚本信息与快捷键**
