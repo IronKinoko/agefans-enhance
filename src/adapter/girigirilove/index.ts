@@ -10,7 +10,7 @@ runtime.register({
     { test: '/addons/aplyer', run: parser, runInIframe: true },
   ],
   search: {
-    name: '咕咕番',
+    name: 'girigiri爱',
     search: (name) =>
       `https://anime.girigirilove.com/search/-------------/?wd=${name}`,
     getSearchName: () => {
