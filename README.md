@@ -7,10 +7,11 @@
 - [agefans](http://www.age.tv)
 - [NT 动漫](https://www.ntdm8.com)
 - [bimiacg](http://www.bimiacg10.net)
-- [mutean](https://www.mutean.com)
+- [MuteFun](https://www.mutean.com)
 - [次元城](https://www.ciyuancheng.net)
 - [稀饭动漫](https://dm.xifanacg.com)
 - [Anime1](https://anime1.me)
+- [咕咕番](https://wwww.gugu3.com)
 - [独立播放器](https://ironkinoko.github.io/agefans-enhance/)
 
 **请使用 <kbd>?</kbd> 键查看脚本信息与快捷键**
