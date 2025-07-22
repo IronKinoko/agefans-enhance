@@ -1,7 +1,7 @@
 import { popover } from '../utils/popover'
 import { Shortcuts } from './plugins/shortcuts'
 // @ts-ignore
-import PlyrSVG from 'plyr/dist/plyr.svg'
+import PlyrSVG from 'plyr/dist/plyr.svg?raw'
 
 const icons = `
 <svg
@@ -10,7 +10,7 @@ style="position: absolute; width: 0px; height: 0px; overflow: hidden"
 aria-hidden="true"
 >
   <!-- Plyr.svg -->
-  ${decodeURIComponent(PlyrSVG.replace('data:image/svg+xml,', ''))}
+  ${PlyrSVG}
 
   <!-- 自定义的 symbol 元素 -->
   <symbol id="next" viewBox="0 0 22 22">
@@ -88,9 +88,7 @@ aria-hidden="true"
     <svg focusable="false">
       <use xlink:href="#next"></use>
     </svg>
-    <span class="plyr__tooltip">下一集(<k-shortcuts-tip command="${
-      Shortcuts.Commands.next
-    }"></k-shortcuts-tip>)</span>
+    <span class="plyr__tooltip">下一集(<k-shortcuts-tip command="${Shortcuts.Commands.next}"></k-shortcuts-tip>)</span>
   </button>
 </template>
 
@@ -107,12 +105,8 @@ aria-hidden="true"
     <svg class="icon--pressed" focusable="false">
       <use xlink:href="#widescreen-quit"></use>
     </svg>
-    <span class="label--not-pressed plyr__tooltip">网页全屏(<k-shortcuts-tip command="${
-      Shortcuts.Commands.toggleWidescreen
-    }"></k-shortcuts-tip>)</span>
-    <span class="label--pressed plyr__tooltip">退出网页全屏(<k-shortcuts-tip command="${
-      Shortcuts.Commands.toggleWidescreen
-    }"></k-shortcuts-tip>)</span>
+    <span class="label--not-pressed plyr__tooltip">网页全屏(<k-shortcuts-tip command="${Shortcuts.Commands.toggleWidescreen}"></k-shortcuts-tip>)</span>
+    <span class="label--pressed plyr__tooltip">退出网页全屏(<k-shortcuts-tip command="${Shortcuts.Commands.toggleWidescreen}"></k-shortcuts-tip>)</span>
   </button>
 </template>
 
