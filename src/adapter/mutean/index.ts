@@ -15,8 +15,7 @@ runtime.register({
   ],
   search: {
     name: 'MuteFun',
-    search: (name) =>
-      `https://www.mutean.com/vodsearch/${name}-------------.html`,
+    search: (cn) => `https://www.mutean.com/vodsearch/${cn}-------------.html`,
     getSearchName: () => {
       return new Promise((resolve) => {
         const fn = (e: MessageEvent<any>) => {

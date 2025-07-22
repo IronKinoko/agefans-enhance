@@ -18,7 +18,7 @@ runtime.register({
   ],
   search: {
     name: 'Anime1',
-    search: (name) => `https://anime1.me/?s=${name}`,
+    search: (cn, tw) => `https://anime1.me/?s=${tw}`,
     getSearchName: () => {
       return $('.entry-title')
         .text()

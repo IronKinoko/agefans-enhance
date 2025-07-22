@@ -18,7 +18,7 @@ runtime.register({
   ],
   search: {
     name: 'agefans',
-    search: (name) => `https://www.age.tv/search?query=${name}`,
+    search: (cn) => `https://www.age.tv/search?query=${cn}`,
     getAnimeScope: () => window.location.href.match(/\/play\/(\d+)/)![1],
   },
 })

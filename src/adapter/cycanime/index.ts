@@ -15,7 +15,7 @@ runtime.register({
   ],
   search: {
     name: '次元城',
-    search: (name) => `https://www.cycani.org/search.html?wd=${name}`,
+    search: (cn) => `https://www.cycani.org/search.html?wd=${cn}`,
     getSearchName: () => {
       return new Promise((resolve) => {
         const fn = (e: MessageEvent<any>) => {

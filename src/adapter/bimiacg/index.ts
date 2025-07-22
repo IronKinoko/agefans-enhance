@@ -18,7 +18,7 @@ runtime.register({
   ],
   search: {
     name: 'BIMI动漫',
-    search: (name) => `http://www.bimiacg10.net/vod/search/wd/${name}/`,
+    search: (cn) => `http://www.bimiacg10.net/vod/search/wd/${cn}/`,
     getSearchName: () => {
       return new Promise((resolve) => {
         const fn = (e: MessageEvent<any>) => {

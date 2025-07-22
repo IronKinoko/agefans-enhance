@@ -11,8 +11,7 @@ runtime.register({
   ],
   search: {
     name: '咕咕番',
-    search: (name) =>
-      `https://www.gugu3.com/index.php/vod/search.html?wd=${name}`,
+    search: (cn) => `https://www.gugu3.com/index.php/vod/search.html?wd=${cn}`,
     getSearchName: () => {
       return new Promise((resolve) => {
         const fn = (e: MessageEvent<any>) => {

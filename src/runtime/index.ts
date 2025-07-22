@@ -1,4 +1,5 @@
 import { memoize } from 'lodash-es'
+import { opencc } from '../utils/opencc'
 
 interface RegisterOpts {
   runInIframe?: boolean
@@ -13,7 +14,7 @@ interface RegisteredItem {
   opts: RegisterOpts[]
   search?: {
     name?: string
-    search?: (name: string) => string | void
+    search?: (cn: string, tw: string) => string | void
     getSearchName?: () => Promise<string> | string
     getEpisode?: () => Promise<string> | string
     getAnimeScope?: () => Promise<string> | string
@@ -97,7 +98,7 @@ class Runtime {
       opts: [],
       search: {
         name: '[BT]蜜柑计划',
-        search: (name) => `https://mikanani.me/Home/Search?searchstr=${name}`,
+        search: (cn) => `https://mikanani.me/Home/Search?searchstr=${cn}`,
       },
     },
   ]
@@ -125,7 +126,11 @@ class Runtime {
       .map((search) => ({
         name: search.name,
         search: () => {
-          const url = search.search!(encodeURIComponent(name!))
+          const { cn, tw } = opencc(name)
+          const url = search.search!(
+            encodeURIComponent(cn),
+            encodeURIComponent(tw)
+          )
           if (!url) return
           if (isInIframe) parent.postMessage({ key: 'openLink', url }, '*')
           else window.open(url)

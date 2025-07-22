@@ -11,8 +11,8 @@ runtime.register({
   ],
   search: {
     name: 'girigiri爱',
-    search: (name) =>
-      `https://anime.girigirilove.com/search/-------------/?wd=${name}`,
+    search: (cn) =>
+      `https://anime.girigirilove.com/search/-------------/?wd=${cn}`,
     getSearchName: () => {
       return new Promise((resolve) => {
         const fn = (e: MessageEvent<any>) => {
