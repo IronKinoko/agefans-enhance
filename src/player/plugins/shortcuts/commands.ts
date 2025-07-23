@@ -53,6 +53,7 @@ Shortcuts.registerCommand(
           open = false
           this.plyr.play()
         },
+        handleOkOnEnter: true,
         onOk: () => {
           const $input = $('#k-customSeekTime')
           const value = $input.val()

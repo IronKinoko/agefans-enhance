@@ -14,7 +14,7 @@ declare module '../../KPlayer' {
 // 所有时间都是秒
 type AutoSeekConfigItem = {
   enabled: boolean
-  start?: number // 开始时间
+  start?: number | string // 开始时间
   diff?: number // 跳过的时间
 }
 type AutoSeekConfig = {
@@ -25,21 +25,29 @@ type AutoSeekConfig = {
 enum Commands {
   autoSeekConfig = 'autoSeekConfig',
 }
-function setFormData(formHTML: string, data: AutoSeekConfig) {
+function bindFormEvent(formHTML: string, data: AutoSeekConfig) {
   const $form = $(formHTML)
   $form.find<HTMLInputElement>('input[name]').each((_, el) => {
     switch (el.getAttribute('type')) {
       case 'checkbox':
         el.checked = get(data, el.name, false)
         break
-      case 'number': {
-        el.value = get(data, el.name)
+      case 'number':
+      case 'text': {
+        el.value = get(data, el.name, '')
+        break
       }
       default:
         break
     }
   })
   return $form
+}
+
+function parseStartTime(value: string | number): number {
+  if (typeof value === 'number') return value
+  const [m, s] = value.split(':')
+  return parseInt(m) * 60 + parseInt(s)
 }
 
 function getFormData(form: JQuery) {
@@ -52,6 +60,18 @@ function getFormData(form: JQuery) {
       case 'number': {
         const value = isNaN(parseInt(el.value)) ? undefined : parseInt(el.value)
         set(data, el.name, value)
+      }
+      case 'text': {
+        const raw = el.value.trim()
+        const isTime = /^\d+[：:]\d+$/.test(raw)
+        if (isTime) {
+          set(data, el.name, raw.replace(/[：:]/g, ':'))
+        } else {
+          const value = isNaN(parseInt(el.value))
+            ? undefined
+            : parseInt(el.value)
+          set(data, el.name, value)
+        }
       }
       default:
         break
@@ -81,11 +101,15 @@ Shortcuts.registerCommand(
       modal({
         width: 350,
         title: '跳过片段设置',
-        content: setFormData(T['k-autoseek-config'], this.autoSeek.getConfig()),
+        content: bindFormEvent(
+          T['k-autoseek-config'],
+          this.autoSeek.getConfig()
+        ),
         afterClose: () => {
           open = false
           this.plyr.play()
         },
+        handleOkOnEnter: true,
         onOk: () => {
           const config = getFormData($('#k-autoseek-config form'))
           if (
@@ -209,7 +233,7 @@ class AutoSeek {
           return
 
         if (this.config.start.enabled) {
-          const start = this.config.start.start || 0
+          const start = parseStartTime(this.config.start.start || 0)
           const diff = this.config.start.diff || 0
 
           if (currentTime >= start && currentTime <= start + diff) {
@@ -218,7 +242,7 @@ class AutoSeek {
         }
 
         if (this.config.end.enabled) {
-          const start = this.config.end.start || 0
+          const start = parseStartTime(this.config.end.start || 0)
           const diff = this.config.end.diff || 0
 
           if (start <= 0) {
@@ -255,7 +279,7 @@ class AutoSeek {
     const $overlay = $(T['k-autoseek-overlay'])
 
     if (this.config.start.enabled) {
-      const start = this.config.start.start || 0
+      const start = parseStartTime(this.config.start.start || 0)
       const $segment = $('<div class="k-autoseek-segment" />')
       $segment.css({
         left: `${(start / duration) * 100}%`,
@@ -263,7 +287,7 @@ class AutoSeek {
       $overlay.append($segment)
     }
     if (this.config.end.enabled) {
-      const start = this.config.end.start || 0
+      const start = parseStartTime(this.config.end.start || 0)
       const diff = this.config.end.diff || 0
       const $segment = $('<div class="k-autoseek-segment" />')
 

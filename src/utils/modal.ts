@@ -9,9 +9,18 @@ export interface ModalOpts {
   okText?: string
   className?: string
   width?: number
+  handleOkOnEnter?: boolean
 }
 export function modal(opts: ModalOpts) {
-  const { title, content, onClose, onOk, afterClose, okText = '确 定' } = opts
+  const {
+    title,
+    content,
+    onClose,
+    onOk,
+    afterClose,
+    okText = '确 定',
+    handleOkOnEnter,
+  } = opts
   const store = {
     width: document.body.style.width,
     overflow: document.body.style.overflow,
@@ -77,6 +86,11 @@ export function modal(opts: ModalOpts) {
     if (['Escape'].includes(e.key)) {
       e.stopPropagation()
       handleClose()
+    }
+
+    if (handleOkOnEnter && e.key === 'Enter') {
+      e.stopPropagation()
+      handleOk()
     }
   }
   window.addEventListener('keydown', fn, { capture: true })

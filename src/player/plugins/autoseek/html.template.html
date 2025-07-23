@@ -6,17 +6,16 @@
         跳过片头
       </label>
       <input
-        type="number"
+        type="text"
         name="start.start"
         class="k-input-number"
-        placeholder="起跳时间(秒)"
+        placeholder="起跳时间"
       />
       <input
         type="number"
         name="start.diff"
         class="k-input-number"
-        min="0"
-        placeholder="长度(秒)"
+        placeholder="长度"
       />
     </div>
 
@@ -26,16 +25,16 @@
         跳过片尾
       </label>
       <input
-        type="number"
+        type="text"
         name="end.start"
         class="k-input-number"
-        placeholder="起跳时间(秒)"
+        placeholder="起跳时间"
       />
       <input
         type="number"
         name="end.diff"
         class="k-input-number"
-        placeholder="长度(秒)"
+        placeholder="长度"
       />
     </div>
     <div class="k-autoseek-config-tips">
@@ -44,19 +43,20 @@
         <div class="k-autoseek-config-tips-title">
           第一个值表示“起跳时间”，二个值表示“跳过多少时间”
         </div>
+        <div>起跳时间格式：分秒时间(2:30)、秒数(150)</div>
+        <div>跳过多少时间：秒数(85)</div>
         <div>
-          例如：在 60s 位置起跳，跳过 85s 时长，视频最终会在 145s 处播放
+          例如：在 2:30 位置起跳，跳过 85s 时长，视频最终会在 145s 处播放
         </div>
-        <br />
         <div class="k-autoseek-config-tips-title">
-          结尾的起跳时间可以是小于等于 0 的数字。
+          结尾的起跳时间可以是小于等于 0 的数字
         </div>
         <div>
           例子1：片尾填写 -10 与 60，那么视频倒数 10s 处再往前数 60s
           的位置开始跳转，视频最终在倒数 10s 处播放
         </div>
         <div>
-          例子2：片尾填写 600 与 60，那么正数 600s 处开始跳转 60s，视频最终在
+          例子2：片尾填写 600 与 60，那么视频 10:00 处开始跳转 60s，视频最终在
           660s 处播放
         </div>
       </details>
