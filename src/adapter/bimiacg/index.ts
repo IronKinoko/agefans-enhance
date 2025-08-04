@@ -1,9 +1,6 @@
 import './index.scss'
 import { runtime } from '../../runtime/index'
-import { playModule, playInIframeModule } from './play'
-
-import { queryDom } from '../../utils/queryDom'
-import { historyModule } from './history'
+import { parser, runInTop, iframePlayer } from './play'
 
 runtime.register({
   domains: [/bimiacg\d+.net/],
@@ -11,10 +8,15 @@ runtime.register({
     {
       test: '*',
       setup: () => $('body').addClass('bimi-wrapper'),
-      run: historyModule,
+      run: iframePlayer.createHistory,
     },
-    { test: ['/play/'], run: playModule },
-    { test: '*', runInIframe: true, run: playInIframeModule },
+    { test: /^\/bangumi\/\d+\/play\//, run: runInTop },
+    {
+      test: /^\/bangumi\/\d+\/play\//,
+      run: iframePlayer.runInIframe,
+      runInIframe: true,
+    },
+    { test: '/static/danmu', runInIframe: true, run: parser },
   ],
   search: {
     name: 'BIMI动漫',

@@ -657,27 +657,39 @@ export class KPlayer {
   }
 
   set src(src: string) {
-    this.isJumped = false
     if (src.includes('.m3u8')) {
-      if (Hls.isSupported()) {
-        const hls = new Hls()
-        hls.loadSource(src)
-        hls.attachMedia(this.media)
-      } else if (this.media.canPlayType('application/vnd.apple.mpegurl')) {
-        this.$video.attr('src', src)
-      } else {
-        throw new Error('不支持播放 hls 文件')
-      }
+      this.setM3u8(src)
     } else {
-      this.$video.attr('src', src)
+      this.setMp4(src)
     }
-
-    this.speed = this.localConfig.speed
-    this.plyr.volume = this.localConfig.volume
   }
 
   get src() {
     return this.media.currentSrc
+  }
+
+  /** 如果直接设置src满足不了需求，则使用这个方法去加载*/
+  setM3u8(src: string) {
+    if (Hls.isSupported()) {
+      const hls = new Hls()
+      hls.loadSource(src)
+      hls.attachMedia(this.media)
+    } else if (this.media.canPlayType('application/vnd.apple.mpegurl')) {
+      this.$video.attr('src', src)
+    } else {
+      throw new Error('不支持播放 hls 文件')
+    }
+    this.afterChangeSrc()
+  }
+  setMp4(src: string) {
+    this.$video.attr('src', src)
+    this.afterChangeSrc()
+  }
+
+  private afterChangeSrc() {
+    this.isJumped = false
+    this.speed = this.localConfig.speed
+    this.plyr.volume = this.localConfig.volume
   }
 
   set currentTime(value) {

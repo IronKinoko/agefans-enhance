@@ -1,127 +1,85 @@
 import { KPlayer } from '../../player'
+import { execInUnsafeWindow } from '../../utils/execInUnsafeWindow'
 import { queryDom } from '../../utils/queryDom'
-import { Info, logHis } from './history'
+import { local } from '../../utils/storage'
+import { wait } from '../../utils/wait'
+import { defineIframePlayer } from '../common/defineIframePlayer'
 
-function replacePlayer() {
-  new KPlayer('#player', {
-    video: $('video')[0] as HTMLVideoElement,
-    eventToParentWindow: true,
-  })
+function getActive() {
+  return $<HTMLAnchorElement>('.episode-active')
 }
-
 function switchPart(next: boolean) {
-  $(
-    `.player-info .play-qqun .${next ? 'next' : 'pre'}:not(.btns_disad)`
-  )[0]?.click()
+  return getActive().parent()[next ? 'next' : 'prev']().find('a')[0]?.href
 }
 
-function getPlayInfo(): Info {
-  const animeName = $('.v_path a.current').text()
-  const episodeName = (() => {
-    let name = ''
-    let pre = $('.player-info .play-qqun .pre').attr('href')
-    let next = $('.player-info .play-qqun .next').attr('href')
-    if (pre) {
-      name = $(`.player_list a[href='${pre}']`).parent().next().find('a').text()
-    } else if (next) {
-      name = $(`.player_list a[href='${next}']`)
-        .parent()
-        .prev()
-        .find('a')
-        .text()
-    } else {
-      name = $(`.player_list a[href='${location.pathname}']`).text()
-    }
-    return name
-  })()
-
-  const url = location.pathname
-  const id = location.pathname.match(/\/(?<id>\d+)\/play/)!.groups!.id
-
-  return { id, url, animeName, episodeName }
-}
-
-export async function playModule() {
+export function runInTop() {
   $('#bkcl').remove()
 
-  const info = getPlayInfo()
-
-  const iframe = await queryDom<HTMLIFrameElement>(
-    `#playleft iframe[src*='url=']`
-  )
-
-  window.addEventListener('message', (e) => {
-    if (!e.data?.key) return
-
-    const key = e.data.key
-    const video = e.data.video
-
-    if (key === 'initDone') {
-      iframe.contentWindow?.postMessage({ key: 'initDone' }, '*')
-    }
-    if (key === 'prev') switchPart(false)
-    if (key === 'next') switchPart(true)
-    if (key === 'enterwidescreen') {
-      $('body').css('overflow', 'hidden')
-      $(iframe).css({
-        position: 'fixed',
-        left: 0,
-        right: 0,
-        bottom: 0,
-        top: 0,
-        zIndex: 99999,
-      })
-    }
-    if (key === 'exitwidescreen') {
-      $('body').css('overflow', '')
-      $(iframe).removeAttr('style')
-    }
-
-    if (key === 'getSearchName') {
-      iframe.contentWindow?.postMessage(
-        { key: 'getSearchName', name: info.animeName },
-        '*'
-      )
-    }
-    if (key === 'getEpisode') {
-      iframe.contentWindow?.postMessage(
-        { key: 'getEpisode', name: info.episodeName },
-        '*'
-      )
-    }
-
-    if (key === 'openLink') {
-      window.open(e.data.url)
-    }
-
-    if (key === 'canplay') {
-      const height = ($('#video').width()! / video.width) * video.height
-      $('#video').height(height)
-    }
-
-    if (key === 'timeupdate') {
-      logHis(info, video.currentTime)
-    }
-  })
-  iframe.contentWindow?.postMessage({ key: 'initDone' }, '*')
-
-  iframe.focus()
-  window.addEventListener('keydown', (e) => {
-    if (document.activeElement !== document.body) return
-    iframe.focus()
-    if (e.key === ' ') e.preventDefault()
-  })
-}
-
-export function playInIframeModule() {
-  const fn = (e: MessageEvent) => {
-    if (!e.data?.key) return
-    if (e.data.key === 'initDone') {
-      replacePlayer()
-      window.removeEventListener('message', fn)
-    }
+  if (local.getItem('bangumi-history')) {
+    local.setItem('k-history', local.getItem('bangumi-history'))
+    local.removeItem('bangumi-history')
   }
 
-  window.addEventListener('message', fn)
-  parent.postMessage({ key: 'initDone' }, '*')
+  $<HTMLAnchorElement>('.player_list a').each((_, el) => {
+    if (el.href === location.href) {
+      el.classList.add('episode-active')
+
+      // 滚动到最高处
+      const parent = el.offsetParent!
+      parent.scrollTop = el.offsetTop
+    }
+  })
+
+  $('.tb.player').get(0)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+  iframePlayer.runInTop()
+}
+
+export const iframePlayer = defineIframePlayer({
+  iframeSelector: '#playleft iframe',
+  getActive,
+  setActive: (href) => {
+    $<HTMLAnchorElement>('.player_list a').each((_, el) => {
+      if (el.href === href) {
+        el.classList.add('episode-active')
+      } else {
+        el.classList.remove('episode-active')
+      }
+    })
+  },
+  search: {
+    getSearchName: () => $('.v_path a.current').text(),
+    getEpisode: () => getActive().text(),
+  },
+  getEpisodeList: () => $('.player_list a'),
+  getSwitchEpisodeURL: (next) => switchPart(next),
+  history: {
+    creator: (renderHistory) => {
+      const $btn = $('<li class="item"><a>历史</a></li>')
+      $btn.on('click', renderHistory)
+
+      $('.header-top__nav ul').append($btn)
+    },
+    getId: () => location.pathname.match(/\/(?<id>\d+)\/play/)!.groups!.id,
+  },
+  onPlayerMessage: (key, data) => {
+    if (key === 'canplay') {
+      const video = data.video
+      const width = $('#video').width()
+      if (width) $('#video').height((video.height / video.width) * width)
+    }
+  },
+})
+
+export async function parser() {
+  const video = await queryDom<HTMLVideoElement>('video')
+  video.src = ''
+
+  const url = await execInUnsafeWindow(() => window.url)
+  const player = new KPlayer('#player', { eventToParentWindow: true })
+  if (url.includes('m3u8')) {
+    player.setM3u8(url)
+  } else {
+    player.src = url
+  }
 }

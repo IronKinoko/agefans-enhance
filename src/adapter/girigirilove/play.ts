@@ -1,5 +1,4 @@
 import { KPlayer } from '../../player'
-import { execInUnsafeWindow } from '../../utils/execInUnsafeWindow'
 import { queryDom } from '../../utils/queryDom'
 import { wait } from '../../utils/wait'
 import { defineIframePlayer } from '../common/defineIframePlayer'
