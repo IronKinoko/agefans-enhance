@@ -10,10 +10,19 @@ function switchPart(next: boolean) {
   return getActive().parent()[next ? 'next' : 'prev']().find('a')[0]?.href
 }
 
+// 因为内部重新生成了iframe节点，导致原本的postMessage丢失目标了，所以重发一下
+function sendVideoParams() {
+  const script = Array.from(document.scripts).find((item) =>
+    item.innerHTML.includes('iframeObj.contentWindow.postMessage')
+  )!
+  new Function(script.innerHTML)()
+}
+
 export function runInTop() {
   $('body').addClass('xfani')
   $('.player-news').remove()
   iframePlayer.runInTop()
+  sendVideoParams()
 }
 
 export const iframePlayer = defineIframePlayer({
