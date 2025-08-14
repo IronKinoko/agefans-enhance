@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.51.0
+// @version      1.52.0
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -2177,25 +2177,25 @@
     return Commands2;
   })(Commands$1 || {});
 
-  var __defProp$4 = Object.defineProperty;
-  var __defProps$3 = Object.defineProperties;
-  var __getOwnPropDescs$3 = Object.getOwnPropertyDescriptors;
-  var __getOwnPropSymbols$4 = Object.getOwnPropertySymbols;
-  var __hasOwnProp$4 = Object.prototype.hasOwnProperty;
-  var __propIsEnum$4 = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp$4 = (obj, key, value) => key in obj ? __defProp$4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues$4 = (a, b) => {
+  var __defProp$3 = Object.defineProperty;
+  var __defProps$2 = Object.defineProperties;
+  var __getOwnPropDescs$2 = Object.getOwnPropertyDescriptors;
+  var __getOwnPropSymbols$3 = Object.getOwnPropertySymbols;
+  var __hasOwnProp$3 = Object.prototype.hasOwnProperty;
+  var __propIsEnum$3 = Object.prototype.propertyIsEnumerable;
+  var __defNormalProp$3 = (obj, key, value) => key in obj ? __defProp$3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __spreadValues$3 = (a, b) => {
     for (var prop in b || (b = {}))
-      if (__hasOwnProp$4.call(b, prop))
-        __defNormalProp$4(a, prop, b[prop]);
-    if (__getOwnPropSymbols$4)
-      for (var prop of __getOwnPropSymbols$4(b)) {
-        if (__propIsEnum$4.call(b, prop))
-          __defNormalProp$4(a, prop, b[prop]);
+      if (__hasOwnProp$3.call(b, prop))
+        __defNormalProp$3(a, prop, b[prop]);
+    if (__getOwnPropSymbols$3)
+      for (var prop of __getOwnPropSymbols$3(b)) {
+        if (__propIsEnum$3.call(b, prop))
+          __defNormalProp$3(a, prop, b[prop]);
       }
     return a;
   };
-  var __spreadProps$3 = (a, b) => __defProps$3(a, __getOwnPropDescs$3(b));
+  var __spreadProps$2 = (a, b) => __defProps$2(a, __getOwnPropDescs$2(b));
   const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
   const DefaultKeyBindings = [
     { command: Commands$1.togglePlay, key: "Space", description: "\u64AD\u653E/\u6682\u505C" },
@@ -2329,7 +2329,7 @@
         const customKeyBinding = customKeyBindings.find(
           (o) => o.command === keyBinding.command
         );
-        const nextKeyBinding = __spreadProps$3(__spreadValues$4({}, keyBinding), { originKey: "", customKey: "" });
+        const nextKeyBinding = __spreadProps$2(__spreadValues$3({}, keyBinding), { originKey: "", customKey: "" });
         if (isMac && nextKeyBinding.mac) {
           nextKeyBinding.key = nextKeyBinding.mac;
         }
@@ -2477,7 +2477,15 @@
   injectCss(css$g,{});
 
   function modal(opts) {
-    const { title, content, onClose, onOk, afterClose, okText = "\u786E \u5B9A" } = opts;
+    const {
+      title,
+      content,
+      onClose,
+      onOk,
+      afterClose,
+      okText = "\u786E \u5B9A",
+      handleOkOnEnter
+    } = opts;
     const store = {
       width: document.body.style.width,
       overflow: document.body.style.overflow
@@ -2535,6 +2543,10 @@
       if (["Escape"].includes(e.key)) {
         e.stopPropagation();
         handleClose();
+      }
+      if (handleOkOnEnter && e.key === "Enter") {
+        e.stopPropagation();
+        handleOk();
       }
     }
     window.addEventListener("keydown", fn, { capture: true });
@@ -2630,7 +2642,7 @@
         content: `
     <table class="k-table">
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.51.0"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.52.0"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2756,7 +2768,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.51.0"}
+\u811A\u672C\u7248\u672C: ${"1.52.0"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -2840,6 +2852,7 @@ userAgent: ${navigator.userAgent}
             open = false;
             this.plyr.play();
           },
+          handleOkOnEnter: true,
           onOk: () => {
             const $input = $("#k-customSeekTime");
             const value = $input.val();
@@ -3336,19 +3349,19 @@ ${text}
     });
   }
 
-  var __defProp$3 = Object.defineProperty;
-  var __getOwnPropSymbols$3 = Object.getOwnPropertySymbols;
-  var __hasOwnProp$3 = Object.prototype.hasOwnProperty;
-  var __propIsEnum$3 = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp$3 = (obj, key, value) => key in obj ? __defProp$3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues$3 = (a, b) => {
+  var __defProp$2 = Object.defineProperty;
+  var __getOwnPropSymbols$2 = Object.getOwnPropertySymbols;
+  var __hasOwnProp$2 = Object.prototype.hasOwnProperty;
+  var __propIsEnum$2 = Object.prototype.propertyIsEnumerable;
+  var __defNormalProp$2 = (obj, key, value) => key in obj ? __defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __spreadValues$2 = (a, b) => {
     for (var prop in b || (b = {}))
-      if (__hasOwnProp$3.call(b, prop))
-        __defNormalProp$3(a, prop, b[prop]);
-    if (__getOwnPropSymbols$3)
-      for (var prop of __getOwnPropSymbols$3(b)) {
-        if (__propIsEnum$3.call(b, prop))
-          __defNormalProp$3(a, prop, b[prop]);
+      if (__hasOwnProp$2.call(b, prop))
+        __defNormalProp$2(a, prop, b[prop]);
+    if (__getOwnPropSymbols$2)
+      for (var prop of __getOwnPropSymbols$2(b)) {
+        if (__propIsEnum$2.call(b, prop))
+          __defNormalProp$2(a, prop, b[prop]);
       }
     return a;
   };
@@ -3406,7 +3419,7 @@ ${text}
         gm.getItem(this.localConfigKey)
       );
       const isIOS = /ip(hone|od)/i.test(navigator.userAgent);
-      this.plyr = new Plyr("#k-player", __spreadValues$3({
+      this.plyr = new Plyr("#k-player", __spreadValues$2({
         autoplay: this.localConfig.autoplay,
         keyboard: { global: false, focused: false },
         controls: [
@@ -3811,25 +3824,35 @@ ${text}
       return this.$video[0];
     }
     set src(src) {
-      this.isJumped = false;
       if (src.includes(".m3u8")) {
-        if (Hls.isSupported()) {
-          const hls = new Hls();
-          hls.loadSource(src);
-          hls.attachMedia(this.media);
-        } else if (this.media.canPlayType("application/vnd.apple.mpegurl")) {
-          this.$video.attr("src", src);
-        } else {
-          throw new Error("\u4E0D\u652F\u6301\u64AD\u653E hls \u6587\u4EF6");
-        }
+        this.setM3u8(src);
       } else {
-        this.$video.attr("src", src);
+        this.setMp4(src);
       }
-      this.speed = this.localConfig.speed;
-      this.plyr.volume = this.localConfig.volume;
     }
     get src() {
       return this.media.currentSrc;
+    }
+    setM3u8(src) {
+      if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(src);
+        hls.attachMedia(this.media);
+      } else if (this.media.canPlayType("application/vnd.apple.mpegurl")) {
+        this.$video.attr("src", src);
+      } else {
+        throw new Error("\u4E0D\u652F\u6301\u64AD\u653E hls \u6587\u4EF6");
+      }
+      this.afterChangeSrc();
+    }
+    setMp4(src) {
+      this.$video.attr("src", src);
+      this.afterChangeSrc();
+    }
+    afterChangeSrc() {
+      this.isJumped = false;
+      this.speed = this.localConfig.speed;
+      this.plyr.volume = this.localConfig.volume;
     }
     set currentTime(value) {
       this.plyr.currentTime = value;
@@ -5123,43 +5146,51 @@ ${text}
     new DanmakuPlugin(player, info);
   }
 
-  var css$a = "#k-autoseek-config {\n  line-height: 32px;\n  font-size: 14px;\n}\n#k-autoseek-config .k-autoseek-config-tips {\n  font-size: 12px;\n  color: #666;\n  margin-top: 8px;\n  line-height: 1.6;\n}\n#k-autoseek-config .k-autoseek-config-tips summary {\n  cursor: pointer;\n}\n#k-autoseek-config .k-autoseek-config-tips .k-autoseek-config-tips-title {\n  font-weight: 500;\n  margin-bottom: 4px;\n}\n\n#k-autoseek-overlay {\n  position: absolute;\n  inset: 0;\n  pointer-events: none;\n  z-index: 1000;\n}\n#k-autoseek-overlay .k-autoseek-segment {\n  position: absolute;\n  background: white;\n  top: 50%;\n  transform: translateY(-50%);\n  width: calc(var(--plyr-range-track-height) + 2px);\n  height: calc(var(--plyr-range-track-height) + 2px);\n  border-radius: 50%;\n}";
+  var css$a = "#k-autoseek-config {\n  line-height: 32px;\n  font-size: 14px;\n}\n#k-autoseek-config .k-autoseek-config-tips {\n  font-size: 12px;\n  color: #666;\n  margin-top: 8px;\n  line-height: 1.6;\n}\n#k-autoseek-config .k-autoseek-config-tips summary {\n  cursor: pointer;\n}\n#k-autoseek-config .k-autoseek-config-tips .k-autoseek-config-tips-title {\n  color: #232323;\n  font-weight: 500;\n  margin-bottom: 4px;\n  margin-top: 8px;\n}\n\n#k-autoseek-overlay {\n  position: absolute;\n  inset: 0;\n  pointer-events: none;\n  z-index: 1000;\n}\n#k-autoseek-overlay .k-autoseek-segment {\n  position: absolute;\n  background: white;\n  top: 50%;\n  transform: translateY(-50%);\n  width: calc(var(--plyr-range-track-height) + 2px);\n  height: calc(var(--plyr-range-track-height) + 2px);\n  border-radius: 50%;\n}";
   injectCss(css$a,{});
 
-  var T = {"k-autoseek-config":"<div id=\"k-autoseek-config\">\n  <form class=\"k-settings-list\">\n    <div class=\"k-settings-item\">\n      <label class=\"k-checkbox\">\n        <input type=\"checkbox\" name=\"start.enabled\" >\n        跳过片头\n      </label>\n      <input         type=\"number\"\n        name=\"start.start\"\n        class=\"k-input-number\"\n        placeholder=\"起跳时间(秒)\"\n      >\n      <input         type=\"number\"\n        name=\"start.diff\"\n        class=\"k-input-number\"\n        min=\"0\"\n        placeholder=\"长度(秒)\"\n      >\n    </div>\n\n    <div class=\"k-settings-item\">\n      <label class=\"k-checkbox\">\n        <input type=\"checkbox\" name=\"end.enabled\" >\n        跳过片尾\n      </label>\n      <input         type=\"number\"\n        name=\"end.start\"\n        class=\"k-input-number\"\n        placeholder=\"起跳时间(秒)\"\n      >\n      <input         type=\"number\"\n        name=\"end.diff\"\n        class=\"k-input-number\"\n        placeholder=\"长度(秒)\"\n      >\n    </div>\n    <div class=\"k-autoseek-config-tips\">\n      <details>\n        <summary>使用说明</summary>\n        <div class=\"k-autoseek-config-tips-title\">\n          第一个值表示“起跳时间”，二个值表示“跳过多少时间”\n        </div>\n        <div>\n          例如：在 60s 位置起跳，跳过 85s 时长，视频最终会在 145s 处播放\n        </div>\n        <br>\n        <div class=\"k-autoseek-config-tips-title\">\n          结尾的起跳时间可以是小于等于 0 的数字。\n        </div>\n        <div>\n          例子1：片尾填写 -10 与 60，那么视频倒数 10s 处再往前数 60s\n          的位置开始跳转，视频最终在倒数 10s 处播放\n        </div>\n        <div>\n          例子2：片尾填写 600 与 60，那么正数 600s 处开始跳转 60s，视频最终在\n          660s 处播放\n        </div>\n      </details>\n    </div>\n    <div class=\"k-autoseek-config-tips\">\n      仅在当前番剧播放页生效，其他番剧需要重新配置\n    </div>\n  </form>\n</div>","k-autoseek-overlay":"<div id=\"k-autoseek-overlay\"></div>"};
+  var T = {"k-autoseek-config":"<div id=\"k-autoseek-config\">\n  <form class=\"k-settings-list\">\n    <div class=\"k-settings-item\">\n      <label class=\"k-checkbox\">\n        <input type=\"checkbox\" name=\"start.enabled\" >\n        跳过片头\n      </label>\n      <input         type=\"text\"\n        name=\"start.start\"\n        class=\"k-input-number\"\n        placeholder=\"起跳时间\"\n      >\n      <input         type=\"number\"\n        name=\"start.diff\"\n        class=\"k-input-number\"\n        placeholder=\"长度\"\n      >\n    </div>\n\n    <div class=\"k-settings-item\">\n      <label class=\"k-checkbox\">\n        <input type=\"checkbox\" name=\"end.enabled\" >\n        跳过片尾\n      </label>\n      <input         type=\"text\"\n        name=\"end.start\"\n        class=\"k-input-number\"\n        placeholder=\"起跳时间\"\n      >\n      <input         type=\"number\"\n        name=\"end.diff\"\n        class=\"k-input-number\"\n        placeholder=\"长度\"\n      >\n    </div>\n    <div class=\"k-autoseek-config-tips\">\n      <details>\n        <summary>使用说明</summary>\n        <div class=\"k-autoseek-config-tips-title\">\n          第一个值表示“起跳时间”，二个值表示“跳过多少时间”\n        </div>\n        <div>起跳时间格式：分秒时间(2:30)、秒数(150)</div>\n        <div>跳过多少时间：秒数(85)</div>\n        <div>\n          例如：在 2:30 位置起跳，跳过 85s 时长，视频最终会在 145s 处播放\n        </div>\n        <div class=\"k-autoseek-config-tips-title\">\n          结尾的起跳时间可以是小于等于 0 的数字\n        </div>\n        <div>\n          例子1：片尾填写 -10 与 60，那么视频倒数 10s 处再往前数 60s\n          的位置开始跳转，视频最终在倒数 10s 处播放\n        </div>\n        <div>\n          例子2：片尾填写 600 与 60，那么视频 10:00 处开始跳转 60s，视频最终在\n          660s 处播放\n        </div>\n      </details>\n    </div>\n    <div class=\"k-autoseek-config-tips\">\n      仅在当前番剧播放页生效，其他番剧需要重新配置\n    </div>\n  </form>\n</div>","k-autoseek-overlay":"<div id=\"k-autoseek-overlay\"></div>"};
 
-  var __defProp$2 = Object.defineProperty;
-  var __defProps$2 = Object.defineProperties;
-  var __getOwnPropDescs$2 = Object.getOwnPropertyDescriptors;
-  var __getOwnPropSymbols$2 = Object.getOwnPropertySymbols;
-  var __hasOwnProp$2 = Object.prototype.hasOwnProperty;
-  var __propIsEnum$2 = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp$2 = (obj, key, value) => key in obj ? __defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues$2 = (a, b) => {
+  var __defProp$1 = Object.defineProperty;
+  var __defProps$1 = Object.defineProperties;
+  var __getOwnPropDescs$1 = Object.getOwnPropertyDescriptors;
+  var __getOwnPropSymbols$1 = Object.getOwnPropertySymbols;
+  var __hasOwnProp$1 = Object.prototype.hasOwnProperty;
+  var __propIsEnum$1 = Object.prototype.propertyIsEnumerable;
+  var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __spreadValues$1 = (a, b) => {
     for (var prop in b || (b = {}))
-      if (__hasOwnProp$2.call(b, prop))
-        __defNormalProp$2(a, prop, b[prop]);
-    if (__getOwnPropSymbols$2)
-      for (var prop of __getOwnPropSymbols$2(b)) {
-        if (__propIsEnum$2.call(b, prop))
-          __defNormalProp$2(a, prop, b[prop]);
+      if (__hasOwnProp$1.call(b, prop))
+        __defNormalProp$1(a, prop, b[prop]);
+    if (__getOwnPropSymbols$1)
+      for (var prop of __getOwnPropSymbols$1(b)) {
+        if (__propIsEnum$1.call(b, prop))
+          __defNormalProp$1(a, prop, b[prop]);
       }
     return a;
   };
-  var __spreadProps$2 = (a, b) => __defProps$2(a, __getOwnPropDescs$2(b));
-  function setFormData(formHTML, data) {
+  var __spreadProps$1 = (a, b) => __defProps$1(a, __getOwnPropDescs$1(b));
+  function bindFormEvent(formHTML, data) {
     const $form = $(formHTML);
     $form.find("input[name]").each((_, el) => {
       switch (el.getAttribute("type")) {
         case "checkbox":
           el.checked = get(data, el.name, false);
           break;
-        case "number": {
-          el.value = get(data, el.name);
+        case "number":
+        case "text": {
+          el.value = get(data, el.name, "");
+          break;
         }
       }
     });
     return $form;
+  }
+  function parseStartTime(value) {
+    if (typeof value === "number")
+      return value;
+    const [m, s] = value.split(":");
+    return parseInt(m) * 60 + parseInt(s);
   }
   function getFormData(form) {
     const data = {};
@@ -5171,6 +5202,16 @@ ${text}
         case "number": {
           const value = isNaN(parseInt(el.value)) ? void 0 : parseInt(el.value);
           set(data, el.name, value);
+        }
+        case "text": {
+          const raw = el.value.trim();
+          const isTime = /^\d+[：:]\d+$/.test(raw);
+          if (isTime) {
+            set(data, el.name, raw.replace(/[：:]/g, ":"));
+          } else {
+            const value = isNaN(parseInt(el.value)) ? void 0 : parseInt(el.value);
+            set(data, el.name, value);
+          }
         }
       }
     });
@@ -5197,11 +5238,15 @@ ${text}
         modal({
           width: 350,
           title: "\u8DF3\u8FC7\u7247\u6BB5\u8BBE\u7F6E",
-          content: setFormData(T["k-autoseek-config"], this.autoSeek.getConfig()),
+          content: bindFormEvent(
+            T["k-autoseek-config"],
+            this.autoSeek.getConfig()
+          ),
           afterClose: () => {
             open = false;
             this.plyr.play();
           },
+          handleOkOnEnter: true,
           onOk: () => {
             const config = getFormData($("#k-autoseek-config form"));
             if (config.start.enabled && (isNil(config.start.start) || isNil(config.start.diff))) {
@@ -5253,7 +5298,7 @@ ${text}
       if (!this.scope)
         throw new Error("AutoSeek scope is not set");
       this.config = config;
-      local.setItem(this.localStoreKey, __spreadProps$2(__spreadValues$2({}, local.getItem(this.localStoreKey, {})), {
+      local.setItem(this.localStoreKey, __spreadProps$1(__spreadValues$1({}, local.getItem(this.localStoreKey, {})), {
         [this.scope]: config
       }));
       this.refresh();
@@ -5294,14 +5339,14 @@ ${text}
           if (!enabled || isSeeking || currentTime >= duration - 3)
             return;
           if (this.config.start.enabled) {
-            const start = this.config.start.start || 0;
+            const start = parseStartTime(this.config.start.start || 0);
             const diff = this.config.start.diff || 0;
             if (currentTime >= start && currentTime <= start + diff) {
               this.player.media.currentTime = Math.min(start + diff, safeMaxTime);
             }
           }
           if (this.config.end.enabled) {
-            const start = this.config.end.start || 0;
+            const start = parseStartTime(this.config.end.start || 0);
             const diff = this.config.end.diff || 0;
             if (start <= 0) {
               if (currentTime >= start + duration - diff && currentTime <= start + duration) {
@@ -5333,7 +5378,7 @@ ${text}
         return;
       const $overlay = $(T["k-autoseek-overlay"]);
       if (this.config.start.enabled) {
-        const start = this.config.start.start || 0;
+        const start = parseStartTime(this.config.start.start || 0);
         const $segment = $('<div class="k-autoseek-segment" />');
         $segment.css({
           left: `${start / duration * 100}%`
@@ -5341,7 +5386,7 @@ ${text}
         $overlay.append($segment);
       }
       if (this.config.end.enabled) {
-        const start = this.config.end.start || 0;
+        const start = parseStartTime(this.config.end.start || 0);
         const diff = this.config.end.diff || 0;
         const $segment = $('<div class="k-autoseek-segment" />');
         if (start <= 0) {
@@ -5413,7 +5458,7 @@ ${text}
   }
 
   let player;
-  const parser$5 = {
+  const parser$6 = {
     "danmu.yhdmjx.com": async () => {
       const video = await queryDom("video");
       video.src = "";
@@ -5495,32 +5540,32 @@ ${text}
       {
         test: () => window.location.href.includes("danmu.yhdmjx.com/m3u8.php"),
         runInIframe: true,
-        run: parser$5["danmu.yhdmjx.com"]
+        run: parser$6["danmu.yhdmjx.com"]
       },
       {
         test: () => window.location.href.includes("pro.ascepan.top/player"),
         runInIframe: true,
-        run: parser$5["pro.ascepan.top"],
+        run: parser$6["pro.ascepan.top"],
         setup: () => $("body").addClass("pro-ascepan-top")
       },
       {
         test: () => !!window.location.href.match(/sp-flv\.com.*url=/),
         runInIframe: true,
-        run: parser$5["sp-flv.com"]
+        run: parser$6["sp-flv.com"]
       },
       {
         test: () => !!window.location.href.match(
           /((43.240.74.134)|(43.240.156.118)).*vip.*url=/
         ),
         runInIframe: true,
-        run: parser$5["agefans-01"]
+        run: parser$6["agefans-01"]
       },
       {
         test: () => !!window.location.href.match(
           /((43.240.74.134)|(43.240.156.118)).*m3u8.*url=/
         ),
         runInIframe: true,
-        run: parser$5["agefans-02"]
+        run: parser$6["agefans-02"]
       }
     ],
     search: {
@@ -5557,26 +5602,26 @@ ${text}
   var css$7 = ".k-episode-anchor:visited {\n  color: rgb(220, 53, 69) !important;\n}\n\n.k-his-table {\n  width: 100%;\n  line-height: 1.4;\n  border-spacing: 0;\n  border-collapse: separate;\n}\n.k-his-table th,\n.k-his-table td {\n  padding: 6px 8px;\n}\n.k-his-table tr {\n  transition: background 0.3s ease;\n}\n.k-his-table tr:hover {\n  background: #f1f1f1;\n}\n.k-his-table a {\n  text-decoration: none;\n  transition: color 0.15s ease;\n}\n.k-his-table a:hover {\n  color: var(--k-player-primary-color);\n}\n.k-his-table .k-btn {\n  color: var(--k-player-primary-color);\n}";
   injectCss(css$7,{});
 
-  var __defProp$1 = Object.defineProperty;
-  var __defProps$1 = Object.defineProperties;
-  var __getOwnPropDescs$1 = Object.getOwnPropertyDescriptors;
-  var __getOwnPropSymbols$1 = Object.getOwnPropertySymbols;
-  var __hasOwnProp$1 = Object.prototype.hasOwnProperty;
-  var __propIsEnum$1 = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues$1 = (a, b) => {
+  var __defProp = Object.defineProperty;
+  var __defProps = Object.defineProperties;
+  var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+  var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+  var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __propIsEnum = Object.prototype.propertyIsEnumerable;
+  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __spreadValues = (a, b) => {
     for (var prop in b || (b = {}))
-      if (__hasOwnProp$1.call(b, prop))
-        __defNormalProp$1(a, prop, b[prop]);
-    if (__getOwnPropSymbols$1)
-      for (var prop of __getOwnPropSymbols$1(b)) {
-        if (__propIsEnum$1.call(b, prop))
-          __defNormalProp$1(a, prop, b[prop]);
+      if (__hasOwnProp.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    if (__getOwnPropSymbols)
+      for (var prop of __getOwnPropSymbols(b)) {
+        if (__propIsEnum.call(b, prop))
+          __defNormalProp(a, prop, b[prop]);
       }
     return a;
   };
-  var __spreadProps$1 = (a, b) => __defProps$1(a, __getOwnPropDescs$1(b));
-  const his$1 = {
+  var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+  const his = {
     key: "k-history",
     load() {
       return local.getItem(this.key, []);
@@ -5587,7 +5632,7 @@ ${text}
     log(info, time) {
       let data = this.load();
       data = data.filter((o) => o.id !== info.id);
-      data.unshift(__spreadProps$1(__spreadValues$1({}, info), { time }));
+      data.unshift(__spreadProps(__spreadValues({}, info), { time }));
       this.save(data);
     },
     remove(id) {
@@ -5596,9 +5641,9 @@ ${text}
       this.save(data);
     }
   };
-  const logHis$1 = throttle(his$1.log.bind(his$1), 1e3);
+  const logHis = throttle(his.log.bind(his), 1e3);
   function renderHistory() {
-    const data = his$1.load();
+    const data = his.load();
     const $root = $(`
     <table class="k-table k-his-table">
       <colgroup>
@@ -5635,7 +5680,7 @@ ${text}
     const $content = $(content);
     $content.find(".delete-btn").on("click", function() {
       const id = $(this).attr("data-id");
-      his$1.remove(id);
+      his.remove(id);
       $(this).closest("tr").remove();
     });
     $root.find("tbody").append($content);
@@ -5767,7 +5812,7 @@ ${text}
           }
           case "timeupdate": {
             if (config.history) {
-              logHis$1(
+              logHis(
                 {
                   animeName: await search.getSearchName(),
                   episodeName: await search.getEpisode(),
@@ -5796,36 +5841,36 @@ ${text}
     return { runInTop, runInIframe, createHistory };
   }
 
-  function getActive$7() {
+  function getActive$8() {
     return $(".van-grid-item.van-grid-item--active");
   }
   function switchPart$8(next) {
     var _a;
-    const $active = getActive$7();
+    const $active = getActive$8();
     let $nextActive = $active[next ? "next" : "prev"]();
     (_a = $nextActive.get(0)) == null ? void 0 : _a.click();
     return void 0;
   }
-  const iframePlayer$7 = defineIframePlayer({
+  const iframePlayer$8 = defineIframePlayer({
     iframeSelector: "#playerIFrame iframe",
-    getActive: getActive$7,
+    getActive: getActive$8,
     setActive: (href) => {
     },
     search: {
       getSearchName: () => $(".detail-box h2").text(),
-      getEpisode: () => getActive$7().text()
+      getEpisode: () => getActive$8().text()
     },
     getEpisodeList: () => $(".video-source-box .van-grid-item"),
     getSwitchEpisodeURL: (next) => switchPart$8(next)
   });
   async function mobilePlayModule() {
-    await wait(() => getActive$7().length > 0);
-    iframePlayer$7.runInTop();
+    await wait(() => getActive$8().length > 0);
+    iframePlayer$8.runInTop();
   }
 
   function calcSortDirection() {
     var _a, _b, _c;
-    const $active = getActive$6();
+    const $active = getActive$7();
     const $prev = $active.prev();
     const $next = $active.next();
     const prevText = (_a = $prev.text().match(/\d+/)) == null ? void 0 : _a[0];
@@ -5882,7 +5927,7 @@ ${text}
     }
   }
   function activeScrollIntoView() {
-    const $active = getActive$6();
+    const $active = getActive$7();
     function getScrollParent() {
       let parent = $active.parent()[0];
       while (parent && parent.tagName !== "BODY") {
@@ -5917,12 +5962,12 @@ ${text}
       activeScrollIntoView();
     }).prependTo(".playlist-source-tab .float-end");
   }
-  function getActive$6() {
+  function getActive$7() {
     return $(".video_detail_episode .video_detail_spisode_playing").parent();
   }
   function switchPart$7(next) {
     var _a;
-    const $active = getActive$6();
+    const $active = getActive$7();
     const sortDirection = getSortDirection();
     let $nextActive;
     if (sortDirection === "asc")
@@ -5931,9 +5976,9 @@ ${text}
       $nextActive = $active[next ? "prev" : "next"]();
     return (_a = $nextActive.find("a").get(0)) == null ? void 0 : _a.href;
   }
-  const iframePlayer$6 = defineIframePlayer({
+  const iframePlayer$7 = defineIframePlayer({
     iframeSelector: ".video_play_wrapper iframe",
-    getActive: getActive$6,
+    getActive: getActive$7,
     setActive: (href) => {
       $(".video_detail_episode a").each((_, el) => {
         const $el = $(el);
@@ -5945,24 +5990,24 @@ ${text}
     },
     search: {
       getSearchName: () => $(".video_detail_wrapper .cata_video_item .card-title").text(),
-      getEpisode: () => getActive$6().text()
+      getEpisode: () => getActive$7().text()
     },
     getEpisodeList: () => $(".video_detail_episode a"),
     getSwitchEpisodeURL: (next) => switchPart$7(next)
   });
-  function playModule$1() {
+  function playModule() {
     $(".video_detail_episode a").each((_, el) => {
       if (el.href)
         el.href = el.href.replace("http://", "https://");
     });
-    iframePlayer$6.runInTop();
+    iframePlayer$7.runInTop();
     rememberSortDirection();
     restoreSortDirection();
     insertFocusBtn();
     activeScrollIntoView();
   }
   function playModuleInIframe() {
-    iframePlayer$6.runInIframe();
+    iframePlayer$7.runInIframe();
   }
 
   runtime.register({
@@ -5974,7 +6019,7 @@ ${text}
           $("body").addClass("agefans-wrapper");
         }
       },
-      { test: "/play", run: playModule$1 },
+      { test: "/play", run: playModule },
       { test: "/play", run: playModuleInIframe, runInIframe: true },
       { test: () => location.hash.includes("/play/"), run: mobilePlayModule }
     ],
@@ -6126,16 +6171,16 @@ ${text}
     setFavorite(createCurrentPageFavorite());
   }
 
-  function getActive$5() {
+  function getActive$6() {
     return $(".active-play");
   }
   function switchPart$6(next) {
     var _a;
     return (_a = $(".active-play").parent()[next ? "next" : "prev"]().find("a").get(0)) == null ? void 0 : _a.href;
   }
-  function runInTop$5() {
+  function runInTop$6() {
     parseURLJumpParams();
-    iframePlayer$5.runInTop();
+    iframePlayer$6.runInTop();
     renderFavoriteBtn();
   }
   function parseURLJumpParams() {
@@ -6145,7 +6190,7 @@ ${text}
       window.location.replace($(".movurl:visible a").last().attr("href"));
     }
   }
-  const iframePlayer$5 = defineIframePlayer({
+  const iframePlayer$6 = defineIframePlayer({
     iframeSelector: "#playleft iframe",
     getActive: () => $(".active-play"),
     setActive: (href) => {
@@ -6159,7 +6204,7 @@ ${text}
     },
     search: {
       getSearchName: () => $("#detailname a:nth-child(1)").text(),
-      getEpisode: () => getActive$5().text()
+      getEpisode: () => getActive$6().text()
     },
     getEpisodeList: () => $(".movurl a"),
     getSwitchEpisodeURL: (next) => switchPart$6(next),
@@ -6185,10 +6230,10 @@ ${text}
   runtime.register({
     domains: [".ntdm8."],
     opts: [
-      { test: "*", run: iframePlayer$5.createHistory },
+      { test: "*", run: iframePlayer$6.createHistory },
       { test: /^\/$/, run: renderFavoriteList },
-      { test: "/play", run: runInTop$5 },
-      { test: "/play", run: iframePlayer$5.runInIframe, runInIframe: true }
+      { test: "/play", run: runInTop$6 },
+      { test: "/play", run: iframePlayer$6.runInIframe, runInIframe: true }
     ],
     search: {
       name: "NT\u52A8\u6F2B",
@@ -6197,195 +6242,78 @@ ${text}
     }
   });
 
-  var css$6 = ".bimi-wrapper .play-full,\n.bimi-wrapper #bkcl,\n.bimi-wrapper marquee {\n  display: none !important;\n}\n.bimi-wrapper .bimi-his-table {\n  width: 100%;\n  line-height: 1.4;\n  border-spacing: 0;\n  border-collapse: separate;\n}\n.bimi-wrapper .bimi-his-table th,\n.bimi-wrapper .bimi-his-table td {\n  padding: 4px 8px;\n  transition: background 0.3s ease;\n}\n.bimi-wrapper .bimi-his-table tr:hover td {\n  background: #f1f1f1;\n}";
+  var css$6 = ".bimi-wrapper .play-full,\n.bimi-wrapper #bkcl,\n.bimi-wrapper marquee {\n  display: none !important;\n}\n.bimi-wrapper .k-episode-anchor:visited {\n  color: white !important;\n}\n.bimi-wrapper a.episode-active {\n  background: var(--k-player-primary-color) !important;\n  color: var(--k-player-color) !important;\n}";
   injectCss(css$6,{});
 
-  var __defProp = Object.defineProperty;
-  var __defProps = Object.defineProperties;
-  var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
-  var __getOwnPropSymbols = Object.getOwnPropertySymbols;
-  var __hasOwnProp = Object.prototype.hasOwnProperty;
-  var __propIsEnum = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues = (a, b) => {
-    for (var prop in b || (b = {}))
-      if (__hasOwnProp.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    if (__getOwnPropSymbols)
-      for (var prop of __getOwnPropSymbols(b)) {
-        if (__propIsEnum.call(b, prop))
-          __defNormalProp(a, prop, b[prop]);
-      }
-    return a;
-  };
-  var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-  const his = {
-    key: "bangumi-history",
-    load() {
-      return local.getItem(this.key, []);
-    },
-    save(data) {
-      local.setItem(this.key, data.slice(0, 100));
-    },
-    log(info, time) {
-      let data = local.getItem(this.key, []);
-      data = data.filter((o) => o.id !== info.id);
-      data.unshift(__spreadProps(__spreadValues({}, info), { time }));
-      this.save(data);
-    }
-  };
-  const logHis = throttle(his.log.bind(his), 1e3);
-  function renderHistroy() {
-    const data = his.load();
-    const content = data.map(
-      (info) => `<tr>
-    <td>
-      <a href="${info.url}">${info.animeName}</a>
-    </td>
-    <td>
-      <a href="${info.url}">${info.episodeName}</a>
-    </td>
-    <td>${parseTime(info.time)}</td>
-    </tr>`
-    ).join("");
-    modal({
-      title: "\u5386\u53F2\u8BB0\u5F55",
-      content: `
-    <table class="k-table bimi-his-table">
-      <thead>
-        <tr>
-          <th>\u6807\u9898</th>
-          <th>\u7AE0\u8282</th>
-          <th style="width:100px">\u65F6\u95F4</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${content}
-      </tbody>
-    </table>
-      `
-    });
-  }
-  function createButton() {
-    const $btn = $('<li class="item"><a>\u5386\u53F2</a></li>');
-    $btn.on("click", renderHistroy);
-    $(".header-top__nav ul").append($btn);
-  }
-  function historyModule$1() {
-    createButton();
-  }
-
-  function replacePlayer$1() {
-    new KPlayer("#player", {
-      video: $("video")[0],
-      eventToParentWindow: true
-    });
+  function getActive$5() {
+    return $(".episode-active");
   }
   function switchPart$5(next) {
     var _a;
-    (_a = $(
-      `.player-info .play-qqun .${next ? "next" : "pre"}:not(.btns_disad)`
-    )[0]) == null ? void 0 : _a.click();
+    return (_a = getActive$5().parent()[next ? "next" : "prev"]().find("a")[0]) == null ? void 0 : _a.href;
   }
-  function getPlayInfo() {
-    const animeName = $(".v_path a.current").text();
-    const episodeName = (() => {
-      let name = "";
-      let pre = $(".player-info .play-qqun .pre").attr("href");
-      let next = $(".player-info .play-qqun .next").attr("href");
-      if (pre) {
-        name = $(`.player_list a[href='${pre}']`).parent().next().find("a").text();
-      } else if (next) {
-        name = $(`.player_list a[href='${next}']`).parent().prev().find("a").text();
-      } else {
-        name = $(`.player_list a[href='${location.pathname}']`).text();
-      }
-      return name;
-    })();
-    const url = location.pathname;
-    const id = location.pathname.match(new RegExp("\\/(?<id>\\d+)\\/play")).groups.id;
-    return { id, url, animeName, episodeName };
-  }
-  async function playModule() {
+  function runInTop$5() {
     var _a;
     $("#bkcl").remove();
-    const info = getPlayInfo();
-    const iframe = await queryDom(
-      `#playleft iframe[src*='url=']`
-    );
-    window.addEventListener("message", (e) => {
-      var _a2, _b, _c, _d;
-      if (!((_a2 = e.data) == null ? void 0 : _a2.key))
-        return;
-      const key = e.data.key;
-      const video = e.data.video;
-      if (key === "initDone") {
-        (_b = iframe.contentWindow) == null ? void 0 : _b.postMessage({ key: "initDone" }, "*");
-      }
-      if (key === "prev")
-        switchPart$5(false);
-      if (key === "next")
-        switchPart$5(true);
-      if (key === "enterwidescreen") {
-        $("body").css("overflow", "hidden");
-        $(iframe).css({
-          position: "fixed",
-          left: 0,
-          right: 0,
-          bottom: 0,
-          top: 0,
-          zIndex: 99999
-        });
-      }
-      if (key === "exitwidescreen") {
-        $("body").css("overflow", "");
-        $(iframe).removeAttr("style");
-      }
-      if (key === "getSearchName") {
-        (_c = iframe.contentWindow) == null ? void 0 : _c.postMessage(
-          { key: "getSearchName", name: info.animeName },
-          "*"
-        );
-      }
-      if (key === "getEpisode") {
-        (_d = iframe.contentWindow) == null ? void 0 : _d.postMessage(
-          { key: "getEpisode", name: info.episodeName },
-          "*"
-        );
-      }
-      if (key === "openLink") {
-        window.open(e.data.url);
-      }
-      if (key === "canplay") {
-        const height = $("#video").width() / video.width * video.height;
-        $("#video").height(height);
-      }
-      if (key === "timeupdate") {
-        logHis(info, video.currentTime);
+    if (local.getItem("bangumi-history")) {
+      local.setItem("k-history", local.getItem("bangumi-history"));
+      local.removeItem("bangumi-history");
+    }
+    $(".player_list a").each((_, el) => {
+      if (el.href === location.href) {
+        el.classList.add("episode-active");
+        const parent = el.offsetParent;
+        parent.scrollTop = el.offsetTop;
       }
     });
-    (_a = iframe.contentWindow) == null ? void 0 : _a.postMessage({ key: "initDone" }, "*");
-    iframe.focus();
-    window.addEventListener("keydown", (e) => {
-      if (document.activeElement !== document.body)
-        return;
-      iframe.focus();
-      if (e.key === " ")
-        e.preventDefault();
-    });
+    (_a = $(".tb.player").get(0)) == null ? void 0 : _a.scrollIntoView({ behavior: "smooth", block: "start" });
+    iframePlayer$5.runInTop();
   }
-  function playInIframeModule() {
-    const fn = (e) => {
-      var _a;
-      if (!((_a = e.data) == null ? void 0 : _a.key))
-        return;
-      if (e.data.key === "initDone") {
-        replacePlayer$1();
-        window.removeEventListener("message", fn);
+  const iframePlayer$5 = defineIframePlayer({
+    iframeSelector: "#playleft iframe",
+    getActive: getActive$5,
+    setActive: (href) => {
+      $(".player_list a").each((_, el) => {
+        if (el.href === href) {
+          el.classList.add("episode-active");
+        } else {
+          el.classList.remove("episode-active");
+        }
+      });
+    },
+    search: {
+      getSearchName: () => $(".v_path a.current").text(),
+      getEpisode: () => getActive$5().text()
+    },
+    getEpisodeList: () => $(".player_list a"),
+    getSwitchEpisodeURL: (next) => switchPart$5(next),
+    history: {
+      creator: (renderHistory) => {
+        const $btn = $('<li class="item"><a>\u5386\u53F2</a></li>');
+        $btn.on("click", renderHistory);
+        $(".header-top__nav ul").append($btn);
+      },
+      getId: () => location.pathname.match(new RegExp("\\/(?<id>\\d+)\\/play")).groups.id
+    },
+    onPlayerMessage: (key, data) => {
+      if (key === "canplay") {
+        const video = data.video;
+        const width = $("#video").width();
+        if (width)
+          $("#video").height(video.height / video.width * width);
       }
-    };
-    window.addEventListener("message", fn);
-    parent.postMessage({ key: "initDone" }, "*");
+    }
+  });
+  async function parser$5() {
+    const video = await queryDom("video");
+    video.src = "";
+    const url = await execInUnsafeWindow(() => window.url);
+    const player = new KPlayer("#player", { eventToParentWindow: true });
+    if (url.includes("m3u8")) {
+      player.setM3u8(url);
+    } else {
+      player.src = url;
+    }
   }
 
   runtime.register({
@@ -6394,10 +6322,15 @@ ${text}
       {
         test: "*",
         setup: () => $("body").addClass("bimi-wrapper"),
-        run: historyModule$1
+        run: iframePlayer$5.createHistory
       },
-      { test: ["/play/"], run: playModule },
-      { test: "*", runInIframe: true, run: playInIframeModule }
+      { test: /^\/bangumi\/\d+\/play\//, run: runInTop$5 },
+      {
+        test: /^\/bangumi\/\d+\/play\//,
+        run: iframePlayer$5.runInIframe,
+        runInIframe: true
+      },
+      { test: "/static/danmu", runInIframe: true, run: parser$5 }
     ],
     search: {
       name: "BIMI\u52A8\u6F2B",
@@ -6621,10 +6554,17 @@ ${text}
     var _a;
     return (_a = getActive$2().parent()[next ? "next" : "prev"]().find("a")[0]) == null ? void 0 : _a.href;
   }
+  function sendVideoParams() {
+    const script = Array.from(document.scripts).find(
+      (item) => item.innerHTML.includes("iframeObj.contentWindow.postMessage")
+    );
+    new Function(script.innerHTML)();
+  }
   function runInTop$2() {
     $("body").addClass("xfani");
     $(".player-news").remove();
     iframePlayer$2.runInTop();
+    sendVideoParams();
   }
   const iframePlayer$2 = defineIframePlayer({
     iframeSelector: "#playleft iframe",
@@ -6810,7 +6750,7 @@ ${text}
         const target = $('a:contains("\u5168\u96C6\u9023\u7D50")')[0];
         const url = new URL(target.href);
         const id = url.searchParams.get("cat");
-        logHis$1(
+        logHis(
           {
             animeName,
             episodeName,
