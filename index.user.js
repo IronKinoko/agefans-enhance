@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.52.0
+// @version      1.53.0
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -2642,7 +2642,7 @@
         content: `
     <table class="k-table">
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.52.0"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.53.0"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2768,7 +2768,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.52.0"}
+\u811A\u672C\u7248\u672C: ${"1.53.0"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -3469,7 +3469,7 @@ ${text}
       this.injectSettings();
       this.injectSpeed();
       this.injectNext();
-      this.injectSreen();
+      this.injectWideSreen();
       this.injectSearchActions();
       _KPlayer.plguinList.forEach((setup) => setup(this));
       this.initEvent();
@@ -3620,8 +3620,13 @@ ${text}
       this.on("next", () => {
         this.message.info("\u6B63\u5728\u5207\u6362\u4E0B\u4E00\u96C6");
       });
+      let fullscreenIsActivedBeforeEnter = this.fixFullscreen();
       this.on("enterfullscreen", () => {
         this.$videoWrapper.addClass("k-player-fullscreen");
+        if (fullscreenIsActivedBeforeEnter) {
+          this.plyr.fullscreen.exit();
+          fullscreenIsActivedBeforeEnter = false;
+        }
       });
       this.on("exitfullscreen", () => {
         this.$videoWrapper.removeClass("k-player-fullscreen");
@@ -3771,10 +3776,18 @@ ${text}
         this.trigger("next");
       });
     }
-    injectSreen() {
+    injectWideSreen() {
       $($("#plyr__widescreen").html()).insertBefore('[data-plyr="fullscreen"]').on("click", () => {
         this.toggleWidescreen();
       });
+    }
+    fixFullscreen() {
+      const isActive = screen.width === this.$wrapper.width() && screen.height === this.$wrapper.height();
+      if (isActive) {
+        $('[data-plyr="fullscreen"]').addClass("plyr__control--pressed");
+        this.$videoWrapper.addClass("k-player-fullscreen");
+      }
+      return isActive;
     }
     async injectSearchActions() {
       this.$searchActions = createSearchActionsHTML().toggle(
@@ -5460,8 +5473,24 @@ ${text}
   let player;
   const parser$6 = {
     "danmu.yhdmjx.com": async () => {
+      function detectLoadError() {
+        let timeId = setInterval(() => {
+          if (document.body.innerText.includes("\u52A8\u6F2B\u4E13\u7528\u89E3\u6790")) {
+            clearInterval(timeId);
+            const dom = document.querySelector("b h1");
+            if (dom) {
+              dom.prepend(document.createElement("br"));
+              dom.prepend(`\u68C0\u6D4B\u5230\u9875\u9762\u52A0\u8F7D\u5931\u8D25\uFF0C2\u79D2\u540E\u81EA\u52A8\u91CD\u8BD5`);
+            }
+            setTimeout(() => location.reload(), 2e3);
+          }
+        }, 16);
+        return () => clearInterval(timeId);
+      }
+      const dispose = detectLoadError();
       const video = await queryDom("video");
       video.src = "";
+      dispose();
       player = new KPlayer("#player", { eventToParentWindow: true });
       player.src = await execInUnsafeWindow(
         () => window.v_decrypt(window.config.url, window._token_key, window.key_token)
