@@ -8,8 +8,27 @@ let player: KPlayer
 
 export const parser = {
   'danmu.yhdmjx.com': async () => {
+    function detectLoadError() {
+      let timeId = setInterval(() => {
+        if (document.body.innerText.includes('动漫专用解析')) {
+          clearInterval(timeId)
+
+          const dom = document.querySelector('b h1')
+          if (dom) {
+            dom.prepend(document.createElement('br'))
+            dom.prepend(`检测到页面加载失败，2秒后自动重试`)
+          }
+          setTimeout(() => location.reload(), 2000)
+        }
+      }, 16)
+      return () => clearInterval(timeId)
+    }
+
+    const dispose = detectLoadError()
+
     const video = await queryDom<HTMLVideoElement>('video')
     video.src = ''
+    dispose()
 
     player = new KPlayer('#player', { eventToParentWindow: true })
 
