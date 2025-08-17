@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.53.0
+// @version      1.53.1
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -2642,7 +2642,7 @@
         content: `
     <table class="k-table">
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.53.0"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.53.1"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2768,7 +2768,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.53.0"}
+\u811A\u672C\u7248\u672C: ${"1.53.1"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -3620,16 +3620,17 @@ ${text}
       this.on("next", () => {
         this.message.info("\u6B63\u5728\u5207\u6362\u4E0B\u4E00\u96C6");
       });
-      let fullscreenIsActivedBeforeEnter = this.fixFullscreen();
+      const tryFixExitFullscreenOnInit = this.fixFullscreen();
+      window.addEventListener("resize", () => {
+        tryFixExitFullscreenOnInit();
+      });
       this.on("enterfullscreen", () => {
         this.$videoWrapper.addClass("k-player-fullscreen");
-        if (fullscreenIsActivedBeforeEnter) {
-          this.plyr.fullscreen.exit();
-          fullscreenIsActivedBeforeEnter = false;
-        }
+        tryFixExitFullscreenOnInit();
       });
       this.on("exitfullscreen", () => {
         this.$videoWrapper.removeClass("k-player-fullscreen");
+        tryFixExitFullscreenOnInit();
       });
       this.on("volumechange", () => {
         this.configSaveToLocal("volume", this.plyr.volume);
@@ -3782,12 +3783,26 @@ ${text}
       });
     }
     fixFullscreen() {
-      const isActive = screen.width === this.$wrapper.width() && screen.height === this.$wrapper.height();
+      let isActive = screen.width === this.$wrapper.width() && screen.height === this.$wrapper.height();
       if (isActive) {
         $('[data-plyr="fullscreen"]').addClass("plyr__control--pressed");
         this.$videoWrapper.addClass("k-player-fullscreen");
       }
-      return isActive;
+      return () => {
+        if (!isActive)
+          return;
+        isActive = false;
+        $('[data-plyr="fullscreen"]').removeClass("plyr__control--pressed");
+        this.$videoWrapper.removeClass("k-player-fullscreen");
+        try {
+          this.plyr.fullscreen.exit();
+        } catch (error) {
+        }
+      };
+    }
+    fixExitFullscreen() {
+      $('[data-plyr="fullscreen"]').removeClass("plyr__control--pressed");
+      this.$videoWrapper.removeClass("k-player-fullscreen");
     }
     async injectSearchActions() {
       this.$searchActions = createSearchActionsHTML().toggle(
