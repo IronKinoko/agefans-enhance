@@ -183,7 +183,7 @@ export class KPlayer {
     this.injectSettings()
     this.injectSpeed()
     this.injectNext()
-    this.injectSreen()
+    this.injectWideSreen()
     this.injectSearchActions()
 
     KPlayer.plguinList.forEach((setup) => setup(this))
@@ -376,8 +376,15 @@ export class KPlayer {
     this.on('next', () => {
       this.message.info('正在切换下一集')
     })
+
+    let fullscreenIsActivedBeforeEnter = this.fixFullscreen()
     this.on('enterfullscreen', () => {
       this.$videoWrapper.addClass('k-player-fullscreen')
+
+      if (fullscreenIsActivedBeforeEnter) {
+        this.plyr.fullscreen.exit()
+        fullscreenIsActivedBeforeEnter = false
+      }
     })
     this.on('exitfullscreen', () => {
       this.$videoWrapper.removeClass('k-player-fullscreen')
@@ -592,12 +599,25 @@ export class KPlayer {
       })
   }
 
-  private injectSreen() {
+  private injectWideSreen() {
     $($('#plyr__widescreen').html())
       .insertBefore('[data-plyr="fullscreen"]')
       .on('click', () => {
         this.toggleWidescreen()
       })
+  }
+
+  private fixFullscreen() {
+    const isActive =
+      screen.width === this.$wrapper.width() &&
+      screen.height === this.$wrapper.height()
+
+    if (isActive) {
+      $('[data-plyr="fullscreen"]').addClass('plyr__control--pressed')
+      this.$videoWrapper.addClass('k-player-fullscreen')
+    }
+
+    return isActive
   }
 
   private async injectSearchActions() {
