@@ -377,17 +377,17 @@ export class KPlayer {
       this.message.info('正在切换下一集')
     })
 
-    let fullscreenIsActivedBeforeEnter = this.fixFullscreen()
+    const tryFixExitFullscreenOnInit = this.fixFullscreen()
+    window.addEventListener('resize', () => {
+      tryFixExitFullscreenOnInit()
+    })
     this.on('enterfullscreen', () => {
       this.$videoWrapper.addClass('k-player-fullscreen')
-
-      if (fullscreenIsActivedBeforeEnter) {
-        this.plyr.fullscreen.exit()
-        fullscreenIsActivedBeforeEnter = false
-      }
+      tryFixExitFullscreenOnInit()
     })
     this.on('exitfullscreen', () => {
       this.$videoWrapper.removeClass('k-player-fullscreen')
+      tryFixExitFullscreenOnInit()
     })
     this.on('volumechange', () => {
       this.configSaveToLocal('volume', this.plyr.volume)
@@ -608,7 +608,7 @@ export class KPlayer {
   }
 
   private fixFullscreen() {
-    const isActive =
+    let isActive =
       screen.width === this.$wrapper.width() &&
       screen.height === this.$wrapper.height()
 
@@ -617,7 +617,20 @@ export class KPlayer {
       this.$videoWrapper.addClass('k-player-fullscreen')
     }
 
-    return isActive
+    return () => {
+      if (!isActive) return
+      isActive = false
+      $('[data-plyr="fullscreen"]').removeClass('plyr__control--pressed')
+      this.$videoWrapper.removeClass('k-player-fullscreen')
+      try {
+        this.plyr.fullscreen.exit()
+      } catch (error) {}
+    }
+  }
+
+  private fixExitFullscreen() {
+    $('[data-plyr="fullscreen"]').removeClass('plyr__control--pressed')
+    this.$videoWrapper.removeClass('k-player-fullscreen')
   }
 
   private async injectSearchActions() {
