@@ -10,6 +10,7 @@ runtime.register({
     'sp-flv.com',
     '43.240.74.134',
     '43.240.156.118',
+    'jx.ejtsyc.com',
   ],
   opts: [
     {
@@ -31,7 +32,7 @@ runtime.register({
     {
       test: () =>
         !!window.location.href.match(
-          /((43.240.74.134)|(43.240.156.118)).*vip.*url=/
+          /((43.240.74.134)|(43.240.156.118)|(jx.ejtsyc.com)).*vip.*url=/
         ),
       runInIframe: true,
       run: parser['agefans-01'],
