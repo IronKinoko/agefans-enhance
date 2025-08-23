@@ -13,12 +13,27 @@ export const parser = {
         if (document.body.innerText.includes('动漫专用解析')) {
           clearInterval(timeId)
 
-          const dom = document.querySelector('b h1')
-          if (dom) {
-            dom.prepend(document.createElement('br'))
-            dom.prepend(`检测到页面加载失败，2秒后自动重试`)
-          }
-          setTimeout(() => location.reload(), 2000)
+          const dom = document.querySelector<HTMLHeadingElement>('b h1')!
+          const root = document.querySelector<HTMLTableCellElement>('table td')!
+          const errorMessage = dom.innerHTML
+          root.innerHTML = `
+            <style>p,h1{ font-family: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif'; }</style>
+            <h1>动漫解析失败</h1>
+            <p>当前时间：<span id="current-time"></span></p>
+            <p>检测到页面加载失败，<span id="status">2秒后自动重试</span></p>
+            <p>如果一直无法加载，请尝试切换到其他线路</p>
+            <p>${errorMessage}</p>
+            `
+
+          setInterval(() => {
+            document.getElementById('current-time')!.innerText =
+              new Date().toLocaleTimeString()
+          }, 16)
+
+          setTimeout(() => {
+            document.getElementById('status')!.innerText = '正在刷新重试中...'
+            location.reload()
+          }, 2000)
         }
       }, 16)
       return () => clearInterval(timeId)
