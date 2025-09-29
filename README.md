@@ -11,7 +11,7 @@
 - [次元城](https://www.ciyuancheng.net)
 - [稀饭动漫](https://dm.xifanacg.com)
 - [Anime1](https://anime1.me)
-- [咕咕番](https://wwww.gugu3.com)
+- [咕咕番](https://www.gugu3.com)
 - [girigiri 爱](https://anime.girigirilove.com/)
 - [独立播放器](https://ironkinoko.github.io/agefans-enhance/)
 

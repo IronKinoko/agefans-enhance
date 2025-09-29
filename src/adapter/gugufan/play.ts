@@ -1,6 +1,7 @@
 import { KPlayer } from '../../player'
 import { execInUnsafeWindow } from '../../utils/execInUnsafeWindow'
 import { queryDom } from '../../utils/queryDom'
+import { sleep } from '../../utils/sleep'
 import { wait } from '../../utils/wait'
 import { defineIframePlayer } from '../common/defineIframePlayer'
 function getActive() {
@@ -37,6 +38,7 @@ export const iframePlayer = defineIframePlayer({
   getSwitchEpisodeURL: (next) => switchPart(next),
 })
 
+// /addons/dp/player
 export async function parser() {
   const video = await queryDom<HTMLVideoElement>('video')
 
@@ -57,4 +59,25 @@ export async function parser() {
     eventToParentWindow: true,
   })
   player.src = await execInUnsafeWindow(() => window.config.url)
+}
+
+// ?url=<videoId>
+export async function parser2() {
+  const video = await queryDom<HTMLVideoElement>('video')
+
+  await wait(() => !!video.currentSrc)
+  video.src = ''
+
+  let url = ''
+  while (!url) {
+    url = await execInUnsafeWindow(() => window.MIZHI.player_url)
+    await sleep(100)
+  }
+
+  const player = new KPlayer('#loading', {
+    eventToParentWindow: true,
+  })
+  player.src = url
+
+  $('.layui-layer').remove()
 }

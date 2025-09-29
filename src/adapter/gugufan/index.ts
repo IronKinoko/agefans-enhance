@@ -1,13 +1,18 @@
 import { runtime } from '../../runtime'
-import { iframePlayer, runInTop, parser } from './play'
+import { iframePlayer, runInTop, parser, parser2 } from './play'
 import './index.scss'
 
 runtime.register({
   domains: ['.gugu3.'],
   opts: [
-    { test: '/vod/play', run: runInTop },
-    { test: '/vod/play', run: iframePlayer.runInIframe, runInIframe: true },
+    { test: /^\/index.php\/vod\/play/, run: runInTop },
+    {
+      test: /^\/index.php\/vod\/play/,
+      run: iframePlayer.runInIframe,
+      runInIframe: true,
+    },
     { test: '/addons/dp/player', run: parser, runInIframe: true },
+    { test: '?url=', run: parser2, runInIframe: true },
   ],
   search: {
     name: '咕咕番',
