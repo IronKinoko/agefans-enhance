@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.53.2
+// @version      1.53.3
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -31,6 +31,7 @@
 // @include      https://www.anime1.me/*
 // @include      https://anime1.me/*
 // @include      https://www.gugu3.com/*
+// @include      https://player.gugu3.com/*
 // @include      https://*.girigirilove.com/*
 // @include      http://127.0.0.1:5500/public/index.html*
 // @include      https://ironkinoko.github.io/agefans-enhance/*
@@ -2643,7 +2644,7 @@
         content: `
     <table class="k-table">
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.53.2"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.53.3"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2769,7 +2770,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.53.2"}
+\u811A\u672C\u7248\u672C: ${"1.53.3"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -5494,11 +5495,23 @@ ${text}
           if (document.body.innerText.includes("\u52A8\u6F2B\u4E13\u7528\u89E3\u6790")) {
             clearInterval(timeId);
             const dom = document.querySelector("b h1");
-            if (dom) {
-              dom.prepend(document.createElement("br"));
-              dom.prepend(`\u68C0\u6D4B\u5230\u9875\u9762\u52A0\u8F7D\u5931\u8D25\uFF0C2\u79D2\u540E\u81EA\u52A8\u91CD\u8BD5`);
-            }
-            setTimeout(() => location.reload(), 2e3);
+            const root = document.querySelector("table td");
+            const errorMessage = dom.innerHTML;
+            root.innerHTML = `
+            <style>p,h1{ font-family: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif'; }</style>
+            <h1>\u52A8\u6F2B\u89E3\u6790\u5931\u8D25</h1>
+            <p>\u5F53\u524D\u65F6\u95F4\uFF1A<span id="current-time"></span></p>
+            <p>\u68C0\u6D4B\u5230\u9875\u9762\u52A0\u8F7D\u5931\u8D25\uFF0C<span id="status">2\u79D2\u540E\u81EA\u52A8\u91CD\u8BD5</span></p>
+            <p>\u5982\u679C\u4E00\u76F4\u65E0\u6CD5\u52A0\u8F7D\uFF0C\u8BF7\u5C1D\u8BD5\u5207\u6362\u5230\u5176\u4ED6\u7EBF\u8DEF</p>
+            <p>${errorMessage}</p>
+            `;
+            setInterval(() => {
+              document.getElementById("current-time").innerText = new Date().toLocaleTimeString();
+            }, 16);
+            setTimeout(() => {
+              document.getElementById("status").innerText = "\u6B63\u5728\u5237\u65B0\u91CD\u8BD5\u4E2D...";
+              location.reload();
+            }, 2e3);
           }
         }, 16);
         return () => clearInterval(timeId);
@@ -6902,6 +6915,21 @@ ${text}
     });
     player.src = await execInUnsafeWindow(() => window.config.url);
   }
+  async function parser2() {
+    const video = await queryDom("video");
+    await wait(() => !!video.currentSrc);
+    video.src = "";
+    let url = "";
+    while (!url) {
+      url = await execInUnsafeWindow(() => window.MIZHI.player_url);
+      await sleep(100);
+    }
+    const player = new KPlayer("#loading", {
+      eventToParentWindow: true
+    });
+    player.src = url;
+    $(".layui-layer").remove();
+  }
 
   var css$1 = ".gugufan.widescreen .header_nav0,\n.gugufan.widescreen .header_nav1,\n.gugufan.widescreen .top-back.hoa,\n.gugufan.widescreen .fixedGroup {\n  visibility: hidden;\n  pointer-events: none;\n}";
   injectCss(css$1,{});
@@ -6909,9 +6937,14 @@ ${text}
   runtime.register({
     domains: [".gugu3."],
     opts: [
-      { test: "/vod/play", run: runInTop$1 },
-      { test: "/vod/play", run: iframePlayer$1.runInIframe, runInIframe: true },
-      { test: "/addons/dp/player", run: parser$1, runInIframe: true }
+      { test: /^\/index.php\/vod\/play/, run: runInTop$1 },
+      {
+        test: /^\/index.php\/vod\/play/,
+        run: iframePlayer$1.runInIframe,
+        runInIframe: true
+      },
+      { test: "/addons/dp/player", run: parser$1, runInIframe: true },
+      { test: "?url=", run: parser2, runInIframe: true }
     ],
     search: {
       name: "\u5495\u5495\u756A",
