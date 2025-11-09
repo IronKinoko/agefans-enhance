@@ -387,6 +387,7 @@ export class KPlayer {
     })
     this.on('exitfullscreen', () => {
       this.$videoWrapper.removeClass('k-player-fullscreen')
+      this.toggleWidescreen(false)
       tryFixExitFullscreenOnInit()
     })
     this.on('volumechange', () => {

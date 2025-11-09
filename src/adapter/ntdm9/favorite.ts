@@ -77,7 +77,10 @@ export function renderFavoriteList() {
   )
 
   const day = new Date().getDay()
-  groups = [...groups.slice(day), ...groups.slice(0, day)]
+  groups = [
+    ...groups.slice(0, day + 1).reverse(),
+    ...groups.slice(day + 1).reverse(),
+  ]
   groups
     .filter((o) => o.list.length > 0)
     .forEach(({ day, list }, index) => {
