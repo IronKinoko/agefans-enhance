@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.53.5
+// @version      1.53.6
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -2644,7 +2644,7 @@
         content: `
     <table class="k-table">
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.53.5"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.53.6"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2770,7 +2770,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.53.5"}
+\u811A\u672C\u7248\u672C: ${"1.53.6"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -3632,6 +3632,7 @@ ${text}
       });
       this.on("exitfullscreen", () => {
         this.$videoWrapper.removeClass("k-player-fullscreen");
+        this.toggleWidescreen(false);
         tryFixExitFullscreenOnInit();
       });
       this.on("volumechange", () => {
@@ -6144,7 +6145,10 @@ ${text}
       })
     );
     const day = new Date().getDay();
-    groups = [...groups.slice(day), ...groups.slice(0, day)];
+    groups = [
+      ...groups.slice(0, day + 1).reverse(),
+      ...groups.slice(day + 1).reverse()
+    ];
     groups.filter((o) => o.list.length > 0).forEach(({ day: day2, list }, index) => {
       const $ul = $(`<ul id="new_anime_page"></ul>`);
       list.forEach((favorite) => {
