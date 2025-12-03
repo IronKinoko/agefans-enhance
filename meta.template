@@ -38,7 +38,7 @@
 // @run-at       document-end
 // @require      https://unpkg.com/jquery@3.6.0/dist/jquery.min.js
 // @require      https://unpkg.com/plyr@3.6.4/dist/plyr.min.js
-// @require      https://unpkg.com/hls.js@1.0.9/dist/hls.min.js
+// @require      https://unpkg.com/hls.js@1.6.15/dist/hls.min.js
 // @require      https://unpkg.com/@ironkinoko/danmaku@1.4.3/dist/danmaku.umd.js
 // @require      https://unpkg.com/opencc-js@1.0.5/dist/umd/full.js
 // @grant        GM_getValue

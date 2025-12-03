@@ -50,18 +50,12 @@ export async function parser() {
   const video = await queryDom<HTMLVideoElement>('video')
 
   await wait(() => !!video.currentSrc)
-  let url = video.currentSrc
-  video.src = ''
+  await execInUnsafeWindow(() => {
+    window.MIZHI.art.destroy()
+  })
 
-  const player = new KPlayer('#player', {
+  const player = new KPlayer('#loading', {
     eventToParentWindow: true,
   })
-  player.src = url
-
-  $('#loading').remove()
-
-  await execInUnsafeWindow(() => {
-    // @ts-ignore
-    PlayEr.void.destroy()
-  })
+  player.src = await execInUnsafeWindow(() => window.MIZHI.player_url)
 }
