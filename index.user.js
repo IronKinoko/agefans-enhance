@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.53.7
+// @version      1.53.8
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -2644,7 +2644,7 @@
         content: `
     <table class="k-table">
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.53.7"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.53.8"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2770,7 +2770,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.53.7"}
+\u811A\u672C\u7248\u672C: ${"1.53.8"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -6651,14 +6651,19 @@ ${text}
   });
   async function parser$2() {
     const video = await queryDom("video");
-    await wait(() => !!video.currentSrc);
-    await execInUnsafeWindow(() => {
-      window.MIZHI.art.destroy();
-    });
-    const player = new KPlayer("#loading", {
+    const cleanly = () => {
+      video.pause();
+      video.volume = 0;
+    };
+    setInterval(cleanly, 16);
+    $("#loading").hide();
+    $("#player").hide();
+    $("body").append('<div id="player2"></div>');
+    const player = new KPlayer("#player2", {
       eventToParentWindow: true
     });
-    player.src = await execInUnsafeWindow(() => window.MIZHI.player_url);
+    const url = new URLSearchParams(window.location.search).get("url");
+    player.src = url;
   }
 
   var css$3 = ".xfani.widescreen .header_nav0,\n.xfani.widescreen .top-back.hoa,\n.xfani.widescreen .fixedGroup {\n  visibility: hidden;\n  pointer-events: none;\n}";
