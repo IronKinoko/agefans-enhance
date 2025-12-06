@@ -48,14 +48,19 @@ export const iframePlayer = defineIframePlayer({
 
 export async function parser() {
   const video = await queryDom<HTMLVideoElement>('video')
+  const cleanly = () => {
+    video.pause()
+    video.volume = 0
+  }
+  setInterval(cleanly, 16)
 
-  await wait(() => !!video.currentSrc)
-  await execInUnsafeWindow(() => {
-    window.MIZHI.art.destroy()
-  })
-
-  const player = new KPlayer('#loading', {
+  $('#loading').hide()
+  $('#player').hide()
+  $('body').append('<div id="player2"></div>')
+  const player = new KPlayer('#player2', {
     eventToParentWindow: true,
   })
-  player.src = await execInUnsafeWindow(() => window.MIZHI.player_url)
+
+  const url = new URLSearchParams(window.location.search).get('url')!
+  player.src = url
 }
