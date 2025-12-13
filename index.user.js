@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.53.8
+// @version      1.53.9
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -2644,7 +2644,7 @@
         content: `
     <table class="k-table">
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.53.8"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.53.9"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2770,7 +2770,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.53.8"}
+\u811A\u672C\u7248\u672C: ${"1.53.9"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -5622,7 +5622,7 @@ ${text}
       },
       {
         test: () => !!window.location.href.match(
-          /((43.240.74.134)|(43.240.156.118)).*m3u8.*url=/
+          /((43.240.74.134)|(43.240.156.118)|(jx.ejtsyc.com)).*m3u8.*url=/
         ),
         runInIframe: true,
         run: parser$6["agefans-02"]
@@ -6387,9 +6387,9 @@ ${text}
         setup: () => $("body").addClass("bimi-wrapper"),
         run: iframePlayer$5.createHistory
       },
-      { test: /^\/bangumi\/\d+\/play\//, run: runInTop$5 },
+      { test: /^\/video\/\d+\/play\//, run: runInTop$5 },
       {
-        test: /^\/bangumi\/\d+\/play\//,
+        test: /^\/video\/\d+\/play\//,
         run: iframePlayer$5.runInIframe,
         runInIframe: true
       },
