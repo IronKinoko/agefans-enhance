@@ -10,9 +10,9 @@ runtime.register({
       setup: () => $('body').addClass('bimi-wrapper'),
       run: iframePlayer.createHistory,
     },
-    { test: /^\/bangumi\/\d+\/play\//, run: runInTop },
+    { test: /^\/video\/\d+\/play\//, run: runInTop },
     {
-      test: /^\/bangumi\/\d+\/play\//,
+      test: /^\/video\/\d+\/play\//,
       run: iframePlayer.runInIframe,
       runInIframe: true,
     },
