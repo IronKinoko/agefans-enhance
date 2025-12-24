@@ -10,9 +10,9 @@ runtime.register({
       setup: () => $('body').addClass('bimi-wrapper'),
       run: iframePlayer.createHistory,
     },
-    { test: /^\/video\/\d+\/play\//, run: runInTop },
+    { test: /^\/(video|bangumi)\/\d+\/play\//, run: runInTop },
     {
-      test: /^\/video\/\d+\/play\//,
+      test: /^\/(video|bangumi)\/\d+\/play\//,
       run: iframePlayer.runInIframe,
       runInIframe: true,
     },
@@ -20,7 +20,7 @@ runtime.register({
   ],
   search: {
     name: 'BIMI动漫',
-    search: (cn) => `http://www.bimiacg10.net/vod/search/wd/${cn}/`,
+    search: (cn) => `http://www.bimiacg14.net/vod/search/wd/${cn}/`,
     getSearchName: () => {
       return new Promise((resolve) => {
         const fn = (e: MessageEvent<any>) => {
