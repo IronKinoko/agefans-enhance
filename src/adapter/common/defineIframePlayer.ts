@@ -65,10 +65,29 @@ export function defineIframePlayer(config: Config) {
     window.addEventListener('keydown', (e) => {
       if (isFocusInputElement()) return
       if (window.getSelection()?.toString()) return
-      if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) return
-      $(iframeSelector)[0].blur()
-      $(iframeSelector)[0].focus()
       if (e.key === ' ') e.preventDefault()
+      const iframe = $<HTMLIFrameElement>(iframeSelector)[0]
+      if (document.activeElement !== iframe) {
+        iframe.contentWindow?.postMessage(
+          {
+            key: 'transportShortcut',
+            data: <KeyboardEventInit>{
+              key: e.key,
+              code: e.code,
+              altKey: e.altKey,
+              ctrlKey: e.ctrlKey,
+              shiftKey: e.shiftKey,
+              metaKey: e.metaKey,
+              repeat: e.repeat,
+              bubbles: true,
+              cancelable: true,
+            },
+          },
+          '*'
+        )
+        iframe.blur()
+        iframe.focus()
+      }
     })
 
     window.addEventListener('popstate', () => {

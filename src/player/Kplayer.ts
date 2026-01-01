@@ -417,6 +417,14 @@ export class KPlayer {
       this.$pip.fadeOut()
     })
 
+    window.addEventListener('message', (e) => {
+      if (e.data?.key === 'transportShortcut') {
+        const data = e.data.data
+        const event = new KeyboardEvent('keydown', data)
+        window.dispatchEvent(event)
+      }
+    })
+
     $('.plyr__controls button,.plyr__controls input').on('mouseleave', (e) => {
       e.target.blur()
     })

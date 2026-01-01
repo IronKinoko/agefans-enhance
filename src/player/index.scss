@@ -5,6 +5,7 @@
   background: #000;
   overflow: hidden;
   font-size: 14px;
+  user-select: none;
 
   --k-player-error-background: url(./assets/NachoNeko.png);
 
@@ -270,7 +271,7 @@
 
 // loading
 .lds-spinner {
-  color: official;
+  color: inherit;
   display: inline-block;
   position: relative;
   width: 80px;
