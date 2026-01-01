@@ -12,7 +12,7 @@ export function createDanmakuList(
 
   $open.on('click', () => {
     const comments = getComments()
-    if (!comments) return
+    if (!comments || !comments.length) return
 
     const $root = $(`
       <div class="k-player-danmaku-list-wrapper">
@@ -39,6 +39,11 @@ export function createDanmakuList(
 
       </div>
     `)
+
+    const $source = $root.find('.k-player-danmaku-list-source')
+    const $wrapper = $root.find('.k-player-danmaku-list-table-wrapper')
+    const $content = $root.find('.k-player-danmaku-list-table-content')
+    const $table = $root.find('.k-player-danmaku-list-table')
 
     let i = 0
     let end = 100
@@ -74,8 +79,6 @@ export function createDanmakuList(
       },
     })
 
-    const $source = $root.find('.k-player-danmaku-list-source')
-
     const sourceCountMap = comments.reduce<Record<string, number>>(
       (map, cmt) => {
         const source = cmt.user.source
@@ -106,10 +109,6 @@ export function createDanmakuList(
           player.configSaveToLocal('danmakuSourceDisabledList', next)
         })
     })
-
-    const $wrapper = $root.find('.k-player-danmaku-list-table-wrapper')
-    const $content = $root.find('.k-player-danmaku-list-table-content')
-    const $table = $root.find('.k-player-danmaku-list-table')
 
     const itemHeight = $root.find('thead tr').height()!
     $content.height(itemHeight * (comments.length + 1))
