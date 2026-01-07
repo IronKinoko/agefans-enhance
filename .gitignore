@@ -106,3 +106,4 @@ dist
 .DS_Store
 
 *.dev.js
+.idea
