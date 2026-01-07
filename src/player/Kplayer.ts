@@ -55,6 +55,8 @@ export interface LocalConfig {
   showSearchActions: boolean
   autoplay: boolean
   showPlayLarge: boolean
+  skipSeconds: number
+  hiddenSearchActions: string[]
 }
 
 const defaultConfig = {
@@ -67,6 +69,8 @@ const defaultConfig = {
   showSearchActions: true,
   autoplay: true,
   showPlayLarge: false,
+  skipSeconds: 85,
+  hiddenSearchActions: [],
 } as LocalConfig
 
 export class KPlayer {
@@ -568,7 +572,59 @@ export class KPlayer {
         const checked = e.target.checked
         this.configSaveToLocal('continuePlay', checked)
       })
+
+    this.$settings
+      .find<HTMLInputElement>('[name=skipSeconds]')
+      .val(this.localConfig.skipSeconds)
+      .on('change', (e) => {
+        const value = parseInt((e.target as HTMLInputElement).value)
+        if (value >= 1 && value <= 600) {
+          this.configSaveToLocal('skipSeconds', value)
+          this.$('.skip-seconds-value').text(value)
+          this.message.info(`跳过秒数已设置为 ${value}s`)
+        }
+      })
+
     this.$settings.insertAfter('.plyr__controls__item.plyr__volume')
+
+    this.initSearchActionsSettings()
+  }
+
+  private async initSearchActionsSettings() {
+    const allSearchActions = await runtime.getSearchActions([])
+    const $container = this.$settings.find('#k-settings-search-actions')
+
+    allSearchActions.forEach((action) => {
+      const $label = $('<label class="k-settings-item"></label>')
+      const $checkbox = $(`<input type="checkbox" name="hiddenSearchAction" />`)
+      const $span = $(`<span>隐藏 ${action.name}</span>`)
+
+      $checkbox.prop(
+        'checked',
+        this.localConfig.hiddenSearchActions.includes(action.name)
+      )
+
+      $checkbox.on('change', (e) => {
+        const checked = (e.target as HTMLInputElement).checked
+        let hiddenActions = this.localConfig.hiddenSearchActions
+
+        if (checked) {
+          hiddenActions.push(action.name)
+        } else {
+          hiddenActions = hiddenActions.filter((name) => name !== action.name)
+        }
+
+        this.configSaveToLocal('hiddenSearchActions', hiddenActions)
+        this.message.info(
+          `${checked ? '已隐藏' : '已显示'} ${action.name} 按钮`
+        )
+
+        this.injectSearchActions()
+      })
+
+      $label.append($checkbox, $span)
+      $container.append($label)
+    })
   }
 
   configSaveToLocal<T extends keyof KPlayer['localConfig']>(
@@ -642,13 +698,19 @@ export class KPlayer {
     this.$videoWrapper.removeClass('k-player-fullscreen')
   }
 
-  private async injectSearchActions() {
+  public async injectSearchActions() {
+    if (this.$searchActions) {
+      this.$searchActions.remove()
+    }
+
     this.$searchActions = createSearchActionsHTML().toggle(
       this.localConfig.showSearchActions
     )
     this.$searchActions.insertBefore(this.$speed)
 
-    const actions = await runtime.getSearchActions()
+    const actions = await runtime.getSearchActions(
+      this.localConfig.hiddenSearchActions
+    )
     if (actions.length === 0) return
 
     this.$searchActions.find('.k-menu').append(
@@ -658,6 +720,12 @@ export class KPlayer {
         ).on('click', search)
       })
     )
+
+    if (this.media.videoHeight) {
+      this.$searchActions
+        .find('.k-text-btn-text')
+        .text(this.media.videoHeight + 'P')
+    }
   }
 
   private async loadSubtitles(file: File) {

@@ -106,7 +106,7 @@ class Runtime {
     this.list.push(item)
   }
 
-  async getSearchActions() {
+  async getSearchActions(hiddenActions: string[] = []) {
     const isInIframe = parent !== self
     const searchs = this.list
       .map((o) => o.search)
@@ -123,6 +123,7 @@ class Runtime {
 
     return searchs
       .filter((search) => search !== register.search && search.search)
+      .filter((search) => !hiddenActions.includes(search.name))
       .map((search) => ({
         name: search.name,
         search: () => {
