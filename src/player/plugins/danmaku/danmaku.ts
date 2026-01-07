@@ -188,7 +188,8 @@ class DanmakuPlugin {
           this.core.show()
         }
         this.core.speed =
-          this.baseDanmkuSpeed * this.player.localConfig.danmakuSpeed
+          (this.baseDanmkuSpeed * this.player.localConfig.danmakuSpeed) /
+          this.player.media.playbackRate
       }
 
       if (this.player.localConfig.showPbp) {
@@ -525,7 +526,9 @@ class DanmakuPlugin {
       $dom: this.elements.$danmakuSpeed,
       name: 'danmakuSpeed',
       onChange: (v) => {
-        if (this.core) this.core.speed = this.baseDanmkuSpeed * v
+        if (this.core)
+          this.core.speed =
+            (this.baseDanmkuSpeed * v) / this.player.media.playbackRate
       },
       player: this.player,
     })
@@ -544,7 +547,13 @@ class DanmakuPlugin {
       },
       player: this.player,
     })
-
+    // 监听播放速度变化，调整弹幕速度使实际飞行速度保持不变
+    this.player.media.addEventListener('ratechange', () => {
+      if (this.core)
+        this.core.speed =
+          (this.baseDanmkuSpeed * this.player.localConfig.danmakuSpeed) /
+          this.player.media.playbackRate
+    })
     setCheckboxGroupValue(
       this.elements.$danmakuMode,
       this.player.localConfig.danmakuMode
