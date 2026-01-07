@@ -1,4 +1,5 @@
 import Hls from 'hls.js'
+import flvjs from 'flv.js'
 import { debounce, throttle } from 'lodash-es'
 import Plyr from 'plyr'
 import { runtime } from '../runtime'
@@ -272,9 +273,21 @@ export class KPlayer {
       if (rawFiles) {
         const files = Array.from(rawFiles)
 
-        const video = files.find((file) => file.type.includes('video'))
+        const video = files.find(
+          (file) =>
+            file.type.includes('video') ||
+            file.name.endsWith('.flv') ||
+            file.name.endsWith('.m3u8')
+        )
         if (video) {
-          this.src = URL.createObjectURL(video)
+          const url = URL.createObjectURL(video)
+          if (video.name.endsWith('.flv')) {
+            this.setFlv(url)
+          } else if (video.name.endsWith('.m3u8')) {
+            this.setM3u8(url)
+          } else {
+            this.src = url
+          }
         }
 
         const videoName = video?.name.split('.')[0]
@@ -769,6 +782,8 @@ export class KPlayer {
   set src(src: string) {
     if (src.includes('.m3u8')) {
       this.setM3u8(src)
+    } else if (src.includes('.flv')) {
+      this.setFlv(src)
     } else {
       this.setMp4(src)
     }
@@ -791,6 +806,21 @@ export class KPlayer {
     }
     this.afterChangeSrc()
   }
+
+  setFlv(src: string) {
+    if (flvjs.isSupported()) {
+      const flvPlayer = flvjs.createPlayer({
+        type: 'flv',
+        url: src,
+      })
+      flvPlayer.attachMediaElement(this.media)
+      flvPlayer.load()
+    } else {
+      throw new Error('不支持播放 flv 文件')
+    }
+    this.afterChangeSrc()
+  }
+
   setMp4(src: string) {
     this.$video.attr('src', src)
     this.afterChangeSrc()

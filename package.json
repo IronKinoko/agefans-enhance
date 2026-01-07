@@ -41,12 +41,14 @@
   },
   "dependencies": {
     "@ironkinoko/danmaku": "1.4.2",
+    "flv.js": "^1.6.2",
     "hls.js": "1.0.9",
     "lodash-es": "^4.17.21",
     "opencc-js": "^1.0.5",
     "plyr": "3.6.4"
   },
   "globals": {
+    "flv.js": "flvjs",
     "hls.js": "Hls",
     "plyr": "Plyr",
     "@ironkinoko/danmaku": "Danmaku",
