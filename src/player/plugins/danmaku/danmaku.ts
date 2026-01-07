@@ -105,6 +105,7 @@ class DanmakuPlugin {
     this.player.$videoWrapper.append(this.elements.$danmakuContainer)
     this.elements.$danmaku.insertBefore(player.$searchActions)
     this.elements.$danmaku.before(this.elements.$danmakuSwitch)
+    this.elements.$skipSecondsButton.insertAfter('.plyr__time--duration')
 
     let defaultSearchName =
       storageAnimeName(videoInfo.rawName) || videoInfo.name
@@ -563,6 +564,19 @@ class DanmakuPlugin {
       () => this.state.comments,
       this.refreshDanmaku
     )
+
+    this.elements.$skipSecondsButton
+      .find('.skip-seconds-value')
+      .text(this.player.localConfig.skipSeconds)
+
+    this.elements.$skipSecondsButton.on('click', () => {
+      const skipSeconds = this.player.localConfig.skipSeconds
+      this.player.currentTime = Math.min(
+        this.player.currentTime + skipSeconds,
+        this.player.plyr.duration
+      )
+      this.messageLog(`已跳过 ${skipSeconds}s`)
+    })
 
     this.injectDanmakuDropEvent()
   }

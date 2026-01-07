@@ -203,6 +203,14 @@ export const createSettingsHTML = () =>
     <input type="checkbox" name="showProgress" />
     显示底部进度条
   </label>
+  <label class="k-settings-item">
+    <span>跳过秒数</span>
+    <input type="number" name="skipSeconds" class="k-input" min="1" max="600" />
+  </label>
+  <div class="k-settings-item k-settings-divider">
+    <div>搜索按钮</div>
+  </div>
+  <div id="k-settings-search-actions" class="k-settings-search-actions"></div>
 </div>
 `,
   })

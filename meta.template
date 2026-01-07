@@ -1,10 +1,9 @@
 // ==UserScript==
-// @name         agefans Enhance
-// @namespace    https://github.com/IronKinoko/agefans-enhance
-// @icon         https://www.age.tv/favicon.ico
+// @name         Anime Enhance
+// @namespace    https://github.com/Lanthing/agefans-enhance
 // @version      #version#
 // @description  #description#
-// @author       IronKinoko
+// @author       Lanthing
 // @include      https://www.age.tv/*
 // @include      https://www.agefans.*
 // @include      https://www.agemys.*
