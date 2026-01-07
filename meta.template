@@ -27,6 +27,8 @@
 // @include      https://player.cycanime.com/*
 // @include      https://dm.xifanacg.com/*
 // @include      https://player.moedot.net/*
+// @include      https://www.mwcy.net/*
+// @include      https://play.catw.moe/*
 // @include      https://www.anime1.me/*
 // @include      https://anime1.me/*
 // @include      https://www.gugu3.com/*
@@ -45,8 +47,8 @@
 // @grant        GM_xmlhttpRequest
 // @connect      dandanplay.net
 // @license      MIT
-// @downloadURL  https://github.com/IronKinoko/agefans-enhance/raw/gh-pages/index.user.js
-// @updateURL    https://github.com/IronKinoko/agefans-enhance/raw/gh-pages/index.user.js
+// @downloadURL  https://github.com/Lanthing/agefans-enhance/raw/gh-pages/index.user.js
+// @updateURL    https://github.com/Lanthing/agefans-enhance/raw/gh-pages/index.user.js
 // ==/UserScript==
 
 /**
