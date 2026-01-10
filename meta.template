@@ -34,6 +34,7 @@
 // @include      https://www.gugu3.com/*
 // @include      https://player.gugu3.com/*
 // @include      https://*.girigirilove.com/*
+// @include      https://*.girigirilove.top/*
 // @include      http://127.0.0.1:5500/public/index.html*
 // @include      https://ironkinoko.github.io/agefans-enhance/*
 // @run-at       document-end

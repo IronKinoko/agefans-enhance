@@ -12,7 +12,7 @@ runtime.register({
   search: {
     name: 'girigiri爱',
     search: (cn) =>
-      `https://bgm.girigirilove.com/search/-------------/?wd=${cn}`,
+      `https://anime.girigirilove.top/search/-------------/?wd=${cn}`,
     getSearchName: () => {
       return new Promise((resolve) => {
         const fn = (e: MessageEvent<any>) => {

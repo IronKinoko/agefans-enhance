@@ -201,3 +201,12 @@ Shortcuts.registerCommand(Commands.toggleMute, function () {
   this.plyr.muted = !this.plyr.muted
   this.message.info(this.plyr.muted ? '静音' : '取消静音')
 })
+
+Shortcuts.registerCommand(Commands.skipSeconds, function () {
+  const skipSeconds = this.localConfig.skipSeconds
+  this.currentTime = Math.min(
+    this.currentTime + skipSeconds,
+    this.plyr.duration
+  )
+  this.message.info(`已跳过 ${skipSeconds}s`)
+})

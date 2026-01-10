@@ -50,4 +50,5 @@ export enum Commands {
   forwardCustom = 'forwardCustom',
   backwardCustom = 'backwardCustom',
   recordCustomSeekTime = 'recordCustomSeekTime',
+  skipSeconds = 'skipSeconds',
 }

@@ -1,7 +1,7 @@
 import { popover } from '../../../utils/popover'
 import { tabs } from '../../../utils/tabs'
 import { KPlayer } from '../../Kplayer'
-import { Commands } from './types'
+import { Commands } from '../shortcuts/types'
 
 export class DanmakuElements {
   constructor(private player: KPlayer) {
@@ -16,7 +16,7 @@ export class DanmakuElements {
   aria-label="skip-seconds"
   >
   <svg focusable="false" width="1em" height="1em" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg>
-  <span class="plyr__tooltip">跳过 <span class="skip-seconds-value">85</span>s</span>
+  <span class="plyr__tooltip">跳过 <span class="skip-seconds-value">85</span>s(<k-shortcuts-tip command="${Commands.skipSeconds}"></k-shortcuts-tip>)</span>
 </button>`)
 
   $danmakuOverlay = tabs([

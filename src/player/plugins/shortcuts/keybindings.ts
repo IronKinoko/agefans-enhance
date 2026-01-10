@@ -104,6 +104,11 @@ const DefaultKeyBindings: KeyBinding[] = [
     editable: false,
     description: '显示帮助',
   },
+  {
+    command: Commands.skipSeconds,
+    key: 'S',
+    description: '跳过指定秒数',
+  },
 ]
 
 export class KeyBindings {
