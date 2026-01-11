@@ -1,0 +1,57 @@
+/* Fix Global CSS Pollution for KPlayer in Mwcy/Catw iframe */
+#k-player-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  /* Ensure it's on top */
+  background: #000;
+
+  /* Reset button styles polluted by site's global CSS */
+  button {
+    background: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  /* Override specific global overrides for SVGs */
+  svg {
+    fill: currentColor !important;
+    width: 100%;
+    height: 100%;
+
+    path,
+    circle {
+      fill: currentColor !important;
+    }
+  }
+
+  /* Ensure controls are visible */
+  .k-controls {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
+/* Force original player hidden */
+#player,
+#playbox,
+.art-video-player,
+.art-contextmenu {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
