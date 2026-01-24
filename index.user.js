@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.53.11
+// @version      1.53.12
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -1038,7 +1038,7 @@
   ListCache.prototype.set = listCacheSet;
 
   /* Built-in method references that are verified to be native. */
-  var Map = getNative(root, 'Map');
+  var Map$1 = getNative(root, 'Map');
 
   /**
    * Removes all key-value entries from the map.
@@ -1051,7 +1051,7 @@
     this.size = 0;
     this.__data__ = {
       'hash': new Hash,
-      'map': new (Map || ListCache),
+      'map': new (Map$1 || ListCache),
       'string': new Hash
     };
   }
@@ -2644,7 +2644,7 @@
         content: `
     <table class="k-table">
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.53.11"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.53.12"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2770,7 +2770,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.53.11"}
+\u811A\u672C\u7248\u672C: ${"1.53.12"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -4122,9 +4122,13 @@ ${text}
     });
     if (!res.success)
       throw new Error(res.errorMessage);
+    const nameCountMap = /* @__PURE__ */ new Map();
+    res.animes.forEach((o) => {
+      nameCountMap.set(o.animeTitle, (nameCountMap.get(o.animeTitle) || 0) + 1);
+    });
     return res.animes.map((o) => ({
       id: o.bangumiId,
-      name: o.animeTitle
+      name: nameCountMap.get(o.animeTitle) > 1 ? `${o.animeTitle}(${o.typeDescription})` : o.animeTitle
     }));
   }
   const queryEpisodes = memoize(async function(animeId) {
@@ -4149,7 +4153,7 @@ ${text}
     const $open = $("#k-player-danmaku-search-form .open-danmaku-list");
     $open.on("click", () => {
       const comments = getComments();
-      if (!comments)
+      if (!comments || !comments.length)
         return;
       const $root = $(`
       <div class="k-player-danmaku-list-wrapper">
@@ -4176,6 +4180,10 @@ ${text}
 
       </div>
     `);
+      const $source = $root.find(".k-player-danmaku-list-source");
+      const $wrapper = $root.find(".k-player-danmaku-list-table-wrapper");
+      const $content = $root.find(".k-player-danmaku-list-table-content");
+      const $table = $root.find(".k-player-danmaku-list-table");
       let i = 0;
       let end = 100;
       const render = () => {
@@ -4204,7 +4212,6 @@ ${text}
           refreshDanmaku();
         }
       });
-      const $source = $root.find(".k-player-danmaku-list-source");
       const sourceCountMap = comments.reduce(
         (map, cmt) => {
           var _a;
@@ -4231,9 +4238,6 @@ ${text}
           player.configSaveToLocal("danmakuSourceDisabledList", next);
         });
       });
-      const $wrapper = $root.find(".k-player-danmaku-list-table-wrapper");
-      const $content = $root.find(".k-player-danmaku-list-table-content");
-      const $table = $root.find(".k-player-danmaku-list-table");
       const itemHeight = $root.find("thead tr").height();
       $content.height(itemHeight * (comments.length + 1));
       $wrapper.on("scroll", (e) => {
@@ -7058,7 +7062,7 @@ ${text}
     player.src = new URLSearchParams(location.search).get("url");
   }
 
-  var css = ".girigirilove.widescreen .header_nav0,\n.girigirilove.widescreen .header_nav1,\n.girigirilove.widescreen .top-back.hoa,\n.girigirilove.widescreen .fixedGroup {\n  visibility: hidden;\n  pointer-events: none;\n}";
+  var css = ".girigirilove.widescreen .head,\n.girigirilove.widescreen .header_nav0,\n.girigirilove.widescreen .header_nav1,\n.girigirilove.widescreen .top-back.hoa,\n.girigirilove.widescreen .fixedGroup {\n  visibility: hidden;\n  pointer-events: none;\n}";
   injectCss(css,{});
 
   runtime.register({
