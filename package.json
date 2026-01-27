@@ -1,6 +1,6 @@
 {
   "name": "agefans",
-  "version": "1.53.12",
+  "version": "1.53.13",
   "description": "增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫",
   "main": "index.user.js",
   "repository": {
