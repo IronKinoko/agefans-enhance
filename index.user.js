@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.53.13
+// @version      1.54.0
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -213,7 +213,7 @@
    * @param {*} value The value to convert.
    * @returns {string} Returns the converted string.
    */
-  function objectToString(value) {
+  function objectToString$1(value) {
     return nativeObjectToString.call(value);
   }
 
@@ -237,7 +237,7 @@
     }
     return (symToStringTag && symToStringTag in Object(value))
       ? getRawTag(value)
-      : objectToString(value);
+      : objectToString$1(value);
   }
 
   /**
@@ -336,7 +336,7 @@
    * _.isArray(_.noop);
    * // => false
    */
-  var isArray = Array.isArray;
+  var isArray$1 = Array.isArray;
 
   /** Used as references for various `Number` constants. */
   var INFINITY$1 = 1 / 0;
@@ -358,7 +358,7 @@
     if (typeof value == 'string') {
       return value;
     }
-    if (isArray(value)) {
+    if (isArray$1(value)) {
       // Recursively convert values (susceptible to call stack limits).
       return arrayMap(value, baseToString) + '';
     }
@@ -515,7 +515,7 @@
    * _.isFunction(/abc/);
    * // => false
    */
-  function isFunction(value) {
+  function isFunction$1(value) {
     if (!isObject(value)) {
       return false;
     }
@@ -607,7 +607,7 @@
     if (!isObject(value) || isMasked(value)) {
       return false;
     }
-    var pattern = isFunction(value) ? reIsNative : reIsHostCtor;
+    var pattern = isFunction$1(value) ? reIsNative : reIsHostCtor;
     return pattern.test(toSource(value));
   }
 
@@ -763,7 +763,7 @@
    * @returns {boolean} Returns `true` if `value` is a property name, else `false`.
    */
   function isKey(value, object) {
-    if (isArray(value)) {
+    if (isArray$1(value)) {
       return false;
     }
     var type = typeof value;
@@ -1321,7 +1321,7 @@
    * @returns {Array} Returns the cast property path array.
    */
   function castPath(value, object) {
-    if (isArray(value)) {
+    if (isArray$1(value)) {
       return value;
     }
     return isKey(value, object) ? [value] : stringToPath(toString(value));
@@ -2179,21 +2179,21 @@
     return Commands2;
   })(Commands$1 || {});
 
-  var __defProp$3 = Object.defineProperty;
+  var __defProp$5 = Object.defineProperty;
   var __defProps$2 = Object.defineProperties;
   var __getOwnPropDescs$2 = Object.getOwnPropertyDescriptors;
-  var __getOwnPropSymbols$3 = Object.getOwnPropertySymbols;
-  var __hasOwnProp$3 = Object.prototype.hasOwnProperty;
-  var __propIsEnum$3 = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp$3 = (obj, key, value) => key in obj ? __defProp$3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues$3 = (a, b) => {
+  var __getOwnPropSymbols$5 = Object.getOwnPropertySymbols;
+  var __hasOwnProp$5 = Object.prototype.hasOwnProperty;
+  var __propIsEnum$5 = Object.prototype.propertyIsEnumerable;
+  var __defNormalProp$5 = (obj, key, value) => key in obj ? __defProp$5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __spreadValues$5 = (a, b) => {
     for (var prop in b || (b = {}))
-      if (__hasOwnProp$3.call(b, prop))
-        __defNormalProp$3(a, prop, b[prop]);
-    if (__getOwnPropSymbols$3)
-      for (var prop of __getOwnPropSymbols$3(b)) {
-        if (__propIsEnum$3.call(b, prop))
-          __defNormalProp$3(a, prop, b[prop]);
+      if (__hasOwnProp$5.call(b, prop))
+        __defNormalProp$5(a, prop, b[prop]);
+    if (__getOwnPropSymbols$5)
+      for (var prop of __getOwnPropSymbols$5(b)) {
+        if (__propIsEnum$5.call(b, prop))
+          __defNormalProp$5(a, prop, b[prop]);
       }
     return a;
   };
@@ -2331,7 +2331,7 @@
         const customKeyBinding = customKeyBindings.find(
           (o) => o.command === keyBinding.command
         );
-        const nextKeyBinding = __spreadProps$2(__spreadValues$3({}, keyBinding), { originKey: "", customKey: "" });
+        const nextKeyBinding = __spreadProps$2(__spreadValues$5({}, keyBinding), { originKey: "", customKey: "" });
         if (isMac && nextKeyBinding.mac) {
           nextKeyBinding.key = nextKeyBinding.mac;
         }
@@ -2644,7 +2644,7 @@
         content: `
     <table class="k-table">
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.53.13"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.54.0"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2770,7 +2770,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.53.13"}
+\u811A\u672C\u7248\u672C: ${"1.54.0"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -3351,19 +3351,19 @@ ${text}
     });
   }
 
-  var __defProp$2 = Object.defineProperty;
-  var __getOwnPropSymbols$2 = Object.getOwnPropertySymbols;
-  var __hasOwnProp$2 = Object.prototype.hasOwnProperty;
-  var __propIsEnum$2 = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp$2 = (obj, key, value) => key in obj ? __defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues$2 = (a, b) => {
+  var __defProp$4 = Object.defineProperty;
+  var __getOwnPropSymbols$4 = Object.getOwnPropertySymbols;
+  var __hasOwnProp$4 = Object.prototype.hasOwnProperty;
+  var __propIsEnum$4 = Object.prototype.propertyIsEnumerable;
+  var __defNormalProp$4 = (obj, key, value) => key in obj ? __defProp$4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __spreadValues$4 = (a, b) => {
     for (var prop in b || (b = {}))
-      if (__hasOwnProp$2.call(b, prop))
-        __defNormalProp$2(a, prop, b[prop]);
-    if (__getOwnPropSymbols$2)
-      for (var prop of __getOwnPropSymbols$2(b)) {
-        if (__propIsEnum$2.call(b, prop))
-          __defNormalProp$2(a, prop, b[prop]);
+      if (__hasOwnProp$4.call(b, prop))
+        __defNormalProp$4(a, prop, b[prop]);
+    if (__getOwnPropSymbols$4)
+      for (var prop of __getOwnPropSymbols$4(b)) {
+        if (__propIsEnum$4.call(b, prop))
+          __defNormalProp$4(a, prop, b[prop]);
       }
     return a;
   };
@@ -3421,7 +3421,7 @@ ${text}
         gm.getItem(this.localConfigKey)
       );
       const isIOS = /ip(hone|od)/i.test(navigator.userAgent);
-      this.plyr = new Plyr("#k-player", __spreadValues$2({
+      this.plyr = new Plyr("#k-player", __spreadValues$4({
         autoplay: this.localConfig.autoplay,
         keyboard: { global: false, focused: false },
         controls: [
@@ -5192,23 +5192,23 @@ ${text}
   var css$a = "#k-autoseek-config {\n  line-height: 32px;\n  font-size: 14px;\n}\n#k-autoseek-config .k-autoseek-config-tips {\n  font-size: 12px;\n  color: #666;\n  margin-top: 8px;\n  line-height: 1.6;\n}\n#k-autoseek-config .k-autoseek-config-tips summary {\n  cursor: pointer;\n}\n#k-autoseek-config .k-autoseek-config-tips .k-autoseek-config-tips-title {\n  color: #232323;\n  font-weight: 500;\n  margin-bottom: 4px;\n  margin-top: 8px;\n}\n\n#k-autoseek-overlay {\n  position: absolute;\n  inset: 0;\n  pointer-events: none;\n  z-index: 1000;\n}\n#k-autoseek-overlay .k-autoseek-segment {\n  position: absolute;\n  background: white;\n  top: 50%;\n  transform: translateY(-50%);\n  width: calc(var(--plyr-range-track-height) + 2px);\n  height: calc(var(--plyr-range-track-height) + 2px);\n  border-radius: 50%;\n}";
   injectCss(css$a,{});
 
-  var T = {"k-autoseek-config":"<div id=\"k-autoseek-config\">\n  <form class=\"k-settings-list\">\n    <div class=\"k-settings-item\">\n      <label class=\"k-checkbox\">\n        <input type=\"checkbox\" name=\"start.enabled\" >\n        跳过片头\n      </label>\n      <input         type=\"text\"\n        name=\"start.start\"\n        class=\"k-input-number\"\n        placeholder=\"起跳时间\"\n      >\n      <input         type=\"number\"\n        name=\"start.diff\"\n        class=\"k-input-number\"\n        placeholder=\"长度\"\n      >\n    </div>\n\n    <div class=\"k-settings-item\">\n      <label class=\"k-checkbox\">\n        <input type=\"checkbox\" name=\"end.enabled\" >\n        跳过片尾\n      </label>\n      <input         type=\"text\"\n        name=\"end.start\"\n        class=\"k-input-number\"\n        placeholder=\"起跳时间\"\n      >\n      <input         type=\"number\"\n        name=\"end.diff\"\n        class=\"k-input-number\"\n        placeholder=\"长度\"\n      >\n    </div>\n    <div class=\"k-autoseek-config-tips\">\n      <details>\n        <summary>使用说明</summary>\n        <div class=\"k-autoseek-config-tips-title\">\n          第一个值表示“起跳时间”，二个值表示“跳过多少时间”\n        </div>\n        <div>起跳时间格式：分秒时间(2:30)、秒数(150)</div>\n        <div>跳过多少时间：秒数(85)</div>\n        <div>\n          例如：在 2:30 位置起跳，跳过 85s 时长，视频最终会在 145s 处播放\n        </div>\n        <div class=\"k-autoseek-config-tips-title\">\n          结尾的起跳时间可以是小于等于 0 的数字\n        </div>\n        <div>\n          例子1：片尾填写 -10 与 60，那么视频倒数 10s 处再往前数 60s\n          的位置开始跳转，视频最终在倒数 10s 处播放\n        </div>\n        <div>\n          例子2：片尾填写 600 与 60，那么视频 10:00 处开始跳转 60s，视频最终在\n          660s 处播放\n        </div>\n      </details>\n    </div>\n    <div class=\"k-autoseek-config-tips\">\n      仅在当前番剧播放页生效，其他番剧需要重新配置\n    </div>\n  </form>\n</div>","k-autoseek-overlay":"<div id=\"k-autoseek-overlay\"></div>"};
+  var T$1 = {"k-autoseek-config":"<div id=\"k-autoseek-config\">\n  <form class=\"k-settings-list\">\n    <div class=\"k-settings-item\">\n      <label class=\"k-checkbox\">\n        <input type=\"checkbox\" name=\"start.enabled\" >\n        跳过片头\n      </label>\n      <input         type=\"text\"\n        name=\"start.start\"\n        class=\"k-input-number\"\n        placeholder=\"起跳时间\"\n      >\n      <input         type=\"number\"\n        name=\"start.diff\"\n        class=\"k-input-number\"\n        placeholder=\"长度\"\n      >\n    </div>\n\n    <div class=\"k-settings-item\">\n      <label class=\"k-checkbox\">\n        <input type=\"checkbox\" name=\"end.enabled\" >\n        跳过片尾\n      </label>\n      <input         type=\"text\"\n        name=\"end.start\"\n        class=\"k-input-number\"\n        placeholder=\"起跳时间\"\n      >\n      <input         type=\"number\"\n        name=\"end.diff\"\n        class=\"k-input-number\"\n        placeholder=\"长度\"\n      >\n    </div>\n    <div class=\"k-autoseek-config-tips\">\n      <details>\n        <summary>使用说明</summary>\n        <div class=\"k-autoseek-config-tips-title\">\n          第一个值表示“起跳时间”，二个值表示“跳过多少时间”\n        </div>\n        <div>起跳时间格式：分秒时间(2:30)、秒数(150)</div>\n        <div>跳过多少时间：秒数(85)</div>\n        <div>\n          例如：在 2:30 位置起跳，跳过 85s 时长，视频最终会在 145s 处播放\n        </div>\n        <div class=\"k-autoseek-config-tips-title\">\n          结尾的起跳时间可以是小于等于 0 的数字\n        </div>\n        <div>\n          例子1：片尾填写 -10 与 60，那么视频倒数 10s 处再往前数 60s\n          的位置开始跳转，视频最终在倒数 10s 处播放\n        </div>\n        <div>\n          例子2：片尾填写 600 与 60，那么视频 10:00 处开始跳转 60s，视频最终在\n          660s 处播放\n        </div>\n      </details>\n    </div>\n    <div class=\"k-autoseek-config-tips\">\n      仅在当前番剧播放页生效，其他番剧需要重新配置\n    </div>\n  </form>\n</div>","k-autoseek-overlay":"<div id=\"k-autoseek-overlay\"></div>"};
 
-  var __defProp$1 = Object.defineProperty;
+  var __defProp$3 = Object.defineProperty;
   var __defProps$1 = Object.defineProperties;
   var __getOwnPropDescs$1 = Object.getOwnPropertyDescriptors;
-  var __getOwnPropSymbols$1 = Object.getOwnPropertySymbols;
-  var __hasOwnProp$1 = Object.prototype.hasOwnProperty;
-  var __propIsEnum$1 = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues$1 = (a, b) => {
+  var __getOwnPropSymbols$3 = Object.getOwnPropertySymbols;
+  var __hasOwnProp$3 = Object.prototype.hasOwnProperty;
+  var __propIsEnum$3 = Object.prototype.propertyIsEnumerable;
+  var __defNormalProp$3 = (obj, key, value) => key in obj ? __defProp$3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __spreadValues$3 = (a, b) => {
     for (var prop in b || (b = {}))
-      if (__hasOwnProp$1.call(b, prop))
-        __defNormalProp$1(a, prop, b[prop]);
-    if (__getOwnPropSymbols$1)
-      for (var prop of __getOwnPropSymbols$1(b)) {
-        if (__propIsEnum$1.call(b, prop))
-          __defNormalProp$1(a, prop, b[prop]);
+      if (__hasOwnProp$3.call(b, prop))
+        __defNormalProp$3(a, prop, b[prop]);
+    if (__getOwnPropSymbols$3)
+      for (var prop of __getOwnPropSymbols$3(b)) {
+        if (__propIsEnum$3.call(b, prop))
+          __defNormalProp$3(a, prop, b[prop]);
       }
     return a;
   };
@@ -5282,7 +5282,7 @@ ${text}
           width: 350,
           title: "\u8DF3\u8FC7\u7247\u6BB5\u8BBE\u7F6E",
           content: bindFormEvent(
-            T["k-autoseek-config"],
+            T$1["k-autoseek-config"],
             this.autoSeek.getConfig()
           ),
           afterClose: () => {
@@ -5341,7 +5341,7 @@ ${text}
       if (!this.scope)
         throw new Error("AutoSeek scope is not set");
       this.config = config;
-      local.setItem(this.localStoreKey, __spreadProps$1(__spreadValues$1({}, local.getItem(this.localStoreKey, {})), {
+      local.setItem(this.localStoreKey, __spreadProps$1(__spreadValues$3({}, local.getItem(this.localStoreKey, {})), {
         [this.scope]: config
       }));
       this.refresh();
@@ -5419,7 +5419,7 @@ ${text}
       const enabled = this.config.start.enabled || this.config.end.enabled;
       if (!enabled)
         return;
-      const $overlay = $(T["k-autoseek-overlay"]);
+      const $overlay = $(T$1["k-autoseek-overlay"]);
       if (this.config.start.enabled) {
         const start = parseStartTime(this.config.start.start || 0);
         const $segment = $('<div class="k-autoseek-segment" />');
@@ -5674,21 +5674,21 @@ ${text}
   var css$7 = ".k-episode-anchor:visited {\n  color: rgb(220, 53, 69) !important;\n}\n\n.k-his-table {\n  width: 100%;\n  line-height: 1.4;\n  border-spacing: 0;\n  border-collapse: separate;\n}\n.k-his-table th,\n.k-his-table td {\n  padding: 6px 8px;\n}\n.k-his-table tr {\n  transition: background 0.3s ease;\n}\n.k-his-table tr:hover {\n  background: #f1f1f1;\n}\n.k-his-table a {\n  text-decoration: none;\n  transition: color 0.15s ease;\n}\n.k-his-table a:hover {\n  color: var(--k-player-primary-color);\n}\n.k-his-table .k-btn {\n  color: var(--k-player-primary-color);\n}";
   injectCss(css$7,{});
 
-  var __defProp = Object.defineProperty;
+  var __defProp$2 = Object.defineProperty;
   var __defProps = Object.defineProperties;
   var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
-  var __getOwnPropSymbols = Object.getOwnPropertySymbols;
-  var __hasOwnProp = Object.prototype.hasOwnProperty;
-  var __propIsEnum = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues = (a, b) => {
+  var __getOwnPropSymbols$2 = Object.getOwnPropertySymbols;
+  var __hasOwnProp$2 = Object.prototype.hasOwnProperty;
+  var __propIsEnum$2 = Object.prototype.propertyIsEnumerable;
+  var __defNormalProp$2 = (obj, key, value) => key in obj ? __defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __spreadValues$2 = (a, b) => {
     for (var prop in b || (b = {}))
-      if (__hasOwnProp.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    if (__getOwnPropSymbols)
-      for (var prop of __getOwnPropSymbols(b)) {
-        if (__propIsEnum.call(b, prop))
-          __defNormalProp(a, prop, b[prop]);
+      if (__hasOwnProp$2.call(b, prop))
+        __defNormalProp$2(a, prop, b[prop]);
+    if (__getOwnPropSymbols$2)
+      for (var prop of __getOwnPropSymbols$2(b)) {
+        if (__propIsEnum$2.call(b, prop))
+          __defNormalProp$2(a, prop, b[prop]);
       }
     return a;
   };
@@ -5704,7 +5704,7 @@ ${text}
     log(info, time) {
       let data = this.load();
       data = data.filter((o) => o.id !== info.id);
-      data.unshift(__spreadProps(__spreadValues({}, info), { time }));
+      data.unshift(__spreadProps(__spreadValues$2({}, info), { time }));
       this.save(data);
     },
     remove(id) {
@@ -5761,6 +5761,108 @@ ${text}
       content: $root
     });
   }
+
+  var __defProp$1 = Object.defineProperty;
+  var __getOwnPropSymbols$1 = Object.getOwnPropertySymbols;
+  var __hasOwnProp$1 = Object.prototype.hasOwnProperty;
+  var __propIsEnum$1 = Object.prototype.propertyIsEnumerable;
+  var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __spreadValues$1 = (a, b) => {
+    for (var prop in b || (b = {}))
+      if (__hasOwnProp$1.call(b, prop))
+        __defNormalProp$1(a, prop, b[prop]);
+    if (__getOwnPropSymbols$1)
+      for (var prop of __getOwnPropSymbols$1(b)) {
+        if (__propIsEnum$1.call(b, prop))
+          __defNormalProp$1(a, prop, b[prop]);
+      }
+    return a;
+  };
+  const _SubscriptionManager = class {
+    constructor(storageKey) {
+      this.storageKey = storageKey;
+      this.listeners = /* @__PURE__ */ new Set();
+      window.addEventListener("storage", (e) => {
+        if (e.key === this.storageKey)
+          this.notify();
+      });
+      window.addEventListener("popstate", () => {
+        this.notify();
+      });
+    }
+    static getInstance(storageKey) {
+      if (!this.instances.has(storageKey)) {
+        this.instances.set(storageKey, new _SubscriptionManager(storageKey));
+      }
+      return this.instances.get(storageKey);
+    }
+    onChange(callback, options) {
+      this.listeners.add(callback);
+      if (options == null ? void 0 : options.immediate) {
+        this.notify();
+      }
+      return () => this.listeners.delete(callback);
+    }
+    notify() {
+      this.listeners.forEach((cb) => cb(this.getSubscriptions()));
+    }
+    getSubscriptions() {
+      return local.getItem(this.storageKey, []);
+    }
+    getSubscriptionsSortedByDay() {
+      const subscriptions = this.getSubscriptions();
+      const daysInChinese = ["\u5468\u65E5", "\u5468\u4E00", "\u5468\u4E8C", "\u5468\u4E09", "\u5468\u56DB", "\u5468\u4E94", "\u5468\u516D"];
+      let groups = Array.from({ length: 7 }, (_, idx) => ({
+        day: daysInChinese[idx],
+        list: []
+      }));
+      subscriptions.forEach((sub) => {
+        const date = new Date(sub.updatedAt);
+        const day = date.getDay();
+        groups[day].list.push(sub);
+      });
+      groups = groups.slice(1).concat(groups[0]);
+      return groups;
+    }
+    getSubscription(id) {
+      const subscriptions = this.getSubscriptions();
+      return subscriptions.find((sub) => sub.id === id);
+    }
+    createSubscription(subscription) {
+      const subscriptions = this.getSubscriptions();
+      const exists = subscriptions.some((sub) => sub.id === subscription.id);
+      if (exists) {
+        throw new Error("Subscription already exists");
+      }
+      subscriptions.push(subscription);
+      local.setItem(this.storageKey, subscriptions);
+      this.notify();
+      return subscription;
+    }
+    updateSubscription(id, updates) {
+      const subscriptions = this.getSubscriptions();
+      const index = subscriptions.findIndex((sub) => sub.id === id);
+      if (index === -1) {
+        throw new Error("Subscription not found");
+      }
+      subscriptions[index] = __spreadValues$1(__spreadValues$1({}, subscriptions[index]), updates);
+      local.setItem(this.storageKey, subscriptions);
+      this.notify();
+      return subscriptions[index];
+    }
+    deleteSubscription(id) {
+      const subscriptions = this.getSubscriptions();
+      const filtered = subscriptions.filter((sub) => sub.id !== id);
+      if (filtered.length === subscriptions.length) {
+        throw new Error("Subscription not found");
+      }
+      local.setItem(this.storageKey, filtered);
+      this.notify();
+      return true;
+    }
+  };
+  let SubscriptionManager = _SubscriptionManager;
+  SubscriptionManager.instances = /* @__PURE__ */ new Map();
 
   function defineIframePlayer(config) {
     const { iframeSelector, search } = config;
@@ -5914,9 +6016,27 @@ ${text}
             }
             break;
           }
+          case "canplay": {
+            if (!config.subscribe)
+              break;
+            const sm = SubscriptionManager.getInstance(
+              config.subscribe.storageKey
+            );
+            const id = config.subscribe.getId();
+            if (id && sm.getSubscription(id)) {
+              sm.updateSubscription(id, {
+                current: {
+                  title: await search.getEpisode(),
+                  url: window.location.href
+                }
+              });
+              checkSubscriptionUpdates(id);
+            }
+          }
         }
         (_d = config.onPlayerMessage) == null ? void 0 : _d.call(config, e.data.key, e.data, e);
       });
+      renderSubscribeBtn();
     }
     function runInIframe() {
       top == null ? void 0 : top.postMessage(
@@ -5928,7 +6048,80 @@ ${text}
         "*"
       );
     }
-    return { runInTop, runInIframe, createHistory };
+    function renderSubscribedAnimes() {
+      if (!config.subscribe)
+        return;
+      const $root = $("<div><div/>");
+      const sm = SubscriptionManager.getInstance(config.subscribe.storageKey);
+      sm.onChange(
+        () => {
+          $root.empty();
+          $root.remove();
+          config.subscribe.renderSubscribedAnimes($root, sm);
+        },
+        { immediate: true }
+      );
+    }
+    function renderSubscribeBtn() {
+      if (!config.subscribe)
+        return;
+      let $btn = $("<button></button>");
+      const sm = SubscriptionManager.getInstance(config.subscribe.storageKey);
+      sm.onChange(
+        () => {
+          $btn.remove();
+          const sub = sm.getSubscription(config.subscribe.getId());
+          $btn = $(`<button>
+          ${sub ? '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 -960 960 960"  fill="currentColor" style="display: inline-block; vertical-align: -0.125em;"><path d="M160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h80v80H160Zm320-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z"/></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 -960 960 960"  fill="currentColor" style="display: inline-block; vertical-align: -0.125em;"><path d="M480-500Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80Zm240-360v-120H600v-80h120v-120h80v120h120v80H800v120h-80ZM160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q14 4 27.5 8.5T593-772q-15 14-27 30.5T545-706q-15-7-31.5-10.5T480-720q-66 0-113 47t-47 113v280h320v-112q18 11 38 18t42 11v83h80v80H160Z"/></svg>'}
+            <span>${sub ? "\u5DF2\u8BA2\u9605" : "\u8BA2\u9605"}</span>
+          </button>`);
+          config.subscribe.renderSubscribeBtn($btn, sm);
+        },
+        { immediate: true }
+      );
+    }
+    async function checkSubscriptionUpdates(id) {
+      if (!config.subscribe)
+        return;
+      const sm = SubscriptionManager.getInstance(config.subscribe.storageKey);
+      const sub = sm.getSubscription(id);
+      if (!sub)
+        return;
+      const now = Date.now();
+      if (now - sub.updatedAt < 1e3 * 60 * 60 * (24 * 7 - 5))
+        return;
+      if (now - sub.checkedAt < 1e3 * 60 * 60)
+        return;
+      try {
+        const animeInfo = await config.subscribe.getAnimeUpdateInfo(
+          config.subscribe.getId()
+        );
+        Object.assign(animeInfo, { checkedAt: now });
+        sm.updateSubscription(id, animeInfo);
+      } catch (error) {
+      }
+    }
+    function checkSubscriptionsUpdates() {
+      if (!config.subscribe)
+        return;
+      const sm = SubscriptionManager.getInstance(config.subscribe.storageKey);
+      const subscriptions = sm.getSubscriptions();
+      subscriptions.forEach((sub) => {
+        if (sub.checkedAt - sub.updatedAt > 1e3 * 60 * 60 * 24 * 15)
+          return;
+        checkSubscriptionUpdates(sub.id);
+      });
+    }
+    return {
+      runInTop,
+      runInIframe,
+      createHistory,
+      subscribe: {
+        renderSubscribedAnimes,
+        renderSubscribeBtn,
+        checkSubscriptionsUpdates
+      }
+    };
   }
 
   function getActive$8() {
@@ -7020,6 +7213,787 @@ ${text}
     }
   });
 
+  var T = {"subList":"<div id=\"subList\" class=\"box-width wow fadeInUp\">\r\n  <div class=\"overflow\">\r\n    <div class=\"title flex between top40 week-diy rel\">\r\n      <div class=\"title-left flex\">\r\n        <h4 class=\"title-h cor4\">订阅列表</h4>\r\n        <div class=\"week-select flex box radius overflow rel\">\r\n          <div class=\"week-bj b-c\"></div>\r\n          <a class=\"week-key1\" data-index=\"1\">周一</a>\r\n          <a class=\"week-key2\" data-index=\"2\">周二</a>\r\n          <a class=\"week-key3\" data-index=\"3\">周三</a>\r\n          <a class=\"week-key4\" data-index=\"4\">周四</a>\r\n          <a class=\"week-key5\" data-index=\"5\">周五</a>\r\n          <a class=\"week-key6\" data-index=\"6\">周六</a>\r\n          <a class=\"week-key7\" data-index=\"7\">周日</a>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>","subListContent":"<div \n  id=\"subListContent\"\r\n  class=\"flex wrap border-box public-r hide-b-2 diy-center1 mask2\"\r\n>\r\n  <div class=\"cor4 empty-tip\">订阅喜欢的番剧，在播放页面标题右侧添加订阅</div>\r\n</div>","subItem":"<div id=\"subItem\" class=\"public-list-box public-pic-b\">\r\n  <div class=\"public-list-div public-list-bj\">\r\n    <a \n      target=\"_blank\"\r\n      class=\"public-list-exp\"\r\n      href=\"{{current.url}}\"\r\n      title=\"{{title}}\"\r\n      ><img \n        class=\"lazy lazy1 gen-movie-img entered loaded\"\r\n        referrerpolicy=\"no-referrer\"\r\n        src=\"{{thumbnail}}\"\r\n        alt=\"{{title}}\"\r\n        data-src=\"{{thumbnail}}\"\r\n        data-ll-status=\"loaded\"\r\n      ><span class=\"public-bg\"></span><span class=\"public-list-prb hide ft2\">{{status}}</span><span class=\"public-play\"><i class=\"fa\"></i></span></a>\r\n  </div>\r\n  <div class=\"public-list-button\">\r\n    <a \n      target=\"_blank\"\r\n      class=\"time-title hide ft4 bold\"\r\n      href=\"{{current.url}}\"\r\n      title=\"{{title}}\"\r\n      >{{title}}</a>\r\n    <div class=\"public-list-subtitle cor5 hide ft2\">\r\n      <span>观看至</span>\r\n      <a target=\"_blank\" href=\"{{current.url}}\" title=\"{{current.title}}\"\r\n        >{{current.title}}</a>\r\n      <span>/</span>\r\n      <a target=\"_blank\" href=\"{{last.url}}\" title=\"{{last.title}}\"\r\n        >{{last.title}}</a>\r\n    </div>\r\n  </div>\r\n</div>"};
+
+  /*!
+   * mustache.js - Logic-less {{mustache}} templates with JavaScript
+   * http://github.com/janl/mustache.js
+   */
+
+  var objectToString = Object.prototype.toString;
+  var isArray = Array.isArray || function isArrayPolyfill (object) {
+    return objectToString.call(object) === '[object Array]';
+  };
+
+  function isFunction (object) {
+    return typeof object === 'function';
+  }
+
+  /**
+   * More correct typeof string handling array
+   * which normally returns typeof 'object'
+   */
+  function typeStr (obj) {
+    return isArray(obj) ? 'array' : typeof obj;
+  }
+
+  function escapeRegExp (string) {
+    return string.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&');
+  }
+
+  /**
+   * Null safe way of checking whether or not an object,
+   * including its prototype, has a given property
+   */
+  function hasProperty (obj, propName) {
+    return obj != null && typeof obj === 'object' && (propName in obj);
+  }
+
+  /**
+   * Safe way of detecting whether or not the given thing is a primitive and
+   * whether it has the given property
+   */
+  function primitiveHasOwnProperty (primitive, propName) {
+    return (
+      primitive != null
+      && typeof primitive !== 'object'
+      && primitive.hasOwnProperty
+      && primitive.hasOwnProperty(propName)
+    );
+  }
+
+  // Workaround for https://issues.apache.org/jira/browse/COUCHDB-577
+  // See https://github.com/janl/mustache.js/issues/189
+  var regExpTest = RegExp.prototype.test;
+  function testRegExp (re, string) {
+    return regExpTest.call(re, string);
+  }
+
+  var nonSpaceRe = /\S/;
+  function isWhitespace (string) {
+    return !testRegExp(nonSpaceRe, string);
+  }
+
+  var entityMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+    '/': '&#x2F;',
+    '`': '&#x60;',
+    '=': '&#x3D;'
+  };
+
+  function escapeHtml (string) {
+    return String(string).replace(/[&<>"'`=\/]/g, function fromEntityMap (s) {
+      return entityMap[s];
+    });
+  }
+
+  var whiteRe = /\s*/;
+  var spaceRe = /\s+/;
+  var equalsRe = /\s*=/;
+  var curlyRe = /\s*\}/;
+  var tagRe = /#|\^|\/|>|\{|&|=|!/;
+
+  /**
+   * Breaks up the given `template` string into a tree of tokens. If the `tags`
+   * argument is given here it must be an array with two string values: the
+   * opening and closing tags used in the template (e.g. [ "<%", "%>" ]). Of
+   * course, the default is to use mustaches (i.e. mustache.tags).
+   *
+   * A token is an array with at least 4 elements. The first element is the
+   * mustache symbol that was used inside the tag, e.g. "#" or "&". If the tag
+   * did not contain a symbol (i.e. {{myValue}}) this element is "name". For
+   * all text that appears outside a symbol this element is "text".
+   *
+   * The second element of a token is its "value". For mustache tags this is
+   * whatever else was inside the tag besides the opening symbol. For text tokens
+   * this is the text itself.
+   *
+   * The third and fourth elements of the token are the start and end indices,
+   * respectively, of the token in the original template.
+   *
+   * Tokens that are the root node of a subtree contain two more elements: 1) an
+   * array of tokens in the subtree and 2) the index in the original template at
+   * which the closing tag for that section begins.
+   *
+   * Tokens for partials also contain two more elements: 1) a string value of
+   * indendation prior to that tag and 2) the index of that tag on that line -
+   * eg a value of 2 indicates the partial is the third tag on this line.
+   */
+  function parseTemplate (template, tags) {
+    if (!template)
+      return [];
+    var lineHasNonSpace = false;
+    var sections = [];     // Stack to hold section tokens
+    var tokens = [];       // Buffer to hold the tokens
+    var spaces = [];       // Indices of whitespace tokens on the current line
+    var hasTag = false;    // Is there a {{tag}} on the current line?
+    var nonSpace = false;  // Is there a non-space char on the current line?
+    var indentation = '';  // Tracks indentation for tags that use it
+    var tagIndex = 0;      // Stores a count of number of tags encountered on a line
+
+    // Strips all whitespace tokens array for the current line
+    // if there was a {{#tag}} on it and otherwise only space.
+    function stripSpace () {
+      if (hasTag && !nonSpace) {
+        while (spaces.length)
+          delete tokens[spaces.pop()];
+      } else {
+        spaces = [];
+      }
+
+      hasTag = false;
+      nonSpace = false;
+    }
+
+    var openingTagRe, closingTagRe, closingCurlyRe;
+    function compileTags (tagsToCompile) {
+      if (typeof tagsToCompile === 'string')
+        tagsToCompile = tagsToCompile.split(spaceRe, 2);
+
+      if (!isArray(tagsToCompile) || tagsToCompile.length !== 2)
+        throw new Error('Invalid tags: ' + tagsToCompile);
+
+      openingTagRe = new RegExp(escapeRegExp(tagsToCompile[0]) + '\\s*');
+      closingTagRe = new RegExp('\\s*' + escapeRegExp(tagsToCompile[1]));
+      closingCurlyRe = new RegExp('\\s*' + escapeRegExp('}' + tagsToCompile[1]));
+    }
+
+    compileTags(tags || mustache.tags);
+
+    var scanner = new Scanner(template);
+
+    var start, type, value, chr, token, openSection;
+    while (!scanner.eos()) {
+      start = scanner.pos;
+
+      // Match any text between tags.
+      value = scanner.scanUntil(openingTagRe);
+
+      if (value) {
+        for (var i = 0, valueLength = value.length; i < valueLength; ++i) {
+          chr = value.charAt(i);
+
+          if (isWhitespace(chr)) {
+            spaces.push(tokens.length);
+            indentation += chr;
+          } else {
+            nonSpace = true;
+            lineHasNonSpace = true;
+            indentation += ' ';
+          }
+
+          tokens.push([ 'text', chr, start, start + 1 ]);
+          start += 1;
+
+          // Check for whitespace on the current line.
+          if (chr === '\n') {
+            stripSpace();
+            indentation = '';
+            tagIndex = 0;
+            lineHasNonSpace = false;
+          }
+        }
+      }
+
+      // Match the opening tag.
+      if (!scanner.scan(openingTagRe))
+        break;
+
+      hasTag = true;
+
+      // Get the tag type.
+      type = scanner.scan(tagRe) || 'name';
+      scanner.scan(whiteRe);
+
+      // Get the tag value.
+      if (type === '=') {
+        value = scanner.scanUntil(equalsRe);
+        scanner.scan(equalsRe);
+        scanner.scanUntil(closingTagRe);
+      } else if (type === '{') {
+        value = scanner.scanUntil(closingCurlyRe);
+        scanner.scan(curlyRe);
+        scanner.scanUntil(closingTagRe);
+        type = '&';
+      } else {
+        value = scanner.scanUntil(closingTagRe);
+      }
+
+      // Match the closing tag.
+      if (!scanner.scan(closingTagRe))
+        throw new Error('Unclosed tag at ' + scanner.pos);
+
+      if (type == '>') {
+        token = [ type, value, start, scanner.pos, indentation, tagIndex, lineHasNonSpace ];
+      } else {
+        token = [ type, value, start, scanner.pos ];
+      }
+      tagIndex++;
+      tokens.push(token);
+
+      if (type === '#' || type === '^') {
+        sections.push(token);
+      } else if (type === '/') {
+        // Check section nesting.
+        openSection = sections.pop();
+
+        if (!openSection)
+          throw new Error('Unopened section "' + value + '" at ' + start);
+
+        if (openSection[1] !== value)
+          throw new Error('Unclosed section "' + openSection[1] + '" at ' + start);
+      } else if (type === 'name' || type === '{' || type === '&') {
+        nonSpace = true;
+      } else if (type === '=') {
+        // Set the tags for the next time around.
+        compileTags(value);
+      }
+    }
+
+    stripSpace();
+
+    // Make sure there are no open sections when we're done.
+    openSection = sections.pop();
+
+    if (openSection)
+      throw new Error('Unclosed section "' + openSection[1] + '" at ' + scanner.pos);
+
+    return nestTokens(squashTokens(tokens));
+  }
+
+  /**
+   * Combines the values of consecutive text tokens in the given `tokens` array
+   * to a single token.
+   */
+  function squashTokens (tokens) {
+    var squashedTokens = [];
+
+    var token, lastToken;
+    for (var i = 0, numTokens = tokens.length; i < numTokens; ++i) {
+      token = tokens[i];
+
+      if (token) {
+        if (token[0] === 'text' && lastToken && lastToken[0] === 'text') {
+          lastToken[1] += token[1];
+          lastToken[3] = token[3];
+        } else {
+          squashedTokens.push(token);
+          lastToken = token;
+        }
+      }
+    }
+
+    return squashedTokens;
+  }
+
+  /**
+   * Forms the given array of `tokens` into a nested tree structure where
+   * tokens that represent a section have two additional items: 1) an array of
+   * all tokens that appear in that section and 2) the index in the original
+   * template that represents the end of that section.
+   */
+  function nestTokens (tokens) {
+    var nestedTokens = [];
+    var collector = nestedTokens;
+    var sections = [];
+
+    var token, section;
+    for (var i = 0, numTokens = tokens.length; i < numTokens; ++i) {
+      token = tokens[i];
+
+      switch (token[0]) {
+        case '#':
+        case '^':
+          collector.push(token);
+          sections.push(token);
+          collector = token[4] = [];
+          break;
+        case '/':
+          section = sections.pop();
+          section[5] = token[2];
+          collector = sections.length > 0 ? sections[sections.length - 1][4] : nestedTokens;
+          break;
+        default:
+          collector.push(token);
+      }
+    }
+
+    return nestedTokens;
+  }
+
+  /**
+   * A simple string scanner that is used by the template parser to find
+   * tokens in template strings.
+   */
+  function Scanner (string) {
+    this.string = string;
+    this.tail = string;
+    this.pos = 0;
+  }
+
+  /**
+   * Returns `true` if the tail is empty (end of string).
+   */
+  Scanner.prototype.eos = function eos () {
+    return this.tail === '';
+  };
+
+  /**
+   * Tries to match the given regular expression at the current position.
+   * Returns the matched text if it can match, the empty string otherwise.
+   */
+  Scanner.prototype.scan = function scan (re) {
+    var match = this.tail.match(re);
+
+    if (!match || match.index !== 0)
+      return '';
+
+    var string = match[0];
+
+    this.tail = this.tail.substring(string.length);
+    this.pos += string.length;
+
+    return string;
+  };
+
+  /**
+   * Skips all text until the given regular expression can be matched. Returns
+   * the skipped string, which is the entire tail if no match can be made.
+   */
+  Scanner.prototype.scanUntil = function scanUntil (re) {
+    var index = this.tail.search(re), match;
+
+    switch (index) {
+      case -1:
+        match = this.tail;
+        this.tail = '';
+        break;
+      case 0:
+        match = '';
+        break;
+      default:
+        match = this.tail.substring(0, index);
+        this.tail = this.tail.substring(index);
+    }
+
+    this.pos += match.length;
+
+    return match;
+  };
+
+  /**
+   * Represents a rendering context by wrapping a view object and
+   * maintaining a reference to the parent context.
+   */
+  function Context (view, parentContext) {
+    this.view = view;
+    this.cache = { '.': this.view };
+    this.parent = parentContext;
+  }
+
+  /**
+   * Creates a new context using the given view with this context
+   * as the parent.
+   */
+  Context.prototype.push = function push (view) {
+    return new Context(view, this);
+  };
+
+  /**
+   * Returns the value of the given name in this context, traversing
+   * up the context hierarchy if the value is absent in this context's view.
+   */
+  Context.prototype.lookup = function lookup (name) {
+    var cache = this.cache;
+
+    var value;
+    if (cache.hasOwnProperty(name)) {
+      value = cache[name];
+    } else {
+      var context = this, intermediateValue, names, index, lookupHit = false;
+
+      while (context) {
+        if (name.indexOf('.') > 0) {
+          intermediateValue = context.view;
+          names = name.split('.');
+          index = 0;
+
+          /**
+           * Using the dot notion path in `name`, we descend through the
+           * nested objects.
+           *
+           * To be certain that the lookup has been successful, we have to
+           * check if the last object in the path actually has the property
+           * we are looking for. We store the result in `lookupHit`.
+           *
+           * This is specially necessary for when the value has been set to
+           * `undefined` and we want to avoid looking up parent contexts.
+           *
+           * In the case where dot notation is used, we consider the lookup
+           * to be successful even if the last "object" in the path is
+           * not actually an object but a primitive (e.g., a string, or an
+           * integer), because it is sometimes useful to access a property
+           * of an autoboxed primitive, such as the length of a string.
+           **/
+          while (intermediateValue != null && index < names.length) {
+            if (index === names.length - 1)
+              lookupHit = (
+                hasProperty(intermediateValue, names[index])
+                || primitiveHasOwnProperty(intermediateValue, names[index])
+              );
+
+            intermediateValue = intermediateValue[names[index++]];
+          }
+        } else {
+          intermediateValue = context.view[name];
+
+          /**
+           * Only checking against `hasProperty`, which always returns `false` if
+           * `context.view` is not an object. Deliberately omitting the check
+           * against `primitiveHasOwnProperty` if dot notation is not used.
+           *
+           * Consider this example:
+           * ```
+           * Mustache.render("The length of a football field is {{#length}}{{length}}{{/length}}.", {length: "100 yards"})
+           * ```
+           *
+           * If we were to check also against `primitiveHasOwnProperty`, as we do
+           * in the dot notation case, then render call would return:
+           *
+           * "The length of a football field is 9."
+           *
+           * rather than the expected:
+           *
+           * "The length of a football field is 100 yards."
+           **/
+          lookupHit = hasProperty(context.view, name);
+        }
+
+        if (lookupHit) {
+          value = intermediateValue;
+          break;
+        }
+
+        context = context.parent;
+      }
+
+      cache[name] = value;
+    }
+
+    if (isFunction(value))
+      value = value.call(this.view);
+
+    return value;
+  };
+
+  /**
+   * A Writer knows how to take a stream of tokens and render them to a
+   * string, given a context. It also maintains a cache of templates to
+   * avoid the need to parse the same template twice.
+   */
+  function Writer () {
+    this.templateCache = {
+      _cache: {},
+      set: function set (key, value) {
+        this._cache[key] = value;
+      },
+      get: function get (key) {
+        return this._cache[key];
+      },
+      clear: function clear () {
+        this._cache = {};
+      }
+    };
+  }
+
+  /**
+   * Clears all cached templates in this writer.
+   */
+  Writer.prototype.clearCache = function clearCache () {
+    if (typeof this.templateCache !== 'undefined') {
+      this.templateCache.clear();
+    }
+  };
+
+  /**
+   * Parses and caches the given `template` according to the given `tags` or
+   * `mustache.tags` if `tags` is omitted,  and returns the array of tokens
+   * that is generated from the parse.
+   */
+  Writer.prototype.parse = function parse (template, tags) {
+    var cache = this.templateCache;
+    var cacheKey = template + ':' + (tags || mustache.tags).join(':');
+    var isCacheEnabled = typeof cache !== 'undefined';
+    var tokens = isCacheEnabled ? cache.get(cacheKey) : undefined;
+
+    if (tokens == undefined) {
+      tokens = parseTemplate(template, tags);
+      isCacheEnabled && cache.set(cacheKey, tokens);
+    }
+    return tokens;
+  };
+
+  /**
+   * High-level method that is used to render the given `template` with
+   * the given `view`.
+   *
+   * The optional `partials` argument may be an object that contains the
+   * names and templates of partials that are used in the template. It may
+   * also be a function that is used to load partial templates on the fly
+   * that takes a single argument: the name of the partial.
+   *
+   * If the optional `config` argument is given here, then it should be an
+   * object with a `tags` attribute or an `escape` attribute or both.
+   * If an array is passed, then it will be interpreted the same way as
+   * a `tags` attribute on a `config` object.
+   *
+   * The `tags` attribute of a `config` object must be an array with two
+   * string values: the opening and closing tags used in the template (e.g.
+   * [ "<%", "%>" ]). The default is to mustache.tags.
+   *
+   * The `escape` attribute of a `config` object must be a function which
+   * accepts a string as input and outputs a safely escaped string.
+   * If an `escape` function is not provided, then an HTML-safe string
+   * escaping function is used as the default.
+   */
+  Writer.prototype.render = function render (template, view, partials, config) {
+    var tags = this.getConfigTags(config);
+    var tokens = this.parse(template, tags);
+    var context = (view instanceof Context) ? view : new Context(view, undefined);
+    return this.renderTokens(tokens, context, partials, template, config);
+  };
+
+  /**
+   * Low-level method that renders the given array of `tokens` using
+   * the given `context` and `partials`.
+   *
+   * Note: The `originalTemplate` is only ever used to extract the portion
+   * of the original template that was contained in a higher-order section.
+   * If the template doesn't use higher-order sections, this argument may
+   * be omitted.
+   */
+  Writer.prototype.renderTokens = function renderTokens (tokens, context, partials, originalTemplate, config) {
+    var buffer = '';
+
+    var token, symbol, value;
+    for (var i = 0, numTokens = tokens.length; i < numTokens; ++i) {
+      value = undefined;
+      token = tokens[i];
+      symbol = token[0];
+
+      if (symbol === '#') value = this.renderSection(token, context, partials, originalTemplate, config);
+      else if (symbol === '^') value = this.renderInverted(token, context, partials, originalTemplate, config);
+      else if (symbol === '>') value = this.renderPartial(token, context, partials, config);
+      else if (symbol === '&') value = this.unescapedValue(token, context);
+      else if (symbol === 'name') value = this.escapedValue(token, context, config);
+      else if (symbol === 'text') value = this.rawValue(token);
+
+      if (value !== undefined)
+        buffer += value;
+    }
+
+    return buffer;
+  };
+
+  Writer.prototype.renderSection = function renderSection (token, context, partials, originalTemplate, config) {
+    var self = this;
+    var buffer = '';
+    var value = context.lookup(token[1]);
+
+    // This function is used to render an arbitrary template
+    // in the current context by higher-order sections.
+    function subRender (template) {
+      return self.render(template, context, partials, config);
+    }
+
+    if (!value) return;
+
+    if (isArray(value)) {
+      for (var j = 0, valueLength = value.length; j < valueLength; ++j) {
+        buffer += this.renderTokens(token[4], context.push(value[j]), partials, originalTemplate, config);
+      }
+    } else if (typeof value === 'object' || typeof value === 'string' || typeof value === 'number') {
+      buffer += this.renderTokens(token[4], context.push(value), partials, originalTemplate, config);
+    } else if (isFunction(value)) {
+      if (typeof originalTemplate !== 'string')
+        throw new Error('Cannot use higher-order sections without the original template');
+
+      // Extract the portion of the original template that the section contains.
+      value = value.call(context.view, originalTemplate.slice(token[3], token[5]), subRender);
+
+      if (value != null)
+        buffer += value;
+    } else {
+      buffer += this.renderTokens(token[4], context, partials, originalTemplate, config);
+    }
+    return buffer;
+  };
+
+  Writer.prototype.renderInverted = function renderInverted (token, context, partials, originalTemplate, config) {
+    var value = context.lookup(token[1]);
+
+    // Use JavaScript's definition of falsy. Include empty arrays.
+    // See https://github.com/janl/mustache.js/issues/186
+    if (!value || (isArray(value) && value.length === 0))
+      return this.renderTokens(token[4], context, partials, originalTemplate, config);
+  };
+
+  Writer.prototype.indentPartial = function indentPartial (partial, indentation, lineHasNonSpace) {
+    var filteredIndentation = indentation.replace(/[^ \t]/g, '');
+    var partialByNl = partial.split('\n');
+    for (var i = 0; i < partialByNl.length; i++) {
+      if (partialByNl[i].length && (i > 0 || !lineHasNonSpace)) {
+        partialByNl[i] = filteredIndentation + partialByNl[i];
+      }
+    }
+    return partialByNl.join('\n');
+  };
+
+  Writer.prototype.renderPartial = function renderPartial (token, context, partials, config) {
+    if (!partials) return;
+    var tags = this.getConfigTags(config);
+
+    var value = isFunction(partials) ? partials(token[1]) : partials[token[1]];
+    if (value != null) {
+      var lineHasNonSpace = token[6];
+      var tagIndex = token[5];
+      var indentation = token[4];
+      var indentedValue = value;
+      if (tagIndex == 0 && indentation) {
+        indentedValue = this.indentPartial(value, indentation, lineHasNonSpace);
+      }
+      var tokens = this.parse(indentedValue, tags);
+      return this.renderTokens(tokens, context, partials, indentedValue, config);
+    }
+  };
+
+  Writer.prototype.unescapedValue = function unescapedValue (token, context) {
+    var value = context.lookup(token[1]);
+    if (value != null)
+      return value;
+  };
+
+  Writer.prototype.escapedValue = function escapedValue (token, context, config) {
+    var escape = this.getConfigEscape(config) || mustache.escape;
+    var value = context.lookup(token[1]);
+    if (value != null)
+      return (typeof value === 'number' && escape === mustache.escape) ? String(value) : escape(value);
+  };
+
+  Writer.prototype.rawValue = function rawValue (token) {
+    return token[1];
+  };
+
+  Writer.prototype.getConfigTags = function getConfigTags (config) {
+    if (isArray(config)) {
+      return config;
+    }
+    else if (config && typeof config === 'object') {
+      return config.tags;
+    }
+    else {
+      return undefined;
+    }
+  };
+
+  Writer.prototype.getConfigEscape = function getConfigEscape (config) {
+    if (config && typeof config === 'object' && !isArray(config)) {
+      return config.escape;
+    }
+    else {
+      return undefined;
+    }
+  };
+
+  var mustache = {
+    name: 'mustache.js',
+    version: '4.2.0',
+    tags: [ '{{', '}}' ],
+    clearCache: undefined,
+    escape: undefined,
+    parse: undefined,
+    render: undefined,
+    Scanner: undefined,
+    Context: undefined,
+    Writer: undefined,
+    /**
+     * Allows a user to override the default caching strategy, by providing an
+     * object with set, get and clear methods. This can also be used to disable
+     * the cache by setting it to the literal `undefined`.
+     */
+    set templateCache (cache) {
+      defaultWriter.templateCache = cache;
+    },
+    /**
+     * Gets the default or overridden caching object from the default writer.
+     */
+    get templateCache () {
+      return defaultWriter.templateCache;
+    }
+  };
+
+  // All high-level mustache.* functions use this writer.
+  var defaultWriter = new Writer();
+
+  /**
+   * Clears all cached templates in the default writer.
+   */
+  mustache.clearCache = function clearCache () {
+    return defaultWriter.clearCache();
+  };
+
+  /**
+   * Parses and caches the given template in the default writer and returns the
+   * array of tokens it contains. Doing this ahead of time avoids the need to
+   * parse templates on the fly as they are rendered.
+   */
+  mustache.parse = function parse (template, tags) {
+    return defaultWriter.parse(template, tags);
+  };
+
+  /**
+   * Renders the `template` with the given `view`, `partials`, and `config`
+   * using the default writer.
+   */
+  mustache.render = function render (template, view, partials, config) {
+    if (typeof template !== 'string') {
+      throw new TypeError('Invalid template! Template should be a "string" ' +
+                          'but "' + typeStr(template) + '" was given as the first ' +
+                          'argument for mustache#render(template, view, partials)');
+    }
+
+    return defaultWriter.render(template, view, partials, config);
+  };
+
+  // Export the escaping function so that the user may override it.
+  // See https://github.com/janl/mustache.js/issues/244
+  mustache.escape = escapeHtml;
+
+  // Export these mainly for testing, but also for advanced usage.
+  mustache.Scanner = Scanner;
+  mustache.Context = Context;
+  mustache.Writer = Writer;
+
+  var __defProp = Object.defineProperty;
+  var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+  var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __propIsEnum = Object.prototype.propertyIsEnumerable;
+  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __spreadValues = (a, b) => {
+    for (var prop in b || (b = {}))
+      if (__hasOwnProp.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    if (__getOwnPropSymbols)
+      for (var prop of __getOwnPropSymbols(b)) {
+        if (__propIsEnum.call(b, prop))
+          __defNormalProp(a, prop, b[prop]);
+      }
+    return a;
+  };
   function getActive() {
     return $(".anthology-list-play li.on > a");
   }
@@ -7027,8 +8001,23 @@ ${text}
     var _a;
     return (_a = getActive().parent()[next ? "next" : "prev"]().find("a")[0]) == null ? void 0 : _a.href;
   }
+  function getEpisodeId() {
+    var _a;
+    return ((_a = window.location.pathname.match(/\/playGV(\d+)-/)) == null ? void 0 : _a[1]) || "";
+  }
+  async function getAnimeUpdateInfo(id) {
+    const html = await fetch(`/GV${id}/`).then((res) => res.text());
+    const $doc = $(html);
+    const updatedAtText = $doc.find("em.cor4:contains('\u66F4\u65B0')")[0].nextSibling.textContent.trim();
+    const statusText = $doc.find("em.cor4:contains('\u72B6\u6001')")[0].nextSibling.textContent.trim();
+    const $last = $doc.find(".anthology-list-play li a").last();
+    return {
+      updatedAt: new Date(updatedAtText).getTime(),
+      status: statusText,
+      last: { title: $last.text(), url: $last.attr("href") }
+    };
+  }
   function runInTop() {
-    $("body").addClass("girigirilove");
     $(".player-news,#buffer,#install").remove();
     iframePlayer.runInTop();
   }
@@ -7050,7 +8039,77 @@ ${text}
       getEpisode: () => getActive().text()
     },
     getEpisodeList: () => $(".anthology-list-play li a"),
-    getSwitchEpisodeURL: (next) => switchPart(next)
+    getSwitchEpisodeURL: (next) => switchPart(next),
+    subscribe: {
+      storageKey: "girigirilove_subscriptions",
+      getId: getEpisodeId,
+      getAnimeUpdateInfo,
+      renderSubscribedAnimes: ($root, sm) => {
+        const grouped = sm.getSubscriptionsSortedByDay();
+        $root.html(T.subList);
+        $root.insertBefore("#week-module-box");
+        grouped.forEach(({ list }, idx) => {
+          const $list = $(T.subListContent);
+          $list.removeAttr("id");
+          $list.hide();
+          if (list.length) {
+            $list.empty();
+            list.forEach((sub) => {
+              const $item = $(mustache.render(T.subItem, sub));
+              $item.removeAttr("id");
+              $list.append($item);
+            });
+          }
+          $list.addClass(`sub-list`);
+          $root.find("#subList > .overflow").append($list);
+        });
+        const setActive = (idx) => {
+          $root.attr("data-active-day", idx);
+          $(".week-bj").attr("class", "week-bj b-c");
+          $(".week-bj").addClass(`week-${idx + 1}`);
+          $(".week-select a").removeClass(`tim`);
+          $(`.week-select [class^="week-key${idx + 1}"]`).addClass(`tim`);
+          $(".sub-list").hide();
+          $(".sub-list").eq(idx).show();
+          $('#week-module-box [id^="week-module-"]').hide();
+          $(`#week-module-box [id="week-module-${idx + 1}"]`).show();
+        };
+        if ($root.attr("data-active-day")) {
+          setActive(Number($root.attr("data-active-day")));
+        } else {
+          const day = new Date().getDay();
+          setActive(day === 0 ? 6 : day - 1);
+        }
+        $(".week-select a").on("click", (e) => {
+          const idx = Number($(e.currentTarget).attr("data-index"));
+          setActive(idx - 1);
+        });
+      },
+      renderSubscribeBtn: ($btn, sm) => {
+        const id = getEpisodeId();
+        const sub = sm.getSubscription(id);
+        $btn.on("click", async () => {
+          $btn.text("\u5904\u7406\u4E2D...");
+          if (sub) {
+            sm.deleteSubscription(id);
+          } else {
+            const updateInfo = await getAnimeUpdateInfo(id);
+            const $current = getActive();
+            sm.createSubscription(__spreadValues({
+              id,
+              title: $(".player-title-link").text(),
+              url: $(".player-title-link").attr("href"),
+              thumbnail: $(".play-details-top .this-pic img").attr("data-src"),
+              createdAt: Date.now(),
+              checkedAt: Date.now(),
+              current: { title: $current.text(), url: $current.attr("href") }
+            }, updateInfo));
+          }
+        });
+        $btn.addClass("cor5 r6");
+        $btn.prependTo($(".anthology-header .function"));
+      }
+    }
   });
   async function parser() {
     const video = await queryDom("video");
@@ -7062,12 +8121,15 @@ ${text}
     player.src = new URLSearchParams(location.search).get("url");
   }
 
-  var css = ".girigirilove.widescreen .head,\n.girigirilove.widescreen .header_nav0,\n.girigirilove.widescreen .header_nav1,\n.girigirilove.widescreen .top-back.hoa,\n.girigirilove.widescreen .fixedGroup {\n  visibility: hidden;\n  pointer-events: none;\n}";
+  var css = ".girigirilove .empty-tip {\n  width: 100%;\n  padding: 40px 20px 20px;\n  text-align: center;\n}\n.girigirilove.widescreen .head,\n.girigirilove.widescreen .header_nav0,\n.girigirilove.widescreen .header_nav1,\n.girigirilove.widescreen .top-back.hoa,\n.girigirilove.widescreen .fixedGroup {\n  visibility: hidden;\n  pointer-events: none;\n}";
   injectCss(css,{});
 
   runtime.register({
     domains: [".girigirilove."],
     opts: [
+      { test: "*", run: () => $("body").addClass("girigirilove") },
+      { test: "*", run: iframePlayer.subscribe.checkSubscriptionsUpdates },
+      { test: "/", run: iframePlayer.subscribe.renderSubscribedAnimes },
       { test: "/playGV", run: runInTop },
       { test: "/playGV", run: iframePlayer.runInIframe, runInIframe: true },
       { test: "/addons/aplyer", run: parser, runInIframe: true }
