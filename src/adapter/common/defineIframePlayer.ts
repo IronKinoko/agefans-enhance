@@ -1,4 +1,5 @@
 import { renderHistory, logHis } from './history'
+import { SubscribedAnime, SubscriptionManager } from './subscribe'
 
 interface Config {
   iframeSelector: string
@@ -22,6 +23,18 @@ interface Config {
   history?: {
     creator: (renderHistory: () => void) => void
     getId: () => string | Promise<string>
+  }
+  /** 内置的订阅功能 */
+  subscribe?: {
+    render: (
+      $root: JQuery<HTMLDivElement>,
+      subscriptionManager: SubscriptionManager
+    ) => void
+    getId: () => string | Promise<string>
+    storageKey: string
+    getAnimeInfo: (
+      id: string
+    ) => Promise<Pick<SubscribedAnime, 'updatedAt' | 'last'>>
   }
 }
 export function defineIframePlayer(config: Config) {
@@ -180,6 +193,26 @@ export function defineIframePlayer(config: Config) {
           }
           break
         }
+
+        case 'canplay': {
+          if (!config.subscribe) break
+
+          const sm = SubscriptionManager.getInstance(
+            config.subscribe.storageKey
+          )
+
+          const id = await config.subscribe.getId()
+          if (id && sm.getSubscription(id)) {
+            sm.updateSubscription(id, {
+              current: {
+                title: await search.getEpisode(),
+                url: window.location.href,
+              },
+            })
+
+            checkSubscriptionUpdates(id)
+          }
+        }
       }
       config.onPlayerMessage?.(e.data.key, e.data, e)
     })
@@ -196,5 +229,60 @@ export function defineIframePlayer(config: Config) {
     )
   }
 
-  return { runInTop, runInIframe, createHistory }
+  function renderSubscriptions() {
+    if (!config.subscribe) return
+
+    const $root = $<HTMLDivElement>('<div><div/>')
+    const sm = SubscriptionManager.getInstance(config.subscribe.storageKey)
+    config.subscribe.render($root, sm)
+    sm.onChange(() => {
+      $root.empty()
+      $root.remove()
+      config.subscribe!.render($root, sm)
+    })
+  }
+
+  async function checkSubscriptionUpdates(id: string) {
+    if (!config.subscribe) return
+
+    const sm = SubscriptionManager.getInstance(config.subscribe.storageKey)
+    const sub = sm.getSubscription(id)
+    if (!sub) return
+
+    const now = Date.now()
+    // 近一周内更新过了
+    if (now - sub.updatedAt < 1000 * 60 * 60 * (24 * 7 - 5)) return
+    // 一小时内检查过了
+    if (now - sub.checkedAt < 1000 * 60 * 60) return
+
+    try {
+      const animeInfo = await config.subscribe.getAnimeInfo(
+        await config.subscribe.getId()
+      )
+      if (!animeInfo) return
+
+      animeInfo.checkedAt = now
+      sm.updateSubscription(id, animeInfo)
+    } catch (error) {}
+  }
+
+  function checkSubscriptionsUpdates() {
+    if (!config.subscribe) return
+
+    const sm = SubscriptionManager.getInstance(config.subscribe.storageKey)
+    const subscriptions = sm.getSubscriptions()
+    subscriptions.forEach((sub) => {
+      // 15天内没有更新过的跳过
+      if (sub.checkedAt - sub.updatedAt > 1000 * 60 * 60 * 24 * 15) return
+      checkSubscriptionUpdates(sub.id)
+    })
+  }
+
+  return {
+    runInTop,
+    runInIframe,
+    createHistory,
+    renderSubscriptions,
+    checkSubscriptionsUpdates,
+  }
 }

@@ -34,6 +34,21 @@ export const iframePlayer = defineIframePlayer({
   },
   getEpisodeList: () => $('.anthology-list-play li a'),
   getSwitchEpisodeURL: (next) => switchPart(next),
+  subscribe: {
+    storageKey: 'girigirilove_subscriptions',
+    getId: () => window.location.pathname.match(/\/playGV(\d+)-/)?.[1] || '',
+    getAnimeInfo: async (id) => {
+      const html = await fetch(`/GV${id}/`).then((res) => res.text())
+      const $doc = $(html)
+      const updatedAtText = $doc
+        .find("em.cor4:contains('更新')")[0]
+        .nextSibling!.textContent!.trim()
+
+      return {
+        updatedAt: new Date(updatedAtText).getTime(),
+      }
+    },
+  },
 })
 
 export async function parser() {
