@@ -21,7 +21,14 @@ export type SubscribedAnime = AnimeInfo & AnimeMetadata & AnimeEpisode
 export class SubscriptionManager {
   private static instances = new Map<string, SubscriptionManager>()
 
-  constructor(private storageKey: string) {}
+  constructor(private storageKey: string) {
+    window.addEventListener('storage', (e) => {
+      if (e.key === this.storageKey) this.notify()
+    })
+    window.addEventListener('popstate', () => {
+      this.notify()
+    })
+  }
 
   static getInstance(storageKey: string) {
     if (!this.instances.has(storageKey)) {

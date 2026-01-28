@@ -1,10 +1,18 @@
-.girigirilove.widescreen {
-  .head,
-  .header_nav0,
-  .header_nav1,
-  .top-back.hoa,
-  .fixedGroup {
-    visibility: hidden;
-    pointer-events: none;
+.girigirilove {
+  .empty-tip {
+    width: 100%;
+    padding: 40px 20px 20px;
+    text-align: center;
+  }
+
+  &.widescreen {
+    .head,
+    .header_nav0,
+    .header_nav1,
+    .top-back.hoa,
+    .fixedGroup {
+      visibility: hidden;
+      pointer-events: none;
+    }
   }
 }

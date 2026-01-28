@@ -36,7 +36,6 @@ async function getAnimeUpdateInfo(id: string) {
 }
 
 export function runInTop() {
-  $('body').addClass('girigirilove')
   $('.player-news,#buffer,#install').remove()
   iframePlayer.runInTop()
 }
@@ -88,18 +87,24 @@ export const iframePlayer = defineIframePlayer({
       })
 
       const setActive = (idx: number) => {
+        $root.attr('data-active-day', idx)
         $('.week-bj').attr('class', 'week-bj b-c')
         $('.week-bj').addClass(`week-${idx + 1}`)
         $('.week-select a').removeClass(`tim`)
-        $('.week-select a').eq(idx)!.addClass(`tim`)
+        $(`.week-select [class^="week-key${idx + 1}"]`).addClass(`tim`)
         $('.sub-list').hide()
         $('.sub-list').eq(idx).show()
         $('#week-module-box [id^="week-module-"]').hide()
         $(`#week-module-box [id="week-module-${idx + 1}"]`).show()
       }
 
-      const day = new Date().getDay()
-      setActive(day === 0 ? 6 : day - 1)
+      if ($root.attr('data-active-day')) {
+        setActive(Number($root.attr('data-active-day')))
+      } else {
+        const day = new Date().getDay()
+        setActive(day === 0 ? 6 : day - 1)
+      }
+
       $('.week-select a').on('click', (e) => {
         const idx = Number($(e.currentTarget).attr('data-index'))
         setActive(idx - 1)
