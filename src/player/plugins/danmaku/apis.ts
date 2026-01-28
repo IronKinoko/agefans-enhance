@@ -42,8 +42,15 @@ type DDPResult<T> = {
 type DDPSearchAnimeResponse = DDPResult<{
   animes: {
     animeId: number
-    bangumiId: string
     animeTitle: string
+    bangumiId: string
+    episodeCount: number
+    imageUrl: string
+    isFavorited: boolean
+    rating: number
+    startDate: string
+    type: string
+    typeDescription: string
   }[]
 }>
 
@@ -56,9 +63,17 @@ export async function queryAnimes(anime: string) {
 
   if (!res.success) throw new Error(res.errorMessage)
 
+  const nameCountMap = new Map<string, number>()
+  res.animes.forEach((o) => {
+    nameCountMap.set(o.animeTitle, (nameCountMap.get(o.animeTitle) || 0) + 1)
+  })
+
   return res.animes.map((o) => ({
     id: o.bangumiId,
-    name: o.animeTitle,
+    name:
+      nameCountMap.get(o.animeTitle)! > 1
+        ? `${o.animeTitle}(${o.typeDescription})`
+        : o.animeTitle,
   }))
 }
 
