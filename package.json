@@ -30,6 +30,7 @@
   "devDependencies": {
     "@types/jquery": "^3.5.14",
     "@types/lodash-es": "^4.17.6",
+    "@types/mustache": "^4.2.6",
     "@types/opencc-js": "^1.0.3",
     "bocchi": "^1.3.1",
     "gh-pages": "^3.2.3",
@@ -43,6 +44,7 @@
     "@ironkinoko/danmaku": "1.4.5",
     "hls.js": "1.6.15",
     "lodash-es": "^4.17.21",
+    "mustache": "^4.2.0",
     "opencc-js": "1.0.5",
     "plyr": "3.6.4"
   },

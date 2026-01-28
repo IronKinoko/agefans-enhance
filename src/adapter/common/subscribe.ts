@@ -5,6 +5,7 @@ type AnimeInfo = {
   title: string
   url: string
   thumbnail: string
+  status: string
 }
 type AnimeMetadata = {
   createdAt: number
@@ -31,8 +32,14 @@ export class SubscriptionManager {
 
   // --- events ---
   private listeners: Set<(data: SubscribedAnime[]) => void> = new Set()
-  onChange(callback: (data: SubscribedAnime[]) => void) {
+  onChange(
+    callback: (data: SubscribedAnime[]) => void,
+    options?: { immediate?: boolean }
+  ) {
     this.listeners.add(callback)
+    if (options?.immediate) {
+      this.notify()
+    }
     return () => this.listeners.delete(callback)
   }
   private notify() {
@@ -47,17 +54,24 @@ export class SubscriptionManager {
   getSubscriptionsSortedByDay() {
     const subscriptions = this.getSubscriptions()
 
-    const grouped: Record<string, SubscribedAnime[]> = {}
+    // prettier-ignore
+    const daysInChinese = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+
+    let groups = Array.from({ length: 7 }, (_, idx) => ({
+      day: daysInChinese[idx],
+      list: [] as SubscribedAnime[],
+    }))
+
     subscriptions.forEach((sub) => {
       const date = new Date(sub.updatedAt)
       const day = date.getDay()
 
-      if (!grouped[day]) {
-        grouped[day] = []
-      }
-      grouped[day].push(sub)
+      groups[day].list.push(sub)
     })
-    return grouped
+
+    groups = groups.slice(1).concat(groups[0])
+
+    return groups
   }
 
   getSubscription(id: string) {

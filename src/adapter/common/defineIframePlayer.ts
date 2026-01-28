@@ -22,19 +22,23 @@ interface Config {
   /** 内置的历史功能，可生成历史按钮，点击后展开观看历史记录 */
   history?: {
     creator: (renderHistory: () => void) => void
-    getId: () => string | Promise<string>
+    getId: () => string
   }
   /** 内置的订阅功能 */
   subscribe?: {
-    render: (
+    renderSubscribedAnimes: (
       $root: JQuery<HTMLDivElement>,
-      subscriptionManager: SubscriptionManager
+      sm: SubscriptionManager
     ) => void
-    getId: () => string | Promise<string>
+    renderSubscribeBtn: (
+      $btn: JQuery<HTMLButtonElement>,
+      sm: SubscriptionManager
+    ) => void
+    getId: () => string
     storageKey: string
-    getAnimeInfo: (
+    getAnimeUpdateInfo: (
       id: string
-    ) => Promise<Pick<SubscribedAnime, 'updatedAt' | 'last'>>
+    ) => Promise<Pick<SubscribedAnime, 'updatedAt' | 'status' | 'last'>>
   }
 }
 export function defineIframePlayer(config: Config) {
@@ -201,7 +205,7 @@ export function defineIframePlayer(config: Config) {
             config.subscribe.storageKey
           )
 
-          const id = await config.subscribe.getId()
+          const id = config.subscribe.getId()
           if (id && sm.getSubscription(id)) {
             sm.updateSubscription(id, {
               current: {
@@ -216,6 +220,8 @@ export function defineIframePlayer(config: Config) {
       }
       config.onPlayerMessage?.(e.data.key, e.data, e)
     })
+
+    renderSubscribeBtn()
   }
 
   function runInIframe() {
@@ -229,17 +235,42 @@ export function defineIframePlayer(config: Config) {
     )
   }
 
-  function renderSubscriptions() {
+  function renderSubscribedAnimes() {
     if (!config.subscribe) return
 
     const $root = $<HTMLDivElement>('<div><div/>')
     const sm = SubscriptionManager.getInstance(config.subscribe.storageKey)
-    config.subscribe.render($root, sm)
-    sm.onChange(() => {
-      $root.empty()
-      $root.remove()
-      config.subscribe!.render($root, sm)
-    })
+    sm.onChange(
+      () => {
+        $root.empty()
+        $root.remove()
+        config.subscribe!.renderSubscribedAnimes($root, sm)
+      },
+      { immediate: true }
+    )
+  }
+
+  function renderSubscribeBtn() {
+    if (!config.subscribe) return
+
+    let $btn = $<HTMLButtonElement>('<button></button>')
+    const sm = SubscriptionManager.getInstance(config.subscribe.storageKey)
+    sm.onChange(
+      () => {
+        $btn.remove()
+        const sub = sm.getSubscription(config.subscribe!.getId())
+        $btn = $<HTMLButtonElement>(`<button>
+          ${
+            sub
+              ? '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 -960 960 960"  fill="currentColor" style="display: inline-block; vertical-align: -0.125em;"><path d="M160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h80v80H160Zm320-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z"/></svg>'
+              : '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 -960 960 960"  fill="currentColor" style="display: inline-block; vertical-align: -0.125em;"><path d="M480-500Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80Zm240-360v-120H600v-80h120v-120h80v120h120v80H800v120h-80ZM160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q14 4 27.5 8.5T593-772q-15 14-27 30.5T545-706q-15-7-31.5-10.5T480-720q-66 0-113 47t-47 113v280h320v-112q18 11 38 18t42 11v83h80v80H160Z"/></svg>'
+          }
+            <span>${sub ? '已订阅' : '订阅'}</span>
+          </button>`)
+        config.subscribe!.renderSubscribeBtn($btn, sm)
+      },
+      { immediate: true }
+    )
   }
 
   async function checkSubscriptionUpdates(id: string) {
@@ -256,12 +287,11 @@ export function defineIframePlayer(config: Config) {
     if (now - sub.checkedAt < 1000 * 60 * 60) return
 
     try {
-      const animeInfo = await config.subscribe.getAnimeInfo(
-        await config.subscribe.getId()
+      const animeInfo = await config.subscribe.getAnimeUpdateInfo(
+        config.subscribe.getId()
       )
-      if (!animeInfo) return
 
-      animeInfo.checkedAt = now
+      Object.assign(animeInfo, { checkedAt: now })
       sm.updateSubscription(id, animeInfo)
     } catch (error) {}
   }
@@ -282,7 +312,10 @@ export function defineIframePlayer(config: Config) {
     runInTop,
     runInIframe,
     createHistory,
-    renderSubscriptions,
-    checkSubscriptionsUpdates,
+    subscribe: {
+      renderSubscribedAnimes,
+      renderSubscribeBtn,
+      checkSubscriptionsUpdates,
+    },
   }
 }

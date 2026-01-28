@@ -5,8 +5,8 @@ import './index.scss'
 runtime.register({
   domains: ['.girigirilove.'],
   opts: [
-    { test: '*', run: iframePlayer.checkSubscriptionsUpdates },
-    { test: '/', run: iframePlayer.renderSubscriptions },
+    { test: '*', run: iframePlayer.subscribe.checkSubscriptionsUpdates },
+    { test: '/', run: iframePlayer.subscribe.renderSubscribedAnimes },
     { test: '/playGV', run: runInTop },
     { test: '/playGV', run: iframePlayer.runInIframe, runInIframe: true },
     { test: '/addons/aplyer', run: parser, runInIframe: true },

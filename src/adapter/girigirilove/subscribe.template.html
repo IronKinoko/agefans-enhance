@@ -1,0 +1,65 @@
+<div id="subList" class="box-width wow fadeInUp">
+  <div class="overflow">
+    <div class="title flex between top40 week-diy rel">
+      <div class="title-left flex">
+        <h4 class="title-h cor4">订阅列表</h4>
+        <div class="week-select flex box radius overflow rel">
+          <div class="week-bj b-c"></div>
+          <a data-index="1">周一</a><a data-index="2">周二</a
+          ><a data-index="3">周三</a><a data-index="4">周四</a
+          ><a data-index="5">周五</a><a data-index="6">周六</a
+          ><a data-index="7">周日</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  id="subListContent"
+  class="flex wrap border-box public-r hide-b-2 diy-center1 mask2"
+>
+  <div class="cor4" style="text-align: center; padding: 20px 0; width: 100%">
+    订阅喜欢的番剧，在播放页面标题右侧添加订阅
+  </div>
+</div>
+
+<div id="subItem" class="public-list-box public-pic-b">
+  <div class="public-list-div public-list-bj">
+    <a
+      target="_blank"
+      class="public-list-exp"
+      href="{{current.url}}"
+      title="{{title}}"
+      ><img
+        class="lazy lazy1 gen-movie-img entered loaded"
+        referrerpolicy="no-referrer"
+        src="{{thumbnail}}"
+        alt="{{title}}"
+        data-src="{{thumbnail}}"
+        data-ll-status="loaded"
+      /><span class="public-bg"></span
+      ><span class="public-list-prb hide ft2">{{status}}</span
+      ><span class="public-play"><i class="fa"></i></span></a
+    >
+  </div>
+  <div class="public-list-button">
+    <a
+      target="_blank"
+      class="time-title hide ft4 bold"
+      href="{{current.url}}"
+      title="{{title}}"
+      >{{title}}</a
+    >
+    <div class="public-list-subtitle cor5 hide ft2">
+      <span>观看至</span>
+      <a target="_blank" href="{{current.url}}" title="{{current.title}}"
+        >{{current.title}}</a
+      >
+      <span>/</span>
+      <a target="_blank" href="{{last.url}}" title="{{last.title}}"
+        >{{last.title}}</a
+      >
+    </div>
+  </div>
+</div>
