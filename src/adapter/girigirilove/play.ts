@@ -19,12 +19,17 @@ function getEpisodeId() {
 async function getAnimeUpdateInfo(id: string) {
   const html = await fetch(`/GV${id}/`).then((res) => res.text())
   const $doc = $(html)
-  const updatedAtText = $doc
-    .find("em.cor4:contains('更新')")[0]
-    .nextSibling!.textContent!.trim()
-  const statusText = $doc
-    .find("em.cor4:contains('状态')")[0]
-    .nextSibling!.textContent!.trim()
+
+  const buildLabelSelector = (labels: string[]) =>
+    labels.map((label) => `em.cor4:contains('${label}')`).join(',')
+
+  const getLabelValue = ($context: JQuery, keywords: string[]) =>
+    $context
+      .find(buildLabelSelector(keywords))[0]
+      ?.nextSibling?.textContent?.trim() ?? ''
+
+  const updatedAtText = getLabelValue($doc, ['更新'])
+  const statusText = getLabelValue($doc, ['状态', '狀态', '狀態'])
 
   const $last = $doc.find('.anthology-list-play li a').last()
 
