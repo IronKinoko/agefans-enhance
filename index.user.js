@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.54.0
+// @version      1.54.1
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -2644,7 +2644,7 @@
         content: `
     <table class="k-table">
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.54.0"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.54.1"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2770,7 +2770,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.54.0"}
+\u811A\u672C\u7248\u672C: ${"1.54.1"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -8008,8 +8008,13 @@ ${text}
   async function getAnimeUpdateInfo(id) {
     const html = await fetch(`/GV${id}/`).then((res) => res.text());
     const $doc = $(html);
-    const updatedAtText = $doc.find("em.cor4:contains('\u66F4\u65B0')")[0].nextSibling.textContent.trim();
-    const statusText = $doc.find("em.cor4:contains('\u72B6\u6001')")[0].nextSibling.textContent.trim();
+    const buildLabelSelector = (labels) => labels.map((label) => `em.cor4:contains('${label}')`).join(",");
+    const getLabelValue = ($context, keywords) => {
+      var _a, _b, _c, _d;
+      return (_d = (_c = (_b = (_a = $context.find(buildLabelSelector(keywords))[0]) == null ? void 0 : _a.nextSibling) == null ? void 0 : _b.textContent) == null ? void 0 : _c.trim()) != null ? _d : "";
+    };
+    const updatedAtText = getLabelValue($doc, ["\u66F4\u65B0"]);
+    const statusText = getLabelValue($doc, ["\u72B6\u6001", "\u72C0\u6001", "\u72C0\u614B"]);
     const $last = $doc.find(".anthology-list-play li a").last();
     return {
       updatedAt: new Date(updatedAtText).getTime(),
