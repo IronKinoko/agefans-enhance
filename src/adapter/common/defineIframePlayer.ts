@@ -273,7 +273,7 @@ export function defineIframePlayer(config: Config) {
     )
   }
 
-  async function checkSubscriptionUpdates(id: string) {
+  async function checkSubscriptionUpdates(id: string, force?: boolean) {
     if (!config.subscribe) return
 
     const sm = SubscriptionManager.getInstance(config.subscribe.storageKey)
@@ -281,30 +281,31 @@ export function defineIframePlayer(config: Config) {
     if (!sub) return
 
     const now = Date.now()
-    // 近一周内更新过了
-    if (now - sub.updatedAt < 1000 * 60 * 60 * (24 * 7 - 5)) return
-    // 一小时内检查过了
-    if (now - sub.checkedAt < 1000 * 60 * 60) return
+    if (!force) {
+      // 近一周内更新过了
+      if (now - sub.updatedAt < 1000 * 60 * 60 * (24 * 7 - 5)) return
+      // 一小时内检查过了
+      if (now - sub.checkedAt < 1000 * 60 * 60) return
+    }
 
     try {
-      const animeInfo = await config.subscribe.getAnimeUpdateInfo(
-        config.subscribe.getId()
-      )
-
+      const animeInfo = await config.subscribe.getAnimeUpdateInfo(id)
       Object.assign(animeInfo, { checkedAt: now })
       sm.updateSubscription(id, animeInfo)
     } catch (error) {}
   }
 
-  function checkSubscriptionsUpdates() {
+  function checkSubscriptionsUpdates(force?: boolean) {
     if (!config.subscribe) return
 
     const sm = SubscriptionManager.getInstance(config.subscribe.storageKey)
     const subscriptions = sm.getSubscriptions()
     subscriptions.forEach((sub) => {
-      // 15天内没有更新过的跳过
-      if (sub.checkedAt - sub.updatedAt > 1000 * 60 * 60 * 24 * 15) return
-      checkSubscriptionUpdates(sub.id)
+      if (!force) {
+        // 15天内没有更新过的跳过
+        if (sub.checkedAt - sub.updatedAt > 1000 * 60 * 60 * 24 * 15) return
+      }
+      checkSubscriptionUpdates(sub.id, force)
     })
   }
 

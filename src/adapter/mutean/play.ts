@@ -7,7 +7,8 @@ function getActive() {
   return $<HTMLAnchorElement>('.module-play-list .module-play-list-link.active')
 }
 function switchPart(next: boolean) {
-  return getActive()[next ? 'next' : 'prev']().get(0)?.href
+  return (getActive()[next ? 'next' : 'prev']().get(0) as HTMLAnchorElement)
+    ?.href
 }
 
 export function runInTop() {

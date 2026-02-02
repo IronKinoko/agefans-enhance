@@ -114,6 +114,10 @@ export const iframePlayer = defineIframePlayer({
         const idx = Number($(e.currentTarget).attr('data-index'))
         setActive(idx - 1)
       })
+
+      $root.find('.force-update').on('click', async () => {
+        iframePlayer.subscribe.checkSubscriptionsUpdates(true)
+      })
     },
     renderSubscribeBtn: ($btn, sm) => {
       const id = getEpisodeId()
