@@ -1,3 +1,5 @@
+@use 'sass:list';
+
 #k-player-wrapper {
   position: relative;
   width: 100%;
@@ -11,7 +13,7 @@
 
   $k-player-tsuma-list: url(./assets/NachoNeko1.png),
     url(./assets/NachoNeko2.png);
-  --k-player-tsuma-length: #{length($k-player-tsuma-list)};
+  --k-player-tsuma-length: #{list.length($k-player-tsuma-list)};
 
   --plyr-line-height: 1;
   --plyr-tooltip-background: var(--k-player-background);
@@ -126,7 +128,7 @@
     pointer-events: none;
 
     @each $bg in $k-player-tsuma-list {
-      $i: index($k-player-tsuma-list, $bg);
+      $i: list.index($k-player-tsuma-list, $bg);
       &[data-bg-idx='#{$i - 1}'] {
         background-image: $bg;
       }
