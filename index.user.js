@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.54.1
+// @version      1.54.2
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -2644,7 +2644,7 @@
         content: `
     <table class="k-table">
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.54.1"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.54.2"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2770,7 +2770,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.54.1"}
+\u811A\u672C\u7248\u672C: ${"1.54.2"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -6080,7 +6080,7 @@ ${text}
         { immediate: true }
       );
     }
-    async function checkSubscriptionUpdates(id) {
+    async function checkSubscriptionUpdates(id, force) {
       if (!config.subscribe)
         return;
       const sm = SubscriptionManager.getInstance(config.subscribe.storageKey);
@@ -6088,28 +6088,30 @@ ${text}
       if (!sub)
         return;
       const now = Date.now();
-      if (now - sub.updatedAt < 1e3 * 60 * 60 * (24 * 7 - 5))
-        return;
-      if (now - sub.checkedAt < 1e3 * 60 * 60)
-        return;
+      if (!force) {
+        if (now - sub.updatedAt < 1e3 * 60 * 60 * (24 * 7 - 5))
+          return;
+        if (now - sub.checkedAt < 1e3 * 60 * 60)
+          return;
+      }
       try {
-        const animeInfo = await config.subscribe.getAnimeUpdateInfo(
-          config.subscribe.getId()
-        );
+        const animeInfo = await config.subscribe.getAnimeUpdateInfo(id);
         Object.assign(animeInfo, { checkedAt: now });
         sm.updateSubscription(id, animeInfo);
       } catch (error) {
       }
     }
-    function checkSubscriptionsUpdates() {
+    function checkSubscriptionsUpdates(force) {
       if (!config.subscribe)
         return;
       const sm = SubscriptionManager.getInstance(config.subscribe.storageKey);
       const subscriptions = sm.getSubscriptions();
       subscriptions.forEach((sub) => {
-        if (sub.checkedAt - sub.updatedAt > 1e3 * 60 * 60 * 24 * 15)
-          return;
-        checkSubscriptionUpdates(sub.id);
+        if (!force) {
+          if (sub.checkedAt - sub.updatedAt > 1e3 * 60 * 60 * 24 * 15)
+            return;
+        }
+        checkSubscriptionUpdates(sub.id, force);
       });
     }
     return {
@@ -7213,7 +7215,7 @@ ${text}
     }
   });
 
-  var T = {"subList":"<div id=\"subList\" class=\"box-width wow fadeInUp\">\r\n  <div class=\"overflow\">\r\n    <div class=\"title flex between top40 week-diy rel\">\r\n      <div class=\"title-left flex\">\r\n        <h4 class=\"title-h cor4\">订阅列表</h4>\r\n        <div class=\"week-select flex box radius overflow rel\">\r\n          <div class=\"week-bj b-c\"></div>\r\n          <a class=\"week-key1\" data-index=\"1\">周一</a>\r\n          <a class=\"week-key2\" data-index=\"2\">周二</a>\r\n          <a class=\"week-key3\" data-index=\"3\">周三</a>\r\n          <a class=\"week-key4\" data-index=\"4\">周四</a>\r\n          <a class=\"week-key5\" data-index=\"5\">周五</a>\r\n          <a class=\"week-key6\" data-index=\"6\">周六</a>\r\n          <a class=\"week-key7\" data-index=\"7\">周日</a>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>","subListContent":"<div \n  id=\"subListContent\"\r\n  class=\"flex wrap border-box public-r hide-b-2 diy-center1 mask2\"\r\n>\r\n  <div class=\"cor4 empty-tip\">订阅喜欢的番剧，在播放页面标题右侧添加订阅</div>\r\n</div>","subItem":"<div id=\"subItem\" class=\"public-list-box public-pic-b\">\r\n  <div class=\"public-list-div public-list-bj\">\r\n    <a \n      target=\"_blank\"\r\n      class=\"public-list-exp\"\r\n      href=\"{{current.url}}\"\r\n      title=\"{{title}}\"\r\n      ><img \n        class=\"lazy lazy1 gen-movie-img entered loaded\"\r\n        referrerpolicy=\"no-referrer\"\r\n        src=\"{{thumbnail}}\"\r\n        alt=\"{{title}}\"\r\n        data-src=\"{{thumbnail}}\"\r\n        data-ll-status=\"loaded\"\r\n      ><span class=\"public-bg\"></span><span class=\"public-list-prb hide ft2\">{{status}}</span><span class=\"public-play\"><i class=\"fa\"></i></span></a>\r\n  </div>\r\n  <div class=\"public-list-button\">\r\n    <a \n      target=\"_blank\"\r\n      class=\"time-title hide ft4 bold\"\r\n      href=\"{{current.url}}\"\r\n      title=\"{{title}}\"\r\n      >{{title}}</a>\r\n    <div class=\"public-list-subtitle cor5 hide ft2\">\r\n      <span>观看至</span>\r\n      <a target=\"_blank\" href=\"{{current.url}}\" title=\"{{current.title}}\"\r\n        >{{current.title}}</a>\r\n      <span>/</span>\r\n      <a target=\"_blank\" href=\"{{last.url}}\" title=\"{{last.title}}\"\r\n        >{{last.title}}</a>\r\n    </div>\r\n  </div>\r\n</div>"};
+  var T = {"subList":"<div id=\"subList\" class=\"box-width wow fadeInUp\">\n  <div class=\"overflow\">\n    <div class=\"title flex between top40 week-diy rel\">\n      <div class=\"title-left flex\">\n        <h4 class=\"title-h cor4\">订阅列表</h4>\n        <div class=\"week-select flex box radius overflow rel\">\n          <div class=\"week-bj b-c\"></div>\n          <a class=\"week-key1\" data-index=\"1\">周一</a>\n          <a class=\"week-key2\" data-index=\"2\">周二</a>\n          <a class=\"week-key3\" data-index=\"3\">周三</a>\n          <a class=\"week-key4\" data-index=\"4\">周四</a>\n          <a class=\"week-key5\" data-index=\"5\">周五</a>\n          <a class=\"week-key6\" data-index=\"6\">周六</a>\n          <a class=\"week-key7\" data-index=\"7\">周日</a>\n        </div>\n      </div>\n      <div class=\"titel-right\">\n        <a class=\"button more force-update\">强制更新</a>\n      </div>\n    </div>\n  </div>\n</div>","subListContent":"<div   id=\"subListContent\"\n  class=\"flex wrap border-box public-r hide-b-2 diy-center1 mask2\"\n>\n  <div class=\"cor4 empty-tip\">订阅喜欢的番剧，在播放页面标题右侧添加订阅</div>\n</div>","subItem":"<div id=\"subItem\" class=\"public-list-box public-pic-b\">\n  <div class=\"public-list-div public-list-bj\">\n    <a       target=\"_blank\"\n      class=\"public-list-exp\"\n      href=\"{{current.url}}\"\n      title=\"{{title}}\"\n      ><img         class=\"lazy lazy1 gen-movie-img entered loaded\"\n        referrerpolicy=\"no-referrer\"\n        src=\"{{thumbnail}}\"\n        alt=\"{{title}}\"\n        data-src=\"{{thumbnail}}\"\n        data-ll-status=\"loaded\"\n      ><span class=\"public-bg\"></span><span class=\"public-list-prb hide ft2\">{{status}}</span><span class=\"public-play\"><i class=\"fa\"></i></span></a>\n  </div>\n  <div class=\"public-list-button\">\n    <a       target=\"_blank\"\n      class=\"time-title hide ft4 bold\"\n      href=\"{{current.url}}\"\n      title=\"{{title}}\"\n      >{{title}}</a>\n    <div class=\"public-list-subtitle cor5 hide ft2\">\n      <span>观看至</span>\n      <a target=\"_blank\" href=\"{{current.url}}\" title=\"{{current.title}}\"\n        >{{current.title}}</a>\n      <span>/</span>\n      <a target=\"_blank\" href=\"{{last.url}}\" title=\"{{last.title}}\"\n        >{{last.title}}</a>\n    </div>\n  </div>\n</div>"};
 
   /*!
    * mustache.js - Logic-less {{mustache}} templates with JavaScript
@@ -8088,6 +8090,9 @@ ${text}
         $(".week-select a").on("click", (e) => {
           const idx = Number($(e.currentTarget).attr("data-index"));
           setActive(idx - 1);
+        });
+        $root.find(".force-update").on("click", async () => {
+          iframePlayer.subscribe.checkSubscriptionsUpdates(true);
         });
       },
       renderSubscribeBtn: ($btn, sm) => {
