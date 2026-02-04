@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.54.2
+// @version      1.54.3
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -338,9 +338,6 @@
    */
   var isArray$1 = Array.isArray;
 
-  /** Used as references for various `Number` constants. */
-  var INFINITY$1 = 1 / 0;
-
   /** Used to convert symbols to primitives and strings. */
   var symbolProto = Symbol ? Symbol.prototype : undefined,
       symbolToString = symbolProto ? symbolProto.toString : undefined;
@@ -366,7 +363,7 @@
       return symbolToString ? symbolToString.call(value) : '';
     }
     var result = (value + '');
-    return (result == '0' && (1 / value) == -INFINITY$1) ? '-0' : result;
+    return (result == '0' && (1 / value) == -Infinity) ? '-0' : result;
   }
 
   /** Used to match a single whitespace character. */
@@ -1327,9 +1324,6 @@
     return isKey(value, object) ? [value] : stringToPath(toString(value));
   }
 
-  /** Used as references for various `Number` constants. */
-  var INFINITY = 1 / 0;
-
   /**
    * Converts `value` to a string key if it's not a string or symbol.
    *
@@ -1342,7 +1336,7 @@
       return value;
     }
     var result = (value + '');
-    return (result == '0' && (1 / value) == -INFINITY) ? '-0' : result;
+    return (result == '0' && (1 / value) == -Infinity) ? '-0' : result;
   }
 
   /**
@@ -1712,7 +1706,7 @@
 
       if (index != lastIndex) {
         var objValue = nested[key];
-        newValue = customizer ? customizer(objValue, key, nested) : undefined;
+        newValue = undefined;
         if (newValue === undefined) {
           newValue = isObject(objValue)
             ? objValue
@@ -1830,15 +1824,17 @@
     return { cn, tw };
   }
 
+  var __defProp$a = Object.defineProperty;
+  var __defNormalProp$a = (obj, key, value) => key in obj ? __defProp$a(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __publicField$8 = (obj, key, value) => __defNormalProp$a(obj, typeof key !== "symbol" ? key + "" : key, value);
   function createTest(target) {
     return (test) => typeof test === "function" ? test() : typeof test === "string" ? target.includes(test) || test === "*" : test.test(target);
   }
   class Runtime {
     constructor() {
-      this.getTopLocationHref = memoize(
+      __publicField$8(this, "getTopLocationHref", memoize(
         async () => {
-          if (parent === self)
-            return window.location.href;
+          if (parent === self) return window.location.href;
           return new Promise((resolve) => {
             window.addEventListener("message", function once(e) {
               var _a;
@@ -1851,8 +1847,8 @@
           });
         },
         () => window.location.href
-      );
-      this.getAnimeScope = memoize(
+      ));
+      __publicField$8(this, "getAnimeScope", memoize(
         async () => {
           var _a, _b;
           if (parent === self)
@@ -1869,8 +1865,8 @@
           });
         },
         () => window.location.href
-      );
-      this.list = [
+      ));
+      __publicField$8(this, "list", [
         {
           domains: [],
           opts: [],
@@ -1879,7 +1875,7 @@
             search: (cn) => `https://mikanani.me/Home/Search?searchstr=${cn}`
           }
         }
-      ];
+      ]);
       if (parent === self) {
         window.addEventListener("message", (e) => {
           var _a, _b;
@@ -1912,8 +1908,7 @@
       const searchs = this.list.map((o) => o.search).filter(Boolean).filter((o) => !(isInIframe && o.disabledInIframe));
       const register = this.getActiveRegister();
       const info = await this.getCurrentVideoNameAndEpisode();
-      if (!(info == null ? void 0 : info.name))
-        return [];
+      if (!(info == null ? void 0 : info.name)) return [];
       let name = info.name;
       return searchs.filter((search) => search !== register.search && search.search).map((search) => ({
         name: search.name,
@@ -1923,24 +1918,23 @@
             encodeURIComponent(cn),
             encodeURIComponent(tw)
           );
-          if (!url)
-            return;
-          if (isInIframe)
-            parent.postMessage({ key: "openLink", url }, "*");
-          else
-            window.open(url);
+          if (!url) return;
+          if (isInIframe) parent.postMessage({ key: "openLink", url }, "*");
+          else window.open(url);
         }
       }));
     }
     async getCurrentVideoNameAndEpisode() {
       var _a, _b, _c, _d;
       const register = this.getActiveRegister();
-      if (!((_a = register.search) == null ? void 0 : _a.getSearchName))
-        return;
+      if (!((_a = register.search) == null ? void 0 : _a.getSearchName)) return;
       let rawName = await register.search.getSearchName() || "";
       let episode = await ((_c = (_b = register.search).getEpisode) == null ? void 0 : _c.call(_b)) || "";
       let name = rawName.replace(/第.季/, "").replace(/[<>《》''‘’""“”\[\]]/g, "").trim();
-      episode = ((_d = episode.match(/([0-9.]+)[集话]/)) == null ? void 0 : _d[1].replace(/^0+/, "")) || episode.replace(/[第集话()（）]/g, "") || episode;
+      episode = // 取出数字
+      ((_d = episode.match(/([0-9.]+)[集话]/)) == null ? void 0 : _d[1].replace(/^0+/, "")) || // 如果没有数字 过滤中文等常见符号
+      episode.replace(/[第集话()（）]/g, "") || // fallback 返回全名
+      episode;
       return { name, rawName, episode };
     }
     getActiveRegister() {
@@ -1990,9 +1984,13 @@
   var css$i = "#k-player-message {\n  z-index: 999;\n  position: absolute;\n  left: 20px;\n  bottom: 60px;\n}\n#k-player-message .k-player-message-item {\n  display: block;\n  width: max-content;\n  padding: 8px 16px;\n  background: var(--k-player-background);\n  border-radius: 4px;\n  color: white;\n  font-size: 14px;\n  white-space: nowrap;\n  overflow: hidden;\n  box-sizing: border-box;\n  margin-top: 4px;\n}\n#k-player-message .k-player-message-item:hover {\n  background: var(--k-player-background-highlight);\n  transition: all 0.3s;\n}";
   injectCss(css$i,{});
 
+  var __defProp$9 = Object.defineProperty;
+  var __defNormalProp$9 = (obj, key, value) => key in obj ? __defProp$9(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __publicField$7 = (obj, key, value) => __defNormalProp$9(obj, typeof key !== "symbol" ? key + "" : key, value);
   class Message {
     constructor(selector) {
-      this.MaxLength = 5;
+      __publicField$7(this, "$message");
+      __publicField$7(this, "MaxLength", 5);
       this.$message = $('<div id="k-player-message">');
       this.$message.appendTo($(selector));
     }
@@ -2021,8 +2019,7 @@
     function getItem(key, defaultValue) {
       try {
         const value = storage.getItem(key);
-        if (value)
-          return JSON.parse(value);
+        if (value) return JSON.parse(value);
         return defaultValue;
       } catch (error) {
         return defaultValue;
@@ -2049,6 +2046,7 @@
         return defaultValue;
       }
     };
+    var getItem2 = getItem;
     if (typeof GM_getValue === "undefined")
       throw new Error("GM_getValue is not defined");
     if (typeof GM_setValue === "undefined")
@@ -2103,8 +2101,7 @@
         "click",
         (e) => {
           if (!$target[0].contains(e.target)) {
-            if (isActive)
-              toggle(false);
+            if (isActive) toggle(false);
           }
         },
         { capture: true }
@@ -2179,25 +2176,26 @@
     return Commands2;
   })(Commands$1 || {});
 
-  var __defProp$5 = Object.defineProperty;
+  var __defProp$8 = Object.defineProperty;
   var __defProps$2 = Object.defineProperties;
   var __getOwnPropDescs$2 = Object.getOwnPropertyDescriptors;
   var __getOwnPropSymbols$5 = Object.getOwnPropertySymbols;
   var __hasOwnProp$5 = Object.prototype.hasOwnProperty;
   var __propIsEnum$5 = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp$5 = (obj, key, value) => key in obj ? __defProp$5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __defNormalProp$8 = (obj, key, value) => key in obj ? __defProp$8(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
   var __spreadValues$5 = (a, b) => {
     for (var prop in b || (b = {}))
       if (__hasOwnProp$5.call(b, prop))
-        __defNormalProp$5(a, prop, b[prop]);
+        __defNormalProp$8(a, prop, b[prop]);
     if (__getOwnPropSymbols$5)
       for (var prop of __getOwnPropSymbols$5(b)) {
         if (__propIsEnum$5.call(b, prop))
-          __defNormalProp$5(a, prop, b[prop]);
+          __defNormalProp$8(a, prop, b[prop]);
       }
     return a;
   };
   var __spreadProps$2 = (a, b) => __defProps$2(a, __getOwnPropDescs$2(b));
+  var __publicField$6 = (obj, key, value) => __defNormalProp$8(obj, typeof key !== "symbol" ? key + "" : key, value);
   const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
   const DefaultKeyBindings = [
     { command: Commands$1.togglePlay, key: "Space", description: "\u64AD\u653E/\u6682\u505C" },
@@ -2303,8 +2301,8 @@
   ];
   class KeyBindings {
     constructor() {
-      this.storageKey = "user-custom-keybindings";
-      this.listener = [];
+      __publicField$6(this, "storageKey", "user-custom-keybindings");
+      __publicField$6(this, "listener", []);
     }
     getCustomKeyBindings() {
       return gm.getItem(this.storageKey, []);
@@ -2349,8 +2347,7 @@
     }
     getCommand(key) {
       var _a;
-      if (!key)
-        return;
+      if (!key) return;
       const keyBindings = this.getKeyBindings();
       return (_a = keyBindings.find((o) => o.key === key)) == null ? void 0 : _a.command;
     }
@@ -2382,26 +2379,27 @@
     e.metaKey && keyArr.push("meta");
     e.shiftKey && !SPECIAL_KEY_EN.includes(key) && keyArr.push("shift");
     e.altKey && keyArr.push("alt");
-    if (!/Control|Meta|Shift|Alt/i.test(key))
-      keyArr.push(key);
+    if (!/Control|Meta|Shift|Alt/i.test(key)) keyArr.push(key);
     keyArr = [...new Set(keyArr)];
     return keyArr.join(" ");
   }
 
-  const _Shortcuts = class {
+  var __defProp$7 = Object.defineProperty;
+  var __defNormalProp$7 = (obj, key, value) => key in obj ? __defProp$7(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __publicField$5 = (obj, key, value) => __defNormalProp$7(obj, typeof key !== "symbol" ? key + "" : key, value);
+  const _Shortcuts = class _Shortcuts {
     constructor(player) {
       this.player = player;
-      this.handleKeyEvent = (e) => {
+      __publicField$5(this, "handleKeyEvent", (e) => {
         var _a;
-        if (/input|textarea|select/i.test((_a = document.activeElement) == null ? void 0 : _a.tagName))
-          return;
+        if (/input|textarea|select/i.test((_a = document.activeElement) == null ? void 0 : _a.tagName)) return;
         const key = normalizeKeyEvent(e);
         const command = _Shortcuts.keyBindings.getCommand(key);
         if (command) {
           e.preventDefault();
           this.invoke(command, e);
         }
-      };
+      });
       player.shortcuts = this;
       window.addEventListener("keydown", this.handleKeyEvent);
       window.addEventListener("keyup", this.handleKeyEvent);
@@ -2418,15 +2416,17 @@
       }
     }
   };
+  __publicField$5(_Shortcuts, "Commands", Commands$1);
+  __publicField$5(_Shortcuts, "keyBindings", new KeyBindings());
+  __publicField$5(_Shortcuts, "commands", []);
   let Shortcuts = _Shortcuts;
-  Shortcuts.Commands = Commands$1;
-  Shortcuts.keyBindings = new KeyBindings();
-  Shortcuts.commands = [];
   customElements.define(
     "k-shortcuts-tip",
     class extends HTMLElement {
       constructor() {
         super();
+        __publicField$5(this, "unsubscribe");
+        __publicField$5(this, "node");
         this.node = document.createElement("span");
         const shadowRoot = this.attachShadow({ mode: "open" });
         shadowRoot.appendChild(this.node);
@@ -2457,8 +2457,7 @@
     keys = keys.filter((key) => !key.includes(isMac ? "ctrl" : "meta"));
     $(window).on("keydown", (e) => {
       var _a;
-      if (((_a = document.activeElement) == null ? void 0 : _a.tagName) === "INPUT")
-        return;
+      if (((_a = document.activeElement) == null ? void 0 : _a.tagName) === "INPUT") return;
       let keyArr = [];
       e.ctrlKey && keyArr.push("ctrl");
       e.metaKey && keyArr.push("meta");
@@ -2515,8 +2514,7 @@
     });
     if (title) {
       $(`#${ID} .k-modal-header-title`).append(title);
-    } else
-      $(`#${ID} .k-modal-header-title`).remove();
+    } else $(`#${ID} .k-modal-header-title`).remove();
     $(`#${ID} .k-modal-body`).append(content);
     $(`#${ID} .k-modal-close`).on("click", () => {
       handleClose();
@@ -2611,10 +2609,8 @@
       $root.find(".k-tabs-panes").css("transform", `translateX(-${idx * 100}%)`);
       function updateIndictor() {
         const width = $tab.outerWidth();
-        if (width)
-          $indicator.css({ width, left: idx * width });
-        else
-          requestAnimationFrame(updateIndictor);
+        if (width) $indicator.css({ width, left: idx * width });
+        else requestAnimationFrame(updateIndictor);
       }
       updateIndictor();
     });
@@ -2644,7 +2640,7 @@
         content: `
     <table class="k-table">
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.54.2"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.54.3"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2770,7 +2766,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.54.2"}
+\u811A\u672C\u7248\u672C: ${"1.54.3"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -2795,8 +2791,7 @@ userAgent: ${navigator.userAgent}
     }
   }
   function showHelp(video) {
-    if ($(".script-info").length)
-      return;
+    if ($(".script-info").length) return;
     modal({
       className: "script-info",
       title: "agefans Enhance",
@@ -2806,8 +2801,7 @@ userAgent: ${navigator.userAgent}
   keybind(["?", "\uFF1F"], help);
   window.addEventListener("message", (e) => {
     var _a;
-    if (((_a = e.data) == null ? void 0 : _a.key) !== GlobalKey)
-      return;
+    if (((_a = e.data) == null ? void 0 : _a.key) !== GlobalKey) return;
     showHelp(e.data.video);
   });
 
@@ -2834,11 +2828,10 @@ userAgent: ${navigator.userAgent}
   });
   Shortcuts.registerCommand(
     Commands$1.recordCustomSeekTime,
-    (() => {
+    /* @__PURE__ */ (() => {
       let open = false;
       return function() {
-        if (open)
-          return;
+        if (open) return;
         open = true;
         this.plyr.pause();
         modal({
@@ -2878,21 +2871,19 @@ userAgent: ${navigator.userAgent}
     this.trigger("next");
   });
   Shortcuts.registerCommand(Commands$1.toggleWidescreen, function() {
-    if (this.plyr.fullscreen.active)
-      return;
+    if (this.plyr.fullscreen.active) return;
     this.toggleWidescreen();
   });
   Shortcuts.registerCommand(Commands$1.togglePlay, function() {
     this.plyr.togglePlay();
   });
   Shortcuts.registerCommand(Commands$1.Escape, function() {
-    if (this.plyr.fullscreen.active || !this.isWideScreen)
-      return;
+    if (this.plyr.fullscreen.active || !this.isWideScreen) return;
     this.toggleWidescreen(false);
   });
   Shortcuts.registerCommand(
     Commands$1.restoreSpeed,
-    (() => {
+    /* @__PURE__ */ (() => {
       let prevSpeed = 1;
       return function() {
         if (this.speed !== 1) {
@@ -2910,8 +2901,7 @@ userAgent: ${navigator.userAgent}
     return function() {
       let idx = this.speedList.indexOf(this.speed);
       const newIdx = clamp(idx + diff, 0, this.speedList.length - 1);
-      if (newIdx === idx)
-        return;
+      if (newIdx === idx) return;
       const speed = this.speedList[newIdx];
       this.speed = speed;
     };
@@ -2923,16 +2913,14 @@ userAgent: ${navigator.userAgent}
     let isIncreasingSpeed = false;
     return [
       function keydown(e) {
-        if (!e.repeat || isIncreasingSpeed)
-          return;
+        if (!e.repeat || isIncreasingSpeed) return;
         isIncreasingSpeed = true;
         prevSpeed = this.speed;
         this.plyr.speed = 3;
         this.message.info("\u500D\u901F\u64AD\u653E\u4E2D", 500);
       },
       function keyup(e) {
-        if (!isIncreasingSpeed)
-          return;
+        if (!isIncreasingSpeed) return;
         isIncreasingSpeed = false;
         this.plyr.speed = prevSpeed;
       }
@@ -3284,8 +3272,7 @@ ${[...speedList].reverse().map(
       let formatParts = [];
       const eventStartIdx = lines.findIndex((line) => line.includes("[Events]"));
       const formatLine = lines.slice(eventStartIdx).find((line) => line.startsWith("Format:"));
-      if (!formatLine)
-        throw new Error("ASS\u6587\u4EF6\u683C\u5F0F\u9519\u8BEF\uFF0C\u672A\u627E\u5230events.format");
+      if (!formatLine) throw new Error("ASS\u6587\u4EF6\u683C\u5F0F\u9519\u8BEF\uFF0C\u672A\u627E\u5230events.format");
       formatParts = formatLine.split(":")[1].split(",").map((part) => part.trim());
       lines.forEach((line) => {
         if (line.startsWith("Dialogue:")) {
@@ -3351,22 +3338,23 @@ ${text}
     });
   }
 
-  var __defProp$4 = Object.defineProperty;
+  var __defProp$6 = Object.defineProperty;
   var __getOwnPropSymbols$4 = Object.getOwnPropertySymbols;
   var __hasOwnProp$4 = Object.prototype.hasOwnProperty;
   var __propIsEnum$4 = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp$4 = (obj, key, value) => key in obj ? __defProp$4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __defNormalProp$6 = (obj, key, value) => key in obj ? __defProp$6(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
   var __spreadValues$4 = (a, b) => {
     for (var prop in b || (b = {}))
       if (__hasOwnProp$4.call(b, prop))
-        __defNormalProp$4(a, prop, b[prop]);
+        __defNormalProp$6(a, prop, b[prop]);
     if (__getOwnPropSymbols$4)
       for (var prop of __getOwnPropSymbols$4(b)) {
         if (__propIsEnum$4.call(b, prop))
-          __defNormalProp$4(a, prop, b[prop]);
+          __defNormalProp$6(a, prop, b[prop]);
       }
     return a;
   };
+  var __publicField$4 = (obj, key, value) => __defNormalProp$6(obj, typeof key !== "symbol" ? key + "" : key, value);
   const MediaErrorMessage = {
     1: "\u4F60\u4E2D\u6B62\u4E86\u5A92\u4F53\u64AD\u653E",
     2: "\u7F51\u7EDC\u9519\u8BEF",
@@ -3385,24 +3373,45 @@ ${text}
     autoplay: true,
     showPlayLarge: false
   };
-  const _KPlayer = class {
+  const _KPlayer = class _KPlayer {
     constructor(selector, opts = {}) {
-      this.isHoverControls = false;
-      this.speedList = speedList;
-      this.setCurrentTimeLogThrottled = throttle(() => {
-        if (this.currentTime > 3)
-          this.setCurrentTimeLog();
-      }, 1e3);
-      this.hideControlsDebounced = debounce(() => {
+      __publicField$4(this, "localConfigKey");
+      __publicField$4(this, "statusSessionKey");
+      __publicField$4(this, "localConfig");
+      __publicField$4(this, "plyr");
+      __publicField$4(this, "$wrapper");
+      __publicField$4(this, "$loading");
+      __publicField$4(this, "$error");
+      __publicField$4(this, "$video");
+      __publicField$4(this, "$progress");
+      __publicField$4(this, "$header");
+      __publicField$4(this, "$pip");
+      __publicField$4(this, "$videoWrapper");
+      __publicField$4(this, "message");
+      __publicField$4(this, "eventMap");
+      __publicField$4(this, "isWideScreen");
+      __publicField$4(this, "wideScreenBodyStyles");
+      __publicField$4(this, "tsumaLength");
+      __publicField$4(this, "curentTsuma");
+      __publicField$4(this, "isHoverControls", false);
+      __publicField$4(this, "$settings");
+      __publicField$4(this, "$speed");
+      __publicField$4(this, "localPlayTimeKey");
+      __publicField$4(this, "$searchActions");
+      __publicField$4(this, "opts");
+      __publicField$4(this, "speedList", speedList);
+      __publicField$4(this, "setCurrentTimeLogThrottled", throttle(() => {
+        if (this.currentTime > 3) this.setCurrentTimeLog();
+      }, 1e3));
+      __publicField$4(this, "hideControlsDebounced", debounce(() => {
         const dom = document.querySelector(".plyr");
-        if (!this.isHoverControls)
-          dom == null ? void 0 : dom.classList.add("plyr--hide-controls");
-      }, 1e3);
-      this.hideCursorDebounced = debounce(() => {
+        if (!this.isHoverControls) dom == null ? void 0 : dom.classList.add("plyr--hide-controls");
+      }, 1e3));
+      __publicField$4(this, "hideCursorDebounced", debounce(() => {
         const dom = document.querySelector(".plyr");
         dom == null ? void 0 : dom.classList.add("plyr--hide-cursor");
-      }, 1e3);
-      this.isJumped = false;
+      }, 1e3));
+      __publicField$4(this, "isJumped", false);
       this.opts = opts;
       this.$wrapper = $('<div id="k-player-wrapper"/>').replaceAll(selector);
       this.$loading = $(loadingHTML);
@@ -3508,8 +3517,7 @@ ${text}
       return await runtime.getAnimeScope();
     }
     async jumpToLogTime() {
-      if (this.isJumped)
-        return;
+      if (this.isJumped) return;
       if (this.currentTime < 3) {
         this.isJumped = true;
         const logTime = await this.getCurrentTimeLog();
@@ -3539,8 +3547,7 @@ ${text}
             if (videoName) {
               subtitle = subtitles.find((o) => o.name.includes(videoName));
             }
-            if (!subtitle)
-              subtitle = subtitles[0];
+            if (!subtitle) subtitle = subtitles[0];
             this.loadSubtitles(subtitle);
           }
         }
@@ -3570,8 +3577,7 @@ ${text}
                   "click",
                   () => {
                     setTimeout(() => {
-                      if (this.media.paused)
-                        this.plyr.play();
+                      if (this.media.paused) this.plyr.play();
                     }, 100);
                   },
                   { capture: true, once: true }
@@ -3707,8 +3713,7 @@ ${text}
         "exitwidescreen",
         "skiperror"
       ].includes(event)) {
-        if (!this.eventMap[event])
-          this.eventMap[event] = [];
+        if (!this.eventMap[event]) this.eventMap[event] = [];
         this.eventMap[event].push(callback);
       } else {
         this.plyr.on(event, callback);
@@ -3800,8 +3805,7 @@ ${text}
         this.$videoWrapper.addClass("k-player-fullscreen");
       }
       return () => {
-        if (!isActive)
-          return;
+        if (!isActive) return;
         isActive = false;
         $('[data-plyr="fullscreen"]').removeClass("plyr__control--pressed");
         this.$videoWrapper.removeClass("k-player-fullscreen");
@@ -3821,8 +3825,7 @@ ${text}
       );
       this.$searchActions.insertBefore(this.$speed);
       const actions = await runtime.getSearchActions();
-      if (actions.length === 0)
-        return;
+      if (actions.length === 0) return;
       this.$searchActions.find(".k-menu").append(
         actions.map(({ name, search }) => {
           return $(
@@ -3843,8 +3846,7 @@ ${text}
       this.plyr.currentTrack = nextTrack;
     }
     toggleWidescreen(bool = !this.isWideScreen) {
-      if (this.isWideScreen === bool)
-        return;
+      if (this.isWideScreen === bool) return;
       this.isWideScreen = bool;
       session.setItem(this.statusSessionKey, this.isWideScreen);
       if (this.isWideScreen) {
@@ -3872,6 +3874,7 @@ ${text}
     get src() {
       return this.media.currentSrc;
     }
+    /** 如果直接设置src满足不了需求，则使用这个方法去加载*/
     setM3u8(src) {
       if (Hls.isSupported()) {
         const hls = new Hls();
@@ -3979,8 +3982,8 @@ ${text}
       });
     }
   };
+  __publicField$4(_KPlayer, "plguinList", []);
   let KPlayer = _KPlayer;
-  KPlayer.plguinList = [];
 
   function request(opts) {
     let { url, method, params } = opts;
@@ -4069,8 +4072,7 @@ ${text}
   function getCheckboxGroupValue($dom) {
     const ret = [];
     $dom.each((_, el) => {
-      if (el.checked)
-        ret.push(el.value);
+      if (el.checked) ret.push(el.value);
     });
     return ret;
   }
@@ -4083,16 +4085,15 @@ ${text}
   }
   function lockWrap(fn) {
     let lock = false;
-    return async (...args) => {
-      if (lock)
-        return;
+    return (async (...args) => {
+      if (lock) return;
       try {
         lock = true;
         await fn(...args);
       } finally {
         lock = false;
       }
-    };
+    });
   }
 
   const KEY = "eyJYLUFwcElkIjoiaHZmNnB6dnhjbSIsIlgtQXBwU2VjcmV0IjoiSVpoY1VJYWtveEZhSzl4QkJESjlCczFPVTJzNGtLNXQifQ==";
@@ -4120,8 +4121,7 @@ ${text}
       params: { keyword: anime },
       headers
     });
-    if (!res.success)
-      throw new Error(res.errorMessage);
+    if (!res.success) throw new Error(res.errorMessage);
     const nameCountMap = /* @__PURE__ */ new Map();
     res.animes.forEach((o) => {
       nameCountMap.set(o.animeTitle, (nameCountMap.get(o.animeTitle) || 0) + 1);
@@ -4153,8 +4153,7 @@ ${text}
     const $open = $("#k-player-danmaku-search-form .open-danmaku-list");
     $open.on("click", () => {
       const comments = getComments();
-      if (!comments || !comments.length)
-        return;
+      if (!comments || !comments.length) return;
       const $root = $(`
       <div class="k-player-danmaku-list-wrapper">
         <div class="k-player-danmaku-list-source-filter">
@@ -4284,16 +4283,13 @@ ${text}
         var _a2;
         const file = (_a2 = e.target.files) == null ? void 0 : _a2[0];
         $import.remove();
-        if (!file)
-          return;
+        if (!file) return;
         const fd = new FileReader();
         fd.onload = () => {
           const result = fd.result;
           if (typeof result === "string") {
-            if (file.name.endsWith(".xml"))
-              importBiliXML(result);
-            if (file.name.endsWith(".json"))
-              importBiliJSON(result);
+            if (file.name.endsWith(".xml")) importBiliXML(result);
+            if (file.name.endsWith(".json")) importBiliJSON(result);
           }
         };
         fd.readAsText(file);
@@ -4327,8 +4323,7 @@ ${text}
     }
     const $input = $filter.find('[name="filter-input"]');
     $input.on("keypress", (e) => {
-      if (e.key === "Enter")
-        addFilter($input.val());
+      if (e.key === "Enter") addFilter($input.val());
     });
     function refreshFilterDom() {
       const filters = player.localConfig.danmakuFilter;
@@ -4355,8 +4350,7 @@ ${text}
     function addFilter(filter) {
       const filters = player.localConfig.danmakuFilter;
       $input.val("");
-      if (!filter || filters.includes(filter))
-        return;
+      if (!filter || filters.includes(filter)) return;
       if (/^\/.*\/$/.test(filter)) {
         try {
           new RegExp(filter.slice(1, -1));
@@ -4380,10 +4374,13 @@ ${text}
     return Commands2;
   })(Commands || {});
 
+  var __defProp$5 = Object.defineProperty;
+  var __defNormalProp$5 = (obj, key, value) => key in obj ? __defProp$5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __publicField$3 = (obj, key, value) => __defNormalProp$5(obj, typeof key !== "symbol" ? key + "" : key, value);
   class DanmakuElements {
     constructor(player) {
       this.player = player;
-      this.$danmakuOverlay = tabs([
+      __publicField$3(this, "$danmakuOverlay", tabs([
         {
           name: "\u641C\u7D22",
           content: `<div id="k-player-danmaku-search-form">
@@ -4500,8 +4497,8 @@ ${text}
     <div id="k-player-danmaku-log"></div>
     `
         }
-      ]);
-      this.$danmakuSwitch = $(`
+      ]));
+      __publicField$3(this, "$danmakuSwitch", $(`
 <button
   class="plyr__controls__item plyr__control plyr__switch-danmaku plyr__custom"
   type="button"
@@ -4512,12 +4509,12 @@ ${text}
   <svg class="icon--pressed" focusable="false" width="1em" height="1em" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="bpx-svg-sprite-danmu-on"><path fill-rule="evenodd" clip-rule="evenodd" d="M11.989 4.828c-.47 0-.975.004-1.515.012l-1.71-2.566a1.008 1.008 0 00-1.678 1.118l.999 1.5c-.681.018-1.403.04-2.164.068a4.013 4.013 0 00-3.83 3.44c-.165 1.15-.245 2.545-.245 4.185 0 1.965.115 3.67.35 5.116a4.012 4.012 0 003.763 3.363l.906.046c1.205.063 1.808.095 3.607.095a.988.988 0 000-1.975c-1.758 0-2.339-.03-3.501-.092l-.915-.047a2.037 2.037 0 01-1.91-1.708c-.216-1.324-.325-2.924-.325-4.798 0-1.563.076-2.864.225-3.904.14-.977.96-1.713 1.945-1.747 2.444-.087 4.465-.13 6.063-.131 1.598 0 3.62.044 6.064.13.96.034 1.71.81 1.855 1.814.075.524.113 1.962.141 3.065v.002c.01.342.017.65.025.88a.987.987 0 101.974-.068c-.008-.226-.016-.523-.025-.856v-.027c-.03-1.118-.073-2.663-.16-3.276-.273-1.906-1.783-3.438-3.74-3.507-.9-.032-1.743-.058-2.531-.078l1.05-1.46a1.008 1.008 0 00-1.638-1.177l-1.862 2.59c-.38-.004-.744-.007-1.088-.007h-.13zm.521 4.775h-1.32v4.631h2.222v.847h-2.618v1.078h2.618l.003.678c.36.026.714.163 1.01.407h.11v-1.085h2.694v-1.078h-2.695v-.847H16.8v-4.63h-1.276a8.59 8.59 0 00.748-1.42L15.183 7.8a14.232 14.232 0 01-.814 1.804h-1.518l.693-.308a8.862 8.862 0 00-.814-1.408l-1.045.352c.297.396.572.847.825 1.364zm-4.18 3.564l.154-1.485h1.98V8.294h-3.2v.98H9.33v1.43H7.472l-.308 3.453h2.277c0 1.166-.044 1.925-.12 2.277-.078.352-.386.528-.936.528-.308 0-.616-.022-.902-.055l.297 1.067.062.005c.285.02.551.04.818.04 1.001-.067 1.562-.419 1.694-1.057.11-.638.176-1.903.176-3.795h-2.2zm7.458.11v-.858h-1.254v.858h1.254zm-2.376-.858v.858h-1.199v-.858h1.2zm-1.199-.946h1.2v-.902h-1.2v.902zm2.321 0v-.902h1.254v.902h-1.254z"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M22.846 14.627a1 1 0 00-1.412.075l-5.091 5.703-2.216-2.275-.097-.086-.008-.005a1 1 0 00-1.322 1.493l2.963 3.041.093.083.007.005c.407.315 1 .27 1.354-.124l5.81-6.505.08-.102.005-.008a1 1 0 00-.166-1.295z" fill="var(--color)"></path></svg>
   <span class="label--not-pressed plyr__tooltip">\u5F00\u542F\u5F39\u5E55(<k-shortcuts-tip command="${Commands.danmakuSwitch}"></k-shortcuts-tip>)</span>
   <span class="label--pressed plyr__tooltip">\u5173\u95ED\u5F39\u5E55(<k-shortcuts-tip command="${Commands.danmakuSwitch}"></k-shortcuts-tip>)</span>
-</button>`);
-      this.$danmakuSettingButton = $(`<button class="plyr__controls__item plyr__control" type="button" data-plyr="danmaku-setting">
+</button>`));
+      __publicField$3(this, "$danmakuSettingButton", $(`<button class="plyr__controls__item plyr__control" type="button" data-plyr="danmaku-setting">
 <svg class="icon--not-pressed" focusable="false" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" id="bpx-svg-sprite-new-danmu-setting"><path fill-rule="evenodd" clip-rule="evenodd" d="M15.645 4.881l1.06-1.473a.998.998 0 10-1.622-1.166L13.22 4.835a110.67 110.67 0 00-1.1-.007h-.131c-.47 0-.975.004-1.515.012L8.783 2.3A.998.998 0 007.12 3.408l.988 1.484c-.688.019-1.418.042-2.188.069a4.013 4.013 0 00-3.83 3.44c-.165 1.15-.245 2.545-.245 4.185 0 1.965.115 3.67.35 5.116a4.012 4.012 0 003.763 3.363c1.903.094 3.317.141 5.513.141a.988.988 0 000-1.975 97.58 97.58 0 01-5.416-.139 2.037 2.037 0 01-1.91-1.708c-.216-1.324-.325-2.924-.325-4.798 0-1.563.076-2.864.225-3.904.14-.977.96-1.713 1.945-1.747 2.444-.087 4.465-.13 6.063-.131 1.598 0 3.62.044 6.064.13.96.034 1.71.81 1.855 1.814.075.524.113 1.962.141 3.065v.002c.005.183.01.07.014-.038.004-.096.008-.189.011-.081a.987.987 0 101.974-.069c-.004-.105-.007-.009-.011.09-.002.056-.004.112-.007.135l-.002.01a.574.574 0 01-.005-.091v-.027c-.03-1.118-.073-2.663-.16-3.276-.273-1.906-1.783-3.438-3.74-3.507-.905-.032-1.752-.058-2.543-.079zm-3.113 4.703h-1.307v4.643h2.2v.04l.651-1.234c.113-.215.281-.389.482-.509v-.11h.235c.137-.049.283-.074.433-.074h1.553V9.584h-1.264a8.5 8.5 0 00.741-1.405l-1.078-.381c-.24.631-.501 1.23-.806 1.786h-1.503l.686-.305c-.228-.501-.5-.959-.806-1.394l-1.034.348c.294.392.566.839.817 1.35zm-1.7 5.502h2.16l-.564 1.068h-1.595v-1.068zm-2.498-1.863l.152-1.561h1.96V8.289H7.277v.969h2.048v1.435h-1.84l-.306 3.51h2.254c0 1.155-.043 1.906-.12 2.255-.076.348-.38.523-.925.523-.305 0-.61-.022-.893-.055l.294 1.056.061.005c.282.02.546.039.81.039.991-.065 1.547-.414 1.677-1.046.11-.631.175-1.883.175-3.757H8.334zm5.09-.8v.85h-1.188v-.85h1.187zm-1.188-.955h1.187v-.893h-1.187v.893zm2.322.007v-.893h1.241v.893h-1.241zm.528 2.757a1.26 1.26 0 011.087-.627l4.003-.009a1.26 1.26 0 011.094.63l1.721 2.982c.226.39.225.872-.001 1.263l-1.743 3a1.26 1.26 0 01-1.086.628l-4.003.009a1.26 1.26 0 01-1.094-.63l-1.722-2.982a1.26 1.26 0 01.002-1.263l1.742-3zm1.967.858a1.26 1.26 0 00-1.08.614l-.903 1.513a1.26 1.26 0 00-.002 1.289l.885 1.492c.227.384.64.62 1.086.618l2.192-.005a1.26 1.26 0 001.08-.615l.904-1.518a1.26 1.26 0 00.001-1.288l-.884-1.489a1.26 1.26 0 00-1.086-.616l-2.193.005zm2.517 2.76a1.4 1.4 0 11-2.8 0 1.4 1.4 0 012.8 0z"></path></svg>
 <span class="label--not-pressed plyr__tooltip">\u5F39\u5E55\u8BBE\u7F6E</span>
-</button>`);
-      this.$danmaku = popover({
+</button>`));
+      __publicField$3(this, "$danmaku", popover({
         target: this.$danmakuSettingButton,
         overlay: this.$danmakuOverlay,
         trigger: "click",
@@ -4539,9 +4536,9 @@ ${text}
             (_d = (_c = this.player.plyr.elements.container) == null ? void 0 : _c.querySelector(".k-player-danmaku-overlay-video-prevent-click")) == null ? void 0 : _d.remove();
           }
         }
-      });
-      this.$danmakuContainer = $('<div id="k-player-danmaku"></div>');
-      this.$pbp = $(`
+      }));
+      __publicField$3(this, "$danmakuContainer", $('<div id="k-player-danmaku"></div>'));
+      __publicField$3(this, "$pbp", $(`
 <svg
   viewBox="0 0 1000 100"
   preserveAspectRatio="none"
@@ -4561,31 +4558,31 @@ ${text}
     <rect id="k-player-pbp-played-path" x="0" y="0" width="0" height="100%" fill="currentColor"></rect>
   </g>
 </svg>
-`);
-      this.$animeName = this.$danmaku.find("#animeName");
-      this.$animes = this.$danmaku.find("#animes");
-      this.$episodes = this.$danmaku.find("#episodes");
-      this.$openDanmakuList = this.$danmaku.find(".open-danmaku-list");
-      this.$tips = this.$danmaku.find("#tips");
-      this.$showDanmaku = this.$danmaku.find("[name='showDanmaku']");
-      this.$showPbp = this.$danmaku.find("[name='showPbp']");
-      this.$danmakuMerge = this.$danmaku.find("[name='danmakuMerge']");
-      this.$danmakuOverlap = this.$danmaku.find(
+`));
+      __publicField$3(this, "$animeName", this.$danmaku.find("#animeName"));
+      __publicField$3(this, "$animes", this.$danmaku.find("#animes"));
+      __publicField$3(this, "$episodes", this.$danmaku.find("#episodes"));
+      __publicField$3(this, "$openDanmakuList", this.$danmaku.find(".open-danmaku-list"));
+      __publicField$3(this, "$tips", this.$danmaku.find("#tips"));
+      __publicField$3(this, "$showDanmaku", this.$danmaku.find("[name='showDanmaku']"));
+      __publicField$3(this, "$showPbp", this.$danmaku.find("[name='showPbp']"));
+      __publicField$3(this, "$danmakuMerge", this.$danmaku.find("[name='danmakuMerge']"));
+      __publicField$3(this, "$danmakuOverlap", this.$danmaku.find(
         "[name='danmakuOverlap']"
-      );
-      this.$opacity = this.$danmaku.find("[name='opacity']");
-      this.$danmakuSpeed = this.$danmaku.find("[name='danmakuSpeed']");
-      this.$danmakuFontSize = this.$danmaku.find(
+      ));
+      __publicField$3(this, "$opacity", this.$danmaku.find("[name='opacity']"));
+      __publicField$3(this, "$danmakuSpeed", this.$danmaku.find("[name='danmakuSpeed']"));
+      __publicField$3(this, "$danmakuFontSize", this.$danmaku.find(
         "[name='danmakuFontSize']"
-      );
-      this.$danmakuDensity = this.$danmaku.find(
+      ));
+      __publicField$3(this, "$danmakuDensity", this.$danmaku.find(
         "[name='danmakuDensity']"
-      );
-      this.$danmakuScrollAreaPercent = this.$danmaku.find(
+      ));
+      __publicField$3(this, "$danmakuScrollAreaPercent", this.$danmaku.find(
         "[name='danmakuScrollAreaPercent']"
-      );
-      this.$danmakuMode = this.$danmaku.find("[name='danmakuMode']");
-      this.$log = this.$danmakuOverlay.find("#k-player-danmaku-log");
+      ));
+      __publicField$3(this, "$danmakuMode", this.$danmaku.find("[name='danmakuMode']"));
+      __publicField$3(this, "$log", this.$danmakuOverlay.find("#k-player-danmaku-log"));
       this.$danmakuOverlay.attr("id", "k-player-danmaku-overlay");
     }
   }
@@ -4657,6 +4654,9 @@ ${text}
     );
   }
 
+  var __defProp$4 = Object.defineProperty;
+  var __defNormalProp$4 = (obj, key, value) => key in obj ? __defProp$4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __publicField$2 = (obj, key, value) => __defNormalProp$4(obj, typeof key !== "symbol" ? key + "" : key, value);
   const defaultConfig = {
     showDanmaku: false,
     opacity: 0.6,
@@ -4673,24 +4673,27 @@ ${text}
   };
   class DanmakuPlugin {
     constructor(player, videoInfo) {
-      this.baseDanmkuSpeed = 130;
-      this.refreshDanmaku = () => {
+      __publicField$2(this, "elements");
+      __publicField$2(this, "player");
+      __publicField$2(this, "core");
+      __publicField$2(this, "state");
+      __publicField$2(this, "baseDanmkuSpeed", 130);
+      __publicField$2(this, "refreshDanmaku", () => {
         this.stop();
         this.autoStart();
-      };
-      this.showTips = (message, duration = 3e3) => {
+      });
+      __publicField$2(this, "showTips", (message, duration = 3e3) => {
         this.elements.$tips.finish().text(message).fadeIn("fast");
-        if (duration > 0)
-          this.elements.$tips.delay(duration).fadeOut("fast");
-      };
-      this.messageLog = (message, options) => {
+        if (duration > 0) this.elements.$tips.delay(duration).fadeOut("fast");
+      });
+      __publicField$2(this, "messageLog", (message, options) => {
         const { duration = 3e3, detail } = options || {};
         this.showTips(message, duration);
         this.player.message.info(message, duration);
         this.log(message, detail);
-      };
-      this.count = 0;
-      this.log = (message, detail) => {
+      });
+      __publicField$2(this, "count", 0);
+      __publicField$2(this, "log", (message, detail) => {
         const $details = $('<div class="k-player-danmaku-log-item"></div>');
         const $title = $('<div class="k-player-danmaku-log-title"></div>');
         $title.text(`[${this.count++}] ${message}`);
@@ -4704,17 +4707,15 @@ ${text}
           $details.append($content);
         }
         this.elements.$log.append($details);
-      };
-      this.stop = () => {
+      });
+      __publicField$2(this, "stop", () => {
         var _a;
         (_a = this.core) == null ? void 0 : _a.hide();
-      };
-      this.start = () => {
+      });
+      __publicField$2(this, "start", () => {
         const run = () => {
-          if (!this.player.media.duration)
-            return requestAnimationFrame(run);
-          if (!this.state.comments)
-            return;
+          if (!this.player.media.duration) return requestAnimationFrame(run);
+          if (!this.state.comments) return;
           const nextComments = this.adjustCommentCount(this.state.comments);
           this.elements.$openDanmakuList.find('[data-id="count"]').text(`(${nextComments.length}/${this.state.comments.length})`);
           if (this.player.localConfig.showDanmaku) {
@@ -4742,8 +4743,8 @@ ${text}
           }
         };
         requestAnimationFrame(run);
-      };
-      this.adjustCommentCount = (comments) => {
+      });
+      __publicField$2(this, "adjustCommentCount", (comments) => {
         let ret = comments;
         ret = ret.filter((cmt) => {
           const isFilterMatch = this.player.localConfig.danmakuFilter.some(
@@ -4784,8 +4785,8 @@ ${text}
           ret = [...new Array(maxLength)].map((_, i) => ret[Math.floor(i * ratio)]);
         }
         return ret;
-      };
-      this.loadEpisode = async (episodeId) => {
+      });
+      __publicField$2(this, "loadEpisode", async (episodeId) => {
         this.stop();
         this.state.comments = await getComments(episodeId);
         this.state.syncDiff = 0;
@@ -4795,19 +4796,18 @@ ${text}
         this.messageLog(`\u756A\u5267\uFF1A${this.elements.$animes.find(":selected").text()}`);
         this.messageLog(`\u7AE0\u8282\uFF1A${this.elements.$episodes.find(":selected").text()}`);
         this.messageLog(`\u5DF2\u52A0\u8F7D ${this.state.comments.length} \u6761\u5F39\u5E55`);
-      };
-      this.setAnimes = (animes) => {
+      });
+      __publicField$2(this, "setAnimes", (animes) => {
         this.state.animes = animes;
         renderSelectOptions(this.elements.$animes, this.state.animes);
-      };
-      this.setEpisodes = (episodes) => {
+      });
+      __publicField$2(this, "setEpisodes", (episodes) => {
         this.state.episodes = episodes;
         renderSelectOptions(this.elements.$episodes, this.state.episodes);
-      };
-      this.searchAnime = lockWrap(async (name) => {
+      });
+      __publicField$2(this, "searchAnime", lockWrap(async (name) => {
         this.log(`\u641C\u7D22\u756A\u5267: ${name}`);
-        if (!name || name.length < 2)
-          return this.messageLog("\u756A\u5267\u540D\u79F0\u4E0D\u5C11\u4E8E2\u4E2A\u5B57");
+        if (!name || name.length < 2) return this.messageLog("\u756A\u5267\u540D\u79F0\u4E0D\u5C11\u4E8E2\u4E2A\u5B57");
         try {
           this.setAnimes([]);
           this.setEpisodes([]);
@@ -4824,8 +4824,8 @@ ${text}
             detail: error.toString()
           });
         }
-      });
-      this.searchEpisodes = async (animeId) => {
+      }));
+      __publicField$2(this, "searchEpisodes", async (animeId) => {
         this.log("\u641C\u7D22\u5267\u96C6", { animeId });
         try {
           this.setEpisodes([]);
@@ -4842,8 +4842,8 @@ ${text}
             detail: error.toString()
           });
         }
-      };
-      this.autoMatchAnime = () => {
+      });
+      __publicField$2(this, "autoMatchAnime", () => {
         let anime = this.state.animes.find((anime2) => {
           const storeAnime = storageAnimeName(this.state.videoInfo.rawName);
           if (storeAnime) {
@@ -4861,8 +4861,8 @@ ${text}
         } else {
           this.messageLog("\u5F39\u5E55\u672A\u80FD\u81EA\u52A8\u5339\u914D\u6570\u636E\u6E90\uFF0C\u8BF7\u624B\u52A8\u641C\u7D22");
         }
-      };
-      this.autoMatchEpisode = async () => {
+      });
+      __publicField$2(this, "autoMatchEpisode", async () => {
         let episodeName = this.state.videoInfo.episode;
         let episode;
         let storedEpisodeId = storageEpisodeName(
@@ -4890,8 +4890,8 @@ ${text}
         } else {
           this.messageLog("\u5F39\u5E55\u672A\u80FD\u81EA\u52A8\u5339\u914D\u6570\u636E\u6E90\uFF0C\u8BF7\u624B\u52A8\u641C\u7D22");
         }
-      };
-      this.injectDanmakuDropEvent = () => {
+      });
+      __publicField$2(this, "injectDanmakuDropEvent", () => {
         this.player.onDrop((e) => {
           var _a;
           e.preventDefault();
@@ -4909,8 +4909,8 @@ ${text}
             reader.readAsText(file);
           }
         });
-      };
-      this.initEvents = (name) => {
+      });
+      __publicField$2(this, "initEvents", (name) => {
         this.elements.$animeName.val(name);
         this.elements.$animeName.on("keypress", (e) => {
           if (e.key === "Enter")
@@ -4922,8 +4922,7 @@ ${text}
         this.elements.$animes.on("change", (e) => {
           const animeId = this.elements.$animes.val();
           const anime = this.state.animes.find((anime2) => anime2.id === animeId);
-          if (!anime)
-            return;
+          if (!anime) return;
           storageAnimeName(this.state.videoInfo.rawName, {
             id: anime.id,
             name: anime.name,
@@ -4935,8 +4934,7 @@ ${text}
           const episodeId = this.elements.$episodes.val();
           const animeId = this.elements.$animes.val();
           const anime = this.state.animes.find((anime2) => anime2.id === animeId);
-          if (!anime || !episodeId)
-            return;
+          if (!anime || !episodeId) return;
           storageAnimeName(this.state.videoInfo.rawName, {
             id: anime.id,
             name: anime.name,
@@ -4976,8 +4974,7 @@ ${text}
           const chekced = e.target.checked;
           this.elements.$pbp.toggle(chekced);
           this.player.configSaveToLocal("showPbp", chekced);
-          if (chekced)
-            this.autoStart();
+          if (chekced) this.autoStart();
         });
         this.elements.$pbp.toggle(this.player.localConfig.showPbp || false);
         const $pbpPlayed = this.elements.$pbp.find("#k-player-pbp-played-path");
@@ -4990,14 +4987,12 @@ ${text}
         this.elements.$danmakuMerge.prop("checked", this.player.localConfig.danmakuMerge).on("change", (e) => {
           const chekced = e.target.checked;
           this.player.configSaveToLocal("danmakuMerge", chekced);
-          if (this.core)
-            this.core.merge = chekced;
+          if (this.core) this.core.merge = chekced;
         });
         this.elements.$danmakuOverlap.prop("checked", this.player.localConfig.danmakuOverlap).on("change", (e) => {
           const chekced = e.target.checked;
           this.player.configSaveToLocal("danmakuOverlap", chekced);
-          if (this.core)
-            this.core.overlap = chekced;
+          if (this.core) this.core.overlap = chekced;
         });
         addRangeListener({
           $dom: this.elements.$opacity,
@@ -5019,8 +5014,7 @@ ${text}
           $dom: this.elements.$danmakuSpeed,
           name: "danmakuSpeed",
           onChange: (v) => {
-            if (this.core)
-              this.core.speed = this.baseDanmkuSpeed * v;
+            if (this.core) this.core.speed = this.baseDanmkuSpeed * v;
           },
           player: this.player
         });
@@ -5034,8 +5028,7 @@ ${text}
           $dom: this.elements.$danmakuScrollAreaPercent,
           name: "danmakuScrollAreaPercent",
           onChange: (val) => {
-            if (this.core)
-              this.core.scrollAreaPercent = val;
+            if (this.core) this.core.scrollAreaPercent = val;
           },
           player: this.player
         });
@@ -5057,8 +5050,8 @@ ${text}
           this.refreshDanmaku
         );
         this.injectDanmakuDropEvent();
-      };
-      this.switchDanmaku = (bool) => {
+      });
+      __publicField$2(this, "switchDanmaku", (bool) => {
         bool != null ? bool : bool = !this.player.localConfig.showDanmaku;
         this.player.configSaveToLocal("showDanmaku", bool);
         this.elements.$danmakuSwitch.toggleClass("plyr__control--pressed", bool);
@@ -5069,8 +5062,8 @@ ${text}
         } else {
           this.stop();
         }
-      };
-      this.autoStart = () => {
+      });
+      __publicField$2(this, "autoStart", () => {
         if (!(this.player.localConfig.showDanmaku || this.player.localConfig.showPbp))
           return;
         switch (this.state.state) {
@@ -5087,7 +5080,7 @@ ${text}
             this.start();
             break;
         }
-      };
+      });
       this.player = player;
       this.elements = new DanmakuElements(player);
       this.player.danmaku = this;
@@ -5131,8 +5124,7 @@ ${text}
   });
   Shortcuts.registerCommand(Commands.danmakuSyncBack, function() {
     var _a;
-    if (!((_a = this.danmaku) == null ? void 0 : _a.state.comments))
-      return;
+    if (!((_a = this.danmaku) == null ? void 0 : _a.state.comments)) return;
     this.danmaku.state.comments.forEach((comment) => {
       comment.time += 0.5;
     });
@@ -5148,8 +5140,7 @@ ${text}
   });
   Shortcuts.registerCommand(Commands.danmakuSyncForward, function() {
     var _a;
-    if (!((_a = this.danmaku) == null ? void 0 : _a.state.comments))
-      return;
+    if (!((_a = this.danmaku) == null ? void 0 : _a.state.comments)) return;
     this.danmaku.state.comments.forEach((comment) => {
       comment.time += -0.5;
     });
@@ -5165,8 +5156,7 @@ ${text}
   });
   Shortcuts.registerCommand(Commands.danmakuSyncRestore, function() {
     var _a;
-    if (!((_a = this.danmaku) == null ? void 0 : _a.state.comments))
-      return;
+    if (!((_a = this.danmaku) == null ? void 0 : _a.state.comments)) return;
     this.danmaku.state.comments.forEach((comment) => {
       comment.time += -this.danmaku.state.syncDiff;
     });
@@ -5184,8 +5174,7 @@ ${text}
   };
   async function setup$1(player) {
     const info = await runtime.getCurrentVideoNameAndEpisode();
-    if (!info)
-      return;
+    if (!info) return;
     new DanmakuPlugin(player, info);
   }
 
@@ -5213,6 +5202,7 @@ ${text}
     return a;
   };
   var __spreadProps$1 = (a, b) => __defProps$1(a, __getOwnPropDescs$1(b));
+  var __publicField$1 = (obj, key, value) => __defNormalProp$3(obj, typeof key !== "symbol" ? key + "" : key, value);
   function bindFormEvent(formHTML, data) {
     const $form = $(formHTML);
     $form.find("input[name]").each((_, el) => {
@@ -5230,8 +5220,7 @@ ${text}
     return $form;
   }
   function parseStartTime(value) {
-    if (typeof value === "number")
-      return value;
+    if (typeof value === "number") return value;
     const [m, s] = value.split(":");
     return parseInt(m) * 60 + parseInt(s);
   }
@@ -5267,15 +5256,14 @@ ${text}
   });
   Shortcuts.registerCommand(
     "autoSeekConfig" /* autoSeekConfig */,
-    function() {
+    /* @__PURE__ */ (function() {
       let open = false;
       return function() {
         if (!this.autoSeek.scope) {
           this.message.info("\u8BE5\u7F51\u7AD9\u6682\u672A\u9002\u914D\u81EA\u52A8\u8DF3\u8FC7\u7247\u6BB5\u529F\u80FD\uFF0C\u656C\u8BF7\u671F\u5F85");
           return;
         }
-        if (open)
-          return;
+        if (open) return;
         open = true;
         this.plyr.pause();
         modal({
@@ -5312,7 +5300,7 @@ ${text}
           }
         });
       };
-    }()
+    })()
   );
   const DefaultConfig = {
     start: { enabled: false, start: 0, diff: 85 },
@@ -5321,16 +5309,16 @@ ${text}
   class AutoSeek {
     constructor(player) {
       this.player = player;
-      this.config = DefaultConfig;
-      this.localStoreKey = "k-autoSeek-config";
+      __publicField$1(this, "config", DefaultConfig);
+      __publicField$1(this, "localStoreKey", "k-autoSeek-config");
+      __publicField$1(this, "scope");
       this.player.autoSeek = this;
       this.player.getAnimeScope().then((scope) => {
         this.init(scope);
       });
     }
     getConfig() {
-      if (!this.scope)
-        throw new Error("AutoSeek scope is not set");
+      if (!this.scope) throw new Error("AutoSeek scope is not set");
       const store = local.getItem(
         this.localStoreKey,
         {}
@@ -5338,8 +5326,7 @@ ${text}
       return store[this.scope] || DefaultConfig;
     }
     setConfig(config) {
-      if (!this.scope)
-        throw new Error("AutoSeek scope is not set");
+      if (!this.scope) throw new Error("AutoSeek scope is not set");
       this.config = config;
       local.setItem(this.localStoreKey, __spreadProps$1(__spreadValues$3({}, local.getItem(this.localStoreKey, {})), {
         [this.scope]: config
@@ -5379,7 +5366,8 @@ ${text}
           const duration = media.duration;
           const safeMaxTime = duration - 0.1;
           const enabled = this.config.start.enabled || this.config.end.enabled;
-          if (!enabled || isSeeking || currentTime >= duration - 3)
+          if (!enabled || isSeeking || // 避免在片尾时触发
+          currentTime >= duration - 3)
             return;
           if (this.config.start.enabled) {
             const start = parseStartTime(this.config.start.start || 0);
@@ -5413,12 +5401,10 @@ ${text}
     refresh() {
       var _a, _b;
       const duration = this.player.media.duration;
-      if (!duration)
-        return;
+      if (!duration) return;
       $("#k-autoseek-overlay").remove();
       const enabled = this.config.start.enabled || this.config.end.enabled;
-      if (!enabled)
-        return;
+      if (!enabled) return;
       const $overlay = $(T$1["k-autoseek-overlay"]);
       if (this.config.start.enabled) {
         const start = parseStartTime(this.config.start.start || 0);
@@ -5519,7 +5505,7 @@ ${text}
             <p>${errorMessage}</p>
             `;
             setInterval(() => {
-              document.getElementById("current-time").innerText = new Date().toLocaleTimeString();
+              document.getElementById("current-time").innerText = (/* @__PURE__ */ new Date()).toLocaleTimeString();
             }, 16);
             setTimeout(() => {
               document.getElementById("status").innerText = "\u6B63\u5728\u5237\u65B0\u91CD\u8BD5\u4E2D...";
@@ -5565,6 +5551,10 @@ ${text}
         player.src = url;
       }
     },
+    /**
+     * agefans-01
+     * @include 43.240.74.134:8443/vip/?url=
+     */
     "agefans-01": async () => {
       let url = "";
       while (!url) {
@@ -5579,6 +5569,10 @@ ${text}
       player = new KPlayer("#k-player-container", { eventToParentWindow: true });
       player.src = url;
     },
+    /**
+     * agefans-02
+     * @include 43.240.74.134:8443/m3u8/?url=
+     */
     "agefans-02": async () => {
       let url = "";
       while (!url) {
@@ -5778,13 +5772,14 @@ ${text}
       }
     return a;
   };
-  const _SubscriptionManager = class {
+  var __publicField = (obj, key, value) => __defNormalProp$1(obj, typeof key !== "symbol" ? key + "" : key, value);
+  const _SubscriptionManager = class _SubscriptionManager {
     constructor(storageKey) {
       this.storageKey = storageKey;
-      this.listeners = /* @__PURE__ */ new Set();
+      // --- events ---
+      __publicField(this, "listeners", /* @__PURE__ */ new Set());
       window.addEventListener("storage", (e) => {
-        if (e.key === this.storageKey)
-          this.notify();
+        if (e.key === this.storageKey) this.notify();
       });
       window.addEventListener("popstate", () => {
         this.notify();
@@ -5806,6 +5801,7 @@ ${text}
     notify() {
       this.listeners.forEach((cb) => cb(this.getSubscriptions()));
     }
+    // --- store ---
     getSubscriptions() {
       return local.getItem(this.storageKey, []);
     }
@@ -5861,8 +5857,8 @@ ${text}
       return true;
     }
   };
+  __publicField(_SubscriptionManager, "instances", /* @__PURE__ */ new Map());
   let SubscriptionManager = _SubscriptionManager;
-  SubscriptionManager.instances = /* @__PURE__ */ new Map();
 
   function defineIframePlayer(config) {
     const { iframeSelector, search } = config;
@@ -5886,8 +5882,7 @@ ${text}
       }
     }
     function isFocusInputElement() {
-      if (!document.activeElement)
-        return false;
+      if (!document.activeElement) return false;
       return ["input", "textarea", "select"].includes(
         document.activeElement.tagName.toLowerCase()
       );
@@ -5898,12 +5893,9 @@ ${text}
       );
       window.addEventListener("keydown", (e) => {
         var _a, _b;
-        if (isFocusInputElement())
-          return;
-        if ((_a = window.getSelection()) == null ? void 0 : _a.toString())
-          return;
-        if (e.key === " ")
-          e.preventDefault();
+        if (isFocusInputElement()) return;
+        if ((_a = window.getSelection()) == null ? void 0 : _a.toString()) return;
+        if (e.key === " ") e.preventDefault();
         const iframe = $(iframeSelector)[0];
         if (document.activeElement !== iframe) {
           (_b = iframe.contentWindow) == null ? void 0 : _b.postMessage(
@@ -5934,17 +5926,14 @@ ${text}
         el.classList.add("k-episode-anchor");
         el.addEventListener("click", (e) => {
           e.preventDefault();
-          if ($(".ready-to-change-iframe-src").length)
-            return;
-          if (!el.href)
-            return;
+          if ($(".ready-to-change-iframe-src").length) return;
+          if (!el.href) return;
           setActive(el.href);
         });
       });
       window.addEventListener("message", async (e) => {
         var _a, _b, _c, _d;
-        if (!e.data.key)
-          return;
+        if (!e.data.key) return;
         switch (e.data.key) {
           case "getSearchName": {
             (_a = e.source) == null ? void 0 : _a.postMessage(
@@ -5976,11 +5965,9 @@ ${text}
           }
           case "prev":
           case "next": {
-            if ($(".ready-to-change-iframe-src").length)
-              return;
+            if ($(".ready-to-change-iframe-src").length) return;
             const url = config.getSwitchEpisodeURL(e.data.key === "next");
-            if (url)
-              setActive(url);
+            if (url) setActive(url);
             break;
           }
           case "enterwidescreen": {
@@ -6017,8 +6004,7 @@ ${text}
             break;
           }
           case "canplay": {
-            if (!config.subscribe)
-              break;
+            if (!config.subscribe) break;
             const sm = SubscriptionManager.getInstance(
               config.subscribe.storageKey
             );
@@ -6049,8 +6035,7 @@ ${text}
       );
     }
     function renderSubscribedAnimes() {
-      if (!config.subscribe)
-        return;
+      if (!config.subscribe) return;
       const $root = $("<div><div/>");
       const sm = SubscriptionManager.getInstance(config.subscribe.storageKey);
       sm.onChange(
@@ -6063,8 +6048,7 @@ ${text}
       );
     }
     function renderSubscribeBtn() {
-      if (!config.subscribe)
-        return;
+      if (!config.subscribe) return;
       let $btn = $("<button></button>");
       const sm = SubscriptionManager.getInstance(config.subscribe.storageKey);
       sm.onChange(
@@ -6081,18 +6065,14 @@ ${text}
       );
     }
     async function checkSubscriptionUpdates(id, force) {
-      if (!config.subscribe)
-        return;
+      if (!config.subscribe) return;
       const sm = SubscriptionManager.getInstance(config.subscribe.storageKey);
       const sub = sm.getSubscription(id);
-      if (!sub)
-        return;
+      if (!sub) return;
       const now = Date.now();
       if (!force) {
-        if (now - sub.updatedAt < 1e3 * 60 * 60 * (24 * 7 - 5))
-          return;
-        if (now - sub.checkedAt < 1e3 * 60 * 60)
-          return;
+        if (now - sub.updatedAt < 1e3 * 60 * 60 * (24 * 7 - 5)) return;
+        if (now - sub.checkedAt < 1e3 * 60 * 60) return;
       }
       try {
         const animeInfo = await config.subscribe.getAnimeUpdateInfo(id);
@@ -6102,14 +6082,12 @@ ${text}
       }
     }
     function checkSubscriptionsUpdates(force) {
-      if (!config.subscribe)
-        return;
+      if (!config.subscribe) return;
       const sm = SubscriptionManager.getInstance(config.subscribe.storageKey);
       const subscriptions = sm.getSubscriptions();
       subscriptions.forEach((sub) => {
         if (!force) {
-          if (sub.checkedAt - sub.updatedAt > 1e3 * 60 * 60 * 24 * 15)
-            return;
+          if (sub.checkedAt - sub.updatedAt > 1e3 * 60 * 60 * 24 * 15) return;
         }
         checkSubscriptionUpdates(sub.id, force);
       });
@@ -6255,10 +6233,8 @@ ${text}
     const $active = getActive$7();
     const sortDirection = getSortDirection();
     let $nextActive;
-    if (sortDirection === "asc")
-      $nextActive = $active[next ? "next" : "prev"]();
-    else
-      $nextActive = $active[next ? "prev" : "next"]();
+    if (sortDirection === "asc") $nextActive = $active[next ? "next" : "prev"]();
+    else $nextActive = $active[next ? "prev" : "next"]();
     return (_a = $nextActive.find("a").get(0)) == null ? void 0 : _a.href;
   }
   const iframePlayer$7 = defineIframePlayer({
@@ -6282,8 +6258,7 @@ ${text}
   });
   function playModule() {
     $(".video_detail_episode a").each((_, el) => {
-      if (el.href)
-        el.href = el.href.replace("http://", "https://");
+      if (el.href) el.href = el.href.replace("http://", "https://");
     });
     iframePlayer$7.runInTop();
     rememberSortDirection();
@@ -6369,7 +6344,7 @@ ${text}
         )
       })
     );
-    const day = new Date().getDay();
+    const day = (/* @__PURE__ */ new Date()).getDay();
     groups = [
       ...groups.slice(0, day + 1).reverse(),
       ...groups.slice(day + 1).reverse()
@@ -6432,8 +6407,7 @@ ${text}
   }
   function updateFavoriteField(id, field, value) {
     const favorite = getFavorite(id);
-    if (!favorite)
-      return;
+    if (!favorite) return;
     favorite[field] = value;
     setFavorite(favorite);
   }
@@ -6454,8 +6428,7 @@ ${text}
   }
   function updateCurrentPageFavorite() {
     const id = getCurrentPageFavoriteId();
-    if (!getFavorite(id))
-      return;
+    if (!getFavorite(id)) return;
     setFavorite(createCurrentPageFavorite());
   }
 
@@ -6508,8 +6481,7 @@ ${text}
       if (key === "canplay") {
         const video = data.video;
         const width = $("#ageframediv").width();
-        if (width)
-          $("#ageframediv").height(video.height / video.width * width);
+        if (width) $("#ageframediv").height(video.height / video.width * width);
         updateCurrentPageFavorite();
       }
     }
@@ -6587,8 +6559,7 @@ ${text}
       if (key === "canplay") {
         const video = data.video;
         const width = $("#video").width();
-        if (width)
-          $("#video").height(video.height / video.width * width);
+        if (width) $("#video").height(video.height / video.width * width);
       }
     }
   });
@@ -7030,8 +7001,7 @@ ${text}
       const target = $('a:contains("\u4E0B\u4E00\u96C6")')[0];
       if (target && target.hasAttribute("href") && !target.hasAttribute("disabled"))
         target.click();
-      else
-        player.message.info("\u6CA1\u6709\u4E0B\u4E00\u96C6\u4E86");
+      else player.message.info("\u6CA1\u6709\u4E0B\u4E00\u96C6\u4E86");
     });
     player.on("timeupdate", () => {
       try {
@@ -7215,7 +7185,7 @@ ${text}
     }
   });
 
-  var T = {"subList":"<div id=\"subList\" class=\"box-width wow fadeInUp\">\n  <div class=\"overflow\">\n    <div class=\"title flex between top40 week-diy rel\">\n      <div class=\"title-left flex\">\n        <h4 class=\"title-h cor4\">订阅列表</h4>\n        <div class=\"week-select flex box radius overflow rel\">\n          <div class=\"week-bj b-c\"></div>\n          <a class=\"week-key1\" data-index=\"1\">周一</a>\n          <a class=\"week-key2\" data-index=\"2\">周二</a>\n          <a class=\"week-key3\" data-index=\"3\">周三</a>\n          <a class=\"week-key4\" data-index=\"4\">周四</a>\n          <a class=\"week-key5\" data-index=\"5\">周五</a>\n          <a class=\"week-key6\" data-index=\"6\">周六</a>\n          <a class=\"week-key7\" data-index=\"7\">周日</a>\n        </div>\n      </div>\n      <div class=\"titel-right\">\n        <a class=\"button more force-update\">强制更新</a>\n      </div>\n    </div>\n  </div>\n</div>","subListContent":"<div   id=\"subListContent\"\n  class=\"flex wrap border-box public-r hide-b-2 diy-center1 mask2\"\n>\n  <div class=\"cor4 empty-tip\">订阅喜欢的番剧，在播放页面标题右侧添加订阅</div>\n</div>","subItem":"<div id=\"subItem\" class=\"public-list-box public-pic-b\">\n  <div class=\"public-list-div public-list-bj\">\n    <a       target=\"_blank\"\n      class=\"public-list-exp\"\n      href=\"{{current.url}}\"\n      title=\"{{title}}\"\n      ><img         class=\"lazy lazy1 gen-movie-img entered loaded\"\n        referrerpolicy=\"no-referrer\"\n        src=\"{{thumbnail}}\"\n        alt=\"{{title}}\"\n        data-src=\"{{thumbnail}}\"\n        data-ll-status=\"loaded\"\n      ><span class=\"public-bg\"></span><span class=\"public-list-prb hide ft2\">{{status}}</span><span class=\"public-play\"><i class=\"fa\"></i></span></a>\n  </div>\n  <div class=\"public-list-button\">\n    <a       target=\"_blank\"\n      class=\"time-title hide ft4 bold\"\n      href=\"{{current.url}}\"\n      title=\"{{title}}\"\n      >{{title}}</a>\n    <div class=\"public-list-subtitle cor5 hide ft2\">\n      <span>观看至</span>\n      <a target=\"_blank\" href=\"{{current.url}}\" title=\"{{current.title}}\"\n        >{{current.title}}</a>\n      <span>/</span>\n      <a target=\"_blank\" href=\"{{last.url}}\" title=\"{{last.title}}\"\n        >{{last.title}}</a>\n    </div>\n  </div>\n</div>"};
+  var T = {"subList":"<div id=\"subList\" class=\"box-width wow fadeInUp\">\r\n  <div class=\"overflow\">\r\n    <div class=\"title flex between top40 week-diy rel\">\r\n      <div class=\"title-left flex\">\r\n        <h4 class=\"title-h cor4\">订阅列表</h4>\r\n        <div class=\"week-select flex box radius overflow rel\">\r\n          <div class=\"week-bj b-c\"></div>\r\n          <a class=\"week-key1\" data-index=\"1\">周一</a>\r\n          <a class=\"week-key2\" data-index=\"2\">周二</a>\r\n          <a class=\"week-key3\" data-index=\"3\">周三</a>\r\n          <a class=\"week-key4\" data-index=\"4\">周四</a>\r\n          <a class=\"week-key5\" data-index=\"5\">周五</a>\r\n          <a class=\"week-key6\" data-index=\"6\">周六</a>\r\n          <a class=\"week-key7\" data-index=\"7\">周日</a>\r\n        </div>\r\n      </div>\r\n      <div class=\"titel-right\">\r\n        <a class=\"button more force-update\">强制更新</a>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>","subListContent":"<div \n  id=\"subListContent\"\r\n  class=\"flex wrap border-box public-r hide-b-2 diy-center1 mask2\"\r\n>\r\n  <div class=\"cor4 empty-tip\">订阅喜欢的番剧，在播放页面标题右侧添加订阅</div>\r\n</div>","subItem":"<div id=\"subItem\" class=\"public-list-box public-pic-b\">\r\n  <div class=\"public-list-div public-list-bj\">\r\n    <a \n      target=\"_blank\"\r\n      class=\"public-list-exp\"\r\n      href=\"{{current.url}}\"\r\n      title=\"{{title}}\"\r\n      ><img \n        class=\"lazy lazy1 gen-movie-img entered loaded\"\r\n        referrerpolicy=\"no-referrer\"\r\n        src=\"{{thumbnail}}\"\r\n        alt=\"{{title}}\"\r\n        data-src=\"{{thumbnail}}\"\r\n        data-ll-status=\"loaded\"\r\n      ><span class=\"public-bg\"></span><span class=\"public-list-prb hide ft2\">{{status}}</span><span class=\"public-play\"><i class=\"fa\"></i></span></a>\r\n  </div>\r\n  <div class=\"public-list-button\">\r\n    <a \n      target=\"_blank\"\r\n      class=\"time-title hide ft4 bold\"\r\n      href=\"{{current.url}}\"\r\n      title=\"{{title}}\"\r\n      >{{title}}</a>\r\n    <div class=\"public-list-subtitle cor5 hide ft2\">\r\n      <span>观看至</span>\r\n      <a target=\"_blank\" href=\"{{current.url}}\" title=\"{{current.title}}\"\r\n        >{{current.title}}</a>\r\n      <span>/</span>\r\n      <a target=\"_blank\" href=\"{{last.url}}\" title=\"{{last.title}}\"\r\n        >{{last.title}}</a>\r\n    </div>\r\n  </div>\r\n</div>"};
 
   /*!
    * mustache.js - Logic-less {{mustache}} templates with JavaScript
@@ -8017,7 +7987,11 @@ ${text}
     };
     const updatedAtText = getLabelValue($doc, ["\u66F4\u65B0"]);
     const statusText = getLabelValue($doc, ["\u72B6\u6001", "\u72C0\u6001", "\u72C0\u614B"]);
-    const $last = $doc.find(".anthology-list-play li a").last();
+    const $lists = $doc.find(".anthology-list-play");
+    const longest = $lists.get().reduce((max, el) => {
+      return max.children.length > el.children.length ? max : el;
+    }, $lists[0]);
+    const $last = $(longest).find("li a").last();
     return {
       updatedAt: new Date(updatedAtText).getTime(),
       status: statusText,
@@ -8084,7 +8058,7 @@ ${text}
         if ($root.attr("data-active-day")) {
           setActive(Number($root.attr("data-active-day")));
         } else {
-          const day = new Date().getDay();
+          const day = (/* @__PURE__ */ new Date()).getDay();
           setActive(day === 0 ? 6 : day - 1);
         }
         $(".week-select a").on("click", (e) => {
