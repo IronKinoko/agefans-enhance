@@ -31,7 +31,11 @@ async function getAnimeUpdateInfo(id: string) {
   const updatedAtText = getLabelValue($doc, ['更新'])
   const statusText = getLabelValue($doc, ['状态', '狀态', '狀態'])
 
-  const $last = $doc.find('.anthology-list-play li a').last()
+  const $lists = $doc.find('.anthology-list-play')
+  const longest = $lists.get().reduce((max, el) => {
+    return max.children.length > el.children.length ? max : el
+  }, $lists[0])
+  const $last = $(longest).find('li a').last()
 
   return {
     updatedAt: new Date(updatedAtText).getTime(),
