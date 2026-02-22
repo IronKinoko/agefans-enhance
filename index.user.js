@@ -2,15 +2,12 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.54.3
+// @version      1.54.4
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
 // @include      https://www.agefans.*
-// @include      https://www.agemys.*
 // @include      https://www.agedm.*
-// @include      https://m.agedm.*
-// @include      http*://www.ntdm*.com/*
 // @include      http*://www.bimiacg*.net*
 // @include      https://pro.ascepan.top/*
 // @include      https://jx.ejtsyc.com*
@@ -154,17 +151,17 @@
   var Symbol = root.Symbol;
 
   /** Used for built-in method references. */
-  var objectProto$5 = Object.prototype;
+  var objectProto$d = Object.prototype;
 
   /** Used to check objects for own properties. */
-  var hasOwnProperty$4 = objectProto$5.hasOwnProperty;
+  var hasOwnProperty$b = objectProto$d.hasOwnProperty;
 
   /**
    * Used to resolve the
    * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
    * of values.
    */
-  var nativeObjectToString$1 = objectProto$5.toString;
+  var nativeObjectToString$1 = objectProto$d.toString;
 
   /** Built-in value references. */
   var symToStringTag$1 = Symbol ? Symbol.toStringTag : undefined;
@@ -177,7 +174,7 @@
    * @returns {string} Returns the raw `toStringTag`.
    */
   function getRawTag(value) {
-    var isOwn = hasOwnProperty$4.call(value, symToStringTag$1),
+    var isOwn = hasOwnProperty$b.call(value, symToStringTag$1),
         tag = value[symToStringTag$1];
 
     try {
@@ -197,14 +194,14 @@
   }
 
   /** Used for built-in method references. */
-  var objectProto$4 = Object.prototype;
+  var objectProto$c = Object.prototype;
 
   /**
    * Used to resolve the
    * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
    * of values.
    */
-  var nativeObjectToString = objectProto$4.toString;
+  var nativeObjectToString = objectProto$c.toString;
 
   /**
    * Converts `value` to a string using `Object.prototype.toString`.
@@ -213,7 +210,7 @@
    * @param {*} value The value to convert.
    * @returns {string} Returns the converted string.
    */
-  function objectToString$1(value) {
+  function objectToString(value) {
     return nativeObjectToString.call(value);
   }
 
@@ -237,7 +234,7 @@
     }
     return (symToStringTag && symToStringTag in Object(value))
       ? getRawTag(value)
-      : objectToString$1(value);
+      : objectToString(value);
   }
 
   /**
@@ -336,7 +333,7 @@
    * _.isArray(_.noop);
    * // => false
    */
-  var isArray$1 = Array.isArray;
+  var isArray = Array.isArray;
 
   /** Used to convert symbols to primitives and strings. */
   var symbolProto = Symbol ? Symbol.prototype : undefined,
@@ -355,7 +352,7 @@
     if (typeof value == 'string') {
       return value;
     }
-    if (isArray$1(value)) {
+    if (isArray(value)) {
       // Recursively convert values (susceptible to call stack limits).
       return arrayMap(value, baseToString) + '';
     }
@@ -489,9 +486,29 @@
       : (reIsBadHex.test(value) ? NAN : +value);
   }
 
+  /**
+   * This method returns the first argument it receives.
+   *
+   * @static
+   * @since 0.1.0
+   * @memberOf _
+   * @category Util
+   * @param {*} value Any value.
+   * @returns {*} Returns `value`.
+   * @example
+   *
+   * var object = { 'a': 1 };
+   *
+   * console.log(_.identity(object) === object);
+   * // => true
+   */
+  function identity(value) {
+    return value;
+  }
+
   /** `Object#toString` result references. */
   var asyncTag = '[object AsyncFunction]',
-      funcTag = '[object Function]',
+      funcTag$1 = '[object Function]',
       genTag = '[object GeneratorFunction]',
       proxyTag = '[object Proxy]';
 
@@ -512,14 +529,14 @@
    * _.isFunction(/abc/);
    * // => false
    */
-  function isFunction$1(value) {
+  function isFunction(value) {
     if (!isObject(value)) {
       return false;
     }
     // The use of `Object#toString` avoids issues with the `typeof` operator
     // in Safari 9 which returns 'object' for typed arrays and other constructors.
     var tag = baseGetTag(value);
-    return tag == funcTag || tag == genTag || tag == asyncTag || tag == proxyTag;
+    return tag == funcTag$1 || tag == genTag || tag == asyncTag || tag == proxyTag;
   }
 
   /** Used to detect overreaching core-js shims. */
@@ -543,10 +560,10 @@
   }
 
   /** Used for built-in method references. */
-  var funcProto$1 = Function.prototype;
+  var funcProto$2 = Function.prototype;
 
   /** Used to resolve the decompiled source of functions. */
-  var funcToString$1 = funcProto$1.toString;
+  var funcToString$2 = funcProto$2.toString;
 
   /**
    * Converts `func` to its source code.
@@ -558,7 +575,7 @@
   function toSource(func) {
     if (func != null) {
       try {
-        return funcToString$1.call(func);
+        return funcToString$2.call(func);
       } catch (e) {}
       try {
         return (func + '');
@@ -577,18 +594,18 @@
   var reIsHostCtor = /^\[object .+?Constructor\]$/;
 
   /** Used for built-in method references. */
-  var funcProto = Function.prototype,
-      objectProto$3 = Object.prototype;
+  var funcProto$1 = Function.prototype,
+      objectProto$b = Object.prototype;
 
   /** Used to resolve the decompiled source of functions. */
-  var funcToString = funcProto.toString;
+  var funcToString$1 = funcProto$1.toString;
 
   /** Used to check objects for own properties. */
-  var hasOwnProperty$3 = objectProto$3.hasOwnProperty;
+  var hasOwnProperty$a = objectProto$b.hasOwnProperty;
 
   /** Used to detect if a method is native. */
   var reIsNative = RegExp('^' +
-    funcToString.call(hasOwnProperty$3).replace(reRegExpChar, '\\$&')
+    funcToString$1.call(hasOwnProperty$a).replace(reRegExpChar, '\\$&')
     .replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$'
   );
 
@@ -604,7 +621,7 @@
     if (!isObject(value) || isMasked(value)) {
       return false;
     }
-    var pattern = isFunction$1(value) ? reIsNative : reIsHostCtor;
+    var pattern = isFunction(value) ? reIsNative : reIsHostCtor;
     return pattern.test(toSource(value));
   }
 
@@ -633,6 +650,87 @@
     return baseIsNative(value) ? value : undefined;
   }
 
+  /**
+   * A faster alternative to `Function#apply`, this function invokes `func`
+   * with the `this` binding of `thisArg` and the arguments of `args`.
+   *
+   * @private
+   * @param {Function} func The function to invoke.
+   * @param {*} thisArg The `this` binding of `func`.
+   * @param {Array} args The arguments to invoke `func` with.
+   * @returns {*} Returns the result of `func`.
+   */
+  function apply(func, thisArg, args) {
+    switch (args.length) {
+      case 0: return func.call(thisArg);
+      case 1: return func.call(thisArg, args[0]);
+      case 2: return func.call(thisArg, args[0], args[1]);
+      case 3: return func.call(thisArg, args[0], args[1], args[2]);
+    }
+    return func.apply(thisArg, args);
+  }
+
+  /** Used to detect hot functions by number of calls within a span of milliseconds. */
+  var HOT_COUNT = 800,
+      HOT_SPAN = 16;
+
+  /* Built-in method references for those with the same name as other `lodash` methods. */
+  var nativeNow = Date.now;
+
+  /**
+   * Creates a function that'll short out and invoke `identity` instead
+   * of `func` when it's called `HOT_COUNT` or more times in `HOT_SPAN`
+   * milliseconds.
+   *
+   * @private
+   * @param {Function} func The function to restrict.
+   * @returns {Function} Returns the new shortable function.
+   */
+  function shortOut(func) {
+    var count = 0,
+        lastCalled = 0;
+
+    return function() {
+      var stamp = nativeNow(),
+          remaining = HOT_SPAN - (stamp - lastCalled);
+
+      lastCalled = stamp;
+      if (remaining > 0) {
+        if (++count >= HOT_COUNT) {
+          return arguments[0];
+        }
+      } else {
+        count = 0;
+      }
+      return func.apply(undefined, arguments);
+    };
+  }
+
+  /**
+   * Creates a function that returns `value`.
+   *
+   * @static
+   * @memberOf _
+   * @since 2.4.0
+   * @category Util
+   * @param {*} value The value to return from the new function.
+   * @returns {Function} Returns the new constant function.
+   * @example
+   *
+   * var objects = _.times(2, _.constant({ 'a': 1 }));
+   *
+   * console.log(objects);
+   * // => [{ 'a': 1 }, { 'a': 1 }]
+   *
+   * console.log(objects[0] === objects[1]);
+   * // => true
+   */
+  function constant(value) {
+    return function() {
+      return value;
+    };
+  }
+
   var defineProperty = (function() {
     try {
       var func = getNative(Object, 'defineProperty');
@@ -641,8 +739,35 @@
     } catch (e) {}
   }());
 
+  /**
+   * The base implementation of `setToString` without support for hot loop shorting.
+   *
+   * @private
+   * @param {Function} func The function to modify.
+   * @param {Function} string The `toString` result.
+   * @returns {Function} Returns `func`.
+   */
+  var baseSetToString = !defineProperty ? identity : function(func, string) {
+    return defineProperty(func, 'toString', {
+      'configurable': true,
+      'enumerable': false,
+      'value': constant(string),
+      'writable': true
+    });
+  };
+
+  /**
+   * Sets the `toString` method of `func` to return `string`.
+   *
+   * @private
+   * @param {Function} func The function to modify.
+   * @param {Function} string The `toString` result.
+   * @returns {Function} Returns `func`.
+   */
+  var setToString = shortOut(baseSetToString);
+
   /** Used as references for various `Number` constants. */
-  var MAX_SAFE_INTEGER = 9007199254740991;
+  var MAX_SAFE_INTEGER$1 = 9007199254740991;
 
   /** Used to detect unsigned integer values. */
   var reIsUint = /^(?:0|[1-9]\d*)$/;
@@ -657,7 +782,7 @@
    */
   function isIndex(value, length) {
     var type = typeof value;
-    length = length == null ? MAX_SAFE_INTEGER : length;
+    length = length == null ? MAX_SAFE_INTEGER$1 : length;
 
     return !!length &&
       (type == 'number' ||
@@ -724,10 +849,10 @@
   }
 
   /** Used for built-in method references. */
-  var objectProto$2 = Object.prototype;
+  var objectProto$a = Object.prototype;
 
   /** Used to check objects for own properties. */
-  var hasOwnProperty$2 = objectProto$2.hasOwnProperty;
+  var hasOwnProperty$9 = objectProto$a.hasOwnProperty;
 
   /**
    * Assigns `value` to `key` of `object` if the existing value is not equivalent
@@ -741,11 +866,685 @@
    */
   function assignValue(object, key, value) {
     var objValue = object[key];
-    if (!(hasOwnProperty$2.call(object, key) && eq(objValue, value)) ||
+    if (!(hasOwnProperty$9.call(object, key) && eq(objValue, value)) ||
         (value === undefined && !(key in object))) {
       baseAssignValue(object, key, value);
     }
   }
+
+  /**
+   * Copies properties of `source` to `object`.
+   *
+   * @private
+   * @param {Object} source The object to copy properties from.
+   * @param {Array} props The property identifiers to copy.
+   * @param {Object} [object={}] The object to copy properties to.
+   * @param {Function} [customizer] The function to customize copied values.
+   * @returns {Object} Returns `object`.
+   */
+  function copyObject(source, props, object, customizer) {
+    var isNew = !object;
+    object || (object = {});
+
+    var index = -1,
+        length = props.length;
+
+    while (++index < length) {
+      var key = props[index];
+
+      var newValue = customizer
+        ? customizer(object[key], source[key], key, object, source)
+        : undefined;
+
+      if (newValue === undefined) {
+        newValue = source[key];
+      }
+      if (isNew) {
+        baseAssignValue(object, key, newValue);
+      } else {
+        assignValue(object, key, newValue);
+      }
+    }
+    return object;
+  }
+
+  /* Built-in method references for those with the same name as other `lodash` methods. */
+  var nativeMax$1 = Math.max;
+
+  /**
+   * A specialized version of `baseRest` which transforms the rest array.
+   *
+   * @private
+   * @param {Function} func The function to apply a rest parameter to.
+   * @param {number} [start=func.length-1] The start position of the rest parameter.
+   * @param {Function} transform The rest array transform.
+   * @returns {Function} Returns the new function.
+   */
+  function overRest(func, start, transform) {
+    start = nativeMax$1(start === undefined ? (func.length - 1) : start, 0);
+    return function() {
+      var args = arguments,
+          index = -1,
+          length = nativeMax$1(args.length - start, 0),
+          array = Array(length);
+
+      while (++index < length) {
+        array[index] = args[start + index];
+      }
+      index = -1;
+      var otherArgs = Array(start + 1);
+      while (++index < start) {
+        otherArgs[index] = args[index];
+      }
+      otherArgs[start] = transform(array);
+      return apply(func, this, otherArgs);
+    };
+  }
+
+  /**
+   * The base implementation of `_.rest` which doesn't validate or coerce arguments.
+   *
+   * @private
+   * @param {Function} func The function to apply a rest parameter to.
+   * @param {number} [start=func.length-1] The start position of the rest parameter.
+   * @returns {Function} Returns the new function.
+   */
+  function baseRest(func, start) {
+    return setToString(overRest(func, start, identity), func + '');
+  }
+
+  /** Used as references for various `Number` constants. */
+  var MAX_SAFE_INTEGER = 9007199254740991;
+
+  /**
+   * Checks if `value` is a valid array-like length.
+   *
+   * **Note:** This method is loosely based on
+   * [`ToLength`](http://ecma-international.org/ecma-262/7.0/#sec-tolength).
+   *
+   * @static
+   * @memberOf _
+   * @since 4.0.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
+   * @example
+   *
+   * _.isLength(3);
+   * // => true
+   *
+   * _.isLength(Number.MIN_VALUE);
+   * // => false
+   *
+   * _.isLength(Infinity);
+   * // => false
+   *
+   * _.isLength('3');
+   * // => false
+   */
+  function isLength(value) {
+    return typeof value == 'number' &&
+      value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
+  }
+
+  /**
+   * Checks if `value` is array-like. A value is considered array-like if it's
+   * not a function and has a `value.length` that's an integer greater than or
+   * equal to `0` and less than or equal to `Number.MAX_SAFE_INTEGER`.
+   *
+   * @static
+   * @memberOf _
+   * @since 4.0.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is array-like, else `false`.
+   * @example
+   *
+   * _.isArrayLike([1, 2, 3]);
+   * // => true
+   *
+   * _.isArrayLike(document.body.children);
+   * // => true
+   *
+   * _.isArrayLike('abc');
+   * // => true
+   *
+   * _.isArrayLike(_.noop);
+   * // => false
+   */
+  function isArrayLike(value) {
+    return value != null && isLength(value.length) && !isFunction(value);
+  }
+
+  /**
+   * Checks if the given arguments are from an iteratee call.
+   *
+   * @private
+   * @param {*} value The potential iteratee value argument.
+   * @param {*} index The potential iteratee index or key argument.
+   * @param {*} object The potential iteratee object argument.
+   * @returns {boolean} Returns `true` if the arguments are from an iteratee call,
+   *  else `false`.
+   */
+  function isIterateeCall(value, index, object) {
+    if (!isObject(object)) {
+      return false;
+    }
+    var type = typeof index;
+    if (type == 'number'
+          ? (isArrayLike(object) && isIndex(index, object.length))
+          : (type == 'string' && index in object)
+        ) {
+      return eq(object[index], value);
+    }
+    return false;
+  }
+
+  /**
+   * Creates a function like `_.assign`.
+   *
+   * @private
+   * @param {Function} assigner The function to assign values.
+   * @returns {Function} Returns the new assigner function.
+   */
+  function createAssigner(assigner) {
+    return baseRest(function(object, sources) {
+      var index = -1,
+          length = sources.length,
+          customizer = length > 1 ? sources[length - 1] : undefined,
+          guard = length > 2 ? sources[2] : undefined;
+
+      customizer = (assigner.length > 3 && typeof customizer == 'function')
+        ? (length--, customizer)
+        : undefined;
+
+      if (guard && isIterateeCall(sources[0], sources[1], guard)) {
+        customizer = length < 3 ? undefined : customizer;
+        length = 1;
+      }
+      object = Object(object);
+      while (++index < length) {
+        var source = sources[index];
+        if (source) {
+          assigner(object, source, index, customizer);
+        }
+      }
+      return object;
+    });
+  }
+
+  /** Used for built-in method references. */
+  var objectProto$9 = Object.prototype;
+
+  /**
+   * Checks if `value` is likely a prototype object.
+   *
+   * @private
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is a prototype, else `false`.
+   */
+  function isPrototype(value) {
+    var Ctor = value && value.constructor,
+        proto = (typeof Ctor == 'function' && Ctor.prototype) || objectProto$9;
+
+    return value === proto;
+  }
+
+  /**
+   * The base implementation of `_.times` without support for iteratee shorthands
+   * or max array length checks.
+   *
+   * @private
+   * @param {number} n The number of times to invoke `iteratee`.
+   * @param {Function} iteratee The function invoked per iteration.
+   * @returns {Array} Returns the array of results.
+   */
+  function baseTimes(n, iteratee) {
+    var index = -1,
+        result = Array(n);
+
+    while (++index < n) {
+      result[index] = iteratee(index);
+    }
+    return result;
+  }
+
+  /** `Object#toString` result references. */
+  var argsTag$1 = '[object Arguments]';
+
+  /**
+   * The base implementation of `_.isArguments`.
+   *
+   * @private
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is an `arguments` object,
+   */
+  function baseIsArguments(value) {
+    return isObjectLike(value) && baseGetTag(value) == argsTag$1;
+  }
+
+  /** Used for built-in method references. */
+  var objectProto$8 = Object.prototype;
+
+  /** Used to check objects for own properties. */
+  var hasOwnProperty$8 = objectProto$8.hasOwnProperty;
+
+  /** Built-in value references. */
+  var propertyIsEnumerable = objectProto$8.propertyIsEnumerable;
+
+  /**
+   * Checks if `value` is likely an `arguments` object.
+   *
+   * @static
+   * @memberOf _
+   * @since 0.1.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is an `arguments` object,
+   *  else `false`.
+   * @example
+   *
+   * _.isArguments(function() { return arguments; }());
+   * // => true
+   *
+   * _.isArguments([1, 2, 3]);
+   * // => false
+   */
+  var isArguments = baseIsArguments(function() { return arguments; }()) ? baseIsArguments : function(value) {
+    return isObjectLike(value) && hasOwnProperty$8.call(value, 'callee') &&
+      !propertyIsEnumerable.call(value, 'callee');
+  };
+
+  /**
+   * This method returns `false`.
+   *
+   * @static
+   * @memberOf _
+   * @since 4.13.0
+   * @category Util
+   * @returns {boolean} Returns `false`.
+   * @example
+   *
+   * _.times(2, _.stubFalse);
+   * // => [false, false]
+   */
+  function stubFalse() {
+    return false;
+  }
+
+  /** Detect free variable `exports`. */
+  var freeExports$1 = typeof exports == 'object' && exports && !exports.nodeType && exports;
+
+  /** Detect free variable `module`. */
+  var freeModule$1 = freeExports$1 && typeof module == 'object' && module && !module.nodeType && module;
+
+  /** Detect the popular CommonJS extension `module.exports`. */
+  var moduleExports$1 = freeModule$1 && freeModule$1.exports === freeExports$1;
+
+  /** Built-in value references. */
+  var Buffer = moduleExports$1 ? root.Buffer : undefined;
+
+  /* Built-in method references for those with the same name as other `lodash` methods. */
+  var nativeIsBuffer = Buffer ? Buffer.isBuffer : undefined;
+
+  /**
+   * Checks if `value` is a buffer.
+   *
+   * @static
+   * @memberOf _
+   * @since 4.3.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is a buffer, else `false`.
+   * @example
+   *
+   * _.isBuffer(new Buffer(2));
+   * // => true
+   *
+   * _.isBuffer(new Uint8Array(2));
+   * // => false
+   */
+  var isBuffer = nativeIsBuffer || stubFalse;
+
+  /** `Object#toString` result references. */
+  var argsTag = '[object Arguments]',
+      arrayTag = '[object Array]',
+      boolTag = '[object Boolean]',
+      dateTag = '[object Date]',
+      errorTag$1 = '[object Error]',
+      funcTag = '[object Function]',
+      mapTag = '[object Map]',
+      numberTag = '[object Number]',
+      objectTag$1 = '[object Object]',
+      regexpTag = '[object RegExp]',
+      setTag = '[object Set]',
+      stringTag = '[object String]',
+      weakMapTag = '[object WeakMap]';
+
+  var arrayBufferTag = '[object ArrayBuffer]',
+      dataViewTag = '[object DataView]',
+      float32Tag = '[object Float32Array]',
+      float64Tag = '[object Float64Array]',
+      int8Tag = '[object Int8Array]',
+      int16Tag = '[object Int16Array]',
+      int32Tag = '[object Int32Array]',
+      uint8Tag = '[object Uint8Array]',
+      uint8ClampedTag = '[object Uint8ClampedArray]',
+      uint16Tag = '[object Uint16Array]',
+      uint32Tag = '[object Uint32Array]';
+
+  /** Used to identify `toStringTag` values of typed arrays. */
+  var typedArrayTags = {};
+  typedArrayTags[float32Tag] = typedArrayTags[float64Tag] =
+  typedArrayTags[int8Tag] = typedArrayTags[int16Tag] =
+  typedArrayTags[int32Tag] = typedArrayTags[uint8Tag] =
+  typedArrayTags[uint8ClampedTag] = typedArrayTags[uint16Tag] =
+  typedArrayTags[uint32Tag] = true;
+  typedArrayTags[argsTag] = typedArrayTags[arrayTag] =
+  typedArrayTags[arrayBufferTag] = typedArrayTags[boolTag] =
+  typedArrayTags[dataViewTag] = typedArrayTags[dateTag] =
+  typedArrayTags[errorTag$1] = typedArrayTags[funcTag] =
+  typedArrayTags[mapTag] = typedArrayTags[numberTag] =
+  typedArrayTags[objectTag$1] = typedArrayTags[regexpTag] =
+  typedArrayTags[setTag] = typedArrayTags[stringTag] =
+  typedArrayTags[weakMapTag] = false;
+
+  /**
+   * The base implementation of `_.isTypedArray` without Node.js optimizations.
+   *
+   * @private
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is a typed array, else `false`.
+   */
+  function baseIsTypedArray(value) {
+    return isObjectLike(value) &&
+      isLength(value.length) && !!typedArrayTags[baseGetTag(value)];
+  }
+
+  /**
+   * The base implementation of `_.unary` without support for storing metadata.
+   *
+   * @private
+   * @param {Function} func The function to cap arguments for.
+   * @returns {Function} Returns the new capped function.
+   */
+  function baseUnary(func) {
+    return function(value) {
+      return func(value);
+    };
+  }
+
+  /** Detect free variable `exports`. */
+  var freeExports = typeof exports == 'object' && exports && !exports.nodeType && exports;
+
+  /** Detect free variable `module`. */
+  var freeModule = freeExports && typeof module == 'object' && module && !module.nodeType && module;
+
+  /** Detect the popular CommonJS extension `module.exports`. */
+  var moduleExports = freeModule && freeModule.exports === freeExports;
+
+  /** Detect free variable `process` from Node.js. */
+  var freeProcess = moduleExports && freeGlobal.process;
+
+  /** Used to access faster Node.js helpers. */
+  var nodeUtil = (function() {
+    try {
+      // Use `util.types` for Node.js 10+.
+      var types = freeModule && freeModule.require && freeModule.require('util').types;
+
+      if (types) {
+        return types;
+      }
+
+      // Legacy `process.binding('util')` for Node.js < 10.
+      return freeProcess && freeProcess.binding && freeProcess.binding('util');
+    } catch (e) {}
+  }());
+
+  /* Node.js helper references. */
+  var nodeIsTypedArray = nodeUtil && nodeUtil.isTypedArray;
+
+  /**
+   * Checks if `value` is classified as a typed array.
+   *
+   * @static
+   * @memberOf _
+   * @since 3.0.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is a typed array, else `false`.
+   * @example
+   *
+   * _.isTypedArray(new Uint8Array);
+   * // => true
+   *
+   * _.isTypedArray([]);
+   * // => false
+   */
+  var isTypedArray = nodeIsTypedArray ? baseUnary(nodeIsTypedArray) : baseIsTypedArray;
+
+  /** Used for built-in method references. */
+  var objectProto$7 = Object.prototype;
+
+  /** Used to check objects for own properties. */
+  var hasOwnProperty$7 = objectProto$7.hasOwnProperty;
+
+  /**
+   * Creates an array of the enumerable property names of the array-like `value`.
+   *
+   * @private
+   * @param {*} value The value to query.
+   * @param {boolean} inherited Specify returning inherited property names.
+   * @returns {Array} Returns the array of property names.
+   */
+  function arrayLikeKeys(value, inherited) {
+    var isArr = isArray(value),
+        isArg = !isArr && isArguments(value),
+        isBuff = !isArr && !isArg && isBuffer(value),
+        isType = !isArr && !isArg && !isBuff && isTypedArray(value),
+        skipIndexes = isArr || isArg || isBuff || isType,
+        result = skipIndexes ? baseTimes(value.length, String) : [],
+        length = result.length;
+
+    for (var key in value) {
+      if ((inherited || hasOwnProperty$7.call(value, key)) &&
+          !(skipIndexes && (
+             // Safari 9 has enumerable `arguments.length` in strict mode.
+             key == 'length' ||
+             // Node.js 0.10 has enumerable non-index properties on buffers.
+             (isBuff && (key == 'offset' || key == 'parent')) ||
+             // PhantomJS 2 has enumerable non-index properties on typed arrays.
+             (isType && (key == 'buffer' || key == 'byteLength' || key == 'byteOffset')) ||
+             // Skip index properties.
+             isIndex(key, length)
+          ))) {
+        result.push(key);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Creates a unary function that invokes `func` with its argument transformed.
+   *
+   * @private
+   * @param {Function} func The function to wrap.
+   * @param {Function} transform The argument transform.
+   * @returns {Function} Returns the new function.
+   */
+  function overArg(func, transform) {
+    return function(arg) {
+      return func(transform(arg));
+    };
+  }
+
+  /* Built-in method references for those with the same name as other `lodash` methods. */
+  var nativeKeys = overArg(Object.keys, Object);
+
+  /** Used for built-in method references. */
+  var objectProto$6 = Object.prototype;
+
+  /** Used to check objects for own properties. */
+  var hasOwnProperty$6 = objectProto$6.hasOwnProperty;
+
+  /**
+   * The base implementation of `_.keys` which doesn't treat sparse arrays as dense.
+   *
+   * @private
+   * @param {Object} object The object to query.
+   * @returns {Array} Returns the array of property names.
+   */
+  function baseKeys(object) {
+    if (!isPrototype(object)) {
+      return nativeKeys(object);
+    }
+    var result = [];
+    for (var key in Object(object)) {
+      if (hasOwnProperty$6.call(object, key) && key != 'constructor') {
+        result.push(key);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Creates an array of the own enumerable property names of `object`.
+   *
+   * **Note:** Non-object values are coerced to objects. See the
+   * [ES spec](http://ecma-international.org/ecma-262/7.0/#sec-object.keys)
+   * for more details.
+   *
+   * @static
+   * @since 0.1.0
+   * @memberOf _
+   * @category Object
+   * @param {Object} object The object to query.
+   * @returns {Array} Returns the array of property names.
+   * @example
+   *
+   * function Foo() {
+   *   this.a = 1;
+   *   this.b = 2;
+   * }
+   *
+   * Foo.prototype.c = 3;
+   *
+   * _.keys(new Foo);
+   * // => ['a', 'b'] (iteration order is not guaranteed)
+   *
+   * _.keys('hi');
+   * // => ['0', '1']
+   */
+  function keys(object) {
+    return isArrayLike(object) ? arrayLikeKeys(object) : baseKeys(object);
+  }
+
+  /**
+   * This function is like
+   * [`Object.keys`](http://ecma-international.org/ecma-262/7.0/#sec-object.keys)
+   * except that it includes inherited enumerable properties.
+   *
+   * @private
+   * @param {Object} object The object to query.
+   * @returns {Array} Returns the array of property names.
+   */
+  function nativeKeysIn(object) {
+    var result = [];
+    if (object != null) {
+      for (var key in Object(object)) {
+        result.push(key);
+      }
+    }
+    return result;
+  }
+
+  /** Used for built-in method references. */
+  var objectProto$5 = Object.prototype;
+
+  /** Used to check objects for own properties. */
+  var hasOwnProperty$5 = objectProto$5.hasOwnProperty;
+
+  /**
+   * The base implementation of `_.keysIn` which doesn't treat sparse arrays as dense.
+   *
+   * @private
+   * @param {Object} object The object to query.
+   * @returns {Array} Returns the array of property names.
+   */
+  function baseKeysIn(object) {
+    if (!isObject(object)) {
+      return nativeKeysIn(object);
+    }
+    var isProto = isPrototype(object),
+        result = [];
+
+    for (var key in object) {
+      if (!(key == 'constructor' && (isProto || !hasOwnProperty$5.call(object, key)))) {
+        result.push(key);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Creates an array of the own and inherited enumerable property names of `object`.
+   *
+   * **Note:** Non-object values are coerced to objects.
+   *
+   * @static
+   * @memberOf _
+   * @since 3.0.0
+   * @category Object
+   * @param {Object} object The object to query.
+   * @returns {Array} Returns the array of property names.
+   * @example
+   *
+   * function Foo() {
+   *   this.a = 1;
+   *   this.b = 2;
+   * }
+   *
+   * Foo.prototype.c = 3;
+   *
+   * _.keysIn(new Foo);
+   * // => ['a', 'b', 'c'] (iteration order is not guaranteed)
+   */
+  function keysIn(object) {
+    return isArrayLike(object) ? arrayLikeKeys(object, true) : baseKeysIn(object);
+  }
+
+  /**
+   * This method is like `_.assignIn` except that it accepts `customizer`
+   * which is invoked to produce the assigned values. If `customizer` returns
+   * `undefined`, assignment is handled by the method instead. The `customizer`
+   * is invoked with five arguments: (objValue, srcValue, key, object, source).
+   *
+   * **Note:** This method mutates `object`.
+   *
+   * @static
+   * @memberOf _
+   * @since 4.0.0
+   * @alias extendWith
+   * @category Object
+   * @param {Object} object The destination object.
+   * @param {...Object} sources The source objects.
+   * @param {Function} [customizer] The function to customize assigned values.
+   * @returns {Object} Returns `object`.
+   * @see _.assignWith
+   * @example
+   *
+   * function customizer(objValue, srcValue) {
+   *   return _.isUndefined(objValue) ? srcValue : objValue;
+   * }
+   *
+   * var defaults = _.partialRight(_.assignInWith, customizer);
+   *
+   * defaults({ 'a': 1 }, { 'b': 2 }, { 'a': 3 });
+   * // => { 'a': 1, 'b': 2 }
+   */
+  var assignInWith = createAssigner(function(object, source, srcIndex, customizer) {
+    copyObject(source, keysIn(source), object, customizer);
+  });
 
   /** Used to match property names within property paths. */
   var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/,
@@ -760,7 +1559,7 @@
    * @returns {boolean} Returns `true` if `value` is a property name, else `false`.
    */
   function isKey(value, object) {
-    if (isArray$1(value)) {
+    if (isArray(value)) {
       return false;
     }
     var type = typeof value;
@@ -807,10 +1606,10 @@
   var HASH_UNDEFINED$1 = '__lodash_hash_undefined__';
 
   /** Used for built-in method references. */
-  var objectProto$1 = Object.prototype;
+  var objectProto$4 = Object.prototype;
 
   /** Used to check objects for own properties. */
-  var hasOwnProperty$1 = objectProto$1.hasOwnProperty;
+  var hasOwnProperty$4 = objectProto$4.hasOwnProperty;
 
   /**
    * Gets the hash value for `key`.
@@ -827,14 +1626,14 @@
       var result = data[key];
       return result === HASH_UNDEFINED$1 ? undefined : result;
     }
-    return hasOwnProperty$1.call(data, key) ? data[key] : undefined;
+    return hasOwnProperty$4.call(data, key) ? data[key] : undefined;
   }
 
   /** Used for built-in method references. */
-  var objectProto = Object.prototype;
+  var objectProto$3 = Object.prototype;
 
   /** Used to check objects for own properties. */
-  var hasOwnProperty = objectProto.hasOwnProperty;
+  var hasOwnProperty$3 = objectProto$3.hasOwnProperty;
 
   /**
    * Checks if a hash value for `key` exists.
@@ -847,7 +1646,7 @@
    */
   function hashHas(key) {
     var data = this.__data__;
-    return nativeCreate ? (data[key] !== undefined) : hasOwnProperty.call(data, key);
+    return nativeCreate ? (data[key] !== undefined) : hasOwnProperty$3.call(data, key);
   }
 
   /** Used to stand-in for `undefined` hash values. */
@@ -1318,7 +2117,7 @@
    * @returns {Array} Returns the cast property path array.
    */
   function castPath(value, object) {
-    if (isArray$1(value)) {
+    if (isArray(value)) {
       return value;
     }
     return isKey(value, object) ? [value] : stringToPath(toString(value));
@@ -1387,6 +2186,140 @@
   function get(object, path, defaultValue) {
     var result = object == null ? undefined : baseGet(object, path);
     return result === undefined ? defaultValue : result;
+  }
+
+  /** Built-in value references. */
+  var getPrototype = overArg(Object.getPrototypeOf, Object);
+
+  /** `Object#toString` result references. */
+  var objectTag = '[object Object]';
+
+  /** Used for built-in method references. */
+  var funcProto = Function.prototype,
+      objectProto$2 = Object.prototype;
+
+  /** Used to resolve the decompiled source of functions. */
+  var funcToString = funcProto.toString;
+
+  /** Used to check objects for own properties. */
+  var hasOwnProperty$2 = objectProto$2.hasOwnProperty;
+
+  /** Used to infer the `Object` constructor. */
+  var objectCtorString = funcToString.call(Object);
+
+  /**
+   * Checks if `value` is a plain object, that is, an object created by the
+   * `Object` constructor or one with a `[[Prototype]]` of `null`.
+   *
+   * @static
+   * @memberOf _
+   * @since 0.8.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is a plain object, else `false`.
+   * @example
+   *
+   * function Foo() {
+   *   this.a = 1;
+   * }
+   *
+   * _.isPlainObject(new Foo);
+   * // => false
+   *
+   * _.isPlainObject([1, 2, 3]);
+   * // => false
+   *
+   * _.isPlainObject({ 'x': 0, 'y': 0 });
+   * // => true
+   *
+   * _.isPlainObject(Object.create(null));
+   * // => true
+   */
+  function isPlainObject(value) {
+    if (!isObjectLike(value) || baseGetTag(value) != objectTag) {
+      return false;
+    }
+    var proto = getPrototype(value);
+    if (proto === null) {
+      return true;
+    }
+    var Ctor = hasOwnProperty$2.call(proto, 'constructor') && proto.constructor;
+    return typeof Ctor == 'function' && Ctor instanceof Ctor &&
+      funcToString.call(Ctor) == objectCtorString;
+  }
+
+  /** `Object#toString` result references. */
+  var domExcTag = '[object DOMException]',
+      errorTag = '[object Error]';
+
+  /**
+   * Checks if `value` is an `Error`, `EvalError`, `RangeError`, `ReferenceError`,
+   * `SyntaxError`, `TypeError`, or `URIError` object.
+   *
+   * @static
+   * @memberOf _
+   * @since 3.0.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is an error object, else `false`.
+   * @example
+   *
+   * _.isError(new Error);
+   * // => true
+   *
+   * _.isError(Error);
+   * // => false
+   */
+  function isError(value) {
+    if (!isObjectLike(value)) {
+      return false;
+    }
+    var tag = baseGetTag(value);
+    return tag == errorTag || tag == domExcTag ||
+      (typeof value.message == 'string' && typeof value.name == 'string' && !isPlainObject(value));
+  }
+
+  /**
+   * Attempts to invoke `func`, returning either the result or the caught error
+   * object. Any additional arguments are provided to `func` when it's invoked.
+   *
+   * @static
+   * @memberOf _
+   * @since 3.0.0
+   * @category Util
+   * @param {Function} func The function to attempt.
+   * @param {...*} [args] The arguments to invoke `func` with.
+   * @returns {*} Returns the `func` result or error object.
+   * @example
+   *
+   * // Avoid throwing errors for invalid selectors.
+   * var elements = _.attempt(function(selector) {
+   *   return document.querySelectorAll(selector);
+   * }, '>_>');
+   *
+   * if (_.isError(elements)) {
+   *   elements = [];
+   * }
+   */
+  var attempt = baseRest(function(func, args) {
+    try {
+      return apply(func, undefined, args);
+    } catch (e) {
+      return isError(e) ? e : new Error(e);
+    }
+  });
+
+  /**
+   * The base implementation of `_.propertyOf` without support for deep paths.
+   *
+   * @private
+   * @param {Object} object The object to query.
+   * @returns {Function} Returns the new accessor function.
+   */
+  function basePropertyOf(object) {
+    return function(key) {
+      return object == null ? undefined : object[key];
+    };
   }
 
   /**
@@ -1651,6 +2584,79 @@
     return debounced;
   }
 
+  /** Used to map characters to HTML entities. */
+  var htmlEscapes = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  };
+
+  /**
+   * Used by `_.escape` to convert characters to HTML entities.
+   *
+   * @private
+   * @param {string} chr The matched character to escape.
+   * @returns {string} Returns the escaped character.
+   */
+  var escapeHtmlChar = basePropertyOf(htmlEscapes);
+
+  /** Used to match HTML entities and HTML characters. */
+  var reUnescapedHtml = /[&<>"']/g,
+      reHasUnescapedHtml = RegExp(reUnescapedHtml.source);
+
+  /**
+   * Converts the characters "&", "<", ">", '"', and "'" in `string` to their
+   * corresponding HTML entities.
+   *
+   * **Note:** No other characters are escaped. To escape additional
+   * characters use a third-party library like [_he_](https://mths.be/he).
+   *
+   * Though the ">" character is escaped for symmetry, characters like
+   * ">" and "/" don't need escaping in HTML and have no special meaning
+   * unless they're part of a tag or unquoted attribute value. See
+   * [Mathias Bynens's article](https://mathiasbynens.be/notes/ambiguous-ampersands)
+   * (under "semi-related fun fact") for more details.
+   *
+   * When working with HTML you should always
+   * [quote attribute values](http://wonko.com/post/html-escaping) to reduce
+   * XSS vectors.
+   *
+   * @static
+   * @since 0.1.0
+   * @memberOf _
+   * @category String
+   * @param {string} [string=''] The string to escape.
+   * @returns {string} Returns the escaped string.
+   * @example
+   *
+   * _.escape('fred, barney, & pebbles');
+   * // => 'fred, barney, &amp; pebbles'
+   */
+  function escape(string) {
+    string = toString(string);
+    return (string && reHasUnescapedHtml.test(string))
+      ? string.replace(reUnescapedHtml, escapeHtmlChar)
+      : string;
+  }
+
+  /**
+   * The base implementation of `_.values` and `_.valuesIn` which creates an
+   * array of `object` property values corresponding to the property names
+   * of `props`.
+   *
+   * @private
+   * @param {Object} object The object to query.
+   * @param {Array} props The property names to get values for.
+   * @returns {Object} Returns the array of property values.
+   */
+  function baseValues(object, props) {
+    return arrayMap(props, function(key) {
+      return object[key];
+    });
+  }
+
   /**
    * Checks if `value` is `null` or `undefined`.
    *
@@ -1751,6 +2757,378 @@
     return object == null ? object : baseSet(object, path, value);
   }
 
+  /** Used for built-in method references. */
+  var objectProto$1 = Object.prototype;
+
+  /** Used to check objects for own properties. */
+  var hasOwnProperty$1 = objectProto$1.hasOwnProperty;
+
+  /**
+   * Used by `_.defaults` to customize its `_.assignIn` use to assign properties
+   * of source objects to the destination object for all destination properties
+   * that resolve to `undefined`.
+   *
+   * @private
+   * @param {*} objValue The destination value.
+   * @param {*} srcValue The source value.
+   * @param {string} key The key of the property to assign.
+   * @param {Object} object The parent object of `objValue`.
+   * @returns {*} Returns the value to assign.
+   */
+  function customDefaultsAssignIn(objValue, srcValue, key, object) {
+    if (objValue === undefined ||
+        (eq(objValue, objectProto$1[key]) && !hasOwnProperty$1.call(object, key))) {
+      return srcValue;
+    }
+    return objValue;
+  }
+
+  /** Used to escape characters for inclusion in compiled string literals. */
+  var stringEscapes = {
+    '\\': '\\',
+    "'": "'",
+    '\n': 'n',
+    '\r': 'r',
+    '\u2028': 'u2028',
+    '\u2029': 'u2029'
+  };
+
+  /**
+   * Used by `_.template` to escape characters for inclusion in compiled string literals.
+   *
+   * @private
+   * @param {string} chr The matched character to escape.
+   * @returns {string} Returns the escaped character.
+   */
+  function escapeStringChar(chr) {
+    return '\\' + stringEscapes[chr];
+  }
+
+  /** Used to match template delimiters. */
+  var reInterpolate = /<%=([\s\S]+?)%>/g;
+
+  /** Used to match template delimiters. */
+  var reEscape = /<%-([\s\S]+?)%>/g;
+
+  /** Used to match template delimiters. */
+  var reEvaluate = /<%([\s\S]+?)%>/g;
+
+  /**
+   * By default, the template delimiters used by lodash are like those in
+   * embedded Ruby (ERB) as well as ES2015 template strings. Change the
+   * following template settings to use alternative delimiters.
+   *
+   * @static
+   * @memberOf _
+   * @type {Object}
+   */
+  var templateSettings = {
+
+    /**
+     * Used to detect `data` property values to be HTML-escaped.
+     *
+     * @memberOf _.templateSettings
+     * @type {RegExp}
+     */
+    'escape': reEscape,
+
+    /**
+     * Used to detect code to be evaluated.
+     *
+     * @memberOf _.templateSettings
+     * @type {RegExp}
+     */
+    'evaluate': reEvaluate,
+
+    /**
+     * Used to detect `data` property values to inject.
+     *
+     * @memberOf _.templateSettings
+     * @type {RegExp}
+     */
+    'interpolate': reInterpolate,
+
+    /**
+     * Used to reference the data object in the template text.
+     *
+     * @memberOf _.templateSettings
+     * @type {string}
+     */
+    'variable': '',
+
+    /**
+     * Used to import variables into the compiled template.
+     *
+     * @memberOf _.templateSettings
+     * @type {Object}
+     */
+    'imports': {
+
+      /**
+       * A reference to the `lodash` function.
+       *
+       * @memberOf _.templateSettings.imports
+       * @type {Function}
+       */
+      '_': { 'escape': escape }
+    }
+  };
+
+  /** Error message constants. */
+  var INVALID_TEMPL_VAR_ERROR_TEXT = 'Invalid `variable` option passed into `_.template`';
+
+  /** Used to match empty string literals in compiled template source. */
+  var reEmptyStringLeading = /\b__p \+= '';/g,
+      reEmptyStringMiddle = /\b(__p \+=) '' \+/g,
+      reEmptyStringTrailing = /(__e\(.*?\)|\b__t\)) \+\n'';/g;
+
+  /**
+   * Used to validate the `validate` option in `_.template` variable.
+   *
+   * Forbids characters which could potentially change the meaning of the function argument definition:
+   * - "()," (modification of function parameters)
+   * - "=" (default value)
+   * - "[]{}" (destructuring of function parameters)
+   * - "/" (beginning of a comment)
+   * - whitespace
+   */
+  var reForbiddenIdentifierChars = /[()=,{}\[\]\/\s]/;
+
+  /**
+   * Used to match
+   * [ES template delimiters](http://ecma-international.org/ecma-262/7.0/#sec-template-literal-lexical-components).
+   */
+  var reEsTemplate = /\$\{([^\\}]*(?:\\.[^\\}]*)*)\}/g;
+
+  /** Used to ensure capturing order of template delimiters. */
+  var reNoMatch = /($^)/;
+
+  /** Used to match unescaped characters in compiled string literals. */
+  var reUnescapedString = /['\n\r\u2028\u2029\\]/g;
+
+  /** Used for built-in method references. */
+  var objectProto = Object.prototype;
+
+  /** Used to check objects for own properties. */
+  var hasOwnProperty = objectProto.hasOwnProperty;
+
+  /**
+   * Creates a compiled template function that can interpolate data properties
+   * in "interpolate" delimiters, HTML-escape interpolated data properties in
+   * "escape" delimiters, and execute JavaScript in "evaluate" delimiters. Data
+   * properties may be accessed as free variables in the template. If a setting
+   * object is given, it takes precedence over `_.templateSettings` values.
+   *
+   * **Note:** In the development build `_.template` utilizes
+   * [sourceURLs](http://www.html5rocks.com/en/tutorials/developertools/sourcemaps/#toc-sourceurl)
+   * for easier debugging.
+   *
+   * For more information on precompiling templates see
+   * [lodash's custom builds documentation](https://lodash.com/custom-builds).
+   *
+   * For more information on Chrome extension sandboxes see
+   * [Chrome's extensions documentation](https://developer.chrome.com/extensions/sandboxingEval).
+   *
+   * @static
+   * @since 0.1.0
+   * @memberOf _
+   * @category String
+   * @param {string} [string=''] The template string.
+   * @param {Object} [options={}] The options object.
+   * @param {RegExp} [options.escape=_.templateSettings.escape]
+   *  The HTML "escape" delimiter.
+   * @param {RegExp} [options.evaluate=_.templateSettings.evaluate]
+   *  The "evaluate" delimiter.
+   * @param {Object} [options.imports=_.templateSettings.imports]
+   *  An object to import into the template as free variables.
+   * @param {RegExp} [options.interpolate=_.templateSettings.interpolate]
+   *  The "interpolate" delimiter.
+   * @param {string} [options.sourceURL='templateSources[n]']
+   *  The sourceURL of the compiled template.
+   * @param {string} [options.variable='obj']
+   *  The data object variable name.
+   * @param- {Object} [guard] Enables use as an iteratee for methods like `_.map`.
+   * @returns {Function} Returns the compiled template function.
+   * @example
+   *
+   * // Use the "interpolate" delimiter to create a compiled template.
+   * var compiled = _.template('hello <%= user %>!');
+   * compiled({ 'user': 'fred' });
+   * // => 'hello fred!'
+   *
+   * // Use the HTML "escape" delimiter to escape data property values.
+   * var compiled = _.template('<b><%- value %></b>');
+   * compiled({ 'value': '<script>' });
+   * // => '<b>&lt;script&gt;</b>'
+   *
+   * // Use the "evaluate" delimiter to execute JavaScript and generate HTML.
+   * var compiled = _.template('<% _.forEach(users, function(user) { %><li><%- user %></li><% }); %>');
+   * compiled({ 'users': ['fred', 'barney'] });
+   * // => '<li>fred</li><li>barney</li>'
+   *
+   * // Use the internal `print` function in "evaluate" delimiters.
+   * var compiled = _.template('<% print("hello " + user); %>!');
+   * compiled({ 'user': 'barney' });
+   * // => 'hello barney!'
+   *
+   * // Use the ES template literal delimiter as an "interpolate" delimiter.
+   * // Disable support by replacing the "interpolate" delimiter.
+   * var compiled = _.template('hello ${ user }!');
+   * compiled({ 'user': 'pebbles' });
+   * // => 'hello pebbles!'
+   *
+   * // Use backslashes to treat delimiters as plain text.
+   * var compiled = _.template('<%= "\\<%- value %\\>" %>');
+   * compiled({ 'value': 'ignored' });
+   * // => '<%- value %>'
+   *
+   * // Use the `imports` option to import `jQuery` as `jq`.
+   * var text = '<% jq.each(users, function(user) { %><li><%- user %></li><% }); %>';
+   * var compiled = _.template(text, { 'imports': { 'jq': jQuery } });
+   * compiled({ 'users': ['fred', 'barney'] });
+   * // => '<li>fred</li><li>barney</li>'
+   *
+   * // Use the `sourceURL` option to specify a custom sourceURL for the template.
+   * var compiled = _.template('hello <%= user %>!', { 'sourceURL': '/basic/greeting.jst' });
+   * compiled(data);
+   * // => Find the source of "greeting.jst" under the Sources tab or Resources panel of the web inspector.
+   *
+   * // Use the `variable` option to ensure a with-statement isn't used in the compiled template.
+   * var compiled = _.template('hi <%= data.user %>!', { 'variable': 'data' });
+   * compiled.source;
+   * // => function(data) {
+   * //   var __t, __p = '';
+   * //   __p += 'hi ' + ((__t = ( data.user )) == null ? '' : __t) + '!';
+   * //   return __p;
+   * // }
+   *
+   * // Use custom template delimiters.
+   * _.templateSettings.interpolate = /{{([\s\S]+?)}}/g;
+   * var compiled = _.template('hello {{ user }}!');
+   * compiled({ 'user': 'mustache' });
+   * // => 'hello mustache!'
+   *
+   * // Use the `source` property to inline compiled templates for meaningful
+   * // line numbers in error messages and stack traces.
+   * fs.writeFileSync(path.join(process.cwd(), 'jst.js'), '\
+   *   var JST = {\
+   *     "main": ' + _.template(mainText).source + '\
+   *   };\
+   * ');
+   */
+  function template(string, options, guard) {
+    // Based on John Resig's `tmpl` implementation
+    // (http://ejohn.org/blog/javascript-micro-templating/)
+    // and Laura Doktorova's doT.js (https://github.com/olado/doT).
+    var settings = templateSettings.imports._.templateSettings || templateSettings;
+    string = toString(string);
+    options = assignInWith({}, options, settings, customDefaultsAssignIn);
+
+    var imports = assignInWith({}, options.imports, settings.imports, customDefaultsAssignIn),
+        importsKeys = keys(imports),
+        importsValues = baseValues(imports, importsKeys);
+
+    var isEscaping,
+        isEvaluating,
+        index = 0,
+        interpolate = options.interpolate || reNoMatch,
+        source = "__p += '";
+
+    // Compile the regexp to match each delimiter.
+    var reDelimiters = RegExp(
+      (options.escape || reNoMatch).source + '|' +
+      interpolate.source + '|' +
+      (interpolate === reInterpolate ? reEsTemplate : reNoMatch).source + '|' +
+      (options.evaluate || reNoMatch).source + '|$'
+    , 'g');
+
+    // Use a sourceURL for easier debugging.
+    // The sourceURL gets injected into the source that's eval-ed, so be careful
+    // to normalize all kinds of whitespace, so e.g. newlines (and unicode versions of it) can't sneak in
+    // and escape the comment, thus injecting code that gets evaled.
+    var sourceURL = hasOwnProperty.call(options, 'sourceURL')
+      ? ('//# sourceURL=' +
+         (options.sourceURL + '').replace(/\s/g, ' ') +
+         '\n')
+      : '';
+
+    string.replace(reDelimiters, function(match, escapeValue, interpolateValue, esTemplateValue, evaluateValue, offset) {
+      interpolateValue || (interpolateValue = esTemplateValue);
+
+      // Escape characters that can't be included in string literals.
+      source += string.slice(index, offset).replace(reUnescapedString, escapeStringChar);
+
+      // Replace delimiters with snippets.
+      if (escapeValue) {
+        isEscaping = true;
+        source += "' +\n__e(" + escapeValue + ") +\n'";
+      }
+      if (evaluateValue) {
+        isEvaluating = true;
+        source += "';\n" + evaluateValue + ";\n__p += '";
+      }
+      if (interpolateValue) {
+        source += "' +\n((__t = (" + interpolateValue + ")) == null ? '' : __t) +\n'";
+      }
+      index = offset + match.length;
+
+      // The JS engine embedded in Adobe products needs `match` returned in
+      // order to produce the correct `offset` value.
+      return match;
+    });
+
+    source += "';\n";
+
+    // If `variable` is not specified wrap a with-statement around the generated
+    // code to add the data object to the top of the scope chain.
+    var variable = hasOwnProperty.call(options, 'variable') && options.variable;
+    if (!variable) {
+      source = 'with (obj) {\n' + source + '\n}\n';
+    }
+    // Throw an error if a forbidden character was found in `variable`, to prevent
+    // potential command injection attacks.
+    else if (reForbiddenIdentifierChars.test(variable)) {
+      throw new Error(INVALID_TEMPL_VAR_ERROR_TEXT);
+    }
+
+    // Cleanup code by stripping empty strings.
+    source = (isEvaluating ? source.replace(reEmptyStringLeading, '') : source)
+      .replace(reEmptyStringMiddle, '$1')
+      .replace(reEmptyStringTrailing, '$1;');
+
+    // Frame code as the function body.
+    source = 'function(' + (variable || 'obj') + ') {\n' +
+      (variable
+        ? ''
+        : 'obj || (obj = {});\n'
+      ) +
+      "var __t, __p = ''" +
+      (isEscaping
+         ? ', __e = _.escape'
+         : ''
+      ) +
+      (isEvaluating
+        ? ', __j = Array.prototype.join;\n' +
+          "function print() { __p += __j.call(arguments, '') }\n"
+        : ';\n'
+      ) +
+      source +
+      'return __p\n}';
+
+    var result = attempt(function() {
+      return Function(importsKeys, sourceURL + 'return ' + source)
+        .apply(undefined, importsValues);
+    });
+
+    // Provide the compiled function's source by its `toString` method or
+    // the `source` property as a convenience for inlining compiled templates.
+    result.source = source;
+    if (isError(result)) {
+      throw result;
+    }
+    return result;
+  }
+
   /** Error message constants. */
   var FUNC_ERROR_TEXT = 'Expected a function';
 
@@ -1824,9 +3202,9 @@
     return { cn, tw };
   }
 
-  var __defProp$a = Object.defineProperty;
-  var __defNormalProp$a = (obj, key, value) => key in obj ? __defProp$a(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __publicField$8 = (obj, key, value) => __defNormalProp$a(obj, typeof key !== "symbol" ? key + "" : key, value);
+  var __defProp$b = Object.defineProperty;
+  var __defNormalProp$b = (obj, key, value) => key in obj ? __defProp$b(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __publicField$8 = (obj, key, value) => __defNormalProp$b(obj, typeof key !== "symbol" ? key + "" : key, value);
   function createTest(target) {
     return (test) => typeof test === "function" ? test() : typeof test === "string" ? target.includes(test) || test === "*" : test.test(target);
   }
@@ -1984,9 +3362,9 @@
   var css$i = "#k-player-message {\n  z-index: 999;\n  position: absolute;\n  left: 20px;\n  bottom: 60px;\n}\n#k-player-message .k-player-message-item {\n  display: block;\n  width: max-content;\n  padding: 8px 16px;\n  background: var(--k-player-background);\n  border-radius: 4px;\n  color: white;\n  font-size: 14px;\n  white-space: nowrap;\n  overflow: hidden;\n  box-sizing: border-box;\n  margin-top: 4px;\n}\n#k-player-message .k-player-message-item:hover {\n  background: var(--k-player-background-highlight);\n  transition: all 0.3s;\n}";
   injectCss(css$i,{});
 
-  var __defProp$9 = Object.defineProperty;
-  var __defNormalProp$9 = (obj, key, value) => key in obj ? __defProp$9(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __publicField$7 = (obj, key, value) => __defNormalProp$9(obj, typeof key !== "symbol" ? key + "" : key, value);
+  var __defProp$a = Object.defineProperty;
+  var __defNormalProp$a = (obj, key, value) => key in obj ? __defProp$a(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __publicField$7 = (obj, key, value) => __defNormalProp$a(obj, typeof key !== "symbol" ? key + "" : key, value);
   class Message {
     constructor(selector) {
       __publicField$7(this, "$message");
@@ -2176,26 +3554,26 @@
     return Commands2;
   })(Commands$1 || {});
 
-  var __defProp$8 = Object.defineProperty;
+  var __defProp$9 = Object.defineProperty;
   var __defProps$2 = Object.defineProperties;
   var __getOwnPropDescs$2 = Object.getOwnPropertyDescriptors;
-  var __getOwnPropSymbols$5 = Object.getOwnPropertySymbols;
-  var __hasOwnProp$5 = Object.prototype.hasOwnProperty;
-  var __propIsEnum$5 = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp$8 = (obj, key, value) => key in obj ? __defProp$8(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues$5 = (a, b) => {
+  var __getOwnPropSymbols$6 = Object.getOwnPropertySymbols;
+  var __hasOwnProp$6 = Object.prototype.hasOwnProperty;
+  var __propIsEnum$6 = Object.prototype.propertyIsEnumerable;
+  var __defNormalProp$9 = (obj, key, value) => key in obj ? __defProp$9(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __spreadValues$6 = (a, b) => {
     for (var prop in b || (b = {}))
-      if (__hasOwnProp$5.call(b, prop))
-        __defNormalProp$8(a, prop, b[prop]);
-    if (__getOwnPropSymbols$5)
-      for (var prop of __getOwnPropSymbols$5(b)) {
-        if (__propIsEnum$5.call(b, prop))
-          __defNormalProp$8(a, prop, b[prop]);
+      if (__hasOwnProp$6.call(b, prop))
+        __defNormalProp$9(a, prop, b[prop]);
+    if (__getOwnPropSymbols$6)
+      for (var prop of __getOwnPropSymbols$6(b)) {
+        if (__propIsEnum$6.call(b, prop))
+          __defNormalProp$9(a, prop, b[prop]);
       }
     return a;
   };
   var __spreadProps$2 = (a, b) => __defProps$2(a, __getOwnPropDescs$2(b));
-  var __publicField$6 = (obj, key, value) => __defNormalProp$8(obj, typeof key !== "symbol" ? key + "" : key, value);
+  var __publicField$6 = (obj, key, value) => __defNormalProp$9(obj, typeof key !== "symbol" ? key + "" : key, value);
   const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
   const DefaultKeyBindings = [
     { command: Commands$1.togglePlay, key: "Space", description: "\u64AD\u653E/\u6682\u505C" },
@@ -2329,7 +3707,7 @@
         const customKeyBinding = customKeyBindings.find(
           (o) => o.command === keyBinding.command
         );
-        const nextKeyBinding = __spreadProps$2(__spreadValues$5({}, keyBinding), { originKey: "", customKey: "" });
+        const nextKeyBinding = __spreadProps$2(__spreadValues$6({}, keyBinding), { originKey: "", customKey: "" });
         if (isMac && nextKeyBinding.mac) {
           nextKeyBinding.key = nextKeyBinding.mac;
         }
@@ -2384,9 +3762,9 @@
     return keyArr.join(" ");
   }
 
-  var __defProp$7 = Object.defineProperty;
-  var __defNormalProp$7 = (obj, key, value) => key in obj ? __defProp$7(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __publicField$5 = (obj, key, value) => __defNormalProp$7(obj, typeof key !== "symbol" ? key + "" : key, value);
+  var __defProp$8 = Object.defineProperty;
+  var __defNormalProp$8 = (obj, key, value) => key in obj ? __defProp$8(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __publicField$5 = (obj, key, value) => __defNormalProp$8(obj, typeof key !== "symbol" ? key + "" : key, value);
   const _Shortcuts = class _Shortcuts {
     constructor(player) {
       this.player = player;
@@ -2640,7 +4018,7 @@
         content: `
     <table class="k-table">
       <tbody>
-      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.54.3"}</td></tr>
+      <tr><td>\u811A\u672C\u7248\u672C</td><td>${"1.54.4"}</td></tr>
       <tr>
         <td>\u811A\u672C\u4F5C\u8005</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -2766,7 +4144,7 @@ ${src}
 
 # \u73AF\u5883
 userAgent: ${navigator.userAgent}
-\u811A\u672C\u7248\u672C: ${"1.54.3"}
+\u811A\u672C\u7248\u672C: ${"1.54.4"}
 `;
 
   const GlobalKey = "show-help-info";
@@ -3338,23 +4716,23 @@ ${text}
     });
   }
 
-  var __defProp$6 = Object.defineProperty;
-  var __getOwnPropSymbols$4 = Object.getOwnPropertySymbols;
-  var __hasOwnProp$4 = Object.prototype.hasOwnProperty;
-  var __propIsEnum$4 = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp$6 = (obj, key, value) => key in obj ? __defProp$6(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues$4 = (a, b) => {
+  var __defProp$7 = Object.defineProperty;
+  var __getOwnPropSymbols$5 = Object.getOwnPropertySymbols;
+  var __hasOwnProp$5 = Object.prototype.hasOwnProperty;
+  var __propIsEnum$5 = Object.prototype.propertyIsEnumerable;
+  var __defNormalProp$7 = (obj, key, value) => key in obj ? __defProp$7(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __spreadValues$5 = (a, b) => {
     for (var prop in b || (b = {}))
-      if (__hasOwnProp$4.call(b, prop))
-        __defNormalProp$6(a, prop, b[prop]);
-    if (__getOwnPropSymbols$4)
-      for (var prop of __getOwnPropSymbols$4(b)) {
-        if (__propIsEnum$4.call(b, prop))
-          __defNormalProp$6(a, prop, b[prop]);
+      if (__hasOwnProp$5.call(b, prop))
+        __defNormalProp$7(a, prop, b[prop]);
+    if (__getOwnPropSymbols$5)
+      for (var prop of __getOwnPropSymbols$5(b)) {
+        if (__propIsEnum$5.call(b, prop))
+          __defNormalProp$7(a, prop, b[prop]);
       }
     return a;
   };
-  var __publicField$4 = (obj, key, value) => __defNormalProp$6(obj, typeof key !== "symbol" ? key + "" : key, value);
+  var __publicField$4 = (obj, key, value) => __defNormalProp$7(obj, typeof key !== "symbol" ? key + "" : key, value);
   const MediaErrorMessage = {
     1: "\u4F60\u4E2D\u6B62\u4E86\u5A92\u4F53\u64AD\u653E",
     2: "\u7F51\u7EDC\u9519\u8BEF",
@@ -3430,7 +4808,7 @@ ${text}
         gm.getItem(this.localConfigKey)
       );
       const isIOS = /ip(hone|od)/i.test(navigator.userAgent);
-      this.plyr = new Plyr("#k-player", __spreadValues$4({
+      this.plyr = new Plyr("#k-player", __spreadValues$5({
         autoplay: this.localConfig.autoplay,
         keyboard: { global: false, focused: false },
         controls: [
@@ -4374,9 +5752,9 @@ ${text}
     return Commands2;
   })(Commands || {});
 
-  var __defProp$5 = Object.defineProperty;
-  var __defNormalProp$5 = (obj, key, value) => key in obj ? __defProp$5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __publicField$3 = (obj, key, value) => __defNormalProp$5(obj, typeof key !== "symbol" ? key + "" : key, value);
+  var __defProp$6 = Object.defineProperty;
+  var __defNormalProp$6 = (obj, key, value) => key in obj ? __defProp$6(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __publicField$3 = (obj, key, value) => __defNormalProp$6(obj, typeof key !== "symbol" ? key + "" : key, value);
   class DanmakuElements {
     constructor(player) {
       this.player = player;
@@ -4654,9 +6032,9 @@ ${text}
     );
   }
 
-  var __defProp$4 = Object.defineProperty;
-  var __defNormalProp$4 = (obj, key, value) => key in obj ? __defProp$4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __publicField$2 = (obj, key, value) => __defNormalProp$4(obj, typeof key !== "symbol" ? key + "" : key, value);
+  var __defProp$5 = Object.defineProperty;
+  var __defNormalProp$5 = (obj, key, value) => key in obj ? __defProp$5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __publicField$2 = (obj, key, value) => __defNormalProp$5(obj, typeof key !== "symbol" ? key + "" : key, value);
   const defaultConfig = {
     showDanmaku: false,
     opacity: 0.6,
@@ -5181,28 +6559,28 @@ ${text}
   var css$a = "#k-autoseek-config {\n  line-height: 32px;\n  font-size: 14px;\n}\n#k-autoseek-config .k-autoseek-config-tips {\n  font-size: 12px;\n  color: #666;\n  margin-top: 8px;\n  line-height: 1.6;\n}\n#k-autoseek-config .k-autoseek-config-tips summary {\n  cursor: pointer;\n}\n#k-autoseek-config .k-autoseek-config-tips .k-autoseek-config-tips-title {\n  color: #232323;\n  font-weight: 500;\n  margin-bottom: 4px;\n  margin-top: 8px;\n}\n\n#k-autoseek-overlay {\n  position: absolute;\n  inset: 0;\n  pointer-events: none;\n  z-index: 1000;\n}\n#k-autoseek-overlay .k-autoseek-segment {\n  position: absolute;\n  background: white;\n  top: 50%;\n  transform: translateY(-50%);\n  width: calc(var(--plyr-range-track-height) + 2px);\n  height: calc(var(--plyr-range-track-height) + 2px);\n  border-radius: 50%;\n}";
   injectCss(css$a,{});
 
-  var T$1 = {"k-autoseek-config":"<div id=\"k-autoseek-config\">\n  <form class=\"k-settings-list\">\n    <div class=\"k-settings-item\">\n      <label class=\"k-checkbox\">\n        <input type=\"checkbox\" name=\"start.enabled\" >\n        跳过片头\n      </label>\n      <input         type=\"text\"\n        name=\"start.start\"\n        class=\"k-input-number\"\n        placeholder=\"起跳时间\"\n      >\n      <input         type=\"number\"\n        name=\"start.diff\"\n        class=\"k-input-number\"\n        placeholder=\"长度\"\n      >\n    </div>\n\n    <div class=\"k-settings-item\">\n      <label class=\"k-checkbox\">\n        <input type=\"checkbox\" name=\"end.enabled\" >\n        跳过片尾\n      </label>\n      <input         type=\"text\"\n        name=\"end.start\"\n        class=\"k-input-number\"\n        placeholder=\"起跳时间\"\n      >\n      <input         type=\"number\"\n        name=\"end.diff\"\n        class=\"k-input-number\"\n        placeholder=\"长度\"\n      >\n    </div>\n    <div class=\"k-autoseek-config-tips\">\n      <details>\n        <summary>使用说明</summary>\n        <div class=\"k-autoseek-config-tips-title\">\n          第一个值表示“起跳时间”，二个值表示“跳过多少时间”\n        </div>\n        <div>起跳时间格式：分秒时间(2:30)、秒数(150)</div>\n        <div>跳过多少时间：秒数(85)</div>\n        <div>\n          例如：在 2:30 位置起跳，跳过 85s 时长，视频最终会在 145s 处播放\n        </div>\n        <div class=\"k-autoseek-config-tips-title\">\n          结尾的起跳时间可以是小于等于 0 的数字\n        </div>\n        <div>\n          例子1：片尾填写 -10 与 60，那么视频倒数 10s 处再往前数 60s\n          的位置开始跳转，视频最终在倒数 10s 处播放\n        </div>\n        <div>\n          例子2：片尾填写 600 与 60，那么视频 10:00 处开始跳转 60s，视频最终在\n          660s 处播放\n        </div>\n      </details>\n    </div>\n    <div class=\"k-autoseek-config-tips\">\n      仅在当前番剧播放页生效，其他番剧需要重新配置\n    </div>\n  </form>\n</div>","k-autoseek-overlay":"<div id=\"k-autoseek-overlay\"></div>"};
+  var T$2 = {"k-autoseek-config":"<div id=\"k-autoseek-config\">\r\n  <form class=\"k-settings-list\">\r\n    <div class=\"k-settings-item\">\r\n      <label class=\"k-checkbox\">\r\n        <input type=\"checkbox\" name=\"start.enabled\" >\r\n        跳过片头\r\n      </label>\r\n      <input \n        type=\"text\"\r\n        name=\"start.start\"\r\n        class=\"k-input-number\"\r\n        placeholder=\"起跳时间\"\r\n      >\r\n      <input \n        type=\"number\"\r\n        name=\"start.diff\"\r\n        class=\"k-input-number\"\r\n        placeholder=\"长度\"\r\n      >\r\n    </div>\r\n\r\n    <div class=\"k-settings-item\">\r\n      <label class=\"k-checkbox\">\r\n        <input type=\"checkbox\" name=\"end.enabled\" >\r\n        跳过片尾\r\n      </label>\r\n      <input \n        type=\"text\"\r\n        name=\"end.start\"\r\n        class=\"k-input-number\"\r\n        placeholder=\"起跳时间\"\r\n      >\r\n      <input \n        type=\"number\"\r\n        name=\"end.diff\"\r\n        class=\"k-input-number\"\r\n        placeholder=\"长度\"\r\n      >\r\n    </div>\r\n    <div class=\"k-autoseek-config-tips\">\r\n      <details>\r\n        <summary>使用说明</summary>\r\n        <div class=\"k-autoseek-config-tips-title\">\r\n          第一个值表示“起跳时间”，二个值表示“跳过多少时间”\r\n        </div>\r\n        <div>起跳时间格式：分秒时间(2:30)、秒数(150)</div>\r\n        <div>跳过多少时间：秒数(85)</div>\r\n        <div>\r\n          例如：在 2:30 位置起跳，跳过 85s 时长，视频最终会在 145s 处播放\r\n        </div>\r\n        <div class=\"k-autoseek-config-tips-title\">\r\n          结尾的起跳时间可以是小于等于 0 的数字\r\n        </div>\r\n        <div>\r\n          例子1：片尾填写 -10 与 60，那么视频倒数 10s 处再往前数 60s\r\n          的位置开始跳转，视频最终在倒数 10s 处播放\r\n        </div>\r\n        <div>\r\n          例子2：片尾填写 600 与 60，那么视频 10:00 处开始跳转 60s，视频最终在\r\n          660s 处播放\r\n        </div>\r\n      </details>\r\n    </div>\r\n    <div class=\"k-autoseek-config-tips\">\r\n      仅在当前番剧播放页生效，其他番剧需要重新配置\r\n    </div>\r\n  </form>\r\n</div>","k-autoseek-overlay":"<div id=\"k-autoseek-overlay\"></div>"};
 
-  var __defProp$3 = Object.defineProperty;
+  var __defProp$4 = Object.defineProperty;
   var __defProps$1 = Object.defineProperties;
   var __getOwnPropDescs$1 = Object.getOwnPropertyDescriptors;
-  var __getOwnPropSymbols$3 = Object.getOwnPropertySymbols;
-  var __hasOwnProp$3 = Object.prototype.hasOwnProperty;
-  var __propIsEnum$3 = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp$3 = (obj, key, value) => key in obj ? __defProp$3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues$3 = (a, b) => {
+  var __getOwnPropSymbols$4 = Object.getOwnPropertySymbols;
+  var __hasOwnProp$4 = Object.prototype.hasOwnProperty;
+  var __propIsEnum$4 = Object.prototype.propertyIsEnumerable;
+  var __defNormalProp$4 = (obj, key, value) => key in obj ? __defProp$4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __spreadValues$4 = (a, b) => {
     for (var prop in b || (b = {}))
-      if (__hasOwnProp$3.call(b, prop))
-        __defNormalProp$3(a, prop, b[prop]);
-    if (__getOwnPropSymbols$3)
-      for (var prop of __getOwnPropSymbols$3(b)) {
-        if (__propIsEnum$3.call(b, prop))
-          __defNormalProp$3(a, prop, b[prop]);
+      if (__hasOwnProp$4.call(b, prop))
+        __defNormalProp$4(a, prop, b[prop]);
+    if (__getOwnPropSymbols$4)
+      for (var prop of __getOwnPropSymbols$4(b)) {
+        if (__propIsEnum$4.call(b, prop))
+          __defNormalProp$4(a, prop, b[prop]);
       }
     return a;
   };
   var __spreadProps$1 = (a, b) => __defProps$1(a, __getOwnPropDescs$1(b));
-  var __publicField$1 = (obj, key, value) => __defNormalProp$3(obj, typeof key !== "symbol" ? key + "" : key, value);
+  var __publicField$1 = (obj, key, value) => __defNormalProp$4(obj, typeof key !== "symbol" ? key + "" : key, value);
   function bindFormEvent(formHTML, data) {
     const $form = $(formHTML);
     $form.find("input[name]").each((_, el) => {
@@ -5270,7 +6648,7 @@ ${text}
           width: 350,
           title: "\u8DF3\u8FC7\u7247\u6BB5\u8BBE\u7F6E",
           content: bindFormEvent(
-            T$1["k-autoseek-config"],
+            T$2["k-autoseek-config"],
             this.autoSeek.getConfig()
           ),
           afterClose: () => {
@@ -5328,7 +6706,7 @@ ${text}
     setConfig(config) {
       if (!this.scope) throw new Error("AutoSeek scope is not set");
       this.config = config;
-      local.setItem(this.localStoreKey, __spreadProps$1(__spreadValues$3({}, local.getItem(this.localStoreKey, {})), {
+      local.setItem(this.localStoreKey, __spreadProps$1(__spreadValues$4({}, local.getItem(this.localStoreKey, {})), {
         [this.scope]: config
       }));
       this.refresh();
@@ -5405,7 +6783,7 @@ ${text}
       $("#k-autoseek-overlay").remove();
       const enabled = this.config.start.enabled || this.config.end.enabled;
       if (!enabled) return;
-      const $overlay = $(T$1["k-autoseek-overlay"]);
+      const $overlay = $(T$2["k-autoseek-overlay"]);
       if (this.config.start.enabled) {
         const start = parseStartTime(this.config.start.start || 0);
         const $segment = $('<div class="k-autoseek-segment" />');
@@ -5662,27 +7040,67 @@ ${text}
     }
   });
 
-  var css$8 = ".agefans-wrapper .video_detail_episode a:visited {\n  color: rgb(220, 53, 69) !important;\n}";
+  var css$8 = ".agefans-wrapper .video_detail_episode a:visited {\n  color: rgb(220, 53, 69) !important;\n}\n.agefans-wrapper .update-info {\n  font-size: 12px;\n  color: #f8f9fa;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n}\n.agefans-wrapper .update-info:hover {\n  cursor: pointer;\n  text-decoration: underline;\n}\n.agefans-wrapper .sub-thumbnail-box {\n  transition: opacity 0.15s ease;\n  opacity: 0;\n  position: absolute;\n  top: -10px;\n  right: calc(100% + 12px);\n  width: 200px;\n  padding: 8px;\n  border-radius: 8px;\n  background-color: #282828;\n  border: 1px solid #404041;\n  box-shadow: 0px 6px 20px 8px rgba(0, 0, 0, 0.45);\n  pointer-events: none;\n  z-index: 10;\n}\n.agefans-wrapper .text_list_item li:hover .sub-thumbnail-box {\n  opacity: 1;\n}\n.agefans-wrapper .sub-thumbnail {\n  width: 100%;\n  border-radius: 6px;\n}\n.agefans-wrapper .sub-group-day {\n  margin-bottom: 4px;\n}";
   injectCss(css$8,{});
+
+  function closestSameDay(value) {
+    if (typeof value === "string") {
+      const ret = value.match(/(\d+).*?(\d\d?).*?(\d\d?)/);
+      if (!ret) throw new Error("Invalid date string");
+      const [, y, m, d] = ret;
+      value = `${y}-${m}-${d != null ? d : "01"}`;
+      if (new Date(value).toJSON().includes("Invalid Date")) {
+        throw new Error("Invalid date string");
+      }
+    }
+    let date = /* @__PURE__ */ new Date();
+    const target = new Date(value);
+    while (target.getDay() !== date.getDay()) {
+      date = new Date(date.getTime() - 24 * 60 * 60 * 1e3);
+    }
+    return date;
+  }
+
+  async function concurrency(tasks, limit, onProgress) {
+    const results = new Array(tasks.length);
+    let nextIndex = 0;
+    let done = 0;
+    async function worker() {
+      while (true) {
+        const current = nextIndex++;
+        if (current >= tasks.length) break;
+        results[current] = await tasks[current]();
+        done++;
+        onProgress == null ? void 0 : onProgress(done, tasks.length);
+      }
+    }
+    const workers = Array.from(
+      { length: Math.min(limit, tasks.length) },
+      () => worker()
+    );
+    onProgress == null ? void 0 : onProgress(done, tasks.length);
+    await Promise.all(workers);
+    return results;
+  }
 
   var css$7 = ".k-episode-anchor:visited {\n  color: rgb(220, 53, 69) !important;\n}\n\n.k-his-table {\n  width: 100%;\n  line-height: 1.4;\n  border-spacing: 0;\n  border-collapse: separate;\n}\n.k-his-table th,\n.k-his-table td {\n  padding: 6px 8px;\n}\n.k-his-table tr {\n  transition: background 0.3s ease;\n}\n.k-his-table tr:hover {\n  background: #f1f1f1;\n}\n.k-his-table a {\n  text-decoration: none;\n  transition: color 0.15s ease;\n}\n.k-his-table a:hover {\n  color: var(--k-player-primary-color);\n}\n.k-his-table .k-btn {\n  color: var(--k-player-primary-color);\n}";
   injectCss(css$7,{});
 
-  var __defProp$2 = Object.defineProperty;
+  var __defProp$3 = Object.defineProperty;
   var __defProps = Object.defineProperties;
   var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
-  var __getOwnPropSymbols$2 = Object.getOwnPropertySymbols;
-  var __hasOwnProp$2 = Object.prototype.hasOwnProperty;
-  var __propIsEnum$2 = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp$2 = (obj, key, value) => key in obj ? __defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues$2 = (a, b) => {
+  var __getOwnPropSymbols$3 = Object.getOwnPropertySymbols;
+  var __hasOwnProp$3 = Object.prototype.hasOwnProperty;
+  var __propIsEnum$3 = Object.prototype.propertyIsEnumerable;
+  var __defNormalProp$3 = (obj, key, value) => key in obj ? __defProp$3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __spreadValues$3 = (a, b) => {
     for (var prop in b || (b = {}))
-      if (__hasOwnProp$2.call(b, prop))
-        __defNormalProp$2(a, prop, b[prop]);
-    if (__getOwnPropSymbols$2)
-      for (var prop of __getOwnPropSymbols$2(b)) {
-        if (__propIsEnum$2.call(b, prop))
-          __defNormalProp$2(a, prop, b[prop]);
+      if (__hasOwnProp$3.call(b, prop))
+        __defNormalProp$3(a, prop, b[prop]);
+    if (__getOwnPropSymbols$3)
+      for (var prop of __getOwnPropSymbols$3(b)) {
+        if (__propIsEnum$3.call(b, prop))
+          __defNormalProp$3(a, prop, b[prop]);
       }
     return a;
   };
@@ -5698,7 +7116,7 @@ ${text}
     log(info, time) {
       let data = this.load();
       data = data.filter((o) => o.id !== info.id);
-      data.unshift(__spreadProps(__spreadValues$2({}, info), { time }));
+      data.unshift(__spreadProps(__spreadValues$3({}, info), { time }));
       this.save(data);
     },
     remove(id) {
@@ -5756,23 +7174,23 @@ ${text}
     });
   }
 
-  var __defProp$1 = Object.defineProperty;
-  var __getOwnPropSymbols$1 = Object.getOwnPropertySymbols;
-  var __hasOwnProp$1 = Object.prototype.hasOwnProperty;
-  var __propIsEnum$1 = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues$1 = (a, b) => {
+  var __defProp$2 = Object.defineProperty;
+  var __getOwnPropSymbols$2 = Object.getOwnPropertySymbols;
+  var __hasOwnProp$2 = Object.prototype.hasOwnProperty;
+  var __propIsEnum$2 = Object.prototype.propertyIsEnumerable;
+  var __defNormalProp$2 = (obj, key, value) => key in obj ? __defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __spreadValues$2 = (a, b) => {
     for (var prop in b || (b = {}))
-      if (__hasOwnProp$1.call(b, prop))
-        __defNormalProp$1(a, prop, b[prop]);
-    if (__getOwnPropSymbols$1)
-      for (var prop of __getOwnPropSymbols$1(b)) {
-        if (__propIsEnum$1.call(b, prop))
-          __defNormalProp$1(a, prop, b[prop]);
+      if (__hasOwnProp$2.call(b, prop))
+        __defNormalProp$2(a, prop, b[prop]);
+    if (__getOwnPropSymbols$2)
+      for (var prop of __getOwnPropSymbols$2(b)) {
+        if (__propIsEnum$2.call(b, prop))
+          __defNormalProp$2(a, prop, b[prop]);
       }
     return a;
   };
-  var __publicField = (obj, key, value) => __defNormalProp$1(obj, typeof key !== "symbol" ? key + "" : key, value);
+  var __publicField = (obj, key, value) => __defNormalProp$2(obj, typeof key !== "symbol" ? key + "" : key, value);
   const _SubscriptionManager = class _SubscriptionManager {
     constructor(storageKey) {
       this.storageKey = storageKey;
@@ -5805,19 +7223,28 @@ ${text}
     getSubscriptions() {
       return local.getItem(this.storageKey, []);
     }
-    getSubscriptionsSortedByDay() {
+    /** 根据更新顺序做排序，按天成组 */
+    getSubscriptionsGroupByDay() {
       const subscriptions = this.getSubscriptions();
       const daysInChinese = ["\u5468\u65E5", "\u5468\u4E00", "\u5468\u4E8C", "\u5468\u4E09", "\u5468\u56DB", "\u5468\u4E94", "\u5468\u516D"];
       let groups = Array.from({ length: 7 }, (_, idx) => ({
+        dayNum: idx,
         day: daysInChinese[idx],
         list: []
       }));
       subscriptions.forEach((sub) => {
         const date = new Date(sub.updatedAt);
-        const day = date.getDay();
-        groups[day].list.push(sub);
+        const day2 = date.getDay();
+        groups[day2].list.push(sub);
       });
-      groups = groups.slice(1).concat(groups[0]);
+      groups.forEach((group) => {
+        group.list.sort((a, b) => a.updatedAt - b.updatedAt);
+      });
+      const day = (/* @__PURE__ */ new Date()).getDay();
+      groups = [
+        ...groups.slice(0, day + 1).reverse(),
+        ...groups.slice(day + 1).reverse()
+      ];
       return groups;
     }
     getSubscription(id) {
@@ -5841,7 +7268,7 @@ ${text}
       if (index === -1) {
         throw new Error("Subscription not found");
       }
-      subscriptions[index] = __spreadValues$1(__spreadValues$1({}, subscriptions[index]), updates);
+      subscriptions[index] = __spreadValues$2(__spreadValues$2({}, subscriptions[index]), updates);
       local.setItem(this.storageKey, subscriptions);
       this.notify();
       return subscriptions[index];
@@ -6016,7 +7443,7 @@ ${text}
                   url: window.location.href
                 }
               });
-              checkSubscriptionUpdates(id);
+              checkSubscriptionUpdate(id, true);
             }
           }
         }
@@ -6036,61 +7463,74 @@ ${text}
     }
     function renderSubscribedAnimes() {
       if (!config.subscribe) return;
-      const $root = $("<div><div/>");
       const sm = SubscriptionManager.getInstance(config.subscribe.storageKey);
-      sm.onChange(
-        () => {
-          $root.empty();
-          $root.remove();
-          config.subscribe.renderSubscribedAnimes($root, sm);
-        },
-        { immediate: true }
-      );
+      const $root = config.subscribe.renderSubscribedAnimes(sm);
+      const $updateInfo = $root.find(".update-info");
+      let isChekingUpdate = false;
+      async function checkSubscriptionsUpdate(force = false) {
+        if (isChekingUpdate) return;
+        isChekingUpdate = true;
+        const subscriptions = sm.getSubscriptions();
+        const tasks = subscriptions.map(
+          (sub) => () => checkSubscriptionUpdate(sub.id, force)
+        );
+        await concurrency(tasks, 3, (done, total) => {
+          $updateInfo.text(`\u66F4\u65B0\u4E2D(${done}/${total})`);
+        });
+        $updateInfo.text(`\u4E8E ${(/* @__PURE__ */ new Date()).toLocaleTimeString()} \u5B8C\u6210\u66F4\u65B0\u68C0\u67E5`);
+        isChekingUpdate = false;
+      }
+      $updateInfo.on("click", () => {
+        checkSubscriptionsUpdate(true);
+      });
+      checkSubscriptionsUpdate();
     }
     function renderSubscribeBtn() {
       if (!config.subscribe) return;
-      let $btn = $("<button></button>");
+      const $btn = $("<button></button>");
       const sm = SubscriptionManager.getInstance(config.subscribe.storageKey);
+      const id = config.subscribe.getId();
+      const ICON_SUBSCRIBE = `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 -960 960 960"  fill="currentColor" style="display: inline-block; vertical-align: -0.125em;"><path d="M480-500Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80Zm240-360v-120H600v-80h120v-120h80v120h120v80H800v120h-80ZM160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q14 4 27.5 8.5T593-772q-15 14-27 30.5T545-706q-15-7-31.5-10.5T480-720q-66 0-113 47t-47 113v280h320v-112q18 11 38 18t42 11v83h80v80H160Z"/></svg>`;
+      const ICON_SUBSCRIBED = `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 -960 960 960"  fill="currentColor" style="display: inline-block; vertical-align: -0.125em;"><path d="M160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h80v80H160Zm320-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z"/></svg>`;
       sm.onChange(
         () => {
-          $btn.remove();
-          const sub = sm.getSubscription(config.subscribe.getId());
-          $btn = $(`<button>
-          ${sub ? '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 -960 960 960"  fill="currentColor" style="display: inline-block; vertical-align: -0.125em;"><path d="M160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h80v80H160Zm320-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z"/></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 -960 960 960"  fill="currentColor" style="display: inline-block; vertical-align: -0.125em;"><path d="M480-500Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80Zm240-360v-120H600v-80h120v-120h80v120h120v80H800v120h-80ZM160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q14 4 27.5 8.5T593-772q-15 14-27 30.5T545-706q-15-7-31.5-10.5T480-720q-66 0-113 47t-47 113v280h320v-112q18 11 38 18t42 11v83h80v80H160Z"/></svg>'}
+          const sub = sm.getSubscription(id);
+          $btn.html(`
+          ${sub ? ICON_SUBSCRIBED : ICON_SUBSCRIBE}
             <span>${sub ? "\u5DF2\u8BA2\u9605" : "\u8BA2\u9605"}</span>
-          </button>`);
-          config.subscribe.renderSubscribeBtn($btn, sm);
+         `);
         },
         { immediate: true }
       );
+      $btn.on("click", async () => {
+        $btn.text("\u5904\u7406\u4E2D...");
+        const sub = sm.getSubscription(id);
+        if (sub) {
+          sm.deleteSubscription(id);
+        } else {
+          const sub2 = await config.subscribe.getAnimeInfo(id, sm);
+          sm.createSubscription(sub2);
+        }
+      });
+      config.subscribe.renderSubscribeBtn($btn, sm);
     }
-    async function checkSubscriptionUpdates(id, force) {
+    async function checkSubscriptionUpdate(id, force = false) {
       if (!config.subscribe) return;
       const sm = SubscriptionManager.getInstance(config.subscribe.storageKey);
       const sub = sm.getSubscription(id);
       if (!sub) return;
       const now = Date.now();
       if (!force) {
+        if (sub.checkedAt - sub.updatedAt > 1e3 * 60 * 60 * 24 * 15) return;
         if (now - sub.updatedAt < 1e3 * 60 * 60 * (24 * 7 - 5)) return;
         if (now - sub.checkedAt < 1e3 * 60 * 60) return;
       }
       try {
-        const animeInfo = await config.subscribe.getAnimeUpdateInfo(id);
+        const animeInfo = await config.subscribe.getAnimeInfo(id, sm);
         Object.assign(animeInfo, { checkedAt: now });
         sm.updateSubscription(id, animeInfo);
       } catch (error) {
       }
-    }
-    function checkSubscriptionsUpdates(force) {
-      if (!config.subscribe) return;
-      const sm = SubscriptionManager.getInstance(config.subscribe.storageKey);
-      const subscriptions = sm.getSubscriptions();
-      subscriptions.forEach((sub) => {
-        if (!force) {
-          if (sub.checkedAt - sub.updatedAt > 1e3 * 60 * 60 * 24 * 15) return;
-        }
-        checkSubscriptionUpdates(sub.id, force);
-      });
     }
     return {
       runInTop,
@@ -6098,42 +7538,32 @@ ${text}
       createHistory,
       subscribe: {
         renderSubscribedAnimes,
-        renderSubscribeBtn,
-        checkSubscriptionsUpdates
+        renderSubscribeBtn
       }
     };
   }
 
-  function getActive$8() {
-    return $(".van-grid-item.van-grid-item--active");
-  }
-  function switchPart$8(next) {
-    var _a;
-    const $active = getActive$8();
-    let $nextActive = $active[next ? "next" : "prev"]();
-    (_a = $nextActive.get(0)) == null ? void 0 : _a.click();
-    return void 0;
-  }
-  const iframePlayer$8 = defineIframePlayer({
-    iframeSelector: "#playerIFrame iframe",
-    getActive: getActive$8,
-    setActive: (href) => {
-    },
-    search: {
-      getSearchName: () => $(".detail-box h2").text(),
-      getEpisode: () => getActive$8().text()
-    },
-    getEpisodeList: () => $(".video-source-box .van-grid-item"),
-    getSwitchEpisodeURL: (next) => switchPart$8(next)
-  });
-  async function mobilePlayModule() {
-    await wait(() => getActive$8().length > 0);
-    iframePlayer$8.runInTop();
-  }
+  var T$1 = {"subListContainer":"<div id=\"subListContainer\" class=\"text_list_box mb-4\">\n  <div class=\"text_list_box--hd\">\n    <h6 class=\"title\">\n      <span class=\"float-end\">\n        <span class=\"update-info\" title=\"点击可强制更新数据\"></span>\n      </span>\n      订阅列表\n    </h6>\n  </div>\n  <div id=\"subList\"></div>\n</div>","subList":"<div id=\"subList\">\n  {{# if (groups.every(o => o.list.length === 0)) { }}\n  <div class=\"text_list_box--bd\">\n    <div class=\"text_list_box_wrapper\">\n      <ul class=\"text_list_item\">\n        <li>\n          <div class=\"d-flex position-relative\">\n            <div class=\"flex-grow-1 text-truncate pe-2\">\n              订阅喜欢的番剧，在播放页面标题右侧添加订阅\n            </div>\n          </div>\n        </li>\n      </ul>\n    </div>\n  </div>\n  {{# } }}\n  \n  {{# groups.filter(o => !!o.list.length).forEach(({list, day}) => { }}\n  <div class=\"text_list_box--bd\">\n    <div class=\"sub-group-day\">{{day}}</div>\n    <div class=\"text_list_box_wrapper\">\n      <ul class=\"text_list_item\">\n        {{# list.forEach(item => { }}\n        <li>\n          <div class=\"d-flex position-relative\">\n            <div class=\"text-truncate pe-2\">\n              <a                 href=\"{{item.current.url}}\"\n                class=\"text-decoration-none link-light common_alink\"\n                >{{item.title}}</a>\n            </div>\n            <div class=\"flex-grow-1 title_new\"></div>\n            <div class=\"title_sub text-truncate\">\n              <a                 class=\"text-decoration-none link-light common_alink\"\n                href=\"{{item.current.url}}\"\n                >{{item.current.title}}</a>\n              <span>/</span>\n              <a                 class=\"text-decoration-none link-light common_alink\"\n                href=\"{{item.last.url}}\"\n                >{{item.last.title}}</a>\n            </div>\n\n            <div class=\"sub-thumbnail-box\">\n              <img                 class=\"sub-thumbnail\"\n                src=\"{{item.thumbnail}}\"\n                alt=\"{{item.title}}\"\n              >\n            </div>\n          </div>\n        </li>\n        {{# }) }}\n      </ul>\n    </div>\n  </div>\n  {{# }) }}\n</div>"};
 
+  var __defProp$1 = Object.defineProperty;
+  var __getOwnPropSymbols$1 = Object.getOwnPropertySymbols;
+  var __hasOwnProp$1 = Object.prototype.hasOwnProperty;
+  var __propIsEnum$1 = Object.prototype.propertyIsEnumerable;
+  var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __spreadValues$1 = (a, b) => {
+    for (var prop in b || (b = {}))
+      if (__hasOwnProp$1.call(b, prop))
+        __defNormalProp$1(a, prop, b[prop]);
+    if (__getOwnPropSymbols$1)
+      for (var prop of __getOwnPropSymbols$1(b)) {
+        if (__propIsEnum$1.call(b, prop))
+          __defNormalProp$1(a, prop, b[prop]);
+      }
+    return a;
+  };
   function calcSortDirection() {
     var _a, _b, _c;
-    const $active = getActive$7();
+    const $active = getActive$6();
     const $prev = $active.prev();
     const $next = $active.next();
     const prevText = (_a = $prev.text().match(/\d+/)) == null ? void 0 : _a[0];
@@ -6190,7 +7620,7 @@ ${text}
     }
   }
   function activeScrollIntoView() {
-    const $active = getActive$7();
+    const $active = getActive$6();
     function getScrollParent() {
       let parent = $active.parent()[0];
       while (parent && parent.tagName !== "BODY") {
@@ -6225,21 +7655,21 @@ ${text}
       activeScrollIntoView();
     }).prependTo(".playlist-source-tab .float-end");
   }
-  function getActive$7() {
+  function getActive$6() {
     return $(".video_detail_episode .video_detail_spisode_playing").parent();
   }
-  function switchPart$7(next) {
+  function switchPart$6(next) {
     var _a;
-    const $active = getActive$7();
+    const $active = getActive$6();
     const sortDirection = getSortDirection();
     let $nextActive;
     if (sortDirection === "asc") $nextActive = $active[next ? "next" : "prev"]();
     else $nextActive = $active[next ? "prev" : "next"]();
     return (_a = $nextActive.find("a").get(0)) == null ? void 0 : _a.href;
   }
-  const iframePlayer$7 = defineIframePlayer({
+  const iframePlayer$6 = defineIframePlayer({
     iframeSelector: ".video_play_wrapper iframe",
-    getActive: getActive$7,
+    getActive: getActive$6,
     setActive: (href) => {
       $(".video_detail_episode a").each((_, el) => {
         const $el = $(el);
@@ -6251,27 +7681,95 @@ ${text}
     },
     search: {
       getSearchName: () => $(".video_detail_wrapper .cata_video_item .card-title").text(),
-      getEpisode: () => getActive$7().text()
+      getEpisode: () => getActive$6().text()
     },
     getEpisodeList: () => $(".video_detail_episode a"),
-    getSwitchEpisodeURL: (next) => switchPart$7(next)
+    getSwitchEpisodeURL: (next) => switchPart$6(next),
+    subscribe: {
+      storageKey: "agefans-subscribe",
+      getId: () => window.location.pathname.match(/play\/(\d+)/)[1],
+      async getAnimeInfo(id, sm) {
+        const res = await fetch(`/detail/${id}/`);
+        const html = await res.text();
+        if (res.status < 200 || res.status >= 300)
+          throw new Error("Failed to fetch anime info");
+        const $doc = $(html);
+        const buildLabelSelector = (labels) => labels.map((label) => `.detail_imform_tag:contains('${label}')`).join(",");
+        const getLabelValue = ($context, keywords) => {
+          var _a, _b, _c, _d;
+          return (_d = (_c = (_b = (_a = $context.find(buildLabelSelector(keywords))[0]) == null ? void 0 : _a.nextSibling) == null ? void 0 : _b.textContent) == null ? void 0 : _c.trim()) != null ? _d : "";
+        };
+        const createdAtText = getLabelValue($doc, ["\u9996\u64AD\u65F6\u95F4"]);
+        const statusText = getLabelValue($doc, ["\u64AD\u653E\u72B6\u6001"]);
+        const $lists = $doc.find(".video_detail_episode");
+        const longest = $lists.get().reduce((max, el) => {
+          return max.children.length >= el.children.length ? max : el;
+        }, $lists[0]);
+        const $last = $(longest).find("li a").last();
+        let sub = sm.getSubscription(id);
+        const updateInfo = {
+          updatedAt: 0,
+          status: statusText,
+          last: { title: $last.text(), url: $last.attr("href") }
+        };
+        if (sub) {
+          if (sub.last.url !== $last.attr("href")) {
+            updateInfo.updatedAt = closestSameDay(createdAtText).getTime();
+          } else {
+            updateInfo.updatedAt = sub.updatedAt;
+          }
+        } else {
+          updateInfo.updatedAt = closestSameDay(createdAtText).getTime();
+          const $current = getActive$6();
+          sub = __spreadValues$1({
+            id,
+            title: $(".video_detail_wrapper .cata_video_item .card-title").text(),
+            url: $(".player-title-link").attr("href"),
+            thumbnail: $(".video_thumbs").attr("src"),
+            createdAt: Date.now(),
+            checkedAt: Date.now(),
+            current: {
+              title: $current.text(),
+              url: $current.find("a").attr("href")
+            }
+          }, updateInfo);
+        }
+        return __spreadValues$1(__spreadValues$1({}, sub), updateInfo);
+      },
+      renderSubscribedAnimes: function(sm) {
+        const $root = $(T$1.subListContainer);
+        $root.insertBefore(".weekly_list");
+        sm.onChange(
+          () => {
+            const groups = sm.getSubscriptionsGroupByDay();
+            $root.find("#subList").replaceWith(template(T$1.subList)({ groups }));
+          },
+          { immediate: true }
+        );
+        return $root;
+      },
+      renderSubscribeBtn($btn) {
+        $btn.addClass("btn video_detail_meta float-end");
+        $btn.insertAfter($(".video_detail_meta.feedback-popover.float-end"));
+      }
+    }
   });
   function playModule() {
     $(".video_detail_episode a").each((_, el) => {
       if (el.href) el.href = el.href.replace("http://", "https://");
     });
-    iframePlayer$7.runInTop();
+    iframePlayer$6.runInTop();
     rememberSortDirection();
     restoreSortDirection();
     insertFocusBtn();
     activeScrollIntoView();
   }
   function playModuleInIframe() {
-    iframePlayer$7.runInIframe();
+    iframePlayer$6.runInIframe();
   }
 
   runtime.register({
-    domains: ["age.tv", "agemys", "agefans", "agedm"],
+    domains: ["age.tv", "agefans", "agedm"],
     opts: [
       {
         test: "*",
@@ -6279,226 +7777,14 @@ ${text}
           $("body").addClass("agefans-wrapper");
         }
       },
+      { test: "/", run: iframePlayer$6.subscribe.renderSubscribedAnimes },
       { test: "/play", run: playModule },
-      { test: "/play", run: playModuleInIframe, runInIframe: true },
-      { test: () => location.hash.includes("/play/"), run: mobilePlayModule }
+      { test: "/play", run: playModuleInIframe, runInIframe: true }
     ],
     search: {
       name: "agefans",
       search: (cn) => `https://www.age.tv/search?query=${cn}`,
       getAnimeScope: () => window.location.href.match(/\/play\/(\d+)/)[1]
-    }
-  });
-
-  const favoriteKey = "favorite.v2";
-  function getFavorite(id) {
-    const favorites = local.getItem(favoriteKey, []);
-    if (id) {
-      return favorites.find((f) => f.id === id);
-    }
-    return favorites;
-  }
-  function setFavorite(favorite) {
-    const favorites = getFavorite();
-    const index = favorites.findIndex((f) => f.id === favorite.id);
-    if (index === -1) {
-      favorites.push(favorite);
-    } else {
-      favorites[index] = favorite;
-    }
-    local.setItem(favoriteKey, favorites);
-  }
-  function removeFavorite(id) {
-    const favorites = getFavorite();
-    const index = favorites.findIndex((f) => f.id === id);
-    if (index !== -1) {
-      favorites.splice(index, 1);
-      local.setItem(favoriteKey, favorites);
-    }
-  }
-  function renderFavoriteList() {
-    const favorites = getFavorite();
-    const $root = $(".div_right.baseblock");
-    const $content = $(`<div class="blockcontent">
-    <ul id="anime_update"></ul>
-  </div>`);
-    $root.prepend(`<div class="blocktitle">\u8BA2\u9605</div>`, $content);
-    favorites.forEach((favorite) => {
-      const update = $(
-        `.mod .one_new_anime a[href$='/${favorite.id}.html'].one_new_anime_ji`
-      ).text() || $(
-        `.div_left a[href$='/${favorite.id}.html'] > img + .anime_icon1_name1`
-      ).text();
-      if (update) {
-        favorite.updateDesc = update;
-        updateFavoriteField(favorite.id, "updateDesc", update);
-      }
-    });
-    const daysInChinese = ["\u5468\u65E5", "\u5468\u4E00", "\u5468\u4E8C", "\u5468\u4E09", "\u5468\u56DB", "\u5468\u4E94", "\u5468\u516D"];
-    let groups = Array.from(
-      { length: 7 },
-      (_, idx) => ({
-        day: daysInChinese[idx],
-        list: favorites.filter(
-          (item) => new Date(item.lastUpdate).getDay() === idx
-        )
-      })
-    );
-    const day = (/* @__PURE__ */ new Date()).getDay();
-    groups = [
-      ...groups.slice(0, day + 1).reverse(),
-      ...groups.slice(day + 1).reverse()
-    ];
-    groups.filter((o) => o.list.length > 0).forEach(({ day: day2, list }, index) => {
-      const $ul = $(`<ul id="new_anime_page"></ul>`);
-      list.forEach((favorite) => {
-        const url = new URL(favorite.current.url, location.origin);
-        url.searchParams.set("jumpToLast", "1");
-        const lastUrl = url.toString();
-        $ul.append(
-          `
-<li class="one_new_anime" style="display:flex; justify-content:space-between;">
-  <a 
-    class="one_new_anime_name" 
-    href="${favorite.current.url}" 
-    title="${favorite.title}"
-  >${favorite.title}</a>
-  <a 
-    class="one_new_anime_ji" 
-    style="flex-shrink:0;margin:0" 
-    href="${favorite.current.url}"
-    title="\u8DF3\u8F6C\u5230${favorite.current.name}\u7684\u64AD\u653E\u9875\u9762"
-  >${favorite.current.name}</a>
-  <span>&nbsp;/&nbsp;</span>
-  <a 
-    class="one_new_anime_ji" 
-    style="flex-shrink:0;" 
-    href="${lastUrl}"
-    title="\u8DF3\u8F6C\u5230\u6700\u540E\u4E00\u96C6\u64AD\u653E\u9875\u9762"
-  >${favorite.updateDesc || "-"}</a>
-</li>`
-        );
-      });
-      $content.find("#anime_update").append(
-        `<div style="margin-top:${index !== 0 ? 8 : 0}px;">${day2}</div>`,
-        $ul
-      );
-    });
-    if (!favorites.length) {
-      $content.find("#anime_update").append("<div>\u8BA2\u9605\u559C\u6B22\u7684\u756A\u5267\uFF0C\u5728\u64AD\u653E\u9875\u9762\u6807\u9898\u53F3\u4FA7\u6DFB\u52A0\u8BA2\u9605</div>");
-    }
-  }
-  function renderFavoriteBtn() {
-    const $btn = $(`<a href="javascript:void(0)" style="float:right;">\u8BA2\u9605</a>`);
-    const id = getCurrentPageFavoriteId();
-    const updateLabel = () => {
-      $btn.text(getFavorite(id) ? "\u5DF2\u8BA2\u9605" : "\u8BA2\u9605");
-    };
-    $btn.on("click", () => {
-      if (getFavorite(id)) {
-        removeFavorite(id);
-      } else {
-        addCurrentPageFavorite();
-      }
-      updateLabel();
-    });
-    updateLabel();
-    $("#detailname").append($btn);
-  }
-  function updateFavoriteField(id, field, value) {
-    const favorite = getFavorite(id);
-    if (!favorite) return;
-    favorite[field] = value;
-    setFavorite(favorite);
-  }
-  function getCurrentPageFavoriteId() {
-    return location.pathname.match(/\/(\d+)-/)[1];
-  }
-  function addCurrentPageFavorite() {
-    setFavorite(createCurrentPageFavorite());
-  }
-  function createCurrentPageFavorite() {
-    const id = getCurrentPageFavoriteId();
-    const name = $(".active-play").text();
-    const url = location.pathname;
-    const title = $("#detailname a:nth-child(1)").text();
-    const lastUpdate = $('.play_imform_kv .play_imform_tag:contains("\u66F4\u65B0\u65F6\u95F4")').next(".play_imform_val").text();
-    const updateDesc = $('.play_imform_kv .play_imform_tag:contains("\u64AD\u653E\u72B6\u6001")').next(".play_imform_val").text();
-    return { id, title, updateDesc, lastUpdate, current: { name, url } };
-  }
-  function updateCurrentPageFavorite() {
-    const id = getCurrentPageFavoriteId();
-    if (!getFavorite(id)) return;
-    setFavorite(createCurrentPageFavorite());
-  }
-
-  function getActive$6() {
-    return $(".active-play");
-  }
-  function switchPart$6(next) {
-    var _a;
-    return (_a = $(".active-play").parent()[next ? "next" : "prev"]().find("a").get(0)) == null ? void 0 : _a.href;
-  }
-  function runInTop$6() {
-    parseURLJumpParams();
-    iframePlayer$6.runInTop();
-    renderFavoriteBtn();
-  }
-  function parseURLJumpParams() {
-    const url = new URL(window.location.href);
-    const jumpToLast = url.searchParams.get("jumpToLast");
-    if (jumpToLast) {
-      window.location.replace($(".movurl:visible a").last().attr("href"));
-    }
-  }
-  const iframePlayer$6 = defineIframePlayer({
-    iframeSelector: "#playleft iframe",
-    getActive: () => $(".active-play"),
-    setActive: (href) => {
-      $(".movurl a").each((_, el) => {
-        if (el.href === href) {
-          el.classList.add("active-play");
-        } else {
-          el.classList.remove("active-play");
-        }
-      });
-    },
-    search: {
-      getSearchName: () => $("#detailname a:nth-child(1)").text(),
-      getEpisode: () => getActive$6().text()
-    },
-    getEpisodeList: () => $(".movurl a"),
-    getSwitchEpisodeURL: (next) => switchPart$6(next),
-    history: {
-      creator: (renderHistory) => {
-        const $btn = $(`<a class="nav_button" href="javascript:void(0)">\u5386\u53F2</a>`);
-        $btn.on("click", renderHistory);
-        $btn.insertBefore("#top_search_from");
-      },
-      getId: () => location.pathname.match(/\/(\d+)-/)[1]
-    },
-    onPlayerMessage: (key, data) => {
-      if (key === "canplay") {
-        const video = data.video;
-        const width = $("#ageframediv").width();
-        if (width) $("#ageframediv").height(video.height / video.width * width);
-        updateCurrentPageFavorite();
-      }
-    }
-  });
-
-  runtime.register({
-    domains: [".ntdm8."],
-    opts: [
-      { test: "*", run: iframePlayer$6.createHistory },
-      { test: /^\/$/, run: renderFavoriteList },
-      { test: "/play", run: runInTop$6 },
-      { test: "/play", run: iframePlayer$6.runInIframe, runInIframe: true }
-    ],
-    search: {
-      name: "NT\u52A8\u6F2B",
-      search: (cn) => `http://www.ntdm8.com/search/-------------.html?wd=${cn}&page=1`,
-      getAnimeScope: () => window.location.pathname.match(/\/play\/(\d+)-/)[1]
     }
   });
 
@@ -7185,770 +8471,7 @@ ${text}
     }
   });
 
-  var T = {"subList":"<div id=\"subList\" class=\"box-width wow fadeInUp\">\r\n  <div class=\"overflow\">\r\n    <div class=\"title flex between top40 week-diy rel\">\r\n      <div class=\"title-left flex\">\r\n        <h4 class=\"title-h cor4\">订阅列表</h4>\r\n        <div class=\"week-select flex box radius overflow rel\">\r\n          <div class=\"week-bj b-c\"></div>\r\n          <a class=\"week-key1\" data-index=\"1\">周一</a>\r\n          <a class=\"week-key2\" data-index=\"2\">周二</a>\r\n          <a class=\"week-key3\" data-index=\"3\">周三</a>\r\n          <a class=\"week-key4\" data-index=\"4\">周四</a>\r\n          <a class=\"week-key5\" data-index=\"5\">周五</a>\r\n          <a class=\"week-key6\" data-index=\"6\">周六</a>\r\n          <a class=\"week-key7\" data-index=\"7\">周日</a>\r\n        </div>\r\n      </div>\r\n      <div class=\"titel-right\">\r\n        <a class=\"button more force-update\">强制更新</a>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>","subListContent":"<div \n  id=\"subListContent\"\r\n  class=\"flex wrap border-box public-r hide-b-2 diy-center1 mask2\"\r\n>\r\n  <div class=\"cor4 empty-tip\">订阅喜欢的番剧，在播放页面标题右侧添加订阅</div>\r\n</div>","subItem":"<div id=\"subItem\" class=\"public-list-box public-pic-b\">\r\n  <div class=\"public-list-div public-list-bj\">\r\n    <a \n      target=\"_blank\"\r\n      class=\"public-list-exp\"\r\n      href=\"{{current.url}}\"\r\n      title=\"{{title}}\"\r\n      ><img \n        class=\"lazy lazy1 gen-movie-img entered loaded\"\r\n        referrerpolicy=\"no-referrer\"\r\n        src=\"{{thumbnail}}\"\r\n        alt=\"{{title}}\"\r\n        data-src=\"{{thumbnail}}\"\r\n        data-ll-status=\"loaded\"\r\n      ><span class=\"public-bg\"></span><span class=\"public-list-prb hide ft2\">{{status}}</span><span class=\"public-play\"><i class=\"fa\"></i></span></a>\r\n  </div>\r\n  <div class=\"public-list-button\">\r\n    <a \n      target=\"_blank\"\r\n      class=\"time-title hide ft4 bold\"\r\n      href=\"{{current.url}}\"\r\n      title=\"{{title}}\"\r\n      >{{title}}</a>\r\n    <div class=\"public-list-subtitle cor5 hide ft2\">\r\n      <span>观看至</span>\r\n      <a target=\"_blank\" href=\"{{current.url}}\" title=\"{{current.title}}\"\r\n        >{{current.title}}</a>\r\n      <span>/</span>\r\n      <a target=\"_blank\" href=\"{{last.url}}\" title=\"{{last.title}}\"\r\n        >{{last.title}}</a>\r\n    </div>\r\n  </div>\r\n</div>"};
-
-  /*!
-   * mustache.js - Logic-less {{mustache}} templates with JavaScript
-   * http://github.com/janl/mustache.js
-   */
-
-  var objectToString = Object.prototype.toString;
-  var isArray = Array.isArray || function isArrayPolyfill (object) {
-    return objectToString.call(object) === '[object Array]';
-  };
-
-  function isFunction (object) {
-    return typeof object === 'function';
-  }
-
-  /**
-   * More correct typeof string handling array
-   * which normally returns typeof 'object'
-   */
-  function typeStr (obj) {
-    return isArray(obj) ? 'array' : typeof obj;
-  }
-
-  function escapeRegExp (string) {
-    return string.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&');
-  }
-
-  /**
-   * Null safe way of checking whether or not an object,
-   * including its prototype, has a given property
-   */
-  function hasProperty (obj, propName) {
-    return obj != null && typeof obj === 'object' && (propName in obj);
-  }
-
-  /**
-   * Safe way of detecting whether or not the given thing is a primitive and
-   * whether it has the given property
-   */
-  function primitiveHasOwnProperty (primitive, propName) {
-    return (
-      primitive != null
-      && typeof primitive !== 'object'
-      && primitive.hasOwnProperty
-      && primitive.hasOwnProperty(propName)
-    );
-  }
-
-  // Workaround for https://issues.apache.org/jira/browse/COUCHDB-577
-  // See https://github.com/janl/mustache.js/issues/189
-  var regExpTest = RegExp.prototype.test;
-  function testRegExp (re, string) {
-    return regExpTest.call(re, string);
-  }
-
-  var nonSpaceRe = /\S/;
-  function isWhitespace (string) {
-    return !testRegExp(nonSpaceRe, string);
-  }
-
-  var entityMap = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;',
-    '/': '&#x2F;',
-    '`': '&#x60;',
-    '=': '&#x3D;'
-  };
-
-  function escapeHtml (string) {
-    return String(string).replace(/[&<>"'`=\/]/g, function fromEntityMap (s) {
-      return entityMap[s];
-    });
-  }
-
-  var whiteRe = /\s*/;
-  var spaceRe = /\s+/;
-  var equalsRe = /\s*=/;
-  var curlyRe = /\s*\}/;
-  var tagRe = /#|\^|\/|>|\{|&|=|!/;
-
-  /**
-   * Breaks up the given `template` string into a tree of tokens. If the `tags`
-   * argument is given here it must be an array with two string values: the
-   * opening and closing tags used in the template (e.g. [ "<%", "%>" ]). Of
-   * course, the default is to use mustaches (i.e. mustache.tags).
-   *
-   * A token is an array with at least 4 elements. The first element is the
-   * mustache symbol that was used inside the tag, e.g. "#" or "&". If the tag
-   * did not contain a symbol (i.e. {{myValue}}) this element is "name". For
-   * all text that appears outside a symbol this element is "text".
-   *
-   * The second element of a token is its "value". For mustache tags this is
-   * whatever else was inside the tag besides the opening symbol. For text tokens
-   * this is the text itself.
-   *
-   * The third and fourth elements of the token are the start and end indices,
-   * respectively, of the token in the original template.
-   *
-   * Tokens that are the root node of a subtree contain two more elements: 1) an
-   * array of tokens in the subtree and 2) the index in the original template at
-   * which the closing tag for that section begins.
-   *
-   * Tokens for partials also contain two more elements: 1) a string value of
-   * indendation prior to that tag and 2) the index of that tag on that line -
-   * eg a value of 2 indicates the partial is the third tag on this line.
-   */
-  function parseTemplate (template, tags) {
-    if (!template)
-      return [];
-    var lineHasNonSpace = false;
-    var sections = [];     // Stack to hold section tokens
-    var tokens = [];       // Buffer to hold the tokens
-    var spaces = [];       // Indices of whitespace tokens on the current line
-    var hasTag = false;    // Is there a {{tag}} on the current line?
-    var nonSpace = false;  // Is there a non-space char on the current line?
-    var indentation = '';  // Tracks indentation for tags that use it
-    var tagIndex = 0;      // Stores a count of number of tags encountered on a line
-
-    // Strips all whitespace tokens array for the current line
-    // if there was a {{#tag}} on it and otherwise only space.
-    function stripSpace () {
-      if (hasTag && !nonSpace) {
-        while (spaces.length)
-          delete tokens[spaces.pop()];
-      } else {
-        spaces = [];
-      }
-
-      hasTag = false;
-      nonSpace = false;
-    }
-
-    var openingTagRe, closingTagRe, closingCurlyRe;
-    function compileTags (tagsToCompile) {
-      if (typeof tagsToCompile === 'string')
-        tagsToCompile = tagsToCompile.split(spaceRe, 2);
-
-      if (!isArray(tagsToCompile) || tagsToCompile.length !== 2)
-        throw new Error('Invalid tags: ' + tagsToCompile);
-
-      openingTagRe = new RegExp(escapeRegExp(tagsToCompile[0]) + '\\s*');
-      closingTagRe = new RegExp('\\s*' + escapeRegExp(tagsToCompile[1]));
-      closingCurlyRe = new RegExp('\\s*' + escapeRegExp('}' + tagsToCompile[1]));
-    }
-
-    compileTags(tags || mustache.tags);
-
-    var scanner = new Scanner(template);
-
-    var start, type, value, chr, token, openSection;
-    while (!scanner.eos()) {
-      start = scanner.pos;
-
-      // Match any text between tags.
-      value = scanner.scanUntil(openingTagRe);
-
-      if (value) {
-        for (var i = 0, valueLength = value.length; i < valueLength; ++i) {
-          chr = value.charAt(i);
-
-          if (isWhitespace(chr)) {
-            spaces.push(tokens.length);
-            indentation += chr;
-          } else {
-            nonSpace = true;
-            lineHasNonSpace = true;
-            indentation += ' ';
-          }
-
-          tokens.push([ 'text', chr, start, start + 1 ]);
-          start += 1;
-
-          // Check for whitespace on the current line.
-          if (chr === '\n') {
-            stripSpace();
-            indentation = '';
-            tagIndex = 0;
-            lineHasNonSpace = false;
-          }
-        }
-      }
-
-      // Match the opening tag.
-      if (!scanner.scan(openingTagRe))
-        break;
-
-      hasTag = true;
-
-      // Get the tag type.
-      type = scanner.scan(tagRe) || 'name';
-      scanner.scan(whiteRe);
-
-      // Get the tag value.
-      if (type === '=') {
-        value = scanner.scanUntil(equalsRe);
-        scanner.scan(equalsRe);
-        scanner.scanUntil(closingTagRe);
-      } else if (type === '{') {
-        value = scanner.scanUntil(closingCurlyRe);
-        scanner.scan(curlyRe);
-        scanner.scanUntil(closingTagRe);
-        type = '&';
-      } else {
-        value = scanner.scanUntil(closingTagRe);
-      }
-
-      // Match the closing tag.
-      if (!scanner.scan(closingTagRe))
-        throw new Error('Unclosed tag at ' + scanner.pos);
-
-      if (type == '>') {
-        token = [ type, value, start, scanner.pos, indentation, tagIndex, lineHasNonSpace ];
-      } else {
-        token = [ type, value, start, scanner.pos ];
-      }
-      tagIndex++;
-      tokens.push(token);
-
-      if (type === '#' || type === '^') {
-        sections.push(token);
-      } else if (type === '/') {
-        // Check section nesting.
-        openSection = sections.pop();
-
-        if (!openSection)
-          throw new Error('Unopened section "' + value + '" at ' + start);
-
-        if (openSection[1] !== value)
-          throw new Error('Unclosed section "' + openSection[1] + '" at ' + start);
-      } else if (type === 'name' || type === '{' || type === '&') {
-        nonSpace = true;
-      } else if (type === '=') {
-        // Set the tags for the next time around.
-        compileTags(value);
-      }
-    }
-
-    stripSpace();
-
-    // Make sure there are no open sections when we're done.
-    openSection = sections.pop();
-
-    if (openSection)
-      throw new Error('Unclosed section "' + openSection[1] + '" at ' + scanner.pos);
-
-    return nestTokens(squashTokens(tokens));
-  }
-
-  /**
-   * Combines the values of consecutive text tokens in the given `tokens` array
-   * to a single token.
-   */
-  function squashTokens (tokens) {
-    var squashedTokens = [];
-
-    var token, lastToken;
-    for (var i = 0, numTokens = tokens.length; i < numTokens; ++i) {
-      token = tokens[i];
-
-      if (token) {
-        if (token[0] === 'text' && lastToken && lastToken[0] === 'text') {
-          lastToken[1] += token[1];
-          lastToken[3] = token[3];
-        } else {
-          squashedTokens.push(token);
-          lastToken = token;
-        }
-      }
-    }
-
-    return squashedTokens;
-  }
-
-  /**
-   * Forms the given array of `tokens` into a nested tree structure where
-   * tokens that represent a section have two additional items: 1) an array of
-   * all tokens that appear in that section and 2) the index in the original
-   * template that represents the end of that section.
-   */
-  function nestTokens (tokens) {
-    var nestedTokens = [];
-    var collector = nestedTokens;
-    var sections = [];
-
-    var token, section;
-    for (var i = 0, numTokens = tokens.length; i < numTokens; ++i) {
-      token = tokens[i];
-
-      switch (token[0]) {
-        case '#':
-        case '^':
-          collector.push(token);
-          sections.push(token);
-          collector = token[4] = [];
-          break;
-        case '/':
-          section = sections.pop();
-          section[5] = token[2];
-          collector = sections.length > 0 ? sections[sections.length - 1][4] : nestedTokens;
-          break;
-        default:
-          collector.push(token);
-      }
-    }
-
-    return nestedTokens;
-  }
-
-  /**
-   * A simple string scanner that is used by the template parser to find
-   * tokens in template strings.
-   */
-  function Scanner (string) {
-    this.string = string;
-    this.tail = string;
-    this.pos = 0;
-  }
-
-  /**
-   * Returns `true` if the tail is empty (end of string).
-   */
-  Scanner.prototype.eos = function eos () {
-    return this.tail === '';
-  };
-
-  /**
-   * Tries to match the given regular expression at the current position.
-   * Returns the matched text if it can match, the empty string otherwise.
-   */
-  Scanner.prototype.scan = function scan (re) {
-    var match = this.tail.match(re);
-
-    if (!match || match.index !== 0)
-      return '';
-
-    var string = match[0];
-
-    this.tail = this.tail.substring(string.length);
-    this.pos += string.length;
-
-    return string;
-  };
-
-  /**
-   * Skips all text until the given regular expression can be matched. Returns
-   * the skipped string, which is the entire tail if no match can be made.
-   */
-  Scanner.prototype.scanUntil = function scanUntil (re) {
-    var index = this.tail.search(re), match;
-
-    switch (index) {
-      case -1:
-        match = this.tail;
-        this.tail = '';
-        break;
-      case 0:
-        match = '';
-        break;
-      default:
-        match = this.tail.substring(0, index);
-        this.tail = this.tail.substring(index);
-    }
-
-    this.pos += match.length;
-
-    return match;
-  };
-
-  /**
-   * Represents a rendering context by wrapping a view object and
-   * maintaining a reference to the parent context.
-   */
-  function Context (view, parentContext) {
-    this.view = view;
-    this.cache = { '.': this.view };
-    this.parent = parentContext;
-  }
-
-  /**
-   * Creates a new context using the given view with this context
-   * as the parent.
-   */
-  Context.prototype.push = function push (view) {
-    return new Context(view, this);
-  };
-
-  /**
-   * Returns the value of the given name in this context, traversing
-   * up the context hierarchy if the value is absent in this context's view.
-   */
-  Context.prototype.lookup = function lookup (name) {
-    var cache = this.cache;
-
-    var value;
-    if (cache.hasOwnProperty(name)) {
-      value = cache[name];
-    } else {
-      var context = this, intermediateValue, names, index, lookupHit = false;
-
-      while (context) {
-        if (name.indexOf('.') > 0) {
-          intermediateValue = context.view;
-          names = name.split('.');
-          index = 0;
-
-          /**
-           * Using the dot notion path in `name`, we descend through the
-           * nested objects.
-           *
-           * To be certain that the lookup has been successful, we have to
-           * check if the last object in the path actually has the property
-           * we are looking for. We store the result in `lookupHit`.
-           *
-           * This is specially necessary for when the value has been set to
-           * `undefined` and we want to avoid looking up parent contexts.
-           *
-           * In the case where dot notation is used, we consider the lookup
-           * to be successful even if the last "object" in the path is
-           * not actually an object but a primitive (e.g., a string, or an
-           * integer), because it is sometimes useful to access a property
-           * of an autoboxed primitive, such as the length of a string.
-           **/
-          while (intermediateValue != null && index < names.length) {
-            if (index === names.length - 1)
-              lookupHit = (
-                hasProperty(intermediateValue, names[index])
-                || primitiveHasOwnProperty(intermediateValue, names[index])
-              );
-
-            intermediateValue = intermediateValue[names[index++]];
-          }
-        } else {
-          intermediateValue = context.view[name];
-
-          /**
-           * Only checking against `hasProperty`, which always returns `false` if
-           * `context.view` is not an object. Deliberately omitting the check
-           * against `primitiveHasOwnProperty` if dot notation is not used.
-           *
-           * Consider this example:
-           * ```
-           * Mustache.render("The length of a football field is {{#length}}{{length}}{{/length}}.", {length: "100 yards"})
-           * ```
-           *
-           * If we were to check also against `primitiveHasOwnProperty`, as we do
-           * in the dot notation case, then render call would return:
-           *
-           * "The length of a football field is 9."
-           *
-           * rather than the expected:
-           *
-           * "The length of a football field is 100 yards."
-           **/
-          lookupHit = hasProperty(context.view, name);
-        }
-
-        if (lookupHit) {
-          value = intermediateValue;
-          break;
-        }
-
-        context = context.parent;
-      }
-
-      cache[name] = value;
-    }
-
-    if (isFunction(value))
-      value = value.call(this.view);
-
-    return value;
-  };
-
-  /**
-   * A Writer knows how to take a stream of tokens and render them to a
-   * string, given a context. It also maintains a cache of templates to
-   * avoid the need to parse the same template twice.
-   */
-  function Writer () {
-    this.templateCache = {
-      _cache: {},
-      set: function set (key, value) {
-        this._cache[key] = value;
-      },
-      get: function get (key) {
-        return this._cache[key];
-      },
-      clear: function clear () {
-        this._cache = {};
-      }
-    };
-  }
-
-  /**
-   * Clears all cached templates in this writer.
-   */
-  Writer.prototype.clearCache = function clearCache () {
-    if (typeof this.templateCache !== 'undefined') {
-      this.templateCache.clear();
-    }
-  };
-
-  /**
-   * Parses and caches the given `template` according to the given `tags` or
-   * `mustache.tags` if `tags` is omitted,  and returns the array of tokens
-   * that is generated from the parse.
-   */
-  Writer.prototype.parse = function parse (template, tags) {
-    var cache = this.templateCache;
-    var cacheKey = template + ':' + (tags || mustache.tags).join(':');
-    var isCacheEnabled = typeof cache !== 'undefined';
-    var tokens = isCacheEnabled ? cache.get(cacheKey) : undefined;
-
-    if (tokens == undefined) {
-      tokens = parseTemplate(template, tags);
-      isCacheEnabled && cache.set(cacheKey, tokens);
-    }
-    return tokens;
-  };
-
-  /**
-   * High-level method that is used to render the given `template` with
-   * the given `view`.
-   *
-   * The optional `partials` argument may be an object that contains the
-   * names and templates of partials that are used in the template. It may
-   * also be a function that is used to load partial templates on the fly
-   * that takes a single argument: the name of the partial.
-   *
-   * If the optional `config` argument is given here, then it should be an
-   * object with a `tags` attribute or an `escape` attribute or both.
-   * If an array is passed, then it will be interpreted the same way as
-   * a `tags` attribute on a `config` object.
-   *
-   * The `tags` attribute of a `config` object must be an array with two
-   * string values: the opening and closing tags used in the template (e.g.
-   * [ "<%", "%>" ]). The default is to mustache.tags.
-   *
-   * The `escape` attribute of a `config` object must be a function which
-   * accepts a string as input and outputs a safely escaped string.
-   * If an `escape` function is not provided, then an HTML-safe string
-   * escaping function is used as the default.
-   */
-  Writer.prototype.render = function render (template, view, partials, config) {
-    var tags = this.getConfigTags(config);
-    var tokens = this.parse(template, tags);
-    var context = (view instanceof Context) ? view : new Context(view, undefined);
-    return this.renderTokens(tokens, context, partials, template, config);
-  };
-
-  /**
-   * Low-level method that renders the given array of `tokens` using
-   * the given `context` and `partials`.
-   *
-   * Note: The `originalTemplate` is only ever used to extract the portion
-   * of the original template that was contained in a higher-order section.
-   * If the template doesn't use higher-order sections, this argument may
-   * be omitted.
-   */
-  Writer.prototype.renderTokens = function renderTokens (tokens, context, partials, originalTemplate, config) {
-    var buffer = '';
-
-    var token, symbol, value;
-    for (var i = 0, numTokens = tokens.length; i < numTokens; ++i) {
-      value = undefined;
-      token = tokens[i];
-      symbol = token[0];
-
-      if (symbol === '#') value = this.renderSection(token, context, partials, originalTemplate, config);
-      else if (symbol === '^') value = this.renderInverted(token, context, partials, originalTemplate, config);
-      else if (symbol === '>') value = this.renderPartial(token, context, partials, config);
-      else if (symbol === '&') value = this.unescapedValue(token, context);
-      else if (symbol === 'name') value = this.escapedValue(token, context, config);
-      else if (symbol === 'text') value = this.rawValue(token);
-
-      if (value !== undefined)
-        buffer += value;
-    }
-
-    return buffer;
-  };
-
-  Writer.prototype.renderSection = function renderSection (token, context, partials, originalTemplate, config) {
-    var self = this;
-    var buffer = '';
-    var value = context.lookup(token[1]);
-
-    // This function is used to render an arbitrary template
-    // in the current context by higher-order sections.
-    function subRender (template) {
-      return self.render(template, context, partials, config);
-    }
-
-    if (!value) return;
-
-    if (isArray(value)) {
-      for (var j = 0, valueLength = value.length; j < valueLength; ++j) {
-        buffer += this.renderTokens(token[4], context.push(value[j]), partials, originalTemplate, config);
-      }
-    } else if (typeof value === 'object' || typeof value === 'string' || typeof value === 'number') {
-      buffer += this.renderTokens(token[4], context.push(value), partials, originalTemplate, config);
-    } else if (isFunction(value)) {
-      if (typeof originalTemplate !== 'string')
-        throw new Error('Cannot use higher-order sections without the original template');
-
-      // Extract the portion of the original template that the section contains.
-      value = value.call(context.view, originalTemplate.slice(token[3], token[5]), subRender);
-
-      if (value != null)
-        buffer += value;
-    } else {
-      buffer += this.renderTokens(token[4], context, partials, originalTemplate, config);
-    }
-    return buffer;
-  };
-
-  Writer.prototype.renderInverted = function renderInverted (token, context, partials, originalTemplate, config) {
-    var value = context.lookup(token[1]);
-
-    // Use JavaScript's definition of falsy. Include empty arrays.
-    // See https://github.com/janl/mustache.js/issues/186
-    if (!value || (isArray(value) && value.length === 0))
-      return this.renderTokens(token[4], context, partials, originalTemplate, config);
-  };
-
-  Writer.prototype.indentPartial = function indentPartial (partial, indentation, lineHasNonSpace) {
-    var filteredIndentation = indentation.replace(/[^ \t]/g, '');
-    var partialByNl = partial.split('\n');
-    for (var i = 0; i < partialByNl.length; i++) {
-      if (partialByNl[i].length && (i > 0 || !lineHasNonSpace)) {
-        partialByNl[i] = filteredIndentation + partialByNl[i];
-      }
-    }
-    return partialByNl.join('\n');
-  };
-
-  Writer.prototype.renderPartial = function renderPartial (token, context, partials, config) {
-    if (!partials) return;
-    var tags = this.getConfigTags(config);
-
-    var value = isFunction(partials) ? partials(token[1]) : partials[token[1]];
-    if (value != null) {
-      var lineHasNonSpace = token[6];
-      var tagIndex = token[5];
-      var indentation = token[4];
-      var indentedValue = value;
-      if (tagIndex == 0 && indentation) {
-        indentedValue = this.indentPartial(value, indentation, lineHasNonSpace);
-      }
-      var tokens = this.parse(indentedValue, tags);
-      return this.renderTokens(tokens, context, partials, indentedValue, config);
-    }
-  };
-
-  Writer.prototype.unescapedValue = function unescapedValue (token, context) {
-    var value = context.lookup(token[1]);
-    if (value != null)
-      return value;
-  };
-
-  Writer.prototype.escapedValue = function escapedValue (token, context, config) {
-    var escape = this.getConfigEscape(config) || mustache.escape;
-    var value = context.lookup(token[1]);
-    if (value != null)
-      return (typeof value === 'number' && escape === mustache.escape) ? String(value) : escape(value);
-  };
-
-  Writer.prototype.rawValue = function rawValue (token) {
-    return token[1];
-  };
-
-  Writer.prototype.getConfigTags = function getConfigTags (config) {
-    if (isArray(config)) {
-      return config;
-    }
-    else if (config && typeof config === 'object') {
-      return config.tags;
-    }
-    else {
-      return undefined;
-    }
-  };
-
-  Writer.prototype.getConfigEscape = function getConfigEscape (config) {
-    if (config && typeof config === 'object' && !isArray(config)) {
-      return config.escape;
-    }
-    else {
-      return undefined;
-    }
-  };
-
-  var mustache = {
-    name: 'mustache.js',
-    version: '4.2.0',
-    tags: [ '{{', '}}' ],
-    clearCache: undefined,
-    escape: undefined,
-    parse: undefined,
-    render: undefined,
-    Scanner: undefined,
-    Context: undefined,
-    Writer: undefined,
-    /**
-     * Allows a user to override the default caching strategy, by providing an
-     * object with set, get and clear methods. This can also be used to disable
-     * the cache by setting it to the literal `undefined`.
-     */
-    set templateCache (cache) {
-      defaultWriter.templateCache = cache;
-    },
-    /**
-     * Gets the default or overridden caching object from the default writer.
-     */
-    get templateCache () {
-      return defaultWriter.templateCache;
-    }
-  };
-
-  // All high-level mustache.* functions use this writer.
-  var defaultWriter = new Writer();
-
-  /**
-   * Clears all cached templates in the default writer.
-   */
-  mustache.clearCache = function clearCache () {
-    return defaultWriter.clearCache();
-  };
-
-  /**
-   * Parses and caches the given template in the default writer and returns the
-   * array of tokens it contains. Doing this ahead of time avoids the need to
-   * parse templates on the fly as they are rendered.
-   */
-  mustache.parse = function parse (template, tags) {
-    return defaultWriter.parse(template, tags);
-  };
-
-  /**
-   * Renders the `template` with the given `view`, `partials`, and `config`
-   * using the default writer.
-   */
-  mustache.render = function render (template, view, partials, config) {
-    if (typeof template !== 'string') {
-      throw new TypeError('Invalid template! Template should be a "string" ' +
-                          'but "' + typeStr(template) + '" was given as the first ' +
-                          'argument for mustache#render(template, view, partials)');
-    }
-
-    return defaultWriter.render(template, view, partials, config);
-  };
-
-  // Export the escaping function so that the user may override it.
-  // See https://github.com/janl/mustache.js/issues/244
-  mustache.escape = escapeHtml;
-
-  // Export these mainly for testing, but also for advanced usage.
-  mustache.Scanner = Scanner;
-  mustache.Context = Context;
-  mustache.Writer = Writer;
+  var T = {"subListContainer":"<div id=\"subListContainer\" class=\"box-width wow fadeInUp\">\n  <div class=\"overflow\">\n    <div class=\"title flex between top40 rel\">\n      <div class=\"title-left\">\n        <h4 class=\"title-h cor4\">订阅列表</h4>\n        <div class=\"update-info cor5\"></div>\n      </div>\n    </div>\n\n    <div id=\"subList\"></div>\n  </div>\n</div>","subList":"<div id=\"subList\">\n  {{# if (groups.every(o => o.list.length === 0)) { }}\n  <div class=\"cor4 empty-tip\">订阅喜欢的番剧，在播放页面标题右侧添加订阅</div>\n  {{# } }}\n  \n  <div class=\"sub-list rel border-box public-r hide-b-2 diy-center1 mask2\">\n    <div class=\"swiper-wrapper\">\n      {{# groups.filter(o => !!o.list.length).forEach((group) => {\n      group.list.forEach((item) => { }}\n      <div class=\"public-list-box public-pic-b swiper-slide\">\n        <div class=\"public-list-div public-list-bj\">\n          <a             target=\"_blank\"\n            class=\"public-list-exp\"\n            href=\"{{item.current.url}}\"\n            title=\"{{item.title}}\"\n          >\n            <img               class=\"lazy lazy1 gen-movie-img entered loaded\"\n              referrerpolicy=\"no-referrer\"\n              src=\"{{item.thumbnail}}\"\n              alt=\"{{item.title}}\"\n              data-src=\"{{item.thumbnail}}\"\n              data-ll-status=\"loaded\"\n            >\n            <span class=\"public-bg\"></span>\n            <div class=\"public-prt k-day-{{group.dayNum}}\">\n              {{group.day + ' ' + new\n              Date(item.updatedAt).toLocaleTimeString().slice(0,-3) }}\n            </div>\n            <span class=\"public-list-prb hide ft2\">{{item.status}}</span>\n          </a>\n        </div>\n        <div class=\"public-list-button\">\n          <a             target=\"_blank\"\n            class=\"time-title hide ft4 bold\"\n            href=\"{{item.current.url}}\"\n            title=\"{{item.title}}\"\n            >{{item.title}}</a>\n          <div class=\"public-list-subtitle cor5 hide ft2\">\n            <span>观看至</span>\n            <a               target=\"_blank\"\n              href=\"{{item.current.url}}\"\n              title=\"{{item.current.title}}\"\n              >{{item.current.title}}</a>\n            <span>/</span>\n            <a               target=\"_blank\"\n              href=\"{{item.last.url}}\"\n              title=\"{{item.last.title}}\"\n              >{{item.last.title}}</a>\n          </div>\n        </div>\n      </div>\n      {{# })}) }}\n    </div>\n\n    <div class=\"vod-list-page\">\n      <a class=\"swiper-button-prev\" href=\"javascript:\" tabindex=\"-1\">\n        <i class=\"fa ds-fanhui\"></i>\n      </a>\n      <a class=\"swiper-button-next\" href=\"javascript:\" tabindex=\"0\">\n        <i class=\"fa ds-jiantouyou\"> </i>\n      </a>\n    </div>\n  </div>\n</div>"};
 
   var __defProp = Object.defineProperty;
   var __getOwnPropSymbols = Object.getOwnPropertySymbols;
@@ -7977,27 +8500,6 @@ ${text}
     var _a;
     return ((_a = window.location.pathname.match(/\/playGV(\d+)-/)) == null ? void 0 : _a[1]) || "";
   }
-  async function getAnimeUpdateInfo(id) {
-    const html = await fetch(`/GV${id}/`).then((res) => res.text());
-    const $doc = $(html);
-    const buildLabelSelector = (labels) => labels.map((label) => `em.cor4:contains('${label}')`).join(",");
-    const getLabelValue = ($context, keywords) => {
-      var _a, _b, _c, _d;
-      return (_d = (_c = (_b = (_a = $context.find(buildLabelSelector(keywords))[0]) == null ? void 0 : _a.nextSibling) == null ? void 0 : _b.textContent) == null ? void 0 : _c.trim()) != null ? _d : "";
-    };
-    const updatedAtText = getLabelValue($doc, ["\u66F4\u65B0"]);
-    const statusText = getLabelValue($doc, ["\u72B6\u6001", "\u72C0\u6001", "\u72C0\u614B"]);
-    const $lists = $doc.find(".anthology-list-play");
-    const longest = $lists.get().reduce((max, el) => {
-      return max.children.length > el.children.length ? max : el;
-    }, $lists[0]);
-    const $last = $(longest).find("li a").last();
-    return {
-      updatedAt: new Date(updatedAtText).getTime(),
-      status: statusText,
-      last: { title: $last.text(), url: $last.attr("href") }
-    };
-  }
   function runInTop() {
     $(".player-news,#buffer,#install").remove();
     iframePlayer.runInTop();
@@ -8024,72 +8526,69 @@ ${text}
     subscribe: {
       storageKey: "girigirilove_subscriptions",
       getId: getEpisodeId,
-      getAnimeUpdateInfo,
-      renderSubscribedAnimes: ($root, sm) => {
-        const grouped = sm.getSubscriptionsSortedByDay();
-        $root.html(T.subList);
-        $root.insertBefore("#week-module-box");
-        grouped.forEach(({ list }, idx) => {
-          const $list = $(T.subListContent);
-          $list.removeAttr("id");
-          $list.hide();
-          if (list.length) {
-            $list.empty();
-            list.forEach((sub) => {
-              const $item = $(mustache.render(T.subItem, sub));
-              $item.removeAttr("id");
-              $list.append($item);
-            });
-          }
-          $list.addClass(`sub-list`);
-          $root.find("#subList > .overflow").append($list);
-        });
-        const setActive = (idx) => {
-          $root.attr("data-active-day", idx);
-          $(".week-bj").attr("class", "week-bj b-c");
-          $(".week-bj").addClass(`week-${idx + 1}`);
-          $(".week-select a").removeClass(`tim`);
-          $(`.week-select [class^="week-key${idx + 1}"]`).addClass(`tim`);
-          $(".sub-list").hide();
-          $(".sub-list").eq(idx).show();
-          $('#week-module-box [id^="week-module-"]').hide();
-          $(`#week-module-box [id="week-module-${idx + 1}"]`).show();
+      async getAnimeInfo(id, sm) {
+        const res = await fetch(`/GV${id}/`);
+        if (res.status < 200 || res.status >= 300)
+          throw new Error("Failed to fetch anime info");
+        const html = await res.text();
+        const $doc = $(html);
+        const buildLabelSelector = (labels) => labels.map((label) => `em.cor4:contains('${label}')`).join(",");
+        const getLabelValue = ($context, keywords) => {
+          var _a, _b, _c, _d;
+          return (_d = (_c = (_b = (_a = $context.find(buildLabelSelector(keywords))[0]) == null ? void 0 : _a.nextSibling) == null ? void 0 : _b.textContent) == null ? void 0 : _c.trim()) != null ? _d : "";
         };
-        if ($root.attr("data-active-day")) {
-          setActive(Number($root.attr("data-active-day")));
-        } else {
-          const day = (/* @__PURE__ */ new Date()).getDay();
-          setActive(day === 0 ? 6 : day - 1);
+        const updatedAtText = getLabelValue($doc, ["\u66F4\u65B0"]);
+        const statusText = getLabelValue($doc, ["\u72B6\u6001", "\u72C0\u6001", "\u72C0\u614B"]);
+        const $lists = $doc.find(".anthology-list-play");
+        const longest = $lists.get().reduce((max, el) => {
+          return max.children.length >= el.children.length ? max : el;
+        }, $lists[0]);
+        const $last = $(longest).find("li a").last();
+        const updateInfo = {
+          updatedAt: new Date(updatedAtText).getTime(),
+          status: statusText,
+          last: { title: $last.text(), url: $last.attr("href") }
+        };
+        let sub = sm.getSubscription(id);
+        if (!sub) {
+          const $current = getActive();
+          sub = __spreadValues({
+            id,
+            title: $(".player-title-link").text(),
+            url: $(".player-title-link").attr("href"),
+            thumbnail: $(".play-details-top .this-pic img").attr("data-src"),
+            createdAt: Date.now(),
+            checkedAt: Date.now(),
+            current: { title: $current.text(), url: $current.attr("href") }
+          }, updateInfo);
         }
-        $(".week-select a").on("click", (e) => {
-          const idx = Number($(e.currentTarget).attr("data-index"));
-          setActive(idx - 1);
-        });
-        $root.find(".force-update").on("click", async () => {
-          iframePlayer.subscribe.checkSubscriptionsUpdates(true);
-        });
+        return __spreadValues(__spreadValues({}, sub), updateInfo);
       },
-      renderSubscribeBtn: ($btn, sm) => {
-        const id = getEpisodeId();
-        const sub = sm.getSubscription(id);
-        $btn.on("click", async () => {
-          $btn.text("\u5904\u7406\u4E2D...");
-          if (sub) {
-            sm.deleteSubscription(id);
-          } else {
-            const updateInfo = await getAnimeUpdateInfo(id);
-            const $current = getActive();
-            sm.createSubscription(__spreadValues({
-              id,
-              title: $(".player-title-link").text(),
-              url: $(".player-title-link").attr("href"),
-              thumbnail: $(".play-details-top .this-pic img").attr("data-src"),
-              createdAt: Date.now(),
-              checkedAt: Date.now(),
-              current: { title: $current.text(), url: $current.attr("href") }
-            }, updateInfo));
-          }
-        });
+      renderSubscribedAnimes: (sm) => {
+        const $root = $(T.subListContainer);
+        $root.insertBefore("#week-module-box");
+        sm.onChange(
+          () => {
+            const groups = sm.getSubscriptionsGroupByDay();
+            $root.find("#subList").replaceWith(template(T.subList)({ groups }));
+            execInUnsafeWindow(() => {
+              if (typeof window.Swiper !== "undefined") {
+                new window.Swiper(".sub-list", {
+                  slidesPerView: "auto",
+                  slidesPerGroup: 2,
+                  navigation: {
+                    nextEl: ".swiper-button-next",
+                    prevEl: ".swiper-button-prev"
+                  }
+                });
+              }
+            });
+          },
+          { immediate: true }
+        );
+        return $root;
+      },
+      renderSubscribeBtn($btn) {
         $btn.addClass("cor5 r6");
         $btn.prependTo($(".anthology-header .function"));
       }
@@ -8105,14 +8604,13 @@ ${text}
     player.src = new URLSearchParams(location.search).get("url");
   }
 
-  var css = ".girigirilove .empty-tip {\n  width: 100%;\n  padding: 40px 20px 20px;\n  text-align: center;\n}\n.girigirilove.widescreen .head,\n.girigirilove.widescreen .header_nav0,\n.girigirilove.widescreen .header_nav1,\n.girigirilove.widescreen .top-back.hoa,\n.girigirilove.widescreen .fixedGroup {\n  visibility: hidden;\n  pointer-events: none;\n}";
+  var css = ".girigirilove .empty-tip {\n  width: 100%;\n  padding: 40px 20px 20px;\n  text-align: center;\n}\n.girigirilove .update-info {\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  font-size: 12px;\n  margin-top: 4px;\n}\n.girigirilove .update-info:hover {\n  cursor: pointer;\n  text-decoration: underline;\n}\n.girigirilove .k-day-0 {\n  background-color: rgb(232, 93, 188);\n}\n.girigirilove .k-day-1 {\n  background-color: rgb(255, 82, 82);\n}\n.girigirilove .k-day-2 {\n  background-color: rgb(255, 145, 77);\n}\n.girigirilove .k-day-3 {\n  background-color: rgb(255, 212, 61);\n}\n.girigirilove .k-day-4 {\n  background-color: rgb(72, 219, 151);\n}\n.girigirilove .k-day-5 {\n  background-color: rgb(66, 184, 221);\n}\n.girigirilove .k-day-6 {\n  background-color: rgb(141, 104, 232);\n}\n.girigirilove.widescreen .head,\n.girigirilove.widescreen .header_nav0,\n.girigirilove.widescreen .header_nav1,\n.girigirilove.widescreen .top-back.hoa,\n.girigirilove.widescreen .fixedGroup {\n  visibility: hidden;\n  pointer-events: none;\n}";
   injectCss(css,{});
 
   runtime.register({
     domains: [".girigirilove."],
     opts: [
       { test: "*", run: () => $("body").addClass("girigirilove") },
-      { test: "*", run: iframePlayer.subscribe.checkSubscriptionsUpdates },
       { test: "/", run: iframePlayer.subscribe.renderSubscribedAnimes },
       { test: "/playGV", run: runInTop },
       { test: "/playGV", run: iframePlayer.runInIframe, runInIframe: true },
@@ -8152,6 +8650,9 @@ ${text}
     }
   });
 
+  templateSettings.interpolate = /{{([^#-][\s\S]+?)}}/g;
+  templateSettings.escape = /{{-([\s\S]+?)}}/g;
+  templateSettings.evaluate = /{{#([\s\S]+?)}}/g;
   runtime.run();
 
 })(OpenCC, Hls, Plyr, Danmaku);
