@@ -1,11 +1,11 @@
-export interface Opts {
+export interface RequestOptions {
   url: string
   method?: 'GET' | 'POST'
   params?: any
   headers?: Record<string, string>
 }
 
-export function request<T = any>(opts: Opts) {
+export function request<T = any>(opts: RequestOptions) {
   let { url, method, params } = opts
 
   if (params) {

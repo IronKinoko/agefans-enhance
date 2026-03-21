@@ -326,4 +326,20 @@
       width: 100px;
     }
   }
+
+  a {
+    color: var(--k-player-primary-color);
+    margin: -4px 0 -4px -8px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  a:hover {
+    color: var(--k-player-primary-color);
+    background-color: var(--k-player-primary-color-highlight);
+  }
 }

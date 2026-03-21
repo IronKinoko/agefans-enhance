@@ -10,7 +10,7 @@ export type RawComments = {
 }
 
 export interface Comment extends BaseComment {
-  user: { source: string; id: string }
+  user: { source: string; id: string; url?: string }
 }
 
 export interface Anime {

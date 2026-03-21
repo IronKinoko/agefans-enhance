@@ -1,44 +1,103 @@
 import { memoize } from 'lodash-es'
-import { request } from '../../../utils/request'
+import { request, RequestOptions } from '../../../utils/request'
 import { Comment, RawComments } from './types'
-import { convert32ToHex, parseUid } from './utils'
+import { convert32ToHex } from './utils'
 
-// https://api.dandanplay.net/swagger/ui/index#/
+// https://api.dandanplay.net/swagger/index.html
 
 const KEY =
   'eyJYLUFwcElkIjoiaHZmNnB6dnhjbSIsIlgtQXBwU2VjcmV0IjoiSVpoY1VJYWtveEZhSzl4QkJESjlCczFPVTJzNGtLNXQifQ=='
 const headers = JSON.parse(atob(KEY))
 
-export async function getComments(
-  episodeId: number | string
-): Promise<Comment[]> {
-  const res: RawComments = await request({
-    url: `https://api.dandanplay.net/api/v2/comment/${episodeId}?withRelated=true&chConvert=1`,
-    headers,
-  })
+const baseURL = 'https://api.dandanplay.net'
 
-  return res.comments
-    .map((o) => {
-      const [time, type, color, uid] = o.p.split(',')
-
-      const user = parseUid(uid)
-
-      return {
-        mode: ({ 1: 'rtl', 4: 'bottom', 5: 'top' } as const)[type] || 'rtl',
-        text: o.m,
-        time: parseFloat(time),
-        style: { color: convert32ToHex(color) },
-        user,
-      }
-    })
-    .sort((a, b) => a.time - b.time)
-}
+const client = <T = unknown>(opts: RequestOptions) =>
+  request<T>({ ...opts, headers, url: baseURL + opts.url })
 
 type DDPResult<T> = {
   errorCode: number
   success: boolean
   errorMessage: string
 } & T
+
+type DDPRelatedResponse = DDPResult<{
+  relateds: {
+    url: string
+    shift: number
+  }[]
+}>
+
+function parseURLSource(url: string) {
+  const tmp = new URL(url)
+  const hostname = tmp.hostname
+
+  if (hostname.match(/bilibili/i)) return '哔哩哔哩'
+  if (hostname.match(/acfun/i)) return 'AcFun'
+  if (hostname.match(/tucao/i)) return 'Tucao'
+  if (hostname.match(/gamer/i)) return '巴哈姆特'
+
+  return hostname.replace('www.', '').replace('.com', ' ')
+}
+
+export async function getComments(
+  episodeId: number | string
+): Promise<Comment[]> {
+  const [ddplay, extra] = await Promise.all([
+    // 仅获取弹弹play的弹幕
+    client<RawComments>({
+      url: `/api/v2/comment/${episodeId}`,
+      params: { chConvert: 1 },
+    }),
+
+    // 获取第三方弹幕链接
+    (async () => {
+      const relatedRes = await client<DDPRelatedResponse>({
+        url: `/api/v2/related/${episodeId}`,
+      })
+
+      if (!relatedRes.success) return []
+
+      const extraComments = await Promise.all(
+        relatedRes.relateds.map(async (o) => {
+          const res = await client<RawComments>({
+            url: `/api/v2/extcomment`,
+            params: { url: o.url, chConvert: 1 },
+          })
+          return {
+            source: parseURLSource(o.url),
+            url: o.url,
+            shift: o.shift,
+            comments: res.comments,
+          }
+        })
+      )
+
+      return extraComments
+    })(),
+  ])
+
+  const sourceList = [
+    { source: '弹弹Play', comments: ddplay.comments, url: '', shift: 0 },
+    ...extra,
+  ]
+
+  const cmts = sourceList.map(({ source, comments, url, shift }) => {
+    return comments.map((o) => {
+      const [time, type, color, uid] = o.p.split(',')
+
+      return {
+        mode: ({ 1: 'rtl', 4: 'bottom', 5: 'top' } as const)[type] || 'rtl',
+        text: o.m,
+        time: parseFloat(time) + shift,
+        style: { color: convert32ToHex(color) },
+        user: { source, id: uid, url },
+      }
+    })
+  })
+
+  return cmts.flat().sort((a, b) => a.time - b.time)
+}
+
 type DDPSearchAnimeResponse = DDPResult<{
   animes: {
     animeId: number
@@ -55,10 +114,9 @@ type DDPSearchAnimeResponse = DDPResult<{
 }>
 
 export async function queryAnimes(anime: string) {
-  const res = await request<DDPSearchAnimeResponse>({
-    url: 'https://api.dandanplay.net/api/v2/search/anime',
+  const res = await client<DDPSearchAnimeResponse>({
+    url: `/api/v2/search/anime`,
     params: { keyword: anime },
-    headers,
   })
 
   if (!res.success) throw new Error(res.errorMessage)
@@ -87,9 +145,8 @@ type DDPBangumiResponse = DDPResult<{
 }>
 
 export const queryEpisodes = memoize(async function (animeId: string) {
-  const res = await request<DDPBangumiResponse>({
-    url: `https://api.dandanplay.net/api/v2/bangumi/${animeId}`,
-    headers,
+  const res = await client<DDPBangumiResponse>({
+    url: `/api/v2/bangumi/${animeId}`,
   })
 
   if (!res.success) {

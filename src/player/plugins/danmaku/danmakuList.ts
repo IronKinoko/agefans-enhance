@@ -61,7 +61,11 @@ export function createDanmakuList(
         <tr data-source="${cmt.user.source}">
           <td>${parseTime(cmt.time)}</td>
           <td>${cmt.text}</td>
-          <td>${cmt.user.source}</td>
+          <td>${
+            cmt.user.url
+              ? `<a href="${cmt.user.url}" target="_blank">${cmt.user.source}</a>`
+              : cmt.user.source
+          }</td>
         </tr>`
           )
           .join('')

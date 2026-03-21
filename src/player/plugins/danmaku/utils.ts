@@ -25,19 +25,6 @@ export const storageEpisodeName = createStorage(
 export function convert32ToHex(color: string) {
   return '#' + parseInt(color).toString(16)
 }
-export function parseUid(uid: string) {
-  let source = '弹弹play',
-    id = uid
-
-  const matcher = uid.match(/^\[(.*?)\](.*)/)
-  if (matcher) {
-    source = matcher[1]
-    id = matcher[2]
-  }
-
-  return { source, id }
-}
-
 export function rangePercent(min: number, input: number, max: number) {
   input = Math.min(max, Math.max(min, input))
 
