@@ -3,15 +3,11 @@ import { modal } from '../../../utils/modal'
 import { parseTime } from '../../../utils/parseTime'
 import { Comment } from './types'
 
-export function createDanmakuList(
-  player: KPlayer,
-  getComments: () => Comment[] | undefined,
-  refreshDanmaku: () => void
-) {
+export function createDanmakuList(player: KPlayer) {
   const $open = $('#k-player-danmaku-search-form .open-danmaku-list')
 
   $open.on('click', () => {
-    const comments = getComments()
+    const comments = player.danmaku!.state.comments
     if (!comments || !comments.length) return
 
     const $root = $(`
@@ -79,7 +75,7 @@ export function createDanmakuList(
       content: $root,
       className: 'k-player-danmaku-list',
       afterClose: () => {
-        refreshDanmaku()
+        player.danmaku!.refreshDanmaku()
       },
     })
 

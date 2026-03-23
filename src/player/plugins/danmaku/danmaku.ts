@@ -556,13 +556,9 @@ class DanmakuPlugin {
       }
     })
 
-    createFilter(this.player, this.refreshDanmaku)
+    createFilter(this.player)
 
-    createDanmakuList(
-      this.player,
-      () => this.state.comments,
-      this.refreshDanmaku
-    )
+    createDanmakuList(this.player)
 
     this.injectDanmakuDropEvent()
   }

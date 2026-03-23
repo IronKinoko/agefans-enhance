@@ -2,7 +2,7 @@ import { KPlayer } from '../..'
 import { modal } from '../../../utils/modal'
 import { parseToJSON } from '../../../utils/parseToJSON'
 
-export function createFilter(player: KPlayer, refreshDanmaku: () => void) {
+export function createFilter(player: KPlayer) {
   const $filter = $('#k-player-danmaku-filter-form')
 
   // import 相关事件
@@ -84,7 +84,7 @@ export function createFilter(player: KPlayer, refreshDanmaku: () => void) {
 
     player.configSaveToLocal('danmakuFilter', [...mergedRules])
 
-    refreshDanmaku()
+    player.danmaku!.refreshDanmaku()
     refreshFilterDom()
   }
 
@@ -115,7 +115,7 @@ export function createFilter(player: KPlayer, refreshDanmaku: () => void) {
   function deleteFilter(idx: number) {
     player.localConfig.danmakuFilter.splice(idx, 1)
     player.configSaveToLocal('danmakuFilter', player.localConfig.danmakuFilter)
-    refreshDanmaku()
+    player.danmaku!.refreshDanmaku()
     refreshFilterDom()
   }
 
@@ -135,7 +135,7 @@ export function createFilter(player: KPlayer, refreshDanmaku: () => void) {
     filters.push(filter)
     player.configSaveToLocal('danmakuFilter', filters)
     refreshFilterDom()
-    refreshDanmaku()
+    player.danmaku!.refreshDanmaku()
   }
 
   refreshFilterDom()
