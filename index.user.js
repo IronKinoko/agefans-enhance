@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.54.5
+// @version      1.54.6
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -3688,7 +3688,7 @@ _ironkinoko_danmaku = __toESM(_ironkinoko_danmaku);
 				content: `
     <table class="k-table">
       <tbody>
-      <tr><td>脚本版本</td><td>1.54.5</td></tr>
+      <tr><td>脚本版本</td><td>1.54.6</td></tr>
       <tr>
         <td>脚本作者</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -3814,7 +3814,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: 1.54.5
+脚本版本: 1.54.6
 `;
 
 //#endregion
@@ -5131,15 +5131,35 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 
 //#endregion
 //#region src/player/plugins/danmaku/danmakuList.ts
-	function createDanmakuList(player, getComments, refreshDanmaku) {
+	const DomainColors = {
+		哔哩哔哩: "#00B5E5",
+		AcFun: "#FF5F6D",
+		Tucao: "#45D8BA",
+		巴哈姆特: "#FFB020",
+		弹弹Play: "#A18CFF",
+		Pakku: "#FFD84A"
+	};
+	const OtherPresetColors = [
+		"#FF4D6D",
+		"#F77F00",
+		"#80B918",
+		"#00BBF9",
+		"#4361EE",
+		"#B5179E"
+	];
+	function createDanmakuList(player) {
 		$("#k-player-danmaku-search-form .open-danmaku-list").on("click", () => {
-			const comments = getComments();
+			const comments = player.danmaku.state.comments;
 			if (!comments || !comments.length) return;
 			const $root = $(`
       <div class="k-player-danmaku-list-wrapper">
         <div class="k-player-danmaku-list-source-filter">
-          <div>来源：</div>
-          <div class="k-player-danmaku-list-source"></div>
+          <div class="ratio-title">来源<span id="commentCount" title="由弹幕密度与弹幕过滤计算出的数据，表示渲染数量与弹幕总数量"></span></div>
+          <div class="ratio-track-wrap">
+            <div class="ratio-track" id="ratioTrack" aria-label="storage ratio bar"></div>
+            <div class="segment-tooltip" id="segmentTooltip"></div>
+          </div>
+          <div class="legends" id="legends"></div>
         </div>
       
         <div class="k-player-danmaku-list-table-wrapper">
@@ -5157,10 +5177,9 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
             </table>
           </div>
         </div>
-
       </div>
     `);
-			const $source = $root.find(".k-player-danmaku-list-source");
+			const $filter = $root.find(".k-player-danmaku-list-source-filter");
 			const $wrapper = $root.find(".k-player-danmaku-list-table-wrapper");
 			const $content = $root.find(".k-player-danmaku-list-table-content");
 			const $table = $root.find(".k-player-danmaku-list-table");
@@ -5185,28 +5204,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 				content: $root,
 				className: "k-player-danmaku-list",
 				afterClose: () => {
-					refreshDanmaku();
+					player.danmaku.refreshDanmaku();
 				}
-			});
-			const sourceCountMap = comments.reduce((map, cmt) => {
-				var _map$source;
-				const source = cmt.user.source;
-				(_map$source = map[source]) !== null && _map$source !== void 0 || (map[source] = 0);
-				map[source]++;
-				return map;
-			}, {});
-			Object.entries(sourceCountMap).forEach(([source, count]) => {
-				const isDisabled = player.localConfig.danmakuSourceDisabledList.includes(source);
-				const percent = (count / comments.length * 100).toFixed(2);
-				$(`<label class="k-player-danmaku-list-source-item k-capsule">
-          <input hidden type="checkbox" value="${source}"/>
-          <div title="${source}有${count}条弹幕">${source}(${percent}%)</div>
-        </label>`).appendTo($source).find("input").prop("checked", !isDisabled).on("change", (e) => {
-					let next = [...player.localConfig.danmakuSourceDisabledList];
-					if (e.currentTarget.checked) next = next.filter((src) => src !== source);
-					else next.push(source);
-					player.configSaveToLocal("danmakuSourceDisabledList", next);
-				});
 			});
 			const itemHeight = $root.find("thead tr").height();
 			$content.height(itemHeight * (comments.length + 1));
@@ -5217,6 +5216,102 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 					end = Math.ceil(height / itemHeight);
 					render();
 				}
+			});
+			const data = comments.reduce((arr, cmt) => {
+				const source = cmt.user.source;
+				const item = arr.find((i) => i.source === source);
+				if (item) {
+					item.count++;
+					if (cmt.user.url && !item.urls.includes(cmt.user.url)) item.urls.push(cmt.user.url);
+					return arr;
+				} else arr.push({
+					source,
+					count: 1,
+					urls: cmt.user.url ? [cmt.user.url] : []
+				});
+				return arr;
+			}, []);
+			data.sort((a, b) => a.source.localeCompare(b.source));
+			const track = $filter.find("#ratioTrack")[0];
+			const legends = $filter.find("#legends")[0];
+			const total = comments.length;
+			const tooltip = $filter.find("#segmentTooltip")[0];
+			const showTooltip = (event, item) => {
+				const percent = (item.count / comments.length * 100).toFixed(2);
+				tooltip.textContent = `${item.source}：${percent}% (${item.count}条)`;
+				tooltip.classList.add("is-visible");
+				const rect = track.getBoundingClientRect();
+				const x = event.clientX - rect.left;
+				tooltip.style.left = `${x}px`;
+			};
+			const moveTooltip = (event) => {
+				const rect = track.getBoundingClientRect();
+				const x = event.clientX - rect.left;
+				tooltip.style.left = `${x}px`;
+			};
+			const hideTooltip = () => {
+				tooltip.classList.remove("is-visible");
+			};
+			const updateCommentCount = () => {
+				const renderComments = player.danmaku.adjustCommentCount(comments);
+				$filter.find("#commentCount").text(` (${renderComments.length}/${total})`);
+			};
+			updateCommentCount();
+			track.addEventListener("mouseleave", hideTooltip);
+			data.forEach((item, idx) => {
+				const isDisabled = player.localConfig.danmakuSourceDisabledList.includes(item.source);
+				const color = DomainColors[item.source] || OtherPresetColors[idx % OtherPresetColors.length];
+				const segment = document.createElement("div");
+				segment.className = "ratio-segment";
+				segment.style.width = `${item.count / total * 100}%`;
+				segment.style.background = color;
+				segment.addEventListener("mouseenter", (event) => showTooltip(event, item));
+				segment.addEventListener("mousemove", moveTooltip);
+				segment.addEventListener("mouseleave", hideTooltip);
+				segment.addEventListener("click", () => {
+					setConfig(toggleStyle());
+				});
+				track.appendChild(segment);
+				const legend = document.createElement("div");
+				legend.className = "legend-item";
+				legend.setAttribute("role", "button");
+				legend.setAttribute("tabindex", "0");
+				legend.innerHTML = `
+        <span class="legend-dot" style="background:${color}"></span>
+        <span>${item.source}</span>
+        ${item.urls.map((url) => `<a
+            class="legend-source"
+            href="${url}"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="查看数据来源"
+            onclick="event.stopPropagation()"
+          >
+            <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 3h7v7"></path>
+              <path d="M10 14 21 3"></path>
+              <path d="M21 14v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h6"></path>
+            </svg>
+          </a>`)}
+     `;
+				const toggleStyle = () => {
+					const isDisabled = legend.classList.toggle("is-disabled");
+					segment.classList.toggle("is-disabled", isDisabled);
+					return isDisabled;
+				};
+				const setConfig = (bool) => {
+					let next = [...player.localConfig.danmakuSourceDisabledList];
+					if (bool) next.push(item.source);
+					else next = next.filter((src) => src !== item.source);
+					player.configSaveToLocal("danmakuSourceDisabledList", next);
+					player.danmaku.refreshDanmaku();
+					updateCommentCount();
+				};
+				legend.addEventListener("click", () => {
+					setConfig(toggleStyle());
+				});
+				if (isDisabled) toggleStyle();
+				legends.appendChild(legend);
 			});
 		});
 	}
@@ -5235,7 +5330,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 
 //#endregion
 //#region src/player/plugins/danmaku/filter.ts
-	function createFilter(player, refreshDanmaku) {
+	function createFilter(player) {
 		const $filter = $("#k-player-danmaku-filter-form");
 		$("#k-player-danmaku-filter-import").on("click", () => {
 			modal({
@@ -5283,7 +5378,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			const mergedRules = new Set([...player.localConfig.danmakuFilter, ...rules]);
 			player.message.info(`导入 ${mergedRules.size - player.localConfig.danmakuFilter.length} 条规则`);
 			player.configSaveToLocal("danmakuFilter", [...mergedRules]);
-			refreshDanmaku();
+			player.danmaku.refreshDanmaku();
 			refreshFilterDom();
 		}
 		const $input = $filter.find("[name=\"filter-input\"]");
@@ -5308,7 +5403,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		function deleteFilter(idx) {
 			player.localConfig.danmakuFilter.splice(idx, 1);
 			player.configSaveToLocal("danmakuFilter", player.localConfig.danmakuFilter);
-			refreshDanmaku();
+			player.danmaku.refreshDanmaku();
 			refreshFilterDom();
 		}
 		function addFilter(filter) {
@@ -5323,7 +5418,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			filters.push(filter);
 			player.configSaveToLocal("danmakuFilter", filters);
 			refreshFilterDom();
-			refreshDanmaku();
+			player.danmaku.refreshDanmaku();
 		}
 		refreshFilterDom();
 	}
@@ -5543,7 +5638,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 
 //#endregion
 //#region src/player/plugins/danmaku/index.scss
-	injectStyle("#k-player-danmaku {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  pointer-events: none;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n}\n#k-player-danmaku-notification {\n  line-height: 1.6;\n}\n#k-player-danmaku-notification .title {\n  text-align: center;\n  font-weight: 500;\n  font-size: 16px;\n}\n#k-player-danmaku-notification img {\n  width: 40%;\n  display: block;\n  margin: 0 auto 8px;\n}\n#k-player-danmaku-notification a {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-notification p {\n  margin: 0;\n}\n#k-player-danmaku-notification p:not(:last-child) {\n  margin-bottom: 8px;\n}\n#k-player-danmaku .danmaku {\n  font-size: calc(var(--danmaku-font-size, 24px) * var(--danmaku-font-size-scale, 1));\n  font-family: SimHei, \"Microsoft JhengHei\", Arial, Helvetica, sans-serif;\n  font-weight: bold;\n  text-shadow: black 1px 0px 1px, black 0px 1px 1px, black 0px -1px 1px, black -1px 0px 1px;\n  line-height: 1.3;\n}\n@media (max-width: 576px) {\n  #k-player-danmaku .danmaku {\n    --danmaku-font-size: 16px;\n  }\n}\n#k-player-danmaku-overlay {\n  width: 210px;\n}\n#k-player-danmaku-search-form > * {\n  font-size: 14px;\n  box-sizing: border-box;\n  text-align: left;\n}\n#k-player-danmaku-search-form input,\n#k-player-danmaku-search-form select {\n  display: block;\n  margin-top: 4px;\n  width: 100%;\n}\n#k-player-danmaku-search-form label {\n  display: block;\n}\n#k-player-danmaku-search-form label span {\n  line-height: 1.4;\n}\n#k-player-danmaku-search-form label + label {\n  margin-top: 8px;\n}\n#k-player-danmaku-search-form .open-danmaku-list {\n  cursor: pointer;\n  transition: color 0.15s;\n}\n#k-player-danmaku-search-form .open-danmaku-list:hover * {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-search-form .specific-thanks {\n  color: #757575;\n  font-size: 12px;\n  position: absolute;\n  left: 8px;\n  bottom: 8px;\n  user-select: none;\n}\n#k-player-danmaku-setting-form {\n  padding: 0;\n}\n#k-player-danmaku-setting-form input {\n  margin: 0;\n}\n#k-player-danmaku-filter-form {\n  padding: 0;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper {\n  display: flex;\n  align-items: center;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper > div {\n  flex: 1;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper > div input {\n  width: 100%;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper label {\n  margin-left: 8px;\n  border: 0;\n  color: white;\n  cursor: pointer;\n  transition: color 0.15s;\n  white-space: nowrap;\n  user-select: none;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper label:hover {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-filter-table {\n  margin-top: 8px;\n}\n#k-player-danmaku-filter-table .ft-body {\n  height: 200px;\n  overflow: auto;\n}\n#k-player-danmaku-filter-table .ft-body::-webkit-scrollbar {\n  display: none;\n}\n#k-player-danmaku-filter-table .ft-row {\n  display: flex;\n  border-radius: 4px;\n  transition: all 0.15s;\n}\n#k-player-danmaku-filter-table .ft-row:hover {\n  background: var(--k-player-background-highlight);\n}\n#k-player-danmaku-filter-table .ft-content {\n  padding: 4px 8px;\n  flex: 1px;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n#k-player-danmaku-filter-table .ft-op {\n  flex-shrink: 0;\n  padding: 4px 8px;\n}\n#k-player-danmaku-filter-table a {\n  color: white;\n  cursor: pointer;\n  transition: color 0.15s;\n  user-select: none;\n}\n#k-player-danmaku-filter-table a:hover {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-log {\n  position: absolute;\n  inset: 0;\n  padding: 8px;\n  overflow: auto;\n}\n#k-player-danmaku-log .k-player-danmaku-log-item {\n  border-bottom: 1px solid rgba(255, 255, 255, 0.2);\n  padding-bottom: 4px;\n  margin-bottom: 4px;\n  line-height: 1.4;\n}\n#k-player-danmaku-log .k-player-danmaku-log-content {\n  padding: 4px 8px;\n  border-radius: 4px;\n  background: rgba(255, 255, 255, 0.2);\n  margin-top: 4px;\n}\n#k-player-danmaku-log .k-player-danmaku-log-code {\n  white-space: pre-wrap;\n  word-wrap: break-word;\n  display: -webkit-box;\n  -webkit-line-clamp: 3;\n  line-clamp: 3;\n  -webkit-box-orient: vertical;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  max-height: 60px;\n  font-size: 12px;\n}\n\n#k-player-pbp {\n  position: absolute;\n  top: -17px;\n  height: 28px;\n  -webkit-appearance: none;\n  appearance: none;\n  left: 0;\n  position: absolute;\n  margin-left: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  margin-right: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  width: calc(100% + var(--plyr-range-thumb-height, 13px));\n  pointer-events: none;\n}\n\n#k-player-pbp-played-path {\n  color: var(--k-player-primary-color);\n}\n\n.plyr__controls__item.plyr__progress__container:hover #k-player-pbp {\n  top: -18px;\n}\n\n.plyr__switch-danmaku .icon--pressed {\n  --color: var(--k-player-primary-color);\n  transition: 0.3s all ease;\n}\n\n.plyr__switch-danmaku:hover .icon--pressed {\n  --color: white;\n}\n\n.k-popover-active .plyr__tooltip {\n  display: none;\n}\n\n.k-player-controls-force-show.plyr .plyr__controls {\n  opacity: 1;\n  pointer-events: auto;\n  transform: translateY(0);\n}\n\n.k-player-danmaku-list * {\n  box-sizing: border-box;\n  font-size: 14px;\n  line-height: normal;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n}\n.k-player-danmaku-list .k-modal-body {\n  padding: 0;\n}\n.k-player-danmaku-list-wrapper {\n  height: 500px;\n  max-height: 80vh;\n  display: flex;\n  flex-direction: column;\n}\n.k-player-danmaku-list-source-filter {\n  display: flex;\n  align-items: center;\n  white-space: nowrap;\n  padding: 16px;\n}\n.k-player-danmaku-list-source {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  flex-wrap: wrap;\n  gap: 8px;\n}\n.k-player-danmaku-list-table-wrapper {\n  flex: 1;\n  min-height: 0;\n  overflow-y: scroll;\n  position: relative;\n}\n.k-player-danmaku-list-table-wrapper::-webkit-scrollbar {\n  width: 8px;\n}\n.k-player-danmaku-list-table-wrapper::-webkit-scrollbar-thumb {\n  background: rgba(0, 0, 0, 0.15);\n  border-radius: 4px;\n}\n.k-player-danmaku-list-table-wrapper::-webkit-scrollbar-thumb:hover {\n  background-color: rgba(0, 0, 0, 0.45);\n}\n.k-player-danmaku-list-table {\n  width: 100%;\n  border-spacing: 0;\n  border-collapse: separate;\n  table-layout: fixed;\n}\n.k-player-danmaku-list-table th,\n.k-player-danmaku-list-table td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n  white-space: nowrap;\n}\n.k-player-danmaku-list-table th {\n  position: sticky;\n  background-color: white;\n  top: 0;\n  z-index: 1;\n}\n.k-player-danmaku-list-table th:nth-child(1) {\n  width: 55px;\n}\n.k-player-danmaku-list-table td:nth-child(2) {\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.k-player-danmaku-list-table th:nth-child(3) {\n  width: 100px;\n}\n.k-player-danmaku-list a {\n  color: var(--k-player-primary-color);\n  margin: -4px 0 -4px -8px;\n  padding: 4px 8px;\n  border-radius: 4px;\n  text-decoration: none;\n  cursor: pointer;\n  display: inline-block;\n  white-space: nowrap;\n}\n.k-player-danmaku-list a:hover {\n  color: var(--k-player-primary-color);\n  background-color: var(--k-player-primary-color-highlight);\n}");
+	injectStyle("#k-player-danmaku {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  pointer-events: none;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n}\n#k-player-danmaku-notification {\n  line-height: 1.6;\n}\n#k-player-danmaku-notification .title {\n  text-align: center;\n  font-weight: 500;\n  font-size: 16px;\n}\n#k-player-danmaku-notification img {\n  width: 40%;\n  display: block;\n  margin: 0 auto 8px;\n}\n#k-player-danmaku-notification a {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-notification p {\n  margin: 0;\n}\n#k-player-danmaku-notification p:not(:last-child) {\n  margin-bottom: 8px;\n}\n#k-player-danmaku .danmaku {\n  font-size: calc(var(--danmaku-font-size, 24px) * var(--danmaku-font-size-scale, 1));\n  font-family: SimHei, \"Microsoft JhengHei\", Arial, Helvetica, sans-serif;\n  font-weight: bold;\n  text-shadow: black 1px 0px 1px, black 0px 1px 1px, black 0px -1px 1px, black -1px 0px 1px;\n  line-height: 1.3;\n}\n@media (max-width: 576px) {\n  #k-player-danmaku .danmaku {\n    --danmaku-font-size: 16px;\n  }\n}\n#k-player-danmaku-overlay {\n  width: 210px;\n}\n#k-player-danmaku-search-form > * {\n  font-size: 14px;\n  box-sizing: border-box;\n  text-align: left;\n}\n#k-player-danmaku-search-form input,\n#k-player-danmaku-search-form select {\n  display: block;\n  margin-top: 4px;\n  width: 100%;\n}\n#k-player-danmaku-search-form label {\n  display: block;\n}\n#k-player-danmaku-search-form label span {\n  line-height: 1.4;\n}\n#k-player-danmaku-search-form label + label {\n  margin-top: 8px;\n}\n#k-player-danmaku-search-form .open-danmaku-list {\n  cursor: pointer;\n  transition: color 0.15s;\n}\n#k-player-danmaku-search-form .open-danmaku-list:hover * {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-search-form .specific-thanks {\n  color: #757575;\n  font-size: 12px;\n  position: absolute;\n  left: 8px;\n  bottom: 8px;\n  user-select: none;\n}\n#k-player-danmaku-setting-form {\n  padding: 0;\n}\n#k-player-danmaku-setting-form input {\n  margin: 0;\n}\n#k-player-danmaku-filter-form {\n  padding: 0;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper {\n  display: flex;\n  align-items: center;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper > div {\n  flex: 1;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper > div input {\n  width: 100%;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper label {\n  margin-left: 8px;\n  border: 0;\n  color: white;\n  cursor: pointer;\n  transition: color 0.15s;\n  white-space: nowrap;\n  user-select: none;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper label:hover {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-filter-table {\n  margin-top: 8px;\n}\n#k-player-danmaku-filter-table .ft-body {\n  height: 200px;\n  overflow: auto;\n}\n#k-player-danmaku-filter-table .ft-body::-webkit-scrollbar {\n  display: none;\n}\n#k-player-danmaku-filter-table .ft-row {\n  display: flex;\n  border-radius: 4px;\n  transition: all 0.15s;\n}\n#k-player-danmaku-filter-table .ft-row:hover {\n  background: var(--k-player-background-highlight);\n}\n#k-player-danmaku-filter-table .ft-content {\n  padding: 4px 8px;\n  flex: 1px;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n#k-player-danmaku-filter-table .ft-op {\n  flex-shrink: 0;\n  padding: 4px 8px;\n}\n#k-player-danmaku-filter-table a {\n  color: white;\n  cursor: pointer;\n  transition: color 0.15s;\n  user-select: none;\n}\n#k-player-danmaku-filter-table a:hover {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-log {\n  position: absolute;\n  inset: 0;\n  padding: 8px;\n  overflow: auto;\n}\n#k-player-danmaku-log .k-player-danmaku-log-item {\n  border-bottom: 1px solid rgba(255, 255, 255, 0.2);\n  padding-bottom: 4px;\n  margin-bottom: 4px;\n  line-height: 1.4;\n}\n#k-player-danmaku-log .k-player-danmaku-log-content {\n  padding: 4px 8px;\n  border-radius: 4px;\n  background: rgba(255, 255, 255, 0.2);\n  margin-top: 4px;\n}\n#k-player-danmaku-log .k-player-danmaku-log-code {\n  white-space: pre-wrap;\n  word-wrap: break-word;\n  display: -webkit-box;\n  -webkit-line-clamp: 3;\n  line-clamp: 3;\n  -webkit-box-orient: vertical;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  max-height: 60px;\n  font-size: 12px;\n}\n\n#k-player-pbp {\n  position: absolute;\n  top: -17px;\n  height: 28px;\n  -webkit-appearance: none;\n  appearance: none;\n  left: 0;\n  position: absolute;\n  margin-left: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  margin-right: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  width: calc(100% + var(--plyr-range-thumb-height, 13px));\n  pointer-events: none;\n}\n\n#k-player-pbp-played-path {\n  color: var(--k-player-primary-color);\n}\n\n.plyr__controls__item.plyr__progress__container:hover #k-player-pbp {\n  top: -18px;\n}\n\n.plyr__switch-danmaku .icon--pressed {\n  --color: var(--k-player-primary-color);\n  transition: 0.3s all ease;\n}\n\n.plyr__switch-danmaku:hover .icon--pressed {\n  --color: white;\n}\n\n.k-popover-active .plyr__tooltip {\n  display: none;\n}\n\n.k-player-controls-force-show.plyr .plyr__controls {\n  opacity: 1;\n  pointer-events: auto;\n  transform: translateY(0);\n}\n\n.k-player-danmaku-list * {\n  box-sizing: border-box;\n  font-size: 14px;\n  line-height: normal;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n}\n.k-player-danmaku-list .k-modal-body {\n  padding: 0;\n}\n.k-player-danmaku-list-wrapper {\n  height: 500px;\n  max-height: 80vh;\n  display: flex;\n  flex-direction: column;\n}\n.k-player-danmaku-list-source-filter {\n  padding: 16px;\n}\n.k-player-danmaku-list-source-filter .ratio-title {\n  margin: 0 0 8px;\n  font-size: 16px;\n  font-weight: 600;\n}\n.k-player-danmaku-list-source-filter .ratio-track {\n  width: 100%;\n  height: 16px;\n  border-radius: 999px;\n  overflow: hidden;\n  background: var(--track);\n  display: flex;\n}\n.k-player-danmaku-list-source-filter .ratio-track-wrap {\n  position: relative;\n}\n.k-player-danmaku-list-source-filter .ratio-segment {\n  height: 100%;\n  min-width: 2px;\n  cursor: pointer;\n}\n.k-player-danmaku-list-source-filter .legends {\n  margin-top: 8px;\n  display: flex;\n  flex-wrap: wrap;\n  gap: 8px 16px;\n}\n.k-player-danmaku-list-source-filter .legend-item {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  font-size: 14px;\n  cursor: pointer;\n  user-select: none;\n  transition: color 0.2s ease, opacity 0.2s ease;\n}\n.k-player-danmaku-list-source-filter .legend-item:hover {\n  color: var(--k-player-primary-color);\n}\n.k-player-danmaku-list-source-filter .legend-item.is-disabled {\n  color: #a1a8b6;\n}\n.k-player-danmaku-list-source-filter .legend-item.is-disabled .legend-dot {\n  background: #c7cdd8 !important;\n}\n.k-player-danmaku-list-source-filter .ratio-segment.is-disabled {\n  background: #c7cdd8 !important;\n}\n.k-player-danmaku-list-source-filter .segment-tooltip {\n  position: absolute;\n  top: -34px;\n  left: 0;\n  transform: translateX(-50%);\n  background: rgba(24, 28, 37, 0.92);\n  color: #fff;\n  padding: 6px;\n  border-radius: 4px;\n  font-size: 12px;\n  line-height: 1;\n  white-space: nowrap;\n  pointer-events: none;\n  opacity: 0;\n  transition: opacity 0.15s ease;\n  z-index: 5;\n}\n.k-player-danmaku-list-source-filter .segment-tooltip::after {\n  content: \"\";\n  position: absolute;\n  left: 50%;\n  transform: translateX(-50%);\n  top: 100%;\n  border: 5px solid transparent;\n  border-top-color: rgba(24, 28, 37, 0.92);\n}\n.k-player-danmaku-list-source-filter .segment-tooltip.is-visible {\n  opacity: 1;\n}\n.k-player-danmaku-list-source-filter .legend-source {\n  width: 18px;\n  height: 18px;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: 999px;\n  color: #6b7383;\n  text-decoration: none;\n  transition: background-color 0.2s ease, color 0.2s ease;\n}\n.k-player-danmaku-list-source-filter .legend-source:hover {\n  background: #edf1fa;\n  color: var(--k-player-primary-color);\n}\n.k-player-danmaku-list-source-filter .legend-source:focus-visible {\n  outline: 2px solid var(--k-player-primary-color-highlight);\n  outline-offset: 2px;\n}\n.k-player-danmaku-list-source-filter .legend-item.is-disabled .legend-source {\n  color: #aeb4c1;\n}\n.k-player-danmaku-list-source-filter .legend-dot {\n  width: 10px;\n  height: 10px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n.k-player-danmaku-list-source-filter .legend-value {\n  font-variant-numeric: tabular-nums;\n}\n.k-player-danmaku-list-table-wrapper {\n  flex: 1;\n  min-height: 0;\n  overflow-y: scroll;\n  position: relative;\n}\n.k-player-danmaku-list-table-wrapper::-webkit-scrollbar {\n  width: 8px;\n}\n.k-player-danmaku-list-table-wrapper::-webkit-scrollbar-thumb {\n  background: rgba(0, 0, 0, 0.15);\n  border-radius: 4px;\n}\n.k-player-danmaku-list-table-wrapper::-webkit-scrollbar-thumb:hover {\n  background-color: rgba(0, 0, 0, 0.45);\n}\n.k-player-danmaku-list-table {\n  width: 100%;\n  border-spacing: 0;\n  border-collapse: separate;\n  table-layout: fixed;\n}\n.k-player-danmaku-list-table th,\n.k-player-danmaku-list-table td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n  white-space: nowrap;\n}\n.k-player-danmaku-list-table th {\n  position: sticky;\n  background-color: white;\n  top: 0;\n  z-index: 1;\n}\n.k-player-danmaku-list-table th:nth-child(1) {\n  width: 55px;\n}\n.k-player-danmaku-list-table td:nth-child(2) {\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.k-player-danmaku-list-table th:nth-child(3) {\n  width: 100px;\n}\n.k-player-danmaku-list-table a {\n  color: var(--k-player-primary-color);\n  margin: -4px 0 -4px -8px;\n  padding: 4px 8px;\n  border-radius: 4px;\n  text-decoration: none;\n  cursor: pointer;\n  display: inline-block;\n  white-space: nowrap;\n}\n.k-player-danmaku-list-table a:hover {\n  color: var(--k-player-primary-color);\n  background-color: var(--k-player-primary-color-highlight);\n}");
 
 //#endregion
 //#region src/player/plugins/danmaku/parser.ts
@@ -5932,8 +6027,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 					this.player.configSaveToLocal("danmakuMode", modes);
 					if (this.core) this.refreshDanmaku();
 				});
-				createFilter(this.player, this.refreshDanmaku);
-				createDanmakuList(this.player, () => this.state.comments, this.refreshDanmaku);
+				createFilter(this.player);
+				createDanmakuList(this.player);
 				this.injectDanmakuDropEvent();
 			});
 			_defineProperty(this, "switchDanmaku", (bool) => {
@@ -6906,8 +7001,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 //#endregion
 //#region src/adapter/agefans/subscribe.template.html
 	var subscribe_template_default$1 = {
-		"subListContainer": "<div id=\"subListContainer\" class=\"text_list_box mb-4\">\r\n  <div class=\"text_list_box--hd\">\r\n    <h6 class=\"title\">\r\n      <span class=\"float-end\">\r\n        <span class=\"update-info\" title=\"点击可强制更新数据\"></span>\r\n      </span>\r\n      订阅列表\r\n    </h6>\r\n  </div>\r\n  <div id=\"subList\"></div>\r\n</div>",
-		"subList": "<div id=\"subList\">\r\n  {{# if (groups.every(o => o.list.length === 0)) { }}\r\n  <div class=\"text_list_box--bd\">\r\n    <div class=\"text_list_box_wrapper\">\r\n      <ul class=\"text_list_item\">\r\n        <li>\r\n          <div class=\"d-flex position-relative\">\r\n            <div class=\"flex-grow-1 text-truncate pe-2\">\r\n              订阅喜欢的番剧，在播放页面标题右侧添加订阅\r\n            </div>\r\n          </div>\r\n        </li>\r\n      </ul>\r\n    </div>\r\n  </div>\r\n  {{# } }}\r\n  \r\n  {{# groups.filter(o => !!o.list.length).forEach(({list, day}) => { }}\r\n  <div class=\"text_list_box--bd\">\r\n    <div class=\"sub-group-day\">{{day}}</div>\r\n    <div class=\"text_list_box_wrapper\">\r\n      <ul class=\"text_list_item\">\r\n        {{# list.forEach(item => { }}\r\n        <li>\r\n          <div class=\"d-flex position-relative\">\r\n            <div class=\"text-truncate pe-2\">\r\n              <a \n                href=\"{{item.current.url}}\"\r\n                class=\"text-decoration-none link-light common_alink\"\r\n                >{{item.title}}</a>\r\n            </div>\r\n            <div class=\"flex-grow-1 title_new\"></div>\r\n            <div class=\"title_sub text-truncate\">\r\n              <a \n                class=\"text-decoration-none link-light common_alink\"\r\n                href=\"{{item.current.url}}\"\r\n                >{{item.current.title}}</a>\r\n              <span>/</span>\r\n              <a \n                class=\"text-decoration-none link-light common_alink\"\r\n                href=\"{{item.last.url}}\"\r\n                >{{item.last.title}}</a>\r\n            </div>\r\n\r\n            <div class=\"sub-thumbnail-box\">\r\n              <img \n                class=\"sub-thumbnail\"\r\n                src=\"{{item.thumbnail}}\"\r\n                alt=\"{{item.title}}\"\r\n              >\r\n            </div>\r\n          </div>\r\n        </li>\r\n        {{# }) }}\r\n      </ul>\r\n    </div>\r\n  </div>\r\n  {{# }) }}\r\n</div>"
+		"subListContainer": "<div id=\"subListContainer\" class=\"text_list_box mb-4\">\n  <div class=\"text_list_box--hd\">\n    <h6 class=\"title\">\n      <span class=\"float-end\">\n        <span class=\"update-info\" title=\"点击可强制更新数据\"></span>\n      </span>\n      订阅列表\n    </h6>\n  </div>\n  <div id=\"subList\"></div>\n</div>",
+		"subList": "<div id=\"subList\">\n  {{# if (groups.every(o => o.list.length === 0)) { }}\n  <div class=\"text_list_box--bd\">\n    <div class=\"text_list_box_wrapper\">\n      <ul class=\"text_list_item\">\n        <li>\n          <div class=\"d-flex position-relative\">\n            <div class=\"flex-grow-1 text-truncate pe-2\">\n              订阅喜欢的番剧，在播放页面标题右侧添加订阅\n            </div>\n          </div>\n        </li>\n      </ul>\n    </div>\n  </div>\n  {{# } }}\n  \n  {{# groups.filter(o => !!o.list.length).forEach(({list, day}) => { }}\n  <div class=\"text_list_box--bd\">\n    <div class=\"sub-group-day\">{{day}}</div>\n    <div class=\"text_list_box_wrapper\">\n      <ul class=\"text_list_item\">\n        {{# list.forEach(item => { }}\n        <li>\n          <div class=\"d-flex position-relative\">\n            <div class=\"text-truncate pe-2\">\n              <a                 href=\"{{item.current.url}}\"\n                class=\"text-decoration-none link-light common_alink\"\n                >{{item.title}}</a>\n            </div>\n            <div class=\"flex-grow-1 title_new\"></div>\n            <div class=\"title_sub text-truncate\">\n              <a                 class=\"text-decoration-none link-light common_alink\"\n                href=\"{{item.current.url}}\"\n                >{{item.current.title}}</a>\n              <span>/</span>\n              <a                 class=\"text-decoration-none link-light common_alink\"\n                href=\"{{item.last.url}}\"\n                >{{item.last.title}}</a>\n            </div>\n\n            <div class=\"sub-thumbnail-box\">\n              <img                 class=\"sub-thumbnail\"\n                src=\"{{item.thumbnail}}\"\n                alt=\"{{item.title}}\"\n              >\n            </div>\n          </div>\n        </li>\n        {{# }) }}\n      </ul>\n    </div>\n  </div>\n  {{# }) }}\n</div>"
 	};
 
 //#endregion
@@ -7867,8 +7962,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 //#endregion
 //#region src/adapter/girigirilove/subscribe.template.html
 	var subscribe_template_default = {
-		"subListContainer": "<div id=\"subListContainer\" class=\"box-width wow fadeInUp\">\r\n  <div class=\"overflow\">\r\n    <div class=\"title flex between top40 rel\">\r\n      <div class=\"title-left\">\r\n        <h4 class=\"title-h cor4\">订阅列表</h4>\r\n        <div class=\"update-info cor5\"></div>\r\n      </div>\r\n    </div>\r\n\r\n    <div id=\"subList\"></div>\r\n  </div>\r\n</div>",
-		"subList": "<div id=\"subList\">\r\n  {{# if (groups.every(o => o.list.length === 0)) { }}\r\n  <div class=\"cor4 empty-tip\">订阅喜欢的番剧，在播放页面标题右侧添加订阅</div>\r\n  {{# } }}\r\n  \r\n  <div class=\"sub-list rel border-box public-r hide-b-2 diy-center1 mask2\">\r\n    <div class=\"swiper-wrapper\">\r\n      {{# groups.filter(o => !!o.list.length).forEach((group) => {\r\n      group.list.forEach((item) => { }}\r\n      <div class=\"public-list-box public-pic-b swiper-slide\">\r\n        <div class=\"public-list-div public-list-bj\">\r\n          <a \n            target=\"_blank\"\r\n            class=\"public-list-exp\"\r\n            href=\"{{item.current.url}}\"\r\n            title=\"{{item.title}}\"\r\n          >\r\n            <img \n              class=\"lazy lazy1 gen-movie-img entered loaded\"\r\n              referrerpolicy=\"no-referrer\"\r\n              src=\"{{item.thumbnail}}\"\r\n              alt=\"{{item.title}}\"\r\n              data-src=\"{{item.thumbnail}}\"\r\n              data-ll-status=\"loaded\"\r\n            >\r\n            <span class=\"public-bg\"></span>\r\n            <div class=\"public-prt k-day-{{group.dayNum}}\">\r\n              {{group.day + ' ' + new\r\n              Date(item.updatedAt).toLocaleTimeString().slice(0,-3) }}\r\n            </div>\r\n            <span class=\"public-list-prb hide ft2\">{{item.status}}</span>\r\n          </a>\r\n        </div>\r\n        <div class=\"public-list-button\">\r\n          <a \n            target=\"_blank\"\r\n            class=\"time-title hide ft4 bold\"\r\n            href=\"{{item.current.url}}\"\r\n            title=\"{{item.title}}\"\r\n            >{{item.title}}</a>\r\n          <div class=\"public-list-subtitle cor5 hide ft2\">\r\n            <span>观看至</span>\r\n            <a \n              target=\"_blank\"\r\n              href=\"{{item.current.url}}\"\r\n              title=\"{{item.current.title}}\"\r\n              >{{item.current.title}}</a>\r\n            <span>/</span>\r\n            <a \n              target=\"_blank\"\r\n              href=\"{{item.last.url}}\"\r\n              title=\"{{item.last.title}}\"\r\n              >{{item.last.title}}</a>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      {{# })}) }}\r\n    </div>\r\n\r\n    <div class=\"vod-list-page\">\r\n      <a class=\"swiper-button-prev\" href=\"javascript:\" tabindex=\"-1\">\r\n        <i class=\"fa ds-fanhui\"></i>\r\n      </a>\r\n      <a class=\"swiper-button-next\" href=\"javascript:\" tabindex=\"0\">\r\n        <i class=\"fa ds-jiantouyou\"> </i>\r\n      </a>\r\n    </div>\r\n  </div>\r\n</div>"
+		"subListContainer": "<div id=\"subListContainer\" class=\"box-width wow fadeInUp\">\n  <div class=\"overflow\">\n    <div class=\"title flex between top40 rel\">\n      <div class=\"title-left\">\n        <h4 class=\"title-h cor4\">订阅列表</h4>\n        <div class=\"update-info cor5\"></div>\n      </div>\n    </div>\n\n    <div id=\"subList\"></div>\n  </div>\n</div>",
+		"subList": "<div id=\"subList\">\n  {{# if (groups.every(o => o.list.length === 0)) { }}\n  <div class=\"cor4 empty-tip\">订阅喜欢的番剧，在播放页面标题右侧添加订阅</div>\n  {{# } }}\n  \n  <div class=\"sub-list rel border-box public-r hide-b-2 diy-center1 mask2\">\n    <div class=\"swiper-wrapper\">\n      {{# groups.filter(o => !!o.list.length).forEach((group) => {\n      group.list.forEach((item) => { }}\n      <div class=\"public-list-box public-pic-b swiper-slide\">\n        <div class=\"public-list-div public-list-bj\">\n          <a             target=\"_blank\"\n            class=\"public-list-exp\"\n            href=\"{{item.current.url}}\"\n            title=\"{{item.title}}\"\n          >\n            <img               class=\"lazy lazy1 gen-movie-img entered loaded\"\n              referrerpolicy=\"no-referrer\"\n              src=\"{{item.thumbnail}}\"\n              alt=\"{{item.title}}\"\n              data-src=\"{{item.thumbnail}}\"\n              data-ll-status=\"loaded\"\n            >\n            <span class=\"public-bg\"></span>\n            <div class=\"public-prt k-day-{{group.dayNum}}\">\n              {{group.day + ' ' + new\n              Date(item.updatedAt).toLocaleTimeString().slice(0,-3) }}\n            </div>\n            <span class=\"public-list-prb hide ft2\">{{item.status}}</span>\n          </a>\n        </div>\n        <div class=\"public-list-button\">\n          <a             target=\"_blank\"\n            class=\"time-title hide ft4 bold\"\n            href=\"{{item.current.url}}\"\n            title=\"{{item.title}}\"\n            >{{item.title}}</a>\n          <div class=\"public-list-subtitle cor5 hide ft2\">\n            <span>观看至</span>\n            <a               target=\"_blank\"\n              href=\"{{item.current.url}}\"\n              title=\"{{item.current.title}}\"\n              >{{item.current.title}}</a>\n            <span>/</span>\n            <a               target=\"_blank\"\n              href=\"{{item.last.url}}\"\n              title=\"{{item.last.title}}\"\n              >{{item.last.title}}</a>\n          </div>\n        </div>\n      </div>\n      {{# })}) }}\n    </div>\n\n    <div class=\"vod-list-page\">\n      <a class=\"swiper-button-prev\" href=\"javascript:\" tabindex=\"-1\">\n        <i class=\"fa ds-fanhui\"></i>\n      </a>\n      <a class=\"swiper-button-next\" href=\"javascript:\" tabindex=\"0\">\n        <i class=\"fa ds-jiantouyou\"> </i>\n      </a>\n    </div>\n  </div>\n</div>"
 	};
 
 //#endregion
