@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.54.6
+// @version      1.54.7
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -3688,7 +3688,7 @@ _ironkinoko_danmaku = __toESM(_ironkinoko_danmaku);
 				content: `
     <table class="k-table">
       <tbody>
-      <tr><td>脚本版本</td><td>1.54.6</td></tr>
+      <tr><td>脚本版本</td><td>1.54.7</td></tr>
       <tr>
         <td>脚本作者</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -3814,7 +3814,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: 1.54.6
+脚本版本: 1.54.7
 `;
 
 //#endregion
@@ -5048,6 +5048,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		if (hostname.match(/acfun/i)) return "AcFun";
 		if (hostname.match(/tucao/i)) return "Tucao";
 		if (hostname.match(/gamer/i)) return "巴哈姆特";
+		if (hostname.match(/v.qq/i)) return "腾讯视频";
+		if (hostname.match(/iqiyi/i)) return "爱奇艺";
 		return hostname.replace("www.", "").replace(".com", " ");
 	}
 	async function getComments(episodeId) {
@@ -5137,7 +5139,9 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		Tucao: "#45D8BA",
 		巴哈姆特: "#FFB020",
 		弹弹Play: "#A18CFF",
-		Pakku: "#FFD84A"
+		Pakku: "#FFD84A",
+		腾讯视频: "#0151D9",
+		爱奇艺: "#00da5a"
 	};
 	const OtherPresetColors = [
 		"#FF4D6D",
@@ -7001,8 +7005,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 //#endregion
 //#region src/adapter/agefans/subscribe.template.html
 	var subscribe_template_default$1 = {
-		"subListContainer": "<div id=\"subListContainer\" class=\"text_list_box mb-4\">\n  <div class=\"text_list_box--hd\">\n    <h6 class=\"title\">\n      <span class=\"float-end\">\n        <span class=\"update-info\" title=\"点击可强制更新数据\"></span>\n      </span>\n      订阅列表\n    </h6>\n  </div>\n  <div id=\"subList\"></div>\n</div>",
-		"subList": "<div id=\"subList\">\n  {{# if (groups.every(o => o.list.length === 0)) { }}\n  <div class=\"text_list_box--bd\">\n    <div class=\"text_list_box_wrapper\">\n      <ul class=\"text_list_item\">\n        <li>\n          <div class=\"d-flex position-relative\">\n            <div class=\"flex-grow-1 text-truncate pe-2\">\n              订阅喜欢的番剧，在播放页面标题右侧添加订阅\n            </div>\n          </div>\n        </li>\n      </ul>\n    </div>\n  </div>\n  {{# } }}\n  \n  {{# groups.filter(o => !!o.list.length).forEach(({list, day}) => { }}\n  <div class=\"text_list_box--bd\">\n    <div class=\"sub-group-day\">{{day}}</div>\n    <div class=\"text_list_box_wrapper\">\n      <ul class=\"text_list_item\">\n        {{# list.forEach(item => { }}\n        <li>\n          <div class=\"d-flex position-relative\">\n            <div class=\"text-truncate pe-2\">\n              <a                 href=\"{{item.current.url}}\"\n                class=\"text-decoration-none link-light common_alink\"\n                >{{item.title}}</a>\n            </div>\n            <div class=\"flex-grow-1 title_new\"></div>\n            <div class=\"title_sub text-truncate\">\n              <a                 class=\"text-decoration-none link-light common_alink\"\n                href=\"{{item.current.url}}\"\n                >{{item.current.title}}</a>\n              <span>/</span>\n              <a                 class=\"text-decoration-none link-light common_alink\"\n                href=\"{{item.last.url}}\"\n                >{{item.last.title}}</a>\n            </div>\n\n            <div class=\"sub-thumbnail-box\">\n              <img                 class=\"sub-thumbnail\"\n                src=\"{{item.thumbnail}}\"\n                alt=\"{{item.title}}\"\n              >\n            </div>\n          </div>\n        </li>\n        {{# }) }}\n      </ul>\n    </div>\n  </div>\n  {{# }) }}\n</div>"
+		"subListContainer": "<div id=\"subListContainer\" class=\"text_list_box mb-4\">\r\n  <div class=\"text_list_box--hd\">\r\n    <h6 class=\"title\">\r\n      <span class=\"float-end\">\r\n        <span class=\"update-info\" title=\"点击可强制更新数据\"></span>\r\n      </span>\r\n      订阅列表\r\n    </h6>\r\n  </div>\r\n  <div id=\"subList\"></div>\r\n</div>",
+		"subList": "<div id=\"subList\">\r\n  {{# if (groups.every(o => o.list.length === 0)) { }}\r\n  <div class=\"text_list_box--bd\">\r\n    <div class=\"text_list_box_wrapper\">\r\n      <ul class=\"text_list_item\">\r\n        <li>\r\n          <div class=\"d-flex position-relative\">\r\n            <div class=\"flex-grow-1 text-truncate pe-2\">\r\n              订阅喜欢的番剧，在播放页面标题右侧添加订阅\r\n            </div>\r\n          </div>\r\n        </li>\r\n      </ul>\r\n    </div>\r\n  </div>\r\n  {{# } }}\r\n  \r\n  {{# groups.filter(o => !!o.list.length).forEach(({list, day}) => { }}\r\n  <div class=\"text_list_box--bd\">\r\n    <div class=\"sub-group-day\">{{day}}</div>\r\n    <div class=\"text_list_box_wrapper\">\r\n      <ul class=\"text_list_item\">\r\n        {{# list.forEach(item => { }}\r\n        <li>\r\n          <div class=\"d-flex position-relative\">\r\n            <div class=\"text-truncate pe-2\">\r\n              <a \n                href=\"{{item.current.url}}\"\r\n                class=\"text-decoration-none link-light common_alink\"\r\n                >{{item.title}}</a>\r\n            </div>\r\n            <div class=\"flex-grow-1 title_new\"></div>\r\n            <div class=\"title_sub text-truncate\">\r\n              <a \n                class=\"text-decoration-none link-light common_alink\"\r\n                href=\"{{item.current.url}}\"\r\n                >{{item.current.title}}</a>\r\n              <span>/</span>\r\n              <a \n                class=\"text-decoration-none link-light common_alink\"\r\n                href=\"{{item.last.url}}\"\r\n                >{{item.last.title}}</a>\r\n            </div>\r\n\r\n            <div class=\"sub-thumbnail-box\">\r\n              <img \n                class=\"sub-thumbnail\"\r\n                src=\"{{item.thumbnail}}\"\r\n                alt=\"{{item.title}}\"\r\n              >\r\n            </div>\r\n          </div>\r\n        </li>\r\n        {{# }) }}\r\n      </ul>\r\n    </div>\r\n  </div>\r\n  {{# }) }}\r\n</div>"
 	};
 
 //#endregion
@@ -7962,8 +7966,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 //#endregion
 //#region src/adapter/girigirilove/subscribe.template.html
 	var subscribe_template_default = {
-		"subListContainer": "<div id=\"subListContainer\" class=\"box-width wow fadeInUp\">\n  <div class=\"overflow\">\n    <div class=\"title flex between top40 rel\">\n      <div class=\"title-left\">\n        <h4 class=\"title-h cor4\">订阅列表</h4>\n        <div class=\"update-info cor5\"></div>\n      </div>\n    </div>\n\n    <div id=\"subList\"></div>\n  </div>\n</div>",
-		"subList": "<div id=\"subList\">\n  {{# if (groups.every(o => o.list.length === 0)) { }}\n  <div class=\"cor4 empty-tip\">订阅喜欢的番剧，在播放页面标题右侧添加订阅</div>\n  {{# } }}\n  \n  <div class=\"sub-list rel border-box public-r hide-b-2 diy-center1 mask2\">\n    <div class=\"swiper-wrapper\">\n      {{# groups.filter(o => !!o.list.length).forEach((group) => {\n      group.list.forEach((item) => { }}\n      <div class=\"public-list-box public-pic-b swiper-slide\">\n        <div class=\"public-list-div public-list-bj\">\n          <a             target=\"_blank\"\n            class=\"public-list-exp\"\n            href=\"{{item.current.url}}\"\n            title=\"{{item.title}}\"\n          >\n            <img               class=\"lazy lazy1 gen-movie-img entered loaded\"\n              referrerpolicy=\"no-referrer\"\n              src=\"{{item.thumbnail}}\"\n              alt=\"{{item.title}}\"\n              data-src=\"{{item.thumbnail}}\"\n              data-ll-status=\"loaded\"\n            >\n            <span class=\"public-bg\"></span>\n            <div class=\"public-prt k-day-{{group.dayNum}}\">\n              {{group.day + ' ' + new\n              Date(item.updatedAt).toLocaleTimeString().slice(0,-3) }}\n            </div>\n            <span class=\"public-list-prb hide ft2\">{{item.status}}</span>\n          </a>\n        </div>\n        <div class=\"public-list-button\">\n          <a             target=\"_blank\"\n            class=\"time-title hide ft4 bold\"\n            href=\"{{item.current.url}}\"\n            title=\"{{item.title}}\"\n            >{{item.title}}</a>\n          <div class=\"public-list-subtitle cor5 hide ft2\">\n            <span>观看至</span>\n            <a               target=\"_blank\"\n              href=\"{{item.current.url}}\"\n              title=\"{{item.current.title}}\"\n              >{{item.current.title}}</a>\n            <span>/</span>\n            <a               target=\"_blank\"\n              href=\"{{item.last.url}}\"\n              title=\"{{item.last.title}}\"\n              >{{item.last.title}}</a>\n          </div>\n        </div>\n      </div>\n      {{# })}) }}\n    </div>\n\n    <div class=\"vod-list-page\">\n      <a class=\"swiper-button-prev\" href=\"javascript:\" tabindex=\"-1\">\n        <i class=\"fa ds-fanhui\"></i>\n      </a>\n      <a class=\"swiper-button-next\" href=\"javascript:\" tabindex=\"0\">\n        <i class=\"fa ds-jiantouyou\"> </i>\n      </a>\n    </div>\n  </div>\n</div>"
+		"subListContainer": "<div id=\"subListContainer\" class=\"box-width wow fadeInUp\">\r\n  <div class=\"overflow\">\r\n    <div class=\"title flex between top40 rel\">\r\n      <div class=\"title-left\">\r\n        <h4 class=\"title-h cor4\">订阅列表</h4>\r\n        <div class=\"update-info cor5\"></div>\r\n      </div>\r\n    </div>\r\n\r\n    <div id=\"subList\"></div>\r\n  </div>\r\n</div>",
+		"subList": "<div id=\"subList\">\r\n  {{# if (groups.every(o => o.list.length === 0)) { }}\r\n  <div class=\"cor4 empty-tip\">订阅喜欢的番剧，在播放页面标题右侧添加订阅</div>\r\n  {{# } }}\r\n  \r\n  <div class=\"sub-list rel border-box public-r hide-b-2 diy-center1 mask2\">\r\n    <div class=\"swiper-wrapper\">\r\n      {{# groups.filter(o => !!o.list.length).forEach((group) => {\r\n      group.list.forEach((item) => { }}\r\n      <div class=\"public-list-box public-pic-b swiper-slide\">\r\n        <div class=\"public-list-div public-list-bj\">\r\n          <a \n            target=\"_blank\"\r\n            class=\"public-list-exp\"\r\n            href=\"{{item.current.url}}\"\r\n            title=\"{{item.title}}\"\r\n          >\r\n            <img \n              class=\"lazy lazy1 gen-movie-img entered loaded\"\r\n              referrerpolicy=\"no-referrer\"\r\n              src=\"{{item.thumbnail}}\"\r\n              alt=\"{{item.title}}\"\r\n              data-src=\"{{item.thumbnail}}\"\r\n              data-ll-status=\"loaded\"\r\n            >\r\n            <span class=\"public-bg\"></span>\r\n            <div class=\"public-prt k-day-{{group.dayNum}}\">\r\n              {{group.day + ' ' + new\r\n              Date(item.updatedAt).toLocaleTimeString().slice(0,-3) }}\r\n            </div>\r\n            <span class=\"public-list-prb hide ft2\">{{item.status}}</span>\r\n          </a>\r\n        </div>\r\n        <div class=\"public-list-button\">\r\n          <a \n            target=\"_blank\"\r\n            class=\"time-title hide ft4 bold\"\r\n            href=\"{{item.current.url}}\"\r\n            title=\"{{item.title}}\"\r\n            >{{item.title}}</a>\r\n          <div class=\"public-list-subtitle cor5 hide ft2\">\r\n            <span>观看至</span>\r\n            <a \n              target=\"_blank\"\r\n              href=\"{{item.current.url}}\"\r\n              title=\"{{item.current.title}}\"\r\n              >{{item.current.title}}</a>\r\n            <span>/</span>\r\n            <a \n              target=\"_blank\"\r\n              href=\"{{item.last.url}}\"\r\n              title=\"{{item.last.title}}\"\r\n              >{{item.last.title}}</a>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      {{# })}) }}\r\n    </div>\r\n\r\n    <div class=\"vod-list-page\">\r\n      <a class=\"swiper-button-prev\" href=\"javascript:\" tabindex=\"-1\">\r\n        <i class=\"fa ds-fanhui\"></i>\r\n      </a>\r\n      <a class=\"swiper-button-next\" href=\"javascript:\" tabindex=\"0\">\r\n        <i class=\"fa ds-jiantouyou\"> </i>\r\n      </a>\r\n    </div>\r\n  </div>\r\n</div>"
 	};
 
 //#endregion
