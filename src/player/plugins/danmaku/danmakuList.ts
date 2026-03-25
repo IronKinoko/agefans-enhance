@@ -15,6 +15,8 @@ const DomainColors: Record<string, string> = {
   巴哈姆特: '#FFB020',
   弹弹Play: '#A18CFF',
   Pakku: '#FFD84A',
+  腾讯视频: '#0151D9',
+  爱奇艺: '#00da5a',
 }
 
 const OtherPresetColors = [

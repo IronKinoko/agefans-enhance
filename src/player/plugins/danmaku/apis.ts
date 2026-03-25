@@ -35,6 +35,8 @@ function parseURLSource(url: string) {
   if (hostname.match(/acfun/i)) return 'AcFun'
   if (hostname.match(/tucao/i)) return 'Tucao'
   if (hostname.match(/gamer/i)) return '巴哈姆特'
+  if (hostname.match(/v.qq/i)) return '腾讯视频'
+  if (hostname.match(/iqiyi/i)) return '爱奇艺'
 
   return hostname.replace('www.', '').replace('.com', ' ')
 }
