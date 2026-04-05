@@ -11,13 +11,13 @@ export function parsePakkuDanmakuXML(xml: string) {
       const [
         time,
         type,
-        fontSize,
+        _fontSize,
         color,
-        sendTime,
-        pool,
-        senderHash,
-        id,
-        weight,
+        _sendTime,
+        _pool,
+        _senderHash,
+        _id,
+        _weight,
       ] = p.split(',')
 
       return {
@@ -25,7 +25,6 @@ export function parsePakkuDanmakuXML(xml: string) {
         text: el.textContent!,
         time: parseFloat(time),
         style: { color: convert32ToHex(color) },
-        user: { source: 'Pakku', id: senderHash },
       } as Comment
     })
     .toArray()

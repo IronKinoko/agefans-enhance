@@ -20,84 +20,26 @@ type DDPResult<T> = {
   errorMessage: string
 } & T
 
-type DDPRelatedResponse = DDPResult<{
-  relateds: {
-    url: string
-    shift: number
-  }[]
-}>
-
-function parseURLSource(url: string) {
-  const tmp = new URL(url)
-  const hostname = tmp.hostname
-
-  if (hostname.match(/bilibili/i)) return '哔哩哔哩'
-  if (hostname.match(/acfun/i)) return 'AcFun'
-  if (hostname.match(/tucao/i)) return 'Tucao'
-  if (hostname.match(/gamer/i)) return '巴哈姆特'
-  if (hostname.match(/v.qq/i)) return '腾讯视频'
-  if (hostname.match(/iqiyi/i)) return '爱奇艺'
-
-  return hostname.replace('www.', '').replace('.com', ' ')
-}
-
 export async function getComments(
   episodeId: number | string
 ): Promise<Comment[]> {
-  const [ddplay, extra] = await Promise.all([
-    // 仅获取弹弹play的弹幕
-    client<RawComments>({
-      url: `/api/v2/comment/${episodeId}`,
-      params: { chConvert: 1 },
-    }),
-
-    // 获取第三方弹幕链接
-    (async () => {
-      const relatedRes = await client<DDPRelatedResponse>({
-        url: `/api/v2/related/${episodeId}`,
-      })
-
-      if (!relatedRes.success) return []
-
-      const extraComments = await Promise.all(
-        relatedRes.relateds.map(async (o) => {
-          const res = await client<RawComments>({
-            url: `/api/v2/extcomment`,
-            params: { url: o.url, chConvert: 1 },
-          })
-          return {
-            source: parseURLSource(o.url),
-            url: o.url,
-            shift: o.shift,
-            comments: res.comments,
-          }
-        })
-      )
-
-      return extraComments
-    })(),
-  ])
-
-  const sourceList = [
-    { source: '弹弹Play', comments: ddplay.comments, url: '', shift: 0 },
-    ...extra,
-  ]
-
-  const cmts = sourceList.map(({ source, comments, url, shift }) => {
-    return comments.map((o) => {
-      const [time, type, color, uid] = o.p.split(',')
-
-      return {
-        mode: ({ 1: 'rtl', 4: 'bottom', 5: 'top' } as const)[type] || 'rtl',
-        text: o.m,
-        time: parseFloat(time) + shift,
-        style: { color: convert32ToHex(color) },
-        user: { source, id: uid, url },
-      }
-    })
+  const res = await client<RawComments>({
+    url: `/api/v2/comment/${episodeId}`,
+    params: { chConvert: 1, withRelated: true },
   })
 
-  return cmts.flat().sort((a, b) => a.time - b.time)
+  const cmts = res.comments.map((o) => {
+    const [time, type, color] = o.p.split(',')
+
+    return {
+      mode: ({ 1: 'rtl', 4: 'bottom', 5: 'top' } as const)[type] || 'rtl',
+      text: o.m,
+      time: parseFloat(time),
+      style: { color: convert32ToHex(color) },
+    }
+  })
+
+  return cmts.sort((a, b) => a.time - b.time)
 }
 
 type DDPSearchAnimeResponse = DDPResult<{

@@ -32,7 +32,6 @@ interface DanmakuConfig {
   danmakuMode: DanmakuMode
   danmakuFilter: string[]
   danmakuScrollAreaPercent: number
-  danmakuSourceDisabledList: string[]
 }
 declare module '../../KPlayer' {
   interface LocalConfig extends DanmakuConfig {}
@@ -54,7 +53,6 @@ const defaultConfig = {
   danmakuMerge: false,
   danmakuDensity: 1,
   danmakuOverlap: false,
-  danmakuSourceDisabledList: [],
 } as DanmakuConfig
 
 enum RunState {
@@ -218,20 +216,10 @@ class DanmakuPlugin {
       return !isFilterMatch
     })
 
-    ret = ret.filter((cmt) => {
-      const isDisabledSource =
-        this.player.localConfig.danmakuSourceDisabledList.includes(
-          cmt.user.source
-        )
-      return !isDisabledSource
-    })
-
     // 过滤弹幕类型
     const mode = this.player.localConfig.danmakuMode
     if (!mode.includes('color')) {
-      ret = ret.filter(
-        (cmt) => (cmt.style as CSSStyleDeclaration)!.color === '#ffffff'
-      )
+      ret = ret.filter((cmt) => cmt.style!.color === '#ffffff')
     }
     if (!mode.includes('bottom')) {
       ret = ret.filter((cmt) => cmt.mode !== 'bottom')
