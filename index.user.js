@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.54.7
+// @version      1.54.8
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -3688,7 +3688,7 @@ _ironkinoko_danmaku = __toESM(_ironkinoko_danmaku);
 				content: `
     <table class="k-table">
       <tbody>
-      <tr><td>脚本版本</td><td>1.54.7</td></tr>
+      <tr><td>脚本版本</td><td>1.54.8</td></tr>
       <tr>
         <td>脚本作者</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -3814,7 +3814,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: 1.54.7
+脚本版本: 1.54.8
 `;
 
 //#endregion
@@ -5042,64 +5042,26 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		headers,
 		url: baseURL + opts.url
 	}));
-	function parseURLSource(url) {
-		const hostname = new URL(url).hostname;
-		if (hostname.match(/bilibili/i)) return "哔哩哔哩";
-		if (hostname.match(/acfun/i)) return "AcFun";
-		if (hostname.match(/tucao/i)) return "Tucao";
-		if (hostname.match(/gamer/i)) return "巴哈姆特";
-		if (hostname.match(/v.qq/i)) return "腾讯视频";
-		if (hostname.match(/iqiyi/i)) return "爱奇艺";
-		return hostname.replace("www.", "").replace(".com", " ");
-	}
 	async function getComments(episodeId) {
-		const [ddplay, extra] = await Promise.all([client({
+		return (await client({
 			url: `/api/v2/comment/${episodeId}`,
-			params: { chConvert: 1 }
-		}), (async () => {
-			const relatedRes = await client({ url: `/api/v2/related/${episodeId}` });
-			if (!relatedRes.success) return [];
-			return await Promise.all(relatedRes.relateds.map(async (o) => {
-				const res = await client({
-					url: `/api/v2/extcomment`,
-					params: {
-						url: o.url,
-						chConvert: 1
-					}
-				});
-				return {
-					source: parseURLSource(o.url),
-					url: o.url,
-					shift: o.shift,
-					comments: res.comments
-				};
-			}));
-		})()]);
-		return [{
-			source: "弹弹Play",
-			comments: ddplay.comments,
-			url: "",
-			shift: 0
-		}, ...extra].map(({ source, comments, url, shift }) => {
-			return comments.map((o) => {
-				const [time, type, color, uid] = o.p.split(",");
-				return {
-					mode: {
-						1: "rtl",
-						4: "bottom",
-						5: "top"
-					}[type] || "rtl",
-					text: o.m,
-					time: parseFloat(time) + shift,
-					style: { color: convert32ToHex(color) },
-					user: {
-						source,
-						id: uid,
-						url
-					}
-				};
-			});
-		}).flat().sort((a, b) => a.time - b.time);
+			params: {
+				chConvert: 1,
+				withRelated: true
+			}
+		})).comments.map((o) => {
+			const [time, type, color] = o.p.split(",");
+			return {
+				mode: {
+					1: "rtl",
+					4: "bottom",
+					5: "top"
+				}[type] || "rtl",
+				text: o.m,
+				time: parseFloat(time),
+				style: { color: convert32ToHex(color) }
+			};
+		}).sort((a, b) => a.time - b.time);
 	}
 	async function queryAnimes(anime) {
 		const res = await client({
@@ -5133,24 +5095,6 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 
 //#endregion
 //#region src/player/plugins/danmaku/danmakuList.ts
-	const DomainColors = {
-		哔哩哔哩: "#00B5E5",
-		AcFun: "#FF5F6D",
-		Tucao: "#45D8BA",
-		巴哈姆特: "#FFB020",
-		弹弹Play: "#A18CFF",
-		Pakku: "#FFD84A",
-		腾讯视频: "#0151D9",
-		爱奇艺: "#00da5a"
-	};
-	const OtherPresetColors = [
-		"#FF4D6D",
-		"#F77F00",
-		"#80B918",
-		"#00BBF9",
-		"#4361EE",
-		"#B5179E"
-	];
 	function createDanmakuList(player) {
 		$("#k-player-danmaku-search-form .open-danmaku-list").on("click", () => {
 			const comments = player.danmaku.state.comments;
@@ -5158,12 +5102,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			const $root = $(`
       <div class="k-player-danmaku-list-wrapper">
         <div class="k-player-danmaku-list-source-filter">
-          <div class="ratio-title">来源<span id="commentCount" title="由弹幕密度与弹幕过滤计算出的数据，表示渲染数量与弹幕总数量"></span></div>
-          <div class="ratio-track-wrap">
-            <div class="ratio-track" id="ratioTrack" aria-label="storage ratio bar"></div>
-            <div class="segment-tooltip" id="segmentTooltip"></div>
-          </div>
-          <div class="legends" id="legends"></div>
+          ${alert("由于弹弹play开放平台相关接口下架，弹幕来源功能已不再可用")}
         </div>
       
         <div class="k-player-danmaku-list-table-wrapper">
@@ -5173,7 +5112,6 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
                 <tr>
                   <th>时间</th>
                   <th>内容</th>
-                  <th>来源</th>
                 </tr>
               </thead>
               <tbody>
@@ -5183,7 +5121,6 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
         </div>
       </div>
     `);
-			const $filter = $root.find(".k-player-danmaku-list-source-filter");
 			const $wrapper = $root.find(".k-player-danmaku-list-table-wrapper");
 			const $content = $root.find(".k-player-danmaku-list-table-content");
 			const $table = $root.find(".k-player-danmaku-list-table");
@@ -5195,11 +5132,10 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 					return;
 				}
 				$root.find("tbody").append(comments.slice(i, end).map((cmt) => `
-        <tr data-source="${cmt.user.source}">
-          <td>${parseTime(cmt.time)}</td>
-          <td>${cmt.text}</td>
-          <td>${cmt.user.url ? `<a href="${cmt.user.url}" target="_blank">${cmt.user.source}</a>` : cmt.user.source}</td>
-        </tr>`).join(""));
+              <tr>
+                <td>${parseTime(cmt.time)}</td>
+                <td>${cmt.text}</td>
+              </tr>`).join(""));
 				i = end;
 			};
 			render();
@@ -5220,102 +5156,6 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 					end = Math.ceil(height / itemHeight);
 					render();
 				}
-			});
-			const data = comments.reduce((arr, cmt) => {
-				const source = cmt.user.source;
-				const item = arr.find((i) => i.source === source);
-				if (item) {
-					item.count++;
-					if (cmt.user.url && !item.urls.includes(cmt.user.url)) item.urls.push(cmt.user.url);
-					return arr;
-				} else arr.push({
-					source,
-					count: 1,
-					urls: cmt.user.url ? [cmt.user.url] : []
-				});
-				return arr;
-			}, []);
-			data.sort((a, b) => a.source.localeCompare(b.source));
-			const track = $filter.find("#ratioTrack")[0];
-			const legends = $filter.find("#legends")[0];
-			const total = comments.length;
-			const tooltip = $filter.find("#segmentTooltip")[0];
-			const showTooltip = (event, item) => {
-				const percent = (item.count / comments.length * 100).toFixed(2);
-				tooltip.textContent = `${item.source}：${percent}% (${item.count}条)`;
-				tooltip.classList.add("is-visible");
-				const rect = track.getBoundingClientRect();
-				const x = event.clientX - rect.left;
-				tooltip.style.left = `${x}px`;
-			};
-			const moveTooltip = (event) => {
-				const rect = track.getBoundingClientRect();
-				const x = event.clientX - rect.left;
-				tooltip.style.left = `${x}px`;
-			};
-			const hideTooltip = () => {
-				tooltip.classList.remove("is-visible");
-			};
-			const updateCommentCount = () => {
-				const renderComments = player.danmaku.adjustCommentCount(comments);
-				$filter.find("#commentCount").text(` (${renderComments.length}/${total})`);
-			};
-			updateCommentCount();
-			track.addEventListener("mouseleave", hideTooltip);
-			data.forEach((item, idx) => {
-				const isDisabled = player.localConfig.danmakuSourceDisabledList.includes(item.source);
-				const color = DomainColors[item.source] || OtherPresetColors[idx % OtherPresetColors.length];
-				const segment = document.createElement("div");
-				segment.className = "ratio-segment";
-				segment.style.width = `${item.count / total * 100}%`;
-				segment.style.background = color;
-				segment.addEventListener("mouseenter", (event) => showTooltip(event, item));
-				segment.addEventListener("mousemove", moveTooltip);
-				segment.addEventListener("mouseleave", hideTooltip);
-				segment.addEventListener("click", () => {
-					setConfig(toggleStyle());
-				});
-				track.appendChild(segment);
-				const legend = document.createElement("div");
-				legend.className = "legend-item";
-				legend.setAttribute("role", "button");
-				legend.setAttribute("tabindex", "0");
-				legend.innerHTML = `
-        <span class="legend-dot" style="background:${color}"></span>
-        <span>${item.source}</span>
-        ${item.urls.map((url) => `<a
-            class="legend-source"
-            href="${url}"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="查看数据来源"
-            onclick="event.stopPropagation()"
-          >
-            <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 3h7v7"></path>
-              <path d="M10 14 21 3"></path>
-              <path d="M21 14v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h6"></path>
-            </svg>
-          </a>`)}
-     `;
-				const toggleStyle = () => {
-					const isDisabled = legend.classList.toggle("is-disabled");
-					segment.classList.toggle("is-disabled", isDisabled);
-					return isDisabled;
-				};
-				const setConfig = (bool) => {
-					let next = [...player.localConfig.danmakuSourceDisabledList];
-					if (bool) next.push(item.source);
-					else next = next.filter((src) => src !== item.source);
-					player.configSaveToLocal("danmakuSourceDisabledList", next);
-					player.danmaku.refreshDanmaku();
-					updateCommentCount();
-				};
-				legend.addEventListener("click", () => {
-					setConfig(toggleStyle());
-				});
-				if (isDisabled) toggleStyle();
-				legends.appendChild(legend);
 			});
 		});
 	}
@@ -5642,13 +5482,13 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 
 //#endregion
 //#region src/player/plugins/danmaku/index.scss
-	injectStyle("#k-player-danmaku {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  pointer-events: none;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n}\n#k-player-danmaku-notification {\n  line-height: 1.6;\n}\n#k-player-danmaku-notification .title {\n  text-align: center;\n  font-weight: 500;\n  font-size: 16px;\n}\n#k-player-danmaku-notification img {\n  width: 40%;\n  display: block;\n  margin: 0 auto 8px;\n}\n#k-player-danmaku-notification a {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-notification p {\n  margin: 0;\n}\n#k-player-danmaku-notification p:not(:last-child) {\n  margin-bottom: 8px;\n}\n#k-player-danmaku .danmaku {\n  font-size: calc(var(--danmaku-font-size, 24px) * var(--danmaku-font-size-scale, 1));\n  font-family: SimHei, \"Microsoft JhengHei\", Arial, Helvetica, sans-serif;\n  font-weight: bold;\n  text-shadow: black 1px 0px 1px, black 0px 1px 1px, black 0px -1px 1px, black -1px 0px 1px;\n  line-height: 1.3;\n}\n@media (max-width: 576px) {\n  #k-player-danmaku .danmaku {\n    --danmaku-font-size: 16px;\n  }\n}\n#k-player-danmaku-overlay {\n  width: 210px;\n}\n#k-player-danmaku-search-form > * {\n  font-size: 14px;\n  box-sizing: border-box;\n  text-align: left;\n}\n#k-player-danmaku-search-form input,\n#k-player-danmaku-search-form select {\n  display: block;\n  margin-top: 4px;\n  width: 100%;\n}\n#k-player-danmaku-search-form label {\n  display: block;\n}\n#k-player-danmaku-search-form label span {\n  line-height: 1.4;\n}\n#k-player-danmaku-search-form label + label {\n  margin-top: 8px;\n}\n#k-player-danmaku-search-form .open-danmaku-list {\n  cursor: pointer;\n  transition: color 0.15s;\n}\n#k-player-danmaku-search-form .open-danmaku-list:hover * {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-search-form .specific-thanks {\n  color: #757575;\n  font-size: 12px;\n  position: absolute;\n  left: 8px;\n  bottom: 8px;\n  user-select: none;\n}\n#k-player-danmaku-setting-form {\n  padding: 0;\n}\n#k-player-danmaku-setting-form input {\n  margin: 0;\n}\n#k-player-danmaku-filter-form {\n  padding: 0;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper {\n  display: flex;\n  align-items: center;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper > div {\n  flex: 1;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper > div input {\n  width: 100%;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper label {\n  margin-left: 8px;\n  border: 0;\n  color: white;\n  cursor: pointer;\n  transition: color 0.15s;\n  white-space: nowrap;\n  user-select: none;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper label:hover {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-filter-table {\n  margin-top: 8px;\n}\n#k-player-danmaku-filter-table .ft-body {\n  height: 200px;\n  overflow: auto;\n}\n#k-player-danmaku-filter-table .ft-body::-webkit-scrollbar {\n  display: none;\n}\n#k-player-danmaku-filter-table .ft-row {\n  display: flex;\n  border-radius: 4px;\n  transition: all 0.15s;\n}\n#k-player-danmaku-filter-table .ft-row:hover {\n  background: var(--k-player-background-highlight);\n}\n#k-player-danmaku-filter-table .ft-content {\n  padding: 4px 8px;\n  flex: 1px;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n#k-player-danmaku-filter-table .ft-op {\n  flex-shrink: 0;\n  padding: 4px 8px;\n}\n#k-player-danmaku-filter-table a {\n  color: white;\n  cursor: pointer;\n  transition: color 0.15s;\n  user-select: none;\n}\n#k-player-danmaku-filter-table a:hover {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-log {\n  position: absolute;\n  inset: 0;\n  padding: 8px;\n  overflow: auto;\n}\n#k-player-danmaku-log .k-player-danmaku-log-item {\n  border-bottom: 1px solid rgba(255, 255, 255, 0.2);\n  padding-bottom: 4px;\n  margin-bottom: 4px;\n  line-height: 1.4;\n}\n#k-player-danmaku-log .k-player-danmaku-log-content {\n  padding: 4px 8px;\n  border-radius: 4px;\n  background: rgba(255, 255, 255, 0.2);\n  margin-top: 4px;\n}\n#k-player-danmaku-log .k-player-danmaku-log-code {\n  white-space: pre-wrap;\n  word-wrap: break-word;\n  display: -webkit-box;\n  -webkit-line-clamp: 3;\n  line-clamp: 3;\n  -webkit-box-orient: vertical;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  max-height: 60px;\n  font-size: 12px;\n}\n\n#k-player-pbp {\n  position: absolute;\n  top: -17px;\n  height: 28px;\n  -webkit-appearance: none;\n  appearance: none;\n  left: 0;\n  position: absolute;\n  margin-left: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  margin-right: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  width: calc(100% + var(--plyr-range-thumb-height, 13px));\n  pointer-events: none;\n}\n\n#k-player-pbp-played-path {\n  color: var(--k-player-primary-color);\n}\n\n.plyr__controls__item.plyr__progress__container:hover #k-player-pbp {\n  top: -18px;\n}\n\n.plyr__switch-danmaku .icon--pressed {\n  --color: var(--k-player-primary-color);\n  transition: 0.3s all ease;\n}\n\n.plyr__switch-danmaku:hover .icon--pressed {\n  --color: white;\n}\n\n.k-popover-active .plyr__tooltip {\n  display: none;\n}\n\n.k-player-controls-force-show.plyr .plyr__controls {\n  opacity: 1;\n  pointer-events: auto;\n  transform: translateY(0);\n}\n\n.k-player-danmaku-list * {\n  box-sizing: border-box;\n  font-size: 14px;\n  line-height: normal;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n}\n.k-player-danmaku-list .k-modal-body {\n  padding: 0;\n}\n.k-player-danmaku-list-wrapper {\n  height: 500px;\n  max-height: 80vh;\n  display: flex;\n  flex-direction: column;\n}\n.k-player-danmaku-list-source-filter {\n  padding: 16px;\n}\n.k-player-danmaku-list-source-filter .ratio-title {\n  margin: 0 0 8px;\n  font-size: 16px;\n  font-weight: 600;\n}\n.k-player-danmaku-list-source-filter .ratio-track {\n  width: 100%;\n  height: 16px;\n  border-radius: 999px;\n  overflow: hidden;\n  background: var(--track);\n  display: flex;\n}\n.k-player-danmaku-list-source-filter .ratio-track-wrap {\n  position: relative;\n}\n.k-player-danmaku-list-source-filter .ratio-segment {\n  height: 100%;\n  min-width: 2px;\n  cursor: pointer;\n}\n.k-player-danmaku-list-source-filter .legends {\n  margin-top: 8px;\n  display: flex;\n  flex-wrap: wrap;\n  gap: 8px 16px;\n}\n.k-player-danmaku-list-source-filter .legend-item {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  font-size: 14px;\n  cursor: pointer;\n  user-select: none;\n  transition: color 0.2s ease, opacity 0.2s ease;\n}\n.k-player-danmaku-list-source-filter .legend-item:hover {\n  color: var(--k-player-primary-color);\n}\n.k-player-danmaku-list-source-filter .legend-item.is-disabled {\n  color: #a1a8b6;\n}\n.k-player-danmaku-list-source-filter .legend-item.is-disabled .legend-dot {\n  background: #c7cdd8 !important;\n}\n.k-player-danmaku-list-source-filter .ratio-segment.is-disabled {\n  background: #c7cdd8 !important;\n}\n.k-player-danmaku-list-source-filter .segment-tooltip {\n  position: absolute;\n  top: -34px;\n  left: 0;\n  transform: translateX(-50%);\n  background: rgba(24, 28, 37, 0.92);\n  color: #fff;\n  padding: 6px;\n  border-radius: 4px;\n  font-size: 12px;\n  line-height: 1;\n  white-space: nowrap;\n  pointer-events: none;\n  opacity: 0;\n  transition: opacity 0.15s ease;\n  z-index: 5;\n}\n.k-player-danmaku-list-source-filter .segment-tooltip::after {\n  content: \"\";\n  position: absolute;\n  left: 50%;\n  transform: translateX(-50%);\n  top: 100%;\n  border: 5px solid transparent;\n  border-top-color: rgba(24, 28, 37, 0.92);\n}\n.k-player-danmaku-list-source-filter .segment-tooltip.is-visible {\n  opacity: 1;\n}\n.k-player-danmaku-list-source-filter .legend-source {\n  width: 18px;\n  height: 18px;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: 999px;\n  color: #6b7383;\n  text-decoration: none;\n  transition: background-color 0.2s ease, color 0.2s ease;\n}\n.k-player-danmaku-list-source-filter .legend-source:hover {\n  background: #edf1fa;\n  color: var(--k-player-primary-color);\n}\n.k-player-danmaku-list-source-filter .legend-source:focus-visible {\n  outline: 2px solid var(--k-player-primary-color-highlight);\n  outline-offset: 2px;\n}\n.k-player-danmaku-list-source-filter .legend-item.is-disabled .legend-source {\n  color: #aeb4c1;\n}\n.k-player-danmaku-list-source-filter .legend-dot {\n  width: 10px;\n  height: 10px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n.k-player-danmaku-list-source-filter .legend-value {\n  font-variant-numeric: tabular-nums;\n}\n.k-player-danmaku-list-table-wrapper {\n  flex: 1;\n  min-height: 0;\n  overflow-y: scroll;\n  position: relative;\n}\n.k-player-danmaku-list-table-wrapper::-webkit-scrollbar {\n  width: 8px;\n}\n.k-player-danmaku-list-table-wrapper::-webkit-scrollbar-thumb {\n  background: rgba(0, 0, 0, 0.15);\n  border-radius: 4px;\n}\n.k-player-danmaku-list-table-wrapper::-webkit-scrollbar-thumb:hover {\n  background-color: rgba(0, 0, 0, 0.45);\n}\n.k-player-danmaku-list-table {\n  width: 100%;\n  border-spacing: 0;\n  border-collapse: separate;\n  table-layout: fixed;\n}\n.k-player-danmaku-list-table th,\n.k-player-danmaku-list-table td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n  white-space: nowrap;\n}\n.k-player-danmaku-list-table th {\n  position: sticky;\n  background-color: white;\n  top: 0;\n  z-index: 1;\n}\n.k-player-danmaku-list-table th:nth-child(1) {\n  width: 55px;\n}\n.k-player-danmaku-list-table td:nth-child(2) {\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.k-player-danmaku-list-table th:nth-child(3) {\n  width: 100px;\n}\n.k-player-danmaku-list-table a {\n  color: var(--k-player-primary-color);\n  margin: -4px 0 -4px -8px;\n  padding: 4px 8px;\n  border-radius: 4px;\n  text-decoration: none;\n  cursor: pointer;\n  display: inline-block;\n  white-space: nowrap;\n}\n.k-player-danmaku-list-table a:hover {\n  color: var(--k-player-primary-color);\n  background-color: var(--k-player-primary-color-highlight);\n}");
+	injectStyle("#k-player-danmaku {\n  position: absolute;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 10;\n  pointer-events: none;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n}\n#k-player-danmaku-notification {\n  line-height: 1.6;\n}\n#k-player-danmaku-notification .title {\n  text-align: center;\n  font-weight: 500;\n  font-size: 16px;\n}\n#k-player-danmaku-notification img {\n  width: 40%;\n  display: block;\n  margin: 0 auto 8px;\n}\n#k-player-danmaku-notification a {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-notification p {\n  margin: 0;\n}\n#k-player-danmaku-notification p:not(:last-child) {\n  margin-bottom: 8px;\n}\n#k-player-danmaku .danmaku {\n  font-size: calc(var(--danmaku-font-size, 24px) * var(--danmaku-font-size-scale, 1));\n  font-family: SimHei, \"Microsoft JhengHei\", Arial, Helvetica, sans-serif;\n  font-weight: bold;\n  text-shadow: black 1px 0px 1px, black 0px 1px 1px, black 0px -1px 1px, black -1px 0px 1px;\n  line-height: 1.3;\n}\n@media (max-width: 576px) {\n  #k-player-danmaku .danmaku {\n    --danmaku-font-size: 16px;\n  }\n}\n#k-player-danmaku-overlay {\n  width: 210px;\n}\n#k-player-danmaku-search-form > * {\n  font-size: 14px;\n  box-sizing: border-box;\n  text-align: left;\n}\n#k-player-danmaku-search-form input,\n#k-player-danmaku-search-form select {\n  display: block;\n  margin-top: 4px;\n  width: 100%;\n}\n#k-player-danmaku-search-form label {\n  display: block;\n}\n#k-player-danmaku-search-form label span {\n  line-height: 1.4;\n}\n#k-player-danmaku-search-form label + label {\n  margin-top: 8px;\n}\n#k-player-danmaku-search-form .open-danmaku-list {\n  cursor: pointer;\n  transition: color 0.15s;\n}\n#k-player-danmaku-search-form .open-danmaku-list:hover * {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-search-form .specific-thanks {\n  color: #757575;\n  font-size: 12px;\n  position: absolute;\n  left: 8px;\n  bottom: 8px;\n  user-select: none;\n}\n#k-player-danmaku-setting-form {\n  padding: 0;\n}\n#k-player-danmaku-setting-form input {\n  margin: 0;\n}\n#k-player-danmaku-filter-form {\n  padding: 0;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper {\n  display: flex;\n  align-items: center;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper > div {\n  flex: 1;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper > div input {\n  width: 100%;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper label {\n  margin-left: 8px;\n  border: 0;\n  color: white;\n  cursor: pointer;\n  transition: color 0.15s;\n  white-space: nowrap;\n  user-select: none;\n}\n#k-player-danmaku-filter-form .ft-input-wrapper label:hover {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-filter-table {\n  margin-top: 8px;\n}\n#k-player-danmaku-filter-table .ft-body {\n  height: 200px;\n  overflow: auto;\n}\n#k-player-danmaku-filter-table .ft-body::-webkit-scrollbar {\n  display: none;\n}\n#k-player-danmaku-filter-table .ft-row {\n  display: flex;\n  border-radius: 4px;\n  transition: all 0.15s;\n}\n#k-player-danmaku-filter-table .ft-row:hover {\n  background: var(--k-player-background-highlight);\n}\n#k-player-danmaku-filter-table .ft-content {\n  padding: 4px 8px;\n  flex: 1px;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n#k-player-danmaku-filter-table .ft-op {\n  flex-shrink: 0;\n  padding: 4px 8px;\n}\n#k-player-danmaku-filter-table a {\n  color: white;\n  cursor: pointer;\n  transition: color 0.15s;\n  user-select: none;\n}\n#k-player-danmaku-filter-table a:hover {\n  color: var(--k-player-primary-color);\n}\n#k-player-danmaku-log {\n  position: absolute;\n  inset: 0;\n  padding: 8px;\n  overflow: auto;\n}\n#k-player-danmaku-log .k-player-danmaku-log-item {\n  border-bottom: 1px solid rgba(255, 255, 255, 0.2);\n  padding-bottom: 4px;\n  margin-bottom: 4px;\n  line-height: 1.4;\n}\n#k-player-danmaku-log .k-player-danmaku-log-content {\n  padding: 4px 8px;\n  border-radius: 4px;\n  background: rgba(255, 255, 255, 0.2);\n  margin-top: 4px;\n}\n#k-player-danmaku-log .k-player-danmaku-log-code {\n  white-space: pre-wrap;\n  word-wrap: break-word;\n  display: -webkit-box;\n  -webkit-line-clamp: 3;\n  line-clamp: 3;\n  -webkit-box-orient: vertical;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  max-height: 60px;\n  font-size: 12px;\n}\n\n#k-player-pbp {\n  position: absolute;\n  top: -17px;\n  height: 28px;\n  -webkit-appearance: none;\n  appearance: none;\n  left: 0;\n  position: absolute;\n  margin-left: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  margin-right: calc(var(--plyr-range-thumb-height, 13px) * -0.5);\n  width: calc(100% + var(--plyr-range-thumb-height, 13px));\n  pointer-events: none;\n}\n\n#k-player-pbp-played-path {\n  color: var(--k-player-primary-color);\n}\n\n.plyr__controls__item.plyr__progress__container:hover #k-player-pbp {\n  top: -18px;\n}\n\n.plyr__switch-danmaku .icon--pressed {\n  --color: var(--k-player-primary-color);\n  transition: 0.3s all ease;\n}\n\n.plyr__switch-danmaku:hover .icon--pressed {\n  --color: white;\n}\n\n.k-popover-active .plyr__tooltip {\n  display: none;\n}\n\n.k-player-controls-force-show.plyr .plyr__controls {\n  opacity: 1;\n  pointer-events: auto;\n  transform: translateY(0);\n}\n\n.k-player-danmaku-list * {\n  box-sizing: border-box;\n  font-size: 14px;\n  line-height: normal;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n}\n.k-player-danmaku-list .k-modal-body {\n  padding: 0;\n}\n.k-player-danmaku-list-wrapper {\n  height: 500px;\n  max-height: 80vh;\n  display: flex;\n  flex-direction: column;\n}\n.k-player-danmaku-list-source-filter {\n  padding: 16px;\n}\n.k-player-danmaku-list-source-filter .k-alert {\n  margin-bottom: 0;\n}\n.k-player-danmaku-list-table-wrapper {\n  flex: 1;\n  min-height: 0;\n  overflow-y: scroll;\n  position: relative;\n}\n.k-player-danmaku-list-table-wrapper::-webkit-scrollbar {\n  width: 8px;\n}\n.k-player-danmaku-list-table-wrapper::-webkit-scrollbar-thumb {\n  background: rgba(0, 0, 0, 0.15);\n  border-radius: 4px;\n}\n.k-player-danmaku-list-table-wrapper::-webkit-scrollbar-thumb:hover {\n  background-color: rgba(0, 0, 0, 0.45);\n}\n.k-player-danmaku-list-table {\n  width: 100%;\n  border-spacing: 0;\n  border-collapse: separate;\n  table-layout: fixed;\n}\n.k-player-danmaku-list-table th,\n.k-player-danmaku-list-table td {\n  padding: 8px;\n  border-bottom: 1px solid #f1f1f1;\n  word-wrap: break-word;\n  word-break: break-all;\n  white-space: nowrap;\n}\n.k-player-danmaku-list-table th {\n  position: sticky;\n  background-color: white;\n  top: 0;\n  z-index: 1;\n}\n.k-player-danmaku-list-table th:nth-child(1) {\n  width: 55px;\n}\n.k-player-danmaku-list-table td:nth-child(2) {\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.k-player-danmaku-list-table th:nth-child(3) {\n  width: 100px;\n}\n.k-player-danmaku-list-table a {\n  color: var(--k-player-primary-color);\n  margin: -4px 0 -4px -8px;\n  padding: 4px 8px;\n  border-radius: 4px;\n  text-decoration: none;\n  cursor: pointer;\n  display: inline-block;\n  white-space: nowrap;\n}\n.k-player-danmaku-list-table a:hover {\n  color: var(--k-player-primary-color);\n  background-color: var(--k-player-primary-color-highlight);\n}");
 
 //#endregion
 //#region src/player/plugins/danmaku/parser.ts
 	function parsePakkuDanmakuXML(xml) {
 		return $(xml).find("d").map((_, el) => {
-			const [time, type, fontSize, color, sendTime, pool, senderHash, id, weight] = el.getAttribute("p").split(",");
+			const [time, type, _fontSize, color, _sendTime, _pool, _senderHash, _id, _weight] = el.getAttribute("p").split(",");
 			return {
 				mode: {
 					1: "rtl",
@@ -5657,11 +5497,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 				}[type] || "rtl",
 				text: el.textContent,
 				time: parseFloat(time),
-				style: { color: convert32ToHex(color) },
-				user: {
-					source: "Pakku",
-					id: senderHash
-				}
+				style: { color: convert32ToHex(color) }
 			};
 		}).toArray();
 	}
@@ -5723,8 +5559,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		danmakuScrollAreaPercent: 1,
 		danmakuMerge: false,
 		danmakuDensity: 1,
-		danmakuOverlap: false,
-		danmakuSourceDisabledList: []
+		danmakuOverlap: false
 	};
 	var RunState = /* @__PURE__ */ function(RunState) {
 		RunState[RunState["unSearched"] = 0] = "unSearched";
@@ -5807,9 +5642,6 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 						if (/^\/.*\/$/.test(filter)) return new RegExp(filter.slice(1, -1)).test(cmt.text);
 						else return cmt.text.includes(filter);
 					});
-				});
-				ret = ret.filter((cmt) => {
-					return !this.player.localConfig.danmakuSourceDisabledList.includes(cmt.user.source);
 				});
 				const mode = this.player.localConfig.danmakuMode;
 				if (!mode.includes("color")) ret = ret.filter((cmt) => cmt.style.color === "#ffffff");
