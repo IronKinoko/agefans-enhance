@@ -1,5 +1,8 @@
 /// <reference types="bocchi/env" />
 
+declare module '*.css' {}
+declare module '*.scss' {}
+
 interface Window {
   [x: string]: any
 }
