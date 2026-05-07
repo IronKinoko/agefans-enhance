@@ -1,4 +1,5 @@
 /// <reference types="bocchi/env" />
+/// <reference types="jquery" />
 
 declare module '*.css' {}
 declare module '*.scss' {}
