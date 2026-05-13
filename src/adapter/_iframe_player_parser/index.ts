@@ -11,6 +11,7 @@ runtime.register({
     '43.240.74.134',
     '43.240.156.118',
     'jx.ejtsyc.com',
+    'jx.wuzhoupai.com',
   ],
   opts: [
     {
@@ -32,7 +33,7 @@ runtime.register({
     {
       test: () =>
         !!window.location.href.match(
-          /((43.240.74.134)|(43.240.156.118)|(jx.ejtsyc.com)).*vip.*url=/
+          /((43\.240\.74\.134)|(43\.240\.156\.118)|(jx\.ejtsyc\.com)|(jx\.wuzhoupai\.com)).*vip.*url=/
         ),
       runInIframe: true,
       run: parser['agefans-01'],
@@ -40,7 +41,7 @@ runtime.register({
     {
       test: () =>
         !!window.location.href.match(
-          /((43.240.74.134)|(43.240.156.118)|(jx.ejtsyc.com)).*m3u8.*url=/
+          /((43\.240\.74\.134)|(43\.240\.156\.118)|(jx\.ejtsyc\.com)|(jx\.wuzhoupai\.com)).*m3u8.*url=/
         ),
       runInIframe: true,
       run: parser['agefans-02'],
