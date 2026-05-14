@@ -1,4 +1,4 @@
-import { local } from '../../utils/storage'
+import { gm } from '../../utils/storage'
 
 type AnimeInfo = {
   id: string
@@ -23,10 +23,14 @@ export class SubscriptionManager {
 
   constructor(private storageKey: string) {
     window.addEventListener('storage', (e) => {
-      if (e.key === this.storageKey) this.notify()
+      // 因为gm存储不是同步发生的，所以等300毫秒再读取，确保数据已经更新
+      if (e.key === this.storageKey) setTimeout(() => this.notify(), 300)
     })
     window.addEventListener('popstate', () => {
       this.notify()
+    })
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') this.notify()
     })
   }
 
@@ -55,7 +59,7 @@ export class SubscriptionManager {
 
   // --- store ---
   getSubscriptions() {
-    return local.getItem<SubscribedAnime[]>(this.storageKey, [])
+    return gm.getItem<SubscribedAnime[]>(this.storageKey, [])
   }
 
   /** 根据更新顺序做排序，按天成组 */
@@ -102,7 +106,7 @@ export class SubscriptionManager {
       throw new Error('Subscription already exists')
     }
     subscriptions.push(subscription)
-    local.setItem(this.storageKey, subscriptions)
+    gm.setItem(this.storageKey, subscriptions)
     this.notify()
     return subscription
   }
@@ -114,7 +118,7 @@ export class SubscriptionManager {
       throw new Error('Subscription not found')
     }
     subscriptions[index] = { ...subscriptions[index], ...updates }
-    local.setItem(this.storageKey, subscriptions)
+    gm.setItem(this.storageKey, subscriptions)
     this.notify()
     return subscriptions[index]
   }
@@ -125,7 +129,7 @@ export class SubscriptionManager {
     if (filtered.length === subscriptions.length) {
       throw new Error('Subscription not found')
     }
-    local.setItem(this.storageKey, filtered)
+    gm.setItem(this.storageKey, filtered)
     this.notify()
     return true
   }
