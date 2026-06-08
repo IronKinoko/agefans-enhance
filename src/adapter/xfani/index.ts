@@ -15,7 +15,7 @@ runtime.register({
   ],
   search: {
     name: '稀饭动漫',
-    search: (cn) => `https://dm.xifanacg.com/search.html?wd=${cn}`,
+    search: (cn) => `https://anime.xifanacg.com/search.html?wd=${cn}`,
     getSearchName: () => {
       return new Promise((resolve) => {
         const fn = (e: MessageEvent<any>) => {

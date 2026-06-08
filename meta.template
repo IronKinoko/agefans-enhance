@@ -24,13 +24,14 @@
 // @include      https://www.cycani.org/*
 // @include      https://www.ciyuancheng.net/*
 // @include      https://player.cycanime.com/*
-// @include      https://dm.xifanacg.com/*
+// @include      https://anime.xifanacg.com/*
 // @include      https://player.moedot.net/*
 // @include      https://www.anime1.me/*
 // @include      https://anime1.me/*
 // @include      https://www.gugu3.com/*
 // @include      https://player.gugu3.com/*
 // @include      https://*.girigirilove.com/*
+// @include      https://play.girigirilove.top/*
 // @include      http://127.0.0.1:5500/public/index.html*
 // @include      https://ironkinoko.github.io/agefans-enhance/*
 // @run-at       document-end
