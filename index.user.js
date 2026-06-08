@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.54.10
+// @version      1.54.11
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -24,13 +24,14 @@
 // @include      https://www.cycani.org/*
 // @include      https://www.ciyuancheng.net/*
 // @include      https://player.cycanime.com/*
-// @include      https://dm.xifanacg.com/*
+// @include      https://anime.xifanacg.com/*
 // @include      https://player.moedot.net/*
 // @include      https://www.anime1.me/*
 // @include      https://anime1.me/*
 // @include      https://www.gugu3.com/*
 // @include      https://player.gugu3.com/*
 // @include      https://*.girigirilove.com/*
+// @include      https://play.girigirilove.top/*
 // @include      http://127.0.0.1:5500/public/index.html*
 // @include      https://ironkinoko.github.io/agefans-enhance/*
 // @run-at       document-end
@@ -3689,7 +3690,7 @@ _ironkinoko_danmaku = __toESM(_ironkinoko_danmaku);
 				content: `
     <table class="k-table">
       <tbody>
-      <tr><td>脚本版本</td><td>1.54.10</td></tr>
+      <tr><td>脚本版本</td><td>1.54.11</td></tr>
       <tr>
         <td>脚本作者</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -3815,7 +3816,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: 1.54.10
+脚本版本: 1.54.11
 `;
 
 //#endregion
@@ -7479,7 +7480,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		],
 		search: {
 			name: "稀饭动漫",
-			search: (cn) => `https://dm.xifanacg.com/search.html?wd=${cn}`,
+			search: (cn) => `https://anime.xifanacg.com/search.html?wd=${cn}`,
 			getSearchName: () => {
 				return new Promise((resolve) => {
 					const fn = (e) => {
@@ -7926,7 +7927,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 
 //#endregion
 //#region src/adapter/girigirilove/index.scss
-	injectStyle(".girigirilove .empty-tip {\n  width: 100%;\n  padding: 40px 20px 20px;\n  text-align: center;\n}\n.girigirilove .update-info {\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  font-size: 12px;\n  margin-top: 4px;\n}\n.girigirilove .update-info:hover {\n  cursor: pointer;\n  text-decoration: underline;\n}\n.girigirilove .k-day-0 {\n  background-color: rgb(232, 93, 188);\n}\n.girigirilove .k-day-1 {\n  background-color: rgb(255, 82, 82);\n}\n.girigirilove .k-day-2 {\n  background-color: rgb(255, 145, 77);\n}\n.girigirilove .k-day-3 {\n  background-color: rgb(255, 212, 61);\n}\n.girigirilove .k-day-4 {\n  background-color: rgb(72, 219, 151);\n}\n.girigirilove .k-day-5 {\n  background-color: rgb(66, 184, 221);\n}\n.girigirilove .k-day-6 {\n  background-color: rgb(141, 104, 232);\n}\n.girigirilove.widescreen .head,\n.girigirilove.widescreen .header_nav0,\n.girigirilove.widescreen .header_nav1,\n.girigirilove.widescreen .top-back.hoa,\n.girigirilove.widescreen .fixedGroup {\n  visibility: hidden;\n  pointer-events: none;\n}");
+	injectStyle(".girigirilove .empty-tip {\n  width: 100%;\n  padding: 40px 20px 20px;\n  text-align: center;\n}\n.girigirilove .update-info {\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  font-size: 12px;\n  margin-top: 4px;\n}\n.girigirilove .update-info:hover {\n  cursor: pointer;\n  text-decoration: underline;\n}\n.girigirilove .MacPlayer {\n  padding: 0 !important;\n}\n.girigirilove .k-day-0 {\n  background-color: rgb(232, 93, 188);\n}\n.girigirilove .k-day-1 {\n  background-color: rgb(255, 82, 82);\n}\n.girigirilove .k-day-2 {\n  background-color: rgb(255, 145, 77);\n}\n.girigirilove .k-day-3 {\n  background-color: rgb(255, 212, 61);\n}\n.girigirilove .k-day-4 {\n  background-color: rgb(72, 219, 151);\n}\n.girigirilove .k-day-5 {\n  background-color: rgb(66, 184, 221);\n}\n.girigirilove .k-day-6 {\n  background-color: rgb(141, 104, 232);\n}\n.girigirilove.widescreen .head,\n.girigirilove.widescreen .header_nav0,\n.girigirilove.widescreen .header_nav1,\n.girigirilove.widescreen .top-back.hoa,\n.girigirilove.widescreen .fixedGroup {\n  visibility: hidden;\n  pointer-events: none;\n}");
 
 //#endregion
 //#region src/adapter/girigirilove/index.ts
