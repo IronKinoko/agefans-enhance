@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.54.11
+// @version      1.55.0
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -32,6 +32,7 @@
 // @include      https://player.gugu3.com/*
 // @include      https://*.girigirilove.com/*
 // @include      https://play.girigirilove.top/*
+// @include      https://www.tucao.my/*
 // @include      http://127.0.0.1:5500/public/index.html*
 // @include      https://ironkinoko.github.io/agefans-enhance/*
 // @run-at       document-end
@@ -3690,7 +3691,7 @@ _ironkinoko_danmaku = __toESM(_ironkinoko_danmaku);
 				content: `
     <table class="k-table">
       <tbody>
-      <tr><td>脚本版本</td><td>1.54.11</td></tr>
+      <tr><td>脚本版本</td><td>1.55.0</td></tr>
       <tr>
         <td>脚本作者</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -3816,7 +3817,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: 1.54.11
+脚本版本: 1.55.0
 `;
 
 //#endregion
@@ -7514,8 +7515,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 
 //#endregion
 //#region src/adapter/standalone/play.ts
-	function main() {
-		replacePlayer();
+	function main$1() {
+		replacePlayer$1();
 	}
 	function getUrlId(url) {
 		const key = "k-player-standalone-url-store";
@@ -7528,7 +7529,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		}
 		return id;
 	}
-	function replacePlayer() {
+	function replacePlayer$1() {
 		const player = new KPlayer("#player");
 		player.message.info("请使用Ctrl+V粘贴视频地址，或者拖拽视频文件/链接到页面", 6e4);
 		player.on("loadstart", (e) => {
@@ -7549,7 +7550,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		domains: ["127.0.0.1", "ironkinoko.github.io"],
 		opts: [{
 			test: "*",
-			run: main
+			run: main$1
 		}],
 		search: {
 			getEpisode: () => "",
@@ -7987,6 +7988,54 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			getAnimeScope: () => {
 				var _window$location$href;
 				return ((_window$location$href = window.location.href.match(/\/playGV(\d+)-/)) === null || _window$location$href === void 0 ? void 0 : _window$location$href[1]) || "";
+			}
+		}
+	});
+
+//#endregion
+//#region src/adapter/tucao/play.ts
+	function main() {
+		replacePlayer();
+	}
+	async function replacePlayer() {
+		await wait(() => !!$(".dplayer-video-wrap video").attr("src"));
+		const video = $(".dplayer-video-wrap video")[0];
+		const url = video.src;
+		video.pause();
+		video.muted = true;
+		video.src = "";
+		video.remove();
+		const player = new KPlayer("#v_link_p");
+		player.src = url;
+		player.on("prev", () => $("#prevLink").trigger("click"));
+		player.on("next", () => $("#nextLink").trigger("click"));
+	}
+
+//#endregion
+//#region src/adapter/tucao/index.scss
+	injectStyle(".tucao #video_part {\n  margin-bottom: 24px;\n}\n.tucao #k-player-wrapper {\n  aspect-ratio: 16/9;\n}");
+
+//#endregion
+//#region src/adapter/tucao/index.ts
+	runtime.register({
+		domains: ["tucao.my"],
+		opts: [{
+			test: "*",
+			run: () => $("body").addClass("tucao")
+		}, {
+			test: "/play",
+			run: main
+		}],
+		search: {
+			name: "吐槽弹幕网",
+			search: (cn) => `https://www.tucao.my/index.php?m=content&c=search&a=init&catid=24&dosubmit=1&orderby=a.id+DESC&info%5Btitle%5D=${cn}`,
+			getSearchName: () => {
+				return $(".show_title").contents().filter((_, node) => node.nodeType === Node.TEXT_NODE).first().text().trim().replace(/【.*?】/g, "");
+			},
+			getEpisode: () => $("#part_lists .now em").text(),
+			getAnimeScope: () => {
+				var _window$location$href;
+				return ((_window$location$href = window.location.href.match(/\/play\/(.*?)\//)) === null || _window$location$href === void 0 ? void 0 : _window$location$href[1]) || "";
 			}
 		}
 	});
