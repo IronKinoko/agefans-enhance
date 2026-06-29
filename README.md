@@ -12,6 +12,7 @@
 - [Anime1](https://anime1.me)
 - [咕咕番](https://www.gugu3.com)
 - [girigiri 爱](https://anime.girigirilove.com/)
+- [吐槽弹幕网](https://www.tucao.my/)
 - [独立播放器](https://ironkinoko.github.io/agefans-enhance/)
 
 **请使用 <kbd>?</kbd> 键查看脚本信息与快捷键**
