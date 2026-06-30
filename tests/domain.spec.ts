@@ -38,6 +38,25 @@ adapterDomains.forEach(({ adapter, target, iframe, direct }) => {
     const response = await page.goto(target)
     expect(response).not.toBeNull()
 
+    // Skip if the site returns an error status (e.g., Cloudflare bot protection returning 403)
+    const status = response?.status() ?? 0
+    test.skip(
+      status >= 400,
+      `Page ${target} is inaccessible (HTTP ${status}) in this environment`
+    )
+
+    // Check for known access restriction messages (geo-blocks, Cloudflare challenges, etc.)
+    const isAccessRestricted =
+      (await page
+        .locator(
+          'h1:has-text("Sorry, you have been blocked"), h1:has-text("暫不支持該地區訪問")'
+        )
+        .count()) > 0
+    test.skip(
+      isAccessRestricted,
+      `Page ${target} is blocked or geo-restricted in this environment`
+    )
+
     const finalResponse = response?.request().redirectedFrom()
     expect(
       finalResponse,
