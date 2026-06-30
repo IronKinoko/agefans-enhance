@@ -35,6 +35,7 @@ const adapterDomains: AdapterDomainCheckConfig[] = [
 
 adapterDomains.forEach(({ adapter, target, iframe, direct }) => {
   test(`Check domain for ${adapter}`, async ({ page }) => {
+    await page.goto(new URL(target).origin)
     const response = await page.goto(target)
     expect(response).not.toBeNull()
 
