@@ -23,6 +23,9 @@ jobs:
 
       - name: detect ip address
         run: curl https://ipinfo.io/json
+        env:
+          HTTP_PROXY: ${{ secrets.HTTP_PROXY }}
+          HTTPS_PROXY: ${{ secrets.HTTP_PROXY }}
 
       - name: Install dependencies
         run: npm install -g pnpm@11 && pnpm install
