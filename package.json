@@ -24,9 +24,9 @@
     "lint": "tsc --noEmit",
     "prepare": "husky install",
     "deploy": "gh-pages -d dist",
-    "preversion": "npm run lint",
-    "version": "npm run build",
-    "postversion": "npm run deploy && git push && git push --tags",
+    "preversion": "pnpm run lint",
+    "version": "pnpm run build",
+    "postversion": "pnpm run deploy && git push && git push --tags",
     "test": "playwright test"
   },
   "devDependencies": {
