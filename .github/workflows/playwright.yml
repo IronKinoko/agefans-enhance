@@ -16,17 +16,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
+
       - name: detect ip address
         run: curl https://ipinfo.io/json
+
       - name: Install dependencies
         run: npm install -g pnpm@11 && pnpm install
+
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps
+
       - name: Run Playwright tests
         run: pnpm exec playwright test
+        env:
+          HTTP_PROXY: ${{ secrets.HTTP_PROXY }}
+          HTTPS_PROXY: ${{ secrets.HTTP_PROXY }}
+
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:

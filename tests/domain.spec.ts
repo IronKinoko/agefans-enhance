@@ -40,10 +40,9 @@ adapterDomains.forEach(({ adapter, target, iframe, direct }) => {
     expect(response).not.toBeNull()
 
     await fs.writeFile(
-      testInfo.outputPath('content.html'),
+      testInfo.outputPath(`content-${adapter}.html`),
       await page.content()
     )
-    await page.screenshot({ path: testInfo.outputPath(`screenshot.png`) })
 
     // Skip if the site returns an error status (e.g., Cloudflare bot protection returning 403)
     const status = response!.status()
