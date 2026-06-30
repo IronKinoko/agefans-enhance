@@ -19,6 +19,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
+      - name: detect ip address
+        run: curl https://ipinfo.io/json
       - name: Install dependencies
         run: npm install -g pnpm@11 && pnpm install
       - name: Install Playwright Browsers
