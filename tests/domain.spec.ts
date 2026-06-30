@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import fs from 'node:fs/promises'
 
 interface AdapterDomainCheckConfig {
   adapter: string
@@ -34,10 +35,15 @@ const adapterDomains: AdapterDomainCheckConfig[] = [
 ]
 
 adapterDomains.forEach(({ adapter, target, iframe, direct }) => {
-  test(`Check domain for ${adapter}`, async ({ page }) => {
-    await page.goto(new URL(target).origin)
+  test(`Check domain for ${adapter}`, async ({ page }, testInfo) => {
     const response = await page.goto(target)
     expect(response).not.toBeNull()
+
+    await fs.writeFile(
+      testInfo.outputPath('content.html'),
+      await page.content()
+    )
+    await page.screenshot({ path: testInfo.outputPath(`screenshot.png`) })
 
     // Skip if the site returns an error status (e.g., Cloudflare bot protection returning 403)
     const status = response!.status()
