@@ -23,12 +23,18 @@ importers:
         specifier: 3.6.4
         version: 3.6.4
     devDependencies:
+      '@playwright/test':
+        specifier: ^1.61.1
+        version: 1.61.1
       '@types/jquery':
         specifier: ^3.5.14
-        version: 3.5.33
+        version: 3.5.34
       '@types/lodash-es':
         specifier: ^4.17.6
         version: 4.17.12
+      '@types/node':
+        specifier: ^26.0.1
+        version: 26.0.1
       '@types/opencc-js':
         specifier: ^1.0.3
         version: 1.0.3
@@ -44,6 +50,9 @@ importers:
       lint-staged:
         specifier: ^11.2.6
         version: 11.2.6
+      playwright:
+        specifier: ^1.61.1
+        version: 1.61.1
       prettier:
         specifier: ^2.6.2
         version: 2.8.8
@@ -270,6 +279,14 @@ packages:
       }
     engines: { node: '>= 10.0.0' }
 
+  '@playwright/test@1.61.1':
+    resolution:
+      {
+        integrity: sha512-8nKv6+0RJSL9FE4jYOEGXnPeM/Hg12qZpmqzZjRh3qM0Y7c3z1mrOTfFLids72RDQYVh9WpLEfR5WdpNX4fkig==,
+      }
+    engines: { node: '>=18' }
+    hasBin: true
+
   '@rolldown/binding-android-arm64@1.0.0-rc.6':
     resolution:
       {
@@ -414,10 +431,10 @@ packages:
         integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==,
       }
 
-  '@types/jquery@3.5.33':
+  '@types/jquery@3.5.34':
     resolution:
       {
-        integrity: sha512-SeyVJXlCZpEki5F0ghuYe+L+PprQta6nRZqhONt9F13dWBtR/ftoaIbdRQ7cis7womE+X2LKhsDdDtkkDhJS6g==,
+        integrity: sha512-3m3939S3erqmTLJANS/uy0B6V7BorKx7RorcGZVjZ62dF5PAGbKEDZK1CuLtKombJkFA2T1jl8LAIIs7IV6gBQ==,
       }
 
   '@types/lodash-es@4.17.12':
@@ -439,10 +456,10 @@ packages:
       }
     deprecated: This is a stub types definition. minimatch provides its own type definitions, so you do not need this installed.
 
-  '@types/node@25.2.0':
+  '@types/node@26.0.1':
     resolution:
       {
-        integrity: sha512-DZ8VwRFUNzuqJ5khrvwMXHmvPe+zGayJhr2CDNiKB1WBE1ST8Djl00D0IC4vvNmHMdj6DlbYRIaFE7WHjlDl5w==,
+        integrity: sha512-fc3KiUoBt6kie0N9bIW3E47vZsuaMf0PM2AaUpLCLT0s/LvX1nxAim6Fc049cNxODPpGm6qRAuUOB86SkRuPQw==,
       }
 
   '@types/opencc-js@1.0.3':
@@ -906,6 +923,14 @@ packages:
       {
         integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==,
       }
+
+  fsevents@2.3.2:
+    resolution:
+      {
+        integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==,
+      }
+    engines: { node: ^8.16.0 || ^10.6.0 || >=11.0.0 }
+    os: [darwin]
 
   get-caller-file@2.0.5:
     resolution:
@@ -1463,6 +1488,22 @@ packages:
       }
     engines: { node: '>=8' }
 
+  playwright-core@1.61.1:
+    resolution:
+      {
+        integrity: sha512-h7Qlt6m4REp25qvIdvbDtVmD4LqVXfpRxhORv9L0jzETM05p4fuPJ3dKyuSXQxDSbXnmS79HAgi9589lGSpLkg==,
+      }
+    engines: { node: '>=18' }
+    hasBin: true
+
+  playwright@1.61.1:
+    resolution:
+      {
+        integrity: sha512-DWnY5o3YbLWK4GovuAVwpqL+1VwGNdUGrRr++8j8PtQQzvAVZUIMjKQ90fY689sEJZJBbZVw1rXaOKSTitkzPQ==,
+      }
+    engines: { node: '>=18' }
+    hasBin: true
+
   please-upgrade-node@3.2.0:
     resolution:
       {
@@ -1759,10 +1800,10 @@ packages:
     engines: { node: '>=14.17' }
     hasBin: true
 
-  undici-types@7.16.0:
+  undici-types@8.3.0:
     resolution:
       {
-        integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==,
+        integrity: sha512-j375ScV60dom+YkPFIfTLcOiPxkN/buHz5GobjLhixFuANaNs3C9l4GmrWqejgXWJ7BbJcFYpTEUkS1Ge8bpZQ==,
       }
 
   universalify@0.1.2:
@@ -1963,6 +2004,10 @@ snapshots:
       '@parcel/watcher-win32-x64': 2.5.6
     optional: true
 
+  '@playwright/test@1.61.1':
+    dependencies:
+      playwright: 1.61.1
+
   '@rolldown/binding-android-arm64@1.0.0-rc.6':
     optional: true
 
@@ -2013,14 +2058,14 @@ snapshots:
 
   '@types/fs-extra@8.1.5':
     dependencies:
-      '@types/node': 25.2.0
+      '@types/node': 26.0.1
 
   '@types/glob@7.2.0':
     dependencies:
       '@types/minimatch': 6.0.0
-      '@types/node': 25.2.0
+      '@types/node': 26.0.1
 
-  '@types/jquery@3.5.33':
+  '@types/jquery@3.5.34':
     dependencies:
       '@types/sizzle': 2.3.10
 
@@ -2034,9 +2079,9 @@ snapshots:
     dependencies:
       minimatch: 10.1.1
 
-  '@types/node@25.2.0':
+  '@types/node@26.0.1':
     dependencies:
-      undici-types: 7.16.0
+      undici-types: 8.3.0
 
   '@types/opencc-js@1.0.3': {}
 
@@ -2303,6 +2348,9 @@ snapshots:
       universalify: 0.1.2
 
   fs.realpath@1.0.0: {}
+
+  fsevents@2.3.2:
+    optional: true
 
   get-caller-file@2.0.5: {}
 
@@ -2588,6 +2636,14 @@ snapshots:
     dependencies:
       find-up: 4.1.0
 
+  playwright-core@1.61.1: {}
+
+  playwright@1.61.1:
+    dependencies:
+      playwright-core: 1.61.1
+    optionalDependencies:
+      fsevents: 2.3.2
+
   please-upgrade-node@3.2.0:
     dependencies:
       semver-compare: 1.0.0
@@ -2766,7 +2822,7 @@ snapshots:
 
   typescript@5.9.3: {}
 
-  undici-types@7.16.0: {}
+  undici-types@8.3.0: {}
 
   universalify@0.1.2: {}
 

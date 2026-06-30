@@ -3,13 +3,14 @@
   "version": "1.55.0",
   "description": "增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫",
   "main": "index.user.js",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/IronKinoko/agefans-enhance.git"
   },
   "keywords": [
     "agefans",
-    "userscirpt"
+    "userscript"
   ],
   "author": "IronKinoko <kinoko.main@gmail.com>",
   "license": "MIT",
@@ -25,16 +26,20 @@
     "deploy": "gh-pages -d dist",
     "preversion": "npm run lint",
     "version": "npm run build",
-    "postversion": "npm run deploy && git push && git push --tags"
+    "postversion": "npm run deploy && git push && git push --tags",
+    "test": "playwright test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@types/jquery": "^3.5.14",
     "@types/lodash-es": "^4.17.6",
+    "@types/node": "^26.0.1",
     "@types/opencc-js": "^1.0.3",
     "bocchi": "^2.0.1",
     "gh-pages": "^3.2.3",
     "husky": "^6.0.0",
     "lint-staged": "^11.2.6",
+    "playwright": "^1.61.1",
     "prettier": "^2.6.2",
     "pretty-quick": "^3.1.3",
     "typescript": "^5.7.3"
