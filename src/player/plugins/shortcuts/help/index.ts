@@ -39,6 +39,15 @@ function showHelp(video: any) {
   })
 }
 
+function registerHelpMenuCommand() {
+  if (parent !== self) return
+  if (typeof GM_registerMenuCommand === 'undefined') return
+
+  GM_registerMenuCommand('脚本信息与快捷键', help)
+}
+
+registerHelpMenuCommand()
+
 keybind(['?', '？'], help)
 window.addEventListener('message', (e) => {
   if (e.data?.key !== GlobalKey) return

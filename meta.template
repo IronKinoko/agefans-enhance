@@ -44,6 +44,7 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
+// @grant        GM_registerMenuCommand
 // @connect      dandanplay.net
 // @license      MIT
 // @downloadURL  https://github.com/IronKinoko/agefans-enhance/raw/gh-pages/index.user.js
@@ -59,6 +60,9 @@
  * 2. GM_getValue, GM_setValue
  *    脚本会使用本地存储功能，用于在不同页面间保存“播放器配置”与“agefans 历史浏览记录”。
  *
- * 3. @include
+ * 3. GM_registerMenuCommand
+ *    脚本会在油猴菜单中注册常用指令的按钮。
+ *
+ * 4. @include
  *    脚本还匹配了 agefans 以外的一些链接，用于提供相同视频资源搜索功能
  */
