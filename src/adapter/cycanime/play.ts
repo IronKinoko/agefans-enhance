@@ -1,4 +1,5 @@
 import { KPlayer } from '../../player'
+import { execInUnsafeWindow } from '../../utils/execInUnsafeWindow'
 import { queryDom } from '../../utils/queryDom'
 import { wait } from '../../utils/wait'
 import { defineIframePlayer } from '../common/defineIframePlayer'
@@ -40,6 +41,11 @@ export async function parser() {
 
   await wait(() => !!video.currentSrc)
   let url = video.currentSrc
+
+  if (url.startsWith('blob:')) {
+    url = await execInUnsafeWindow(() => window.decrypt(window.config.url))
+  }
+
   video.src = ''
   const player = new KPlayer('#mui-player', {
     eventToParentWindow: true,
