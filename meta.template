@@ -16,9 +16,6 @@
 // @include      https://*.sp-flv.com*
 // @include      https://*43.240.74.134*
 // @include      https://*43.240.156.118*
-// @include      https://www.mutedm.com/*
-// @include      https://www.mutean.com/*
-// @include      https://www.mute01.com/*
 // @include      https://www.cycanime.com/*
 // @include      https://www.cyc-anime.net/*
 // @include      https://www.cycani.org/*
@@ -33,7 +30,6 @@
 // @include      https://*.girigirilove.com/*
 // @include      https://play.girigirilove.top/*
 // @include      https://www.tucao.my/*
-// @include      http://127.0.0.1:5500/public/index.html*
 // @include      https://ironkinoko.github.io/agefans-enhance/*
 // @run-at       document-end
 // @require      https://unpkg.com/jquery@3.6.0/dist/jquery.min.js

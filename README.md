@@ -6,7 +6,6 @@
 
 - [agefans](http://www.age.tv)
 - [bimiacg](http://www.bimiacg14.net)
-- [MuteFun](https://www.mutean.com)
 - [次元城](https://www.ciyuancheng.net)
 - [稀饭动漫](https://anime.xifanacg.com)
 - [Anime1](https://anime1.me)
