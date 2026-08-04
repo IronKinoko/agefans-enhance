@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.56.1
+// @version      1.57.0
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -16,14 +16,7 @@
 // @include      https://*.sp-flv.com*
 // @include      https://*43.240.74.134*
 // @include      https://*43.240.156.118*
-// @include      https://www.mutedm.com/*
-// @include      https://www.mutean.com/*
-// @include      https://www.mute01.com/*
-// @include      https://www.cycanime.com/*
-// @include      https://www.cyc-anime.net/*
 // @include      https://www.cycani.org/*
-// @include      https://www.ciyuancheng.net/*
-// @include      https://player.cycanime.com/*
 // @include      https://anime.xifanacg.com/*
 // @include      https://player.moedot.net/*
 // @include      https://www.anime1.me/*
@@ -33,7 +26,6 @@
 // @include      https://*.girigirilove.com/*
 // @include      https://play.girigirilove.top/*
 // @include      https://www.tucao.my/*
-// @include      http://127.0.0.1:5500/public/index.html*
 // @include      https://ironkinoko.github.io/agefans-enhance/*
 // @run-at       document-end
 // @require      https://unpkg.com/jquery@3.6.0/dist/jquery.min.js
@@ -2786,6 +2778,21 @@
 	function createTest(target) {
 		return (test) => typeof test === "function" ? test() : typeof test === "string" ? target.includes(test) || test === "*" : test.test(target);
 	}
+	function installRouteChangeListener(onRouteChange) {
+		const wrapHistoryMethod = (type) => {
+			const original = history[type];
+			history[type] = function(...args) {
+				const result = original.apply(this, args);
+				window.dispatchEvent(new Event("routechange"));
+				return result;
+			};
+		};
+		wrapHistoryMethod("pushState");
+		wrapHistoryMethod("replaceState");
+		window.addEventListener("popstate", onRouteChange);
+		window.addEventListener("hashchange", onRouteChange);
+		window.addEventListener("routechange", onRouteChange);
+	}
 	var Runtime = class {
 		constructor() {
 			var _this = this;
@@ -2901,20 +2908,29 @@
 				return (Array.isArray(test) ? test : [test]).some(createTest(location.pathname + location.search));
 			});
 		}
-		run() {
+		runActiveOpts(runSetup) {
+			const opts = this.getActiveOpts();
 			let setupList = [];
 			let runList = [];
-			this.getActiveOpts().forEach((opt) => {
+			opts.forEach((opt) => {
 				const { run, setup, runInIframe } = opt;
 				if (runInIframe ? parent !== self : parent === self) {
 					console.log("[agefans-enhance]", "激活的opt", opt);
 					setup && setupList.push(setup);
-					runList.push(run);
+					run && runList.push(run);
 				}
 			});
+			if (runSetup) setupList.forEach((setup) => setup());
+			return runList.map((run) => run()).filter((o) => typeof o === "function");
+		}
+		run() {
+			const register = this.getActiveRegister();
 			const init = () => {
-				setupList.forEach((setup) => setup());
-				runList.forEach((run) => run());
+				let disposeList = this.runActiveOpts(true);
+				if (register.spa) installRouteChangeListener(() => {
+					disposeList.forEach((dispose) => dispose());
+					disposeList = this.runActiveOpts(false);
+				});
 			};
 			if (document.readyState !== "loading") init();
 			else window.addEventListener("DOMContentLoaded", init);
@@ -3597,7 +3613,7 @@
 				content: `
     <table class="k-table">
       <tbody>
-      <tr><td>脚本版本</td><td>1.56.1</td></tr>
+      <tr><td>脚本版本</td><td>1.57.0</td></tr>
       <tr>
         <td>脚本作者</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -3723,7 +3739,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: 1.56.1
+脚本版本: 1.57.0
 `;
 	//#endregion
 	//#region src/player/plugins/shortcuts/help/index.ts
@@ -4304,15 +4320,18 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			_defineProperty(this, "$searchActions", void 0);
 			_defineProperty(this, "opts", void 0);
 			_defineProperty(this, "speedList", speedList);
+			_defineProperty(this, "hls", void 0);
+			_defineProperty(this, "destroyList", []);
+			_defineProperty(this, "destroyed", false);
 			_defineProperty(this, "setCurrentTimeLogThrottled", throttle(() => {
 				if (this.currentTime > 3) this.setCurrentTimeLog();
 			}, 1e3));
 			_defineProperty(this, "hideControlsDebounced", debounce(() => {
-				const dom = document.querySelector(".plyr");
+				const dom = this.$videoWrapper[0];
 				if (!this.isHoverControls) dom === null || dom === void 0 || dom.classList.add("plyr--hide-controls");
 			}, 1e3));
 			_defineProperty(this, "hideCursorDebounced", debounce(() => {
-				const dom = document.querySelector(".plyr");
+				const dom = this.$videoWrapper[0];
 				dom === null || dom === void 0 || dom.classList.add("plyr--hide-cursor");
 			}, 1e3));
 			_defineProperty(this, "isJumped", false);
@@ -4417,6 +4436,15 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		async getAnimeScope() {
 			return await runtime.getAnimeScope();
 		}
+		addDestroyTask(task) {
+			this.destroyList.push(task);
+		}
+		bindEvent(target, type, listener, options) {
+			target.addEventListener(type, listener, options);
+			this.addDestroyTask(() => {
+				target.removeEventListener(type, listener, options);
+			});
+		}
 		async jumpToLogTime() {
 			var _this3 = this;
 			if (_this3.isJumped) return;
@@ -4511,9 +4539,10 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 				this.message.info("正在切换下一集");
 			});
 			const tryFixExitFullscreenOnInit = this.fixFullscreen();
-			window.addEventListener("resize", () => {
+			const onResize = () => {
 				tryFixExitFullscreenOnInit();
-			});
+			};
+			this.bindEvent(window, "resize", onResize);
 			this.on("enterfullscreen", () => {
 				this.$videoWrapper.addClass("k-player-fullscreen");
 				tryFixExitFullscreenOnInit();
@@ -4541,35 +4570,39 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			this.on("leavepictureinpicture", () => {
 				this.$pip.fadeOut();
 			});
-			window.addEventListener("message", (e) => {
+			const onMessage = (e) => {
 				var _e$data;
 				if (((_e$data = e.data) === null || _e$data === void 0 ? void 0 : _e$data.key) === "transportShortcut") {
 					const data = e.data.data;
 					const event = new KeyboardEvent("keydown", data);
 					window.dispatchEvent(event);
 				}
-			});
+			};
+			this.bindEvent(window, "message", onMessage);
 			$(".plyr__controls button,.plyr__controls input").on("mouseleave", (e) => {
 				e.target.blur();
 			});
-			const playerEl = document.querySelector(".plyr");
-			playerEl.addEventListener("mousemove", () => {
+			const playerEl = this.$videoWrapper[0];
+			const onMouseMove = () => {
 				playerEl.classList.remove("plyr--hide-cursor");
 				this.hideCursorDebounced();
 				if (this.plyr.paused) this.hideControlsDebounced();
-			});
-			const controlsEl = document.querySelector(".plyr__controls");
-			controlsEl.addEventListener("mouseenter", () => {
+			};
+			this.bindEvent(playerEl, "mousemove", onMouseMove);
+			const controlsEl = this.$videoWrapper.find(".plyr__controls")[0];
+			const onControlsEnter = () => {
 				this.isHoverControls = true;
-			});
-			controlsEl.addEventListener("mouseleave", () => {
+			};
+			const onControlsLeave = () => {
 				this.isHoverControls = false;
-			});
+			};
+			this.bindEvent(controlsEl, "mouseenter", onControlsEnter);
+			this.bindEvent(controlsEl, "mouseleave", onControlsLeave);
 			this.initInputEvent();
 		}
 		initInputEvent() {
 			let timeId;
-			const $dom = $("#k-player-wrapper input[type='range']");
+			const $dom = this.$wrapper.find("input[type='range']");
 			$dom.trigger("mouseup").off("mousedown").off("mouseup");
 			$dom.on("mousedown", function() {
 				clearInterval(timeId);
@@ -4741,8 +4774,12 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		}
 		/** 如果直接设置src满足不了需求，则使用这个方法去加载*/
 		setM3u8(src) {
+			var _this$hls;
+			(_this$hls = this.hls) === null || _this$hls === void 0 || _this$hls.destroy();
+			this.hls = void 0;
 			if (hls_js.default.isSupported()) {
 				const hls = new hls_js.default();
+				this.hls = hls;
 				hls.loadSource(src);
 				hls.attachMedia(this.media);
 			} else if (this.media.canPlayType("application/vnd.apple.mpegurl")) this.$video.attr("src", src);
@@ -4750,8 +4787,36 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			this.afterChangeSrc();
 		}
 		setMp4(src) {
+			var _this$hls2;
+			(_this$hls2 = this.hls) === null || _this$hls2 === void 0 || _this$hls2.destroy();
+			this.hls = void 0;
 			this.$video.attr("src", src);
 			this.afterChangeSrc();
+		}
+		destroy() {
+			var _this$hls3;
+			if (this.destroyed) return;
+			this.destroyed = true;
+			this.hideControlsDebounced.cancel();
+			this.hideCursorDebounced.cancel();
+			this.setCurrentTimeLogThrottled.cancel();
+			this.message.destroy();
+			(_this$hls3 = this.hls) === null || _this$hls3 === void 0 || _this$hls3.destroy();
+			this.hls = void 0;
+			try {
+				this.toggleWidescreen(false);
+			} catch (error) {}
+			try {
+				this.plyr.fullscreen.exit();
+			} catch (error) {}
+			this.destroyList.forEach((dispose) => dispose());
+			this.destroyList = [];
+			this.eventMap = {};
+			this.media.pause();
+			this.$video.removeAttr("src");
+			this.media.load();
+			this.plyr.destroy();
+			this.$wrapper.remove();
 		}
 		afterChangeSrc() {
 			this.isJumped = false;
@@ -5550,6 +5615,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 				renderSelectOptions(this.elements.$episodes, this.state.episodes);
 			});
 			_defineProperty(this, "searchAnime", lockWrap(async (name) => {
+				if (!name) return;
 				_this.log(`搜索番剧: ${name}`);
 				if (!name || name.length < 2) return _this.messageLog("番剧名称不少于2个字");
 				try {
@@ -5566,6 +5632,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 				}
 			}));
 			_defineProperty(this, "searchEpisodes", async (animeId) => {
+				if (!animeId) return;
 				_this.log("搜索剧集", { animeId });
 				try {
 					_this.setEpisodes([]);
@@ -6113,8 +6180,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	}
 	//#endregion
 	//#region src/adapter/_iframe_player_parser/parser.ts
-	let player;
-	const parser$6 = {
+	let player$1;
+	const parser$5 = {
 		"danmu.yhdmjx.com": async () => {
 			function detectLoadError() {
 				let timeId = setInterval(() => {
@@ -6145,14 +6212,14 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			const video = await queryDom("video");
 			video.src = "";
 			dispose();
-			player = new KPlayer("#player", { eventToParentWindow: true });
-			player.src = await execInUnsafeWindow(() => window.v_decrypt(window.config.url, window._token_key, window.key_token));
+			player$1 = new KPlayer("#player", { eventToParentWindow: true });
+			player$1.src = await execInUnsafeWindow(() => window.v_decrypt(window.config.url, window._token_key, window.key_token));
 		},
 		"pro.ascepan.top": async () => {
 			const video = await queryDom("video");
 			video.src = "";
-			player = new KPlayer("#player", { eventToParentWindow: true });
-			player.src = await execInUnsafeWindow(() => window.config.url);
+			player$1 = new KPlayer("#player", { eventToParentWindow: true });
+			player$1.src = await execInUnsafeWindow(() => window.config.url);
 		},
 		"sp-flv.com": async () => {
 			const video = await queryDom("video");
@@ -6162,13 +6229,13 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 				url = await execInUnsafeWindow(() => window.video_url);
 				if (url) {
 					video.src = "";
-					player = new KPlayer("#mplayer-media-wrapper", { eventToParentWindow: true });
-					player.src = url;
+					player$1 = new KPlayer("#mplayer-media-wrapper", { eventToParentWindow: true });
+					player$1.src = url;
 				}
 			} else {
 				video.src = "";
-				player = new KPlayer("#mplayer-media-wrapper", { eventToParentWindow: true });
-				player.src = url;
+				player$1 = new KPlayer("#mplayer-media-wrapper", { eventToParentWindow: true });
+				player$1.src = url;
 			}
 		},
 		/**
@@ -6186,8 +6253,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			}
 			$("#artplayer").remove();
 			$("body").append("<div id=\"k-player-container\"/>");
-			player = new KPlayer("#k-player-container", { eventToParentWindow: true });
-			player.src = url;
+			player$1 = new KPlayer("#k-player-container", { eventToParentWindow: true });
+			player$1.src = url;
 		},
 		/**
 		* agefans-02
@@ -6205,8 +6272,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			await execInUnsafeWindow(() => window.art.destroy(false));
 			$("#loading").remove();
 			$("body").append("<div id=\"k-player-container\"/>");
-			player = new KPlayer("#k-player-container", { eventToParentWindow: true });
-			player.src = url;
+			player$1 = new KPlayer("#k-player-container", { eventToParentWindow: true });
+			player$1.src = url;
 		}
 	};
 	//#endregion
@@ -6228,28 +6295,28 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			{
 				test: () => window.location.href.includes("danmu.yhdmjx.com/m3u8.php"),
 				runInIframe: true,
-				run: parser$6["danmu.yhdmjx.com"]
+				run: parser$5["danmu.yhdmjx.com"]
 			},
 			{
 				test: () => window.location.href.includes("pro.ascepan.top/player"),
 				runInIframe: true,
-				run: parser$6["pro.ascepan.top"],
+				run: parser$5["pro.ascepan.top"],
 				setup: () => $("body").addClass("pro-ascepan-top")
 			},
 			{
 				test: () => !!window.location.href.match(/sp-flv\.com.*url=/),
 				runInIframe: true,
-				run: parser$6["sp-flv.com"]
+				run: parser$5["sp-flv.com"]
 			},
 			{
 				test: () => !!window.location.href.match(/((43\.240\.74\.134)|(43\.240\.156\.118)|(jx\.ejtsyc\.com)|(jx\.wuzhoupai\.com)).*vip.*url=/),
 				runInIframe: true,
-				run: parser$6["agefans-01"]
+				run: parser$5["agefans-01"]
 			},
 			{
 				test: () => !!window.location.href.match(/((43\.240\.74\.134)|(43\.240\.156\.118)|(jx\.ejtsyc\.com)|(jx\.wuzhoupai\.com)).*m3u8.*url=/),
 				runInIframe: true,
-				run: parser$6["agefans-02"]
+				run: parser$5["agefans-02"]
 			}
 		],
 		search: {
@@ -6703,14 +6770,14 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	//#endregion
 	//#region src/adapter/agefans/subscribe.template.html
 	var subscribe_template_default$1 = {
-		"subListContainer": "<div id=\"subListContainer\" class=\"text_list_box mb-4\">\n  <div class=\"text_list_box--hd\">\n    <h6 class=\"title\">\n      <span class=\"float-end\">\n        <span class=\"update-info\" title=\"点击可强制更新数据\"></span>\n      </span>\n      订阅列表\n    </h6>\n  </div>\n  <div id=\"subList\"></div>\n</div>",
-		"subList": "<div id=\"subList\">\n  {{# if (groups.every(o => o.list.length === 0)) { }}\n  <div class=\"text_list_box--bd\">\n    <div class=\"text_list_box_wrapper\">\n      <ul class=\"text_list_item\">\n        <li>\n          <div class=\"d-flex position-relative\">\n            <div class=\"flex-grow-1 text-truncate pe-2\">\n              订阅喜欢的番剧，在播放页面标题右侧添加订阅\n            </div>\n          </div>\n        </li>\n      </ul>\n    </div>\n  </div>\n  {{# } }}\n  \n  {{# groups.filter(o => !!o.list.length).forEach(({list, day}) => { }}\n  <div class=\"text_list_box--bd\">\n    <div class=\"sub-group-day\">{{day}}</div>\n    <div class=\"text_list_box_wrapper\">\n      <ul class=\"text_list_item\">\n        {{# list.forEach(item => { }}\n        <li>\n          <div class=\"d-flex position-relative\">\n            <div class=\"text-truncate pe-2\">\n              <a                 href=\"{{item.current.url}}\"\n                class=\"text-decoration-none link-light common_alink\"\n                >{{item.title}}</a>\n            </div>\n            <div class=\"flex-grow-1 title_new\"></div>\n            <div class=\"title_sub text-truncate\">\n              <a                 class=\"text-decoration-none link-light common_alink\"\n                href=\"{{item.current.url}}\"\n                >{{item.current.title}}</a>\n              <span>/</span>\n              <a                 class=\"text-decoration-none link-light common_alink\"\n                href=\"{{item.last.url}}\"\n                >{{item.last.title}}</a>\n            </div>\n\n            <div class=\"sub-thumbnail-box\">\n              <img                 class=\"sub-thumbnail\"\n                src=\"{{item.thumbnail}}\"\n                alt=\"{{item.title}}\"\n              >\n            </div>\n          </div>\n        </li>\n        {{# }) }}\n      </ul>\n    </div>\n  </div>\n  {{# }) }}\n</div>"
+		"subListContainer": "<div id=\"subListContainer\" class=\"text_list_box mb-4\">\r\n  <div class=\"text_list_box--hd\">\r\n    <h6 class=\"title\">\r\n      <span class=\"float-end\">\r\n        <span class=\"update-info\" title=\"点击可强制更新数据\"></span>\r\n      </span>\r\n      订阅列表\r\n    </h6>\r\n  </div>\r\n  <div id=\"subList\"></div>\r\n</div>",
+		"subList": "<div id=\"subList\">\r\n  {{# if (groups.every(o => o.list.length === 0)) { }}\r\n  <div class=\"text_list_box--bd\">\r\n    <div class=\"text_list_box_wrapper\">\r\n      <ul class=\"text_list_item\">\r\n        <li>\r\n          <div class=\"d-flex position-relative\">\r\n            <div class=\"flex-grow-1 text-truncate pe-2\">\r\n              订阅喜欢的番剧，在播放页面标题右侧添加订阅\r\n            </div>\r\n          </div>\r\n        </li>\r\n      </ul>\r\n    </div>\r\n  </div>\r\n  {{# } }}\r\n  \r\n  {{# groups.filter(o => !!o.list.length).forEach(({list, day}) => { }}\r\n  <div class=\"text_list_box--bd\">\r\n    <div class=\"sub-group-day\">{{day}}</div>\r\n    <div class=\"text_list_box_wrapper\">\r\n      <ul class=\"text_list_item\">\r\n        {{# list.forEach(item => { }}\r\n        <li>\r\n          <div class=\"d-flex position-relative\">\r\n            <div class=\"text-truncate pe-2\">\r\n              <a \n                href=\"{{item.current.url}}\"\r\n                class=\"text-decoration-none link-light common_alink\"\r\n                >{{item.title}}</a>\r\n            </div>\r\n            <div class=\"flex-grow-1 title_new\"></div>\r\n            <div class=\"title_sub text-truncate\">\r\n              <a \n                class=\"text-decoration-none link-light common_alink\"\r\n                href=\"{{item.current.url}}\"\r\n                >{{item.current.title}}</a>\r\n              <span>/</span>\r\n              <a \n                class=\"text-decoration-none link-light common_alink\"\r\n                href=\"{{item.last.url}}\"\r\n                >{{item.last.title}}</a>\r\n            </div>\r\n\r\n            <div class=\"sub-thumbnail-box\">\r\n              <img \n                class=\"sub-thumbnail\"\r\n                src=\"{{item.thumbnail}}\"\r\n                alt=\"{{item.title}}\"\r\n              >\r\n            </div>\r\n          </div>\r\n        </li>\r\n        {{# }) }}\r\n      </ul>\r\n    </div>\r\n  </div>\r\n  {{# }) }}\r\n</div>"
 	};
 	//#endregion
 	//#region src/adapter/agefans/play.ts
 	function calcSortDirection() {
 		var _$prev$text$match, _$next$text$match, _$active$text$match;
-		const $active = getActive$6();
+		const $active = getActive$4();
 		const $prev = $active.prev();
 		const $next = $active.next();
 		const prevText = (_$prev$text$match = $prev.text().match(/\d+/)) === null || _$prev$text$match === void 0 ? void 0 : _$prev$text$match[0];
@@ -6752,7 +6819,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		if (getSortDirection() === "desc") getSortButon().trigger("click");
 	}
 	function activeScrollIntoView() {
-		const $active = getActive$6();
+		const $active = getActive$4();
 		function getScrollParent() {
 			let parent = $active.parent()[0];
 			while (parent && parent.tagName !== "BODY") {
@@ -6782,21 +6849,21 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			activeScrollIntoView();
 		}).prependTo(".playlist-source-tab .float-end");
 	}
-	function getActive$6() {
+	function getActive$4() {
 		return $(".video_detail_episode .video_detail_spisode_playing").parent();
 	}
-	function switchPart$6(next) {
+	function switchPart$4(next) {
 		var _$nextActive$find$get;
-		const $active = getActive$6();
+		const $active = getActive$4();
 		const sortDirection = getSortDirection();
 		let $nextActive;
 		if (sortDirection === "asc") $nextActive = $active[next ? "next" : "prev"]();
 		else $nextActive = $active[next ? "prev" : "next"]();
 		return (_$nextActive$find$get = $nextActive.find("a").get(0)) === null || _$nextActive$find$get === void 0 ? void 0 : _$nextActive$find$get.href;
 	}
-	const iframePlayer$6 = defineIframePlayer({
+	const iframePlayer$4 = defineIframePlayer({
 		iframeSelector: ".video_play_wrapper iframe",
-		getActive: getActive$6,
+		getActive: getActive$4,
 		setActive: (href) => {
 			$(".video_detail_episode a").each((_, el) => {
 				const $el = $(el);
@@ -6806,10 +6873,10 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		},
 		search: {
 			getSearchName: () => $(".video_detail_wrapper .cata_video_item .card-title").text(),
-			getEpisode: () => getActive$6().text()
+			getEpisode: () => getActive$4().text()
 		},
 		getEpisodeList: () => $(".video_detail_episode a"),
-		getSwitchEpisodeURL: (next) => switchPart$6(next),
+		getSwitchEpisodeURL: (next) => switchPart$4(next),
 		subscribe: {
 			storageKey: "agefans-subscribe",
 			getId: () => window.location.pathname.match(/play\/(\d+)/)[1],
@@ -6843,7 +6910,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 				else updateInfo.updatedAt = sub.updatedAt;
 				else {
 					updateInfo.updatedAt = closestSameDay(createdAtText).getTime();
-					const $current = getActive$6();
+					const $current = getActive$4();
 					sub = _objectSpread2({
 						id,
 						title: $(".video_detail_wrapper .cata_video_item .card-title").text(),
@@ -6878,14 +6945,14 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		$(".video_detail_episode a").each((_, el) => {
 			if (el.href) el.href = el.href.replace("http://", "https://");
 		});
-		iframePlayer$6.runInTop();
+		iframePlayer$4.runInTop();
 		rememberSortDirection();
 		restoreSortDirection();
 		insertFocusBtn();
 		activeScrollIntoView();
 	}
 	function playModuleInIframe() {
-		iframePlayer$6.runInIframe();
+		iframePlayer$4.runInIframe();
 	}
 	//#endregion
 	//#region src/adapter/agefans/index.ts
@@ -6904,7 +6971,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			},
 			{
 				test: "/",
-				run: iframePlayer$6.subscribe.renderSubscribedAnimes
+				run: iframePlayer$4.subscribe.renderSubscribedAnimes
 			},
 			{
 				test: "/play",
@@ -6927,14 +6994,14 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	injectStyle(".bimi-wrapper .play-full,\n.bimi-wrapper #bkcl,\n.bimi-wrapper marquee {\n  display: none !important;\n}\n.bimi-wrapper .k-episode-anchor:visited {\n  color: white !important;\n}\n.bimi-wrapper a.episode-active {\n  background: var(--k-player-primary-color) !important;\n  color: var(--k-player-color) !important;\n}");
 	//#endregion
 	//#region src/adapter/bimiacg/play.ts
-	function getActive$5() {
+	function getActive$3() {
 		return $(".episode-active");
 	}
-	function switchPart$5(next) {
+	function switchPart$3(next) {
 		var _getActive$parent$fin;
-		return (_getActive$parent$fin = getActive$5().parent()[next ? "next" : "prev"]().find("a")[0]) === null || _getActive$parent$fin === void 0 ? void 0 : _getActive$parent$fin.href;
+		return (_getActive$parent$fin = getActive$3().parent()[next ? "next" : "prev"]().find("a")[0]) === null || _getActive$parent$fin === void 0 ? void 0 : _getActive$parent$fin.href;
 	}
-	function runInTop$5() {
+	function runInTop$4() {
 		var _$$get;
 		$("#bkcl").remove();
 		if (local.getItem("bangumi-history")) {
@@ -6952,11 +7019,11 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			behavior: "smooth",
 			block: "start"
 		});
-		iframePlayer$5.runInTop();
+		iframePlayer$3.runInTop();
 	}
-	const iframePlayer$5 = defineIframePlayer({
+	const iframePlayer$3 = defineIframePlayer({
 		iframeSelector: "#playleft iframe",
-		getActive: getActive$5,
+		getActive: getActive$3,
 		setActive: (href) => {
 			$(".player_list a").each((_, el) => {
 				if (el.href === href) el.classList.add("episode-active");
@@ -6965,10 +7032,10 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		},
 		search: {
 			getSearchName: () => $(".v_path a.current").text(),
-			getEpisode: () => getActive$5().text()
+			getEpisode: () => getActive$3().text()
 		},
 		getEpisodeList: () => $(".player_list a"),
-		getSwitchEpisodeURL: (next) => switchPart$5(next),
+		getSwitchEpisodeURL: (next) => switchPart$3(next),
 		history: {
 			creator: (renderHistory) => {
 				const $btn = $("<li class=\"item\"><a>历史</a></li>");
@@ -6985,7 +7052,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			}
 		}
 	});
-	async function parser$5() {
+	async function parser$4() {
 		const video = await queryDom("video");
 		video.src = "";
 		const url = await execInUnsafeWindow(() => window.url);
@@ -7001,21 +7068,21 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			{
 				test: "*",
 				setup: () => $("body").addClass("bimi-wrapper"),
-				run: iframePlayer$5.createHistory
+				run: iframePlayer$3.createHistory
 			},
 			{
 				test: /^\/(video|bangumi)\/\d+\/play\//,
-				run: runInTop$5
+				run: runInTop$4
 			},
 			{
 				test: /^\/(video|bangumi)\/\d+\/play\//,
-				run: iframePlayer$5.runInIframe,
+				run: iframePlayer$3.runInIframe,
 				runInIframe: true
 			},
 			{
 				test: "/static/danmu",
 				runInIframe: true,
-				run: parser$5
+				run: parser$4
 			}
 		],
 		search: {
@@ -7052,203 +7119,182 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		}
 	});
 	//#endregion
-	//#region src/adapter/mutean/play.ts
-	function getActive$4() {
-		return $(".module-play-list .module-play-list-link.active");
-	}
-	function switchPart$4(next) {
-		var _getActive$get;
-		return (_getActive$get = getActive$4()[next ? "next" : "prev"]().get(0)) === null || _getActive$get === void 0 ? void 0 : _getActive$get.href;
-	}
-	function runInTop$4() {
-		$("body").addClass("mutefun");
-		iframePlayer$4.runInTop();
-	}
-	const iframePlayer$4 = defineIframePlayer({
-		iframeSelector: "#playleft iframe",
-		getActive: getActive$4,
-		setActive: (href) => {
-			$(".module-play-list-link").each((_, el) => {
-				if (el.href === href) {
-					el.classList.add("active");
-					$(".playon").insertAfter($(el).find("span"));
-				} else el.classList.remove("active");
-			});
-		},
-		search: {
-			getSearchName: () => $(".module-info-heading h1").text(),
-			getEpisode: () => getActive$4().text()
-		},
-		getEpisodeList: () => $(".module-play-list-link"),
-		getSwitchEpisodeURL: (next) => switchPart$4(next)
-	});
-	async function parser$4() {
-		const video = await queryDom("video");
-		await wait(() => !!video.currentSrc);
-		let url = await execInUnsafeWindow(() => window.config.url);
-		video.src = "";
-		const player = new KPlayer("#player", { eventToParentWindow: true });
-		player.src = url;
-		$("#ADplayer,#ADtip").remove();
-	}
-	//#endregion
-	//#region src/adapter/mutean/index.scss
-	injectStyle(".mutefun.widescreen .header,\n.mutefun.widescreen .module-player-side,\n.mutefun.widescreen .fixedGroup {\n  visibility: hidden;\n  pointer-events: none;\n}");
-	//#endregion
-	//#region src/adapter/mutean/index.ts
-	runtime.register({
-		domains: [
-			".mutedm.",
-			".mutean.",
-			".mute01."
-		],
-		opts: [
-			{
-				test: "/vodplay",
-				run: runInTop$4
-			},
-			{
-				test: "/vodplay",
-				run: iframePlayer$4.runInIframe,
-				runInIframe: true
-			},
-			{
-				test: ["/addons/dp/player/dp.php"],
-				run: parser$4,
-				runInIframe: true
-			}
-		],
-		search: {
-			name: "MuteFun",
-			search: (cn) => `https://www.mutean.com/vodsearch/${cn}-------------.html`,
-			getSearchName: () => {
-				return new Promise((resolve) => {
-					const fn = (e) => {
-						if (e.data.key === "getSearchName") {
-							resolve(e.data.name);
-							window.removeEventListener("message", fn);
-						}
-					};
-					window.addEventListener("message", fn);
-					parent.postMessage({ key: "getSearchName" }, "*");
-				});
-			},
-			getEpisode: () => {
-				return new Promise((resolve) => {
-					const fn = (e) => {
-						if (e.data.key === "getEpisode") {
-							resolve(e.data.name);
-							window.removeEventListener("message", fn);
-						}
-					};
-					window.addEventListener("message", fn);
-					parent.postMessage({ key: "getEpisode" }, "*");
-				});
-			},
-			getAnimeScope: () => {
-				var _window$location$href;
-				return ((_window$location$href = window.location.href.match(/\/vodplay\/(\d+)-/)) === null || _window$location$href === void 0 ? void 0 : _window$location$href[1]) || "";
-			}
-		}
-	});
-	//#endregion
 	//#region src/adapter/cycanime/play.ts
-	function getActive$3() {
-		return $(".anthology-list-play li.on > a");
-	}
-	function switchPart$3(next) {
-		var _getActive$parent$fin;
-		return (_getActive$parent$fin = getActive$3().parent()[next ? "next" : "prev"]().find("a")[0]) === null || _getActive$parent$fin === void 0 ? void 0 : _getActive$parent$fin.href;
-	}
+	const PLAYER_SELECTOR = "#k-player-wrapper";
+	const PLAY_PATH_RE = /\/anime\/\d+\/play\/\d+/;
+	let currentParserSession = 0;
+	let player;
+	let startPlayHandler;
 	function runInTop$3() {
-		$("body").addClass("cycanime");
-		iframePlayer$3.runInTop();
+		const disposeList = [
+			hideOriginPlayer(),
+			mountParser(),
+			fixPlayerSpaceKey()
+		];
+		return () => disposeList.forEach((dispose) => dispose());
 	}
-	const iframePlayer$3 = defineIframePlayer({
-		iframeSelector: "#playleft iframe",
-		getActive: getActive$3,
-		setActive: (href) => {
-			$(".anthology-list-play li a").each((_, el) => {
-				if (el.href === href) {
-					el.parentElement.classList.add("ecnav-dt", "on");
-					$(".play-on").insertAfter($(el).find("span"));
-				} else el.parentElement.classList.remove("ecnav-dt", "on");
-			});
-		},
-		search: {
-			getSearchName: () => $(".player-title-link").text(),
-			getEpisode: () => getActive$3().text()
-		},
-		getEpisodeList: () => $(".anthology-list-play li a"),
-		getSwitchEpisodeURL: (next) => switchPart$3(next)
-	});
-	async function parser$3() {
-		const video = await queryDom("video");
-		await wait(() => !!video.currentSrc);
-		let url = video.currentSrc;
-		if (url.startsWith("blob:")) url = await execInUnsafeWindow(() => window.decrypt(window.config.url));
-		video.src = "";
-		const player = new KPlayer("#mui-player", { eventToParentWindow: true });
-		player.src = url;
+	function fixPlayerSpaceKey() {
+		const fn = (e) => {
+			if (e.code === "Space") {
+				if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+				if (player) {
+					e.preventDefault();
+					e.stopImmediatePropagation();
+					e.stopPropagation();
+					player.plyr.togglePlay();
+				}
+			}
+		};
+		window.addEventListener("keydown", fn, { capture: true });
+		return () => window.removeEventListener("keydown", fn, { capture: true });
+	}
+	function mountParser() {
+		const sessionId = ++currentParserSession;
+		parser$3(() => sessionId !== currentParserSession);
+		return () => {
+			if (currentParserSession === sessionId) currentParserSession++;
+			if (!isPlayPage()) destroyPlayer();
+			document.body.classList.remove("widescreen");
+		};
+	}
+	function cleanupInjectedPlayer() {
+		var _document$querySelect;
+		(_document$querySelect = document.querySelector(PLAYER_SELECTOR)) === null || _document$querySelect === void 0 || _document$querySelect.remove();
+	}
+	function destroyPlayer() {
+		startPlayHandler = void 0;
+		player === null || player === void 0 || player.destroy();
+		player = void 0;
+		cleanupInjectedPlayer();
+	}
+	function isPlayPage() {
+		return PLAY_PATH_RE.test(window.location.pathname);
+	}
+	function hideOriginPlayer() {
+		const cleanly = async () => {
+			const video = document.querySelector(".art-video-player video");
+			if (!video) return;
+			video.pause();
+			video.volume = 0;
+		};
+		const id = setInterval(cleanly, 16);
+		return () => clearInterval(id);
+	}
+	const API = {
+		getSctions: memoize(async (animeId) => {
+			const pageSize = 100;
+			const getSectionByPage = async (page) => {
+				return (await fetch(`/api/videos/${animeId}/sections?player_code=cychub&page=${page + 1}&page_size=${pageSize}`, { headers: {
+					"x-app-name": "cyc_web",
+					"x-app-version": "cycweb",
+					"x-time-zone": "Asia/Hong_Kong"
+				} }).then((res) => res.json())).data;
+			};
+			const sections = [];
+			const firstPageData = await getSectionByPage(0);
+			const pageCount = Math.ceil(firstPageData.pager.total / firstPageData.pager.page_size);
+			sections.push(...firstPageData.list);
+			if (pageCount > 1) {
+				const promises = [];
+				for (let i = 1; i < pageCount; i++) promises.push(getSectionByPage(i));
+				(await Promise.all(promises)).forEach((data) => {
+					sections.push(...data.list);
+				});
+			}
+			return sections;
+		}),
+		getEpisodePlayUrl: async (episodeId) => {
+			return (await fetch(`/api/sections/${episodeId}/play-url`, { headers: {
+				"x-app-name": "cyc_web",
+				"x-app-version": "cycweb",
+				"x-time-zone": "Asia/Hong_Kong"
+			} }).then((res) => res.json())).data;
+		}
+	};
+	function parsePageId() {
+		const match = window.location.href.match(/\/anime\/(\d+)\/play\/(\d+)/);
+		if (!match) throw new Error("Failed to parse animeId from URL");
+		return {
+			animeId: +match[1],
+			episodeIndex: +match[2] - 1
+		};
+	}
+	async function initPlayer(isDisposed, onSwitchEpisode) {
+		startPlayHandler = onSwitchEpisode;
+		if (player) return player;
+		const container = await queryDom(".relative.aspect-video");
+		if (isDisposed()) return;
+		cleanupInjectedPlayer();
+		const playerRoot = document.createElement("div");
+		container.append(playerRoot);
+		player = new KPlayer(playerRoot);
+		player.on("prev", () => startPlayHandler === null || startPlayHandler === void 0 ? void 0 : startPlayHandler(-1));
+		player.on("next", () => startPlayHandler === null || startPlayHandler === void 0 ? void 0 : startPlayHandler(1));
+		player.on("enterwidescreen", () => document.body.classList.add("widescreen"));
+		player.on("exitwidescreen", () => document.body.classList.remove("widescreen"));
+		return player;
+	}
+	async function parser$3(isDisposed) {
+		try {
+			const startPlay = async (diff) => {
+				if (isDisposed()) return;
+				const { episodeIndex } = parsePageId();
+				const nextIdx = episodeIndex + diff;
+				if (nextIdx >= 0 && nextIdx < sections.length) {
+					const episode = sections[nextIdx];
+					if (diff !== 0) {
+						const target = $(`[title="${episode.title}"]`)[0];
+						if (target) target.click();
+						return;
+					}
+					const episodeId = episode.id;
+					const playUrlData = await API.getEpisodePlayUrl(episodeId);
+					if (isDisposed()) return;
+					if (!player) return;
+					player.src = playUrlData.url;
+				}
+			};
+			const nextPlayer = await initPlayer(isDisposed, startPlay);
+			if (isDisposed()) return;
+			player = nextPlayer;
+			if (!player) return;
+			const { animeId } = parsePageId();
+			const sections = await API.getSctions(animeId);
+			if (isDisposed()) return;
+			startPlay(0);
+		} catch (error) {
+			if (isDisposed()) return;
+			player === null || player === void 0 || player.message.info("页面初始化失败了，请刷新页面重新尝试");
+		}
 	}
 	//#endregion
 	//#region src/adapter/cycanime/index.scss
-	injectStyle(".cycanime.widescreen .header_nav0,\n.cycanime.widescreen .top-back.hoa,\n.cycanime.widescreen .fixedGroup {\n  visibility: hidden;\n  pointer-events: none;\n}");
+	injectStyle("@charset \"UTF-8\";\n.cycanime [aria-label=广告] {\n  display: none !important;\n}\n.cycanime .art-video-player {\n  display: none !important;\n}\n.cycanime #k-player-wrapper {\n  position: absolute;\n  inset: 0;\n  z-index: 99999;\n}\n.cycanime.widescreen #k-player-wrapper {\n  position: fixed;\n}");
 	//#endregion
 	//#region src/adapter/cycanime/index.ts
 	runtime.register({
-		domains: [
-			".cycanime.",
-			".cyc-anime.",
-			".cycani.",
-			".ciyuancheng."
-		],
-		opts: [
-			{
-				test: "/watch",
-				run: runInTop$3
-			},
-			{
-				test: "/watch",
-				run: iframePlayer$3.runInIframe,
-				runInIframe: true
-			},
-			{
-				test: () => location.hostname.includes("player.cycanime"),
-				run: parser$3,
-				runInIframe: true
-			}
-		],
+		domains: [".cycani."],
+		opts: [{
+			test: "*",
+			setup: () => $("body").addClass("cycanime")
+		}, {
+			test: /anime\/\d+\/play/,
+			run: runInTop$3
+		}],
+		spa: true,
 		search: {
 			name: "次元城",
-			search: (cn) => `https://www.cycani.org/search.html?wd=${cn}`,
+			search: (cn) => `https://www.cycani.org/category?q=${cn}`,
 			getSearchName: () => {
-				return new Promise((resolve) => {
-					const fn = (e) => {
-						if (e.data.key === "getSearchName") {
-							resolve(e.data.name);
-							window.removeEventListener("message", fn);
-						}
-					};
-					window.addEventListener("message", fn);
-					parent.postMessage({ key: "getSearchName" }, "*");
-				});
+				return $("a[href^=\"/anime/\"]").filter((_, el) => !el.href.includes("/play")).text();
 			},
-			getEpisode: () => {
-				return new Promise((resolve) => {
-					const fn = (e) => {
-						if (e.data.key === "getEpisode") {
-							resolve(e.data.name);
-							window.removeEventListener("message", fn);
-						}
-					};
-					window.addEventListener("message", fn);
-					parent.postMessage({ key: "getEpisode" }, "*");
-				});
+			getEpisode: async () => {
+				await wait(() => !!$("[aria-current=\"page\"]").first().text());
+				return $("[aria-current=\"page\"]").first().text();
 			},
 			getAnimeScope: () => {
 				var _window$location$href;
-				return ((_window$location$href = window.location.href.match(/\/watch\/(\d+)\//)) === null || _window$location$href === void 0 ? void 0 : _window$location$href[1]) || "";
+				return ((_window$location$href = window.location.href.match(/\/anime\/(\d+)\//)) === null || _window$location$href === void 0 ? void 0 : _window$location$href[1]) || "";
 			}
 		}
 	});
@@ -7641,8 +7687,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	//#endregion
 	//#region src/adapter/girigirilove/subscribe.template.html
 	var subscribe_template_default = {
-		"subListContainer": "<div id=\"subListContainer\" class=\"box-width wow fadeInUp\">\n  <div class=\"overflow\">\n    <div class=\"title flex between top40 rel\">\n      <div class=\"title-left\">\n        <h4 class=\"title-h cor4\">订阅列表</h4>\n        <div class=\"update-info cor5\"></div>\n      </div>\n    </div>\n\n    <div id=\"subList\"></div>\n  </div>\n</div>",
-		"subList": "<div id=\"subList\">\n  {{# if (groups.every(o => o.list.length === 0)) { }}\n  <div class=\"cor4 empty-tip\">订阅喜欢的番剧，在播放页面标题右侧添加订阅</div>\n  {{# } }}\n  \n  <div class=\"sub-list rel border-box public-r hide-b-2 diy-center1 mask2\">\n    <div class=\"swiper-wrapper\">\n      {{# groups.filter(o => !!o.list.length).forEach((group) => {\n      group.list.forEach((item) => { }}\n      <div class=\"public-list-box public-pic-b swiper-slide\">\n        <div class=\"public-list-div public-list-bj\">\n          <a             target=\"_blank\"\n            class=\"public-list-exp\"\n            href=\"{{item.current.url}}\"\n            title=\"{{item.title}}\"\n          >\n            <img               class=\"lazy lazy1 gen-movie-img entered loaded\"\n              referrerpolicy=\"no-referrer\"\n              src=\"{{item.thumbnail}}\"\n              alt=\"{{item.title}}\"\n              data-src=\"{{item.thumbnail}}\"\n              data-ll-status=\"loaded\"\n            >\n            <span class=\"public-bg\"></span>\n            <div class=\"public-prt k-day-{{group.dayNum}}\">\n              {{group.day + ' ' + new\n              Date(item.updatedAt).toLocaleTimeString().slice(0,-3) }}\n            </div>\n            <span class=\"public-list-prb hide ft2\">{{item.status}}</span>\n          </a>\n        </div>\n        <div class=\"public-list-button\">\n          <a             target=\"_blank\"\n            class=\"time-title hide ft4 bold\"\n            href=\"{{item.current.url}}\"\n            title=\"{{item.title}}\"\n            >{{item.title}}</a>\n          <div class=\"public-list-subtitle cor5 hide ft2\">\n            <span>观看至</span>\n            <a               target=\"_blank\"\n              href=\"{{item.current.url}}\"\n              title=\"{{item.current.title}}\"\n              >{{item.current.title}}</a>\n            <span>/</span>\n            <a               target=\"_blank\"\n              href=\"{{item.last.url}}\"\n              title=\"{{item.last.title}}\"\n              >{{item.last.title}}</a>\n          </div>\n        </div>\n      </div>\n      {{# })}) }}\n    </div>\n\n    <div class=\"vod-list-page\">\n      <a class=\"swiper-button-prev\" href=\"javascript:\" tabindex=\"-1\">\n        <i class=\"fa ds-fanhui\"></i>\n      </a>\n      <a class=\"swiper-button-next\" href=\"javascript:\" tabindex=\"0\">\n        <i class=\"fa ds-jiantouyou\"> </i>\n      </a>\n    </div>\n  </div>\n</div>"
+		"subListContainer": "<div id=\"subListContainer\" class=\"box-width wow fadeInUp\">\r\n  <div class=\"overflow\">\r\n    <div class=\"title flex between top40 rel\">\r\n      <div class=\"title-left\">\r\n        <h4 class=\"title-h cor4\">订阅列表</h4>\r\n        <div class=\"update-info cor5\"></div>\r\n      </div>\r\n    </div>\r\n\r\n    <div id=\"subList\"></div>\r\n  </div>\r\n</div>",
+		"subList": "<div id=\"subList\">\r\n  {{# if (groups.every(o => o.list.length === 0)) { }}\r\n  <div class=\"cor4 empty-tip\">订阅喜欢的番剧，在播放页面标题右侧添加订阅</div>\r\n  {{# } }}\r\n  \r\n  <div class=\"sub-list rel border-box public-r hide-b-2 diy-center1 mask2\">\r\n    <div class=\"swiper-wrapper\">\r\n      {{# groups.filter(o => !!o.list.length).forEach((group) => {\r\n      group.list.forEach((item) => { }}\r\n      <div class=\"public-list-box public-pic-b swiper-slide\">\r\n        <div class=\"public-list-div public-list-bj\">\r\n          <a \n            target=\"_blank\"\r\n            class=\"public-list-exp\"\r\n            href=\"{{item.current.url}}\"\r\n            title=\"{{item.title}}\"\r\n          >\r\n            <img \n              class=\"lazy lazy1 gen-movie-img entered loaded\"\r\n              referrerpolicy=\"no-referrer\"\r\n              src=\"{{item.thumbnail}}\"\r\n              alt=\"{{item.title}}\"\r\n              data-src=\"{{item.thumbnail}}\"\r\n              data-ll-status=\"loaded\"\r\n            >\r\n            <span class=\"public-bg\"></span>\r\n            <div class=\"public-prt k-day-{{group.dayNum}}\">\r\n              {{group.day + ' ' + new\r\n              Date(item.updatedAt).toLocaleTimeString().slice(0,-3) }}\r\n            </div>\r\n            <span class=\"public-list-prb hide ft2\">{{item.status}}</span>\r\n          </a>\r\n        </div>\r\n        <div class=\"public-list-button\">\r\n          <a \n            target=\"_blank\"\r\n            class=\"time-title hide ft4 bold\"\r\n            href=\"{{item.current.url}}\"\r\n            title=\"{{item.title}}\"\r\n            >{{item.title}}</a>\r\n          <div class=\"public-list-subtitle cor5 hide ft2\">\r\n            <span>观看至</span>\r\n            <a \n              target=\"_blank\"\r\n              href=\"{{item.current.url}}\"\r\n              title=\"{{item.current.title}}\"\r\n              >{{item.current.title}}</a>\r\n            <span>/</span>\r\n            <a \n              target=\"_blank\"\r\n              href=\"{{item.last.url}}\"\r\n              title=\"{{item.last.title}}\"\r\n              >{{item.last.title}}</a>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      {{# })}) }}\r\n    </div>\r\n\r\n    <div class=\"vod-list-page\">\r\n      <a class=\"swiper-button-prev\" href=\"javascript:\" tabindex=\"-1\">\r\n        <i class=\"fa ds-fanhui\"></i>\r\n      </a>\r\n      <a class=\"swiper-button-next\" href=\"javascript:\" tabindex=\"0\">\r\n        <i class=\"fa ds-jiantouyou\"> </i>\r\n      </a>\r\n    </div>\r\n  </div>\r\n</div>"
 	};
 	//#endregion
 	//#region src/adapter/girigirilove/play.ts
