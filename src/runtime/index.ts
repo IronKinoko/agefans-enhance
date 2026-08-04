@@ -1,17 +1,24 @@
 import { memoize } from 'lodash-es'
 import { opencc } from '../utils/opencc'
 
+type Dispose = () => void
+type Run = () => void | Promise<void> | Dispose
+
 interface RegisterOpts {
   runInIframe?: boolean
   /** 仅包含 pathname + search */
   test: string | RegExp | (string | RegExp)[] | (() => boolean)
-  setup?: Function
-  run: Function
+  /** 只执行一次，就算是spa模式也不会再执行 */
+  setup?: () => void
+  /** spa模式下，可以返回 dispose 函数 */
+  run?: Run
 }
 
 interface RegisteredItem {
   domains: (string | RegExp)[]
   opts: RegisterOpts[]
+  /** 网站是 spa 模式 */
+  spa?: boolean
   search?: {
     name?: string
     search?: (cn: string, tw: string) => string | void
@@ -30,6 +37,25 @@ function createTest(target: string) {
       ? target.includes(test) || test === '*'
       : test.test(target)
 }
+
+function installRouteChangeListener(onRouteChange: () => void) {
+  const wrapHistoryMethod = (type: 'pushState' | 'replaceState') => {
+    const original = history[type]
+    history[type] = function (this: History, ...args) {
+      const result = original.apply(this, args as any)
+      window.dispatchEvent(new Event('routechange'))
+      return result
+    } as (typeof history)[typeof type]
+  }
+
+  wrapHistoryMethod('pushState')
+  wrapHistoryMethod('replaceState')
+
+  window.addEventListener('popstate', onRouteChange)
+  window.addEventListener('hashchange', onRouteChange)
+  window.addEventListener('routechange', onRouteChange)
+}
+
 class Runtime {
   constructor() {
     if (parent === self) {
@@ -182,11 +208,10 @@ class Runtime {
     })
   }
 
-  run() {
-    let setupList: Function[] = []
-    let runList: Function[] = []
-
+  private runActiveOpts(runSetup: boolean) {
     const opts = this.getActiveOpts()
+    let setupList: Function[] = []
+    let runList: Run[] = []
 
     opts.forEach((opt) => {
       const { run, setup, runInIframe } = opt
@@ -194,13 +219,30 @@ class Runtime {
       if (needRun) {
         console.log('[agefans-enhance]', '激活的opt', opt)
         setup && setupList.push(setup)
-        runList.push(run)
+        run && runList.push(run)
       }
     })
 
+    if (runSetup) setupList.forEach((setup) => setup())
+    return runList
+      .map((run) => run())
+      .filter((o) => typeof o === 'function') as Dispose[]
+  }
+
+  run() {
+    const register = this.getActiveRegister()
+
     const init = () => {
-      setupList.forEach((setup) => setup())
-      runList.forEach((run) => run())
+      let disposeList = this.runActiveOpts(true)
+
+      if (register.spa) {
+        // 监听 SPA 路由变化
+        installRouteChangeListener(() => {
+          disposeList.forEach((dispose) => dispose())
+
+          disposeList = this.runActiveOpts(false)
+        })
+      }
     }
     if (document.readyState !== 'loading') {
       init()

@@ -96,6 +96,9 @@ export class KPlayer {
   static plguinList: ((player: KPlayer) => void)[] = []
   opts: KPlayerOpts
   speedList = speedList
+  private hls?: Hls
+  private destroyList: (() => void)[] = []
+  private destroyed = false
 
   constructor(selector: string | Element, opts: KPlayerOpts = {}) {
     this.opts = opts
@@ -235,14 +238,30 @@ export class KPlayer {
   }
 
   hideControlsDebounced = debounce(() => {
-    const dom = document.querySelector('.plyr')
+    const dom = this.$videoWrapper[0]
     if (!this.isHoverControls) dom?.classList.add('plyr--hide-controls')
   }, 1000)
 
   hideCursorDebounced = debounce(() => {
-    const dom = document.querySelector('.plyr')
+    const dom = this.$videoWrapper[0]
     dom?.classList.add('plyr--hide-cursor')
   }, 1000)
+
+  private addDestroyTask(task: () => void) {
+    this.destroyList.push(task)
+  }
+
+  private bindEvent(
+    target: EventTarget,
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions
+  ) {
+    target.addEventListener(type, listener as EventListener, options)
+    this.addDestroyTask(() => {
+      target.removeEventListener(type, listener as EventListener, options)
+    })
+  }
 
   private isJumped = false
 
@@ -378,9 +397,10 @@ export class KPlayer {
     })
 
     const tryFixExitFullscreenOnInit = this.fixFullscreen()
-    window.addEventListener('resize', () => {
+    const onResize = () => {
       tryFixExitFullscreenOnInit()
-    })
+    }
+    this.bindEvent(window, 'resize', onResize)
     this.on('enterfullscreen', () => {
       this.$videoWrapper.addClass('k-player-fullscreen')
       tryFixExitFullscreenOnInit()
@@ -417,42 +437,46 @@ export class KPlayer {
       this.$pip.fadeOut()
     })
 
-    window.addEventListener('message', (e) => {
+    const onMessage = (e: MessageEvent) => {
       if (e.data?.key === 'transportShortcut') {
         const data = e.data.data
         const event = new KeyboardEvent('keydown', data)
         window.dispatchEvent(event)
       }
-    })
+    }
+    this.bindEvent(window, 'message', onMessage as EventListener)
 
     $('.plyr__controls button,.plyr__controls input').on('mouseleave', (e) => {
       e.target.blur()
     })
 
-    const playerEl = document.querySelector('.plyr')!
-    playerEl.addEventListener('mousemove', () => {
+    const playerEl = this.$videoWrapper[0]
+    const onMouseMove = () => {
       playerEl.classList.remove('plyr--hide-cursor')
       this.hideCursorDebounced()
 
       if (this.plyr.paused) {
         this.hideControlsDebounced()
       }
-    })
+    }
+    this.bindEvent(playerEl, 'mousemove', onMouseMove)
 
-    const controlsEl = document.querySelector('.plyr__controls')!
-    controlsEl.addEventListener('mouseenter', () => {
+    const controlsEl = this.$videoWrapper.find('.plyr__controls')[0]
+    const onControlsEnter = () => {
       this.isHoverControls = true
-    })
-    controlsEl.addEventListener('mouseleave', () => {
+    }
+    const onControlsLeave = () => {
       this.isHoverControls = false
-    })
+    }
+    this.bindEvent(controlsEl, 'mouseenter', onControlsEnter)
+    this.bindEvent(controlsEl, 'mouseleave', onControlsLeave)
 
     this.initInputEvent()
   }
 
   initInputEvent() {
     let timeId: number
-    const $dom = $("#k-player-wrapper input[type='range']")
+    const $dom = this.$wrapper.find("input[type='range']")
 
     $dom.trigger('mouseup').off('mousedown').off('mouseup')
     $dom.on('mousedown', function () {
@@ -712,8 +736,12 @@ export class KPlayer {
 
   /** 如果直接设置src满足不了需求，则使用这个方法去加载*/
   setM3u8(src: string) {
+    this.hls?.destroy()
+    this.hls = undefined
+
     if (Hls.isSupported()) {
       const hls = new Hls()
+      this.hls = hls
       hls.loadSource(src)
       hls.attachMedia(this.media)
     } else if (this.media.canPlayType('application/vnd.apple.mpegurl')) {
@@ -724,8 +752,42 @@ export class KPlayer {
     this.afterChangeSrc()
   }
   setMp4(src: string) {
+    this.hls?.destroy()
+    this.hls = undefined
     this.$video.attr('src', src)
     this.afterChangeSrc()
+  }
+
+  destroy() {
+    if (this.destroyed) return
+    this.destroyed = true
+
+    this.hideControlsDebounced.cancel()
+    this.hideCursorDebounced.cancel()
+    this.setCurrentTimeLogThrottled.cancel()
+
+    this.message.destroy()
+    this.hls?.destroy()
+    this.hls = undefined
+
+    try {
+      this.toggleWidescreen(false)
+    } catch (error) {}
+
+    try {
+      this.plyr.fullscreen.exit()
+    } catch (error) {}
+
+    this.destroyList.forEach((dispose) => dispose())
+    this.destroyList = []
+    this.eventMap = {}
+
+    this.media.pause()
+    this.$video.removeAttr('src')
+    this.media.load()
+
+    this.plyr.destroy()
+    this.$wrapper.remove()
   }
 
   private afterChangeSrc() {

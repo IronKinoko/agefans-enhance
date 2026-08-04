@@ -266,6 +266,7 @@ class DanmakuPlugin {
     renderSelectOptions(this.elements.$episodes, this.state.episodes)
   }
   searchAnime = lockWrap(async (name: string) => {
+    if (!name) return
     this.log(`搜索番剧: ${name}`)
     if (!name || name.length < 2) return this.messageLog('番剧名称不少于2个字')
 
@@ -289,6 +290,7 @@ class DanmakuPlugin {
   })
 
   searchEpisodes = async (animeId: string) => {
+    if (!animeId) return
     this.log('搜索剧集', { animeId })
     try {
       this.setEpisodes([])

@@ -1,8 +1,19 @@
-.cycanime.widescreen {
-  .header_nav0,
-  .top-back.hoa,
-  .fixedGroup {
-    visibility: hidden;
-    pointer-events: none;
+.cycanime {
+  [aria-label='广告'] {
+    display: none !important;
+  }
+
+  .art-video-player {
+    display: none !important;
+  }
+  #k-player-wrapper {
+    position: absolute;
+    inset: 0;
+    z-index: 99999;
+  }
+  &.widescreen {
+    #k-player-wrapper {
+      position: fixed;
+    }
   }
 }

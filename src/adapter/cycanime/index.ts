@@ -1,46 +1,31 @@
 import { runtime } from '../../runtime'
-import { iframePlayer, runInTop, parser } from './play'
+import { runInTop } from './play'
 import './index.scss'
+import { wait } from '../../utils/wait'
 
 runtime.register({
-  domains: ['.cycanime.', '.cyc-anime.', '.cycani.', '.ciyuancheng.'],
+  domains: ['.cycani.'],
   opts: [
-    { test: '/watch', run: runInTop },
-    { test: '/watch', run: iframePlayer.runInIframe, runInIframe: true },
     {
-      test: () => location.hostname.includes('player.cycanime'),
-      run: parser,
-      runInIframe: true,
+      test: '*',
+      setup: () => $('body').addClass('cycanime'),
     },
+    { test: /anime\/\d+\/play/, run: runInTop },
   ],
+  spa: true,
   search: {
     name: '次元城',
-    search: (cn) => `https://www.cycani.org/search.html?wd=${cn}`,
+    search: (cn) => `https://www.cycani.org/category?q=${cn}`,
     getSearchName: () => {
-      return new Promise((resolve) => {
-        const fn = (e: MessageEvent<any>) => {
-          if (e.data.key === 'getSearchName') {
-            resolve(e.data.name)
-            window.removeEventListener('message', fn)
-          }
-        }
-        window.addEventListener('message', fn)
-        parent.postMessage({ key: 'getSearchName' }, '*')
-      })
+      return $<HTMLAnchorElement>('a[href^="/anime/"]')
+        .filter((_, el) => !el.href.includes('/play'))
+        .text()
     },
-    getEpisode: () => {
-      return new Promise((resolve) => {
-        const fn = (e: MessageEvent<any>) => {
-          if (e.data.key === 'getEpisode') {
-            resolve(e.data.name)
-            window.removeEventListener('message', fn)
-          }
-        }
-        window.addEventListener('message', fn)
-        parent.postMessage({ key: 'getEpisode' }, '*')
-      })
+    getEpisode: async () => {
+      await wait(() => !!$('[aria-current="page"]').first().text())
+      return $('[aria-current="page"]').first().text()
     },
     getAnimeScope: () =>
-      window.location.href.match(/\/watch\/(\d+)\//)?.[1] || '',
+      window.location.href.match(/\/anime\/(\d+)\//)?.[1] || '',
   },
 })

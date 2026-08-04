@@ -6,7 +6,7 @@
 
 - [agefans](http://www.age.tv)
 - [bimiacg](http://www.bimiacg14.net)
-- [次元城](https://www.ciyuancheng.net)
+- [次元城](https://www.cycani.org)
 - [稀饭动漫](https://anime.xifanacg.com)
 - [Anime1](https://anime1.me)
 - [咕咕番](https://www.gugu3.com)
