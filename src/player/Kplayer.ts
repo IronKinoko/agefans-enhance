@@ -770,6 +770,8 @@ export class KPlayer {
     this.hls?.destroy()
     this.hls = undefined
 
+    this.shortcuts.destroy()
+
     try {
       this.toggleWidescreen(false)
     } catch (error) {}

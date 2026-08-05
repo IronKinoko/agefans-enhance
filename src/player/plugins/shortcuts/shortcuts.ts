@@ -13,8 +13,8 @@ declare module '../../KPlayer' {
 export class Shortcuts {
   constructor(private player: KPlayer) {
     player.shortcuts = this
-    window.addEventListener('keydown', this.handleKeyEvent)
-    window.addEventListener('keyup', this.handleKeyEvent)
+    window.addEventListener('keydown', this.handleKeyEvent, { capture: true })
+    window.addEventListener('keyup', this.handleKeyEvent, { capture: true })
   }
   static Commands = Commands
   static keyBindings = new KeyBindings()
@@ -45,6 +45,13 @@ export class Shortcuts {
       const type = e.type === 'keydown' ? 'keydown' : 'keyup'
       cmd[type]?.call(this.player, e)
     }
+  }
+
+  destroy() {
+    window.removeEventListener('keydown', this.handleKeyEvent, {
+      capture: true,
+    })
+    window.removeEventListener('keyup', this.handleKeyEvent, { capture: true })
   }
 }
 

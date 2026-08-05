@@ -12,35 +12,9 @@ let player: KPlayer | undefined
 let startPlayHandler: ((diff: number) => void) | undefined
 
 export function runInTop() {
-  const disposeList: Dispose[] = [
-    hideOriginPlayer(),
-    mountParser(),
-    fixPlayerSpaceKey(),
-  ]
+  const disposeList: Dispose[] = [hideOriginPlayer(), mountParser()]
 
   return () => disposeList.forEach((dispose) => dispose())
-}
-
-function fixPlayerSpaceKey() {
-  const fn = (e: KeyboardEvent) => {
-    if (e.code === 'Space') {
-      if (
-        e.target instanceof HTMLInputElement ||
-        e.target instanceof HTMLTextAreaElement
-      ) {
-        return
-      }
-
-      if (player) {
-        e.preventDefault()
-        e.stopImmediatePropagation()
-        e.stopPropagation()
-        player.plyr.togglePlay()
-      }
-    }
-  }
-  window.addEventListener('keydown', fn, { capture: true })
-  return () => window.removeEventListener('keydown', fn, { capture: true })
 }
 
 function mountParser() {
