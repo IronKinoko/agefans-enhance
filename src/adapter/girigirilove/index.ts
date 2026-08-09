@@ -3,7 +3,7 @@ import { iframePlayer, runInTop, parser } from './play'
 import './index.scss'
 
 runtime.register({
-  domains: ['.girigirilove.'],
+  domains: ['.girigirilove.', 'giri.moemoekyu.com'],
   opts: [
     { test: '*', run: () => $('body').addClass('girigirilove') },
     { test: '/', run: iframePlayer.subscribe.renderSubscribedAnimes },
