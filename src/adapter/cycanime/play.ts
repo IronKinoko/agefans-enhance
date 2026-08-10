@@ -1,6 +1,7 @@
 import { memoize } from 'lodash-es'
 import { KPlayer } from '../../player'
 import { queryDom } from '../../utils/queryDom'
+import { local } from '../../utils/storage'
 
 type Dispose = () => void
 
@@ -64,6 +65,77 @@ function hideOriginPlayer() {
 }
 
 const API = {
+  randomUUID: () => {
+    try {
+      if (
+        typeof crypto !== 'undefined' &&
+        typeof crypto.randomUUID == 'function'
+      )
+        return crypto.randomUUID()
+    } catch {}
+    return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
+  },
+  commonHeaders: <Record<string, string>>{
+    'x-app-name': 'cyc_web',
+    'x-app-version': 'cycweb',
+    'x-time-zone': 'Asia/Hong_Kong',
+  },
+  ensureLogin: async () => {
+    type Auth = {
+      version: number
+      scope: string
+      token: string
+      expiresAt: string
+    }
+
+    const auth = local.getItem<Auth>('cycweb:auth:v2')
+
+    if (auth && auth.expiresAt && new Date(auth.expiresAt) > new Date()) {
+      API.commonHeaders['authorization'] = auth.token
+      return
+    }
+
+    type LoginResponse = {
+      code: number
+      msg: string
+      data: {
+        token: string
+        expires_at: string
+        user: {
+          id: number
+          username: string
+          nickname: string
+          email: string
+          avatar_url: string
+        }
+      }
+    }
+
+    const res: LoginResponse = await fetch(`/api/auth/login`, {
+      method: 'POST',
+      body: JSON.stringify({
+        username: 'ironuserscripts',
+        password: 'U5PXEp.vc.LTj3',
+      }),
+      headers: { ...API.commonHeaders, 'content-type': 'application/json' },
+    }).then((res) => res.json())
+
+    if (res.code !== 0) {
+      alert(
+        `[agefans-enhance] 脚本自动登录失败，请联系开发者解决。错误信息：${res.msg}`
+      )
+      return
+    }
+
+    local.setItem('cycweb:auth:v2', <Auth>{
+      version: 2,
+      scope: API.randomUUID(),
+      expiresAt: res.data.expires_at,
+      token: res.data.token,
+    })
+
+    API.commonHeaders['authorization'] = res.data.token
+  },
   getSctions: memoize(async (animeId: number) => {
     type Section = {
       id: number
@@ -84,13 +156,7 @@ const API = {
         `/api/videos/${animeId}/sections?player_code=cychub&page=${
           page + 1
         }&page_size=${pageSize}`,
-        {
-          headers: {
-            'x-app-name': 'cyc_web',
-            'x-app-version': 'cycweb',
-            'x-time-zone': 'Asia/Hong_Kong',
-          },
-        }
+        { headers: API.commonHeaders }
       ).then((res) => res.json())
       return res.data
     }
@@ -118,20 +184,16 @@ const API = {
   }),
 
   getEpisodePlayUrl: async (episodeId: number) => {
+    await API.ensureLogin()
+
     type PlayUrlResponse = {
       code: number
       data: { url: string; name: string }
       msg: string
     }
     const res: PlayUrlResponse = await fetch(
-      `/api/sections/${episodeId}/play-url`,
-      {
-        headers: {
-          'x-app-name': 'cyc_web',
-          'x-app-version': 'cycweb',
-          'x-time-zone': 'Asia/Hong_Kong',
-        },
-      }
+      `/api/v2/sections/${episodeId}/play-url`,
+      { headers: API.commonHeaders }
     ).then((res) => res.json())
     return res.data
   },
