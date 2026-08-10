@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.57.2
+// @version      1.57.3
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -3548,7 +3548,7 @@
 	injectStyle(".k-alert {\n  margin-bottom: 16px;\n  box-sizing: border-box;\n  color: black;\n  font-size: 14px;\n  font-variant: tabular-nums;\n  line-height: 1.5715;\n  list-style: none;\n  font-feature-settings: \"tnum\";\n  position: relative;\n  display: flex;\n  align-items: center;\n  padding: 8px 15px;\n  word-wrap: break-word;\n  border-radius: 2px;\n}\n.k-alert-icon {\n  margin-right: 8px;\n  display: block;\n  color: var(--k-player-primary-color);\n}\n.k-alert-content {\n  flex: 1;\n  min-width: 0;\n}\n.k-alert-info {\n  background-color: var(--k-player-primary-color-highlight);\n  border: 1px solid var(--k-player-primary-color);\n}");
 	//#endregion
 	//#region src/utils/alert.ts
-	function alert(html) {
+	function alert$1(html) {
 		return `<div class="k-alert k-alert-info">
   <svg class="k-alert-icon" viewBox="64 64 896 896" focusable="false" data-icon="info-circle" width="1em" height="1em" fill="currentColor" aria-hidden="true">
     <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm32 664c0 4.4-3.6 8-8 8h-48c-4.4 0-8-3.6-8-8V456c0-4.4 3.6-8 8-8h48c4.4 0 8 3.6 8 8v272zm-32-344a48.01 48.01 0 010-96 48.01 48.01 0 010 96z"></path>
@@ -3618,7 +3618,7 @@
 				content: `
     <table class="k-table">
       <tbody>
-      <tr><td>脚本版本</td><td>1.57.2</td></tr>
+      <tr><td>脚本版本</td><td>1.57.3</td></tr>
       <tr>
         <td>脚本作者</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -3660,7 +3660,7 @@
 				content: () => {
 					const $root = $(`
           <div class="shortcuts">
-            ${alert("自定义按键立即生效，请使用英文输入法")}
+            ${alert$1("自定义按键立即生效，请使用英文输入法")}
 
             <table class="k-table">
               <thead>
@@ -3715,7 +3715,7 @@
 				className: "feature-wrapper",
 				content: () => `
       <div>
-        ${alert("实验性功能可能存在问题，仅供尝试")}
+        ${alert$1("实验性功能可能存在问题，仅供尝试")}
 
         <ul class="features">
           <li class="feature">
@@ -3744,7 +3744,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: 1.57.2
+脚本版本: 1.57.3
 `;
 	//#endregion
 	//#region src/player/plugins/shortcuts/help/index.ts
@@ -5073,7 +5073,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			const $root = $(`
       <div class="k-player-danmaku-list-wrapper">
         <div class="k-player-danmaku-list-source-filter">
-          ${alert("由于弹弹play开放平台相关接口下架，弹幕来源功能已不再可用")}
+          ${alert$1("由于弹弹play开放平台相关接口下架，弹幕来源功能已不再可用")}
         </div>
       
         <div class="k-player-danmaku-list-table-wrapper">
@@ -7168,14 +7168,47 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		return () => clearInterval(id);
 	}
 	const API = {
+		randomUUID: () => {
+			try {
+				if (typeof crypto !== "undefined" && typeof crypto.randomUUID == "function") return crypto.randomUUID();
+			} catch (_unused) {}
+			return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+		},
+		commonHeaders: {
+			"x-app-name": "cyc_web",
+			"x-app-version": "cycweb",
+			"x-time-zone": "Asia/Hong_Kong"
+		},
+		ensureLogin: async () => {
+			const auth = local.getItem("cycweb:auth:v2");
+			if (auth && auth.expiresAt && new Date(auth.expiresAt) > /* @__PURE__ */ new Date()) {
+				API.commonHeaders["authorization"] = auth.token;
+				return;
+			}
+			const res = await fetch(`/api/auth/login`, {
+				method: "POST",
+				body: JSON.stringify({
+					username: "ironuserscripts",
+					password: "U5PXEp.vc.LTj3"
+				}),
+				headers: _objectSpread2(_objectSpread2({}, API.commonHeaders), {}, { "content-type": "application/json" })
+			}).then((res) => res.json());
+			if (res.code !== 0) {
+				alert(`[agefans-enhance] 脚本自动登录失败，请联系开发者解决。错误信息：${res.msg}`);
+				return;
+			}
+			local.setItem("cycweb:auth:v2", {
+				version: 2,
+				scope: API.randomUUID(),
+				expiresAt: res.data.expires_at,
+				token: res.data.token
+			});
+			API.commonHeaders["authorization"] = res.data.token;
+		},
 		getSctions: memoize(async (animeId) => {
 			const pageSize = 100;
 			const getSectionByPage = async (page) => {
-				return (await fetch(`/api/videos/${animeId}/sections?player_code=cychub&page=${page + 1}&page_size=${pageSize}`, { headers: {
-					"x-app-name": "cyc_web",
-					"x-app-version": "cycweb",
-					"x-time-zone": "Asia/Hong_Kong"
-				} }).then((res) => res.json())).data;
+				return (await fetch(`/api/videos/${animeId}/sections?player_code=cychub&page=${page + 1}&page_size=${pageSize}`, { headers: API.commonHeaders }).then((res) => res.json())).data;
 			};
 			const sections = [];
 			const firstPageData = await getSectionByPage(0);
@@ -7191,11 +7224,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			return sections;
 		}),
 		getEpisodePlayUrl: async (episodeId) => {
-			return (await fetch(`/api/sections/${episodeId}/play-url`, { headers: {
-				"x-app-name": "cyc_web",
-				"x-app-version": "cycweb",
-				"x-time-zone": "Asia/Hong_Kong"
-			} }).then((res) => res.json())).data;
+			await API.ensureLogin();
+			return (await fetch(`/api/v2/sections/${episodeId}/play-url`, { headers: API.commonHeaders }).then((res) => res.json())).data;
 		}
 	};
 	function parsePageId() {
