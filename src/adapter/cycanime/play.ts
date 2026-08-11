@@ -41,7 +41,6 @@ function mountParser() {
     if (!isPlayPage()) {
       destroyPlayer()
     }
-    document.body.classList.remove('widescreen')
   }
 }
 
@@ -54,6 +53,7 @@ function destroyPlayer() {
   player?.destroy()
   player = undefined
   cleanupInjectedPlayer()
+  document.body.classList.remove('widescreen')
 }
 
 function isPlayPage() {
