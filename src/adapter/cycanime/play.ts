@@ -12,6 +12,17 @@ let currentParserSession = 0
 let player: KPlayer | undefined
 let startPlayHandler: ((diff: number) => void) | undefined
 
+const DEFAULT_ACCOUNT = {
+  username: 'ironuserscripts',
+  password: 'U5PXEp.vc.LTj3',
+}
+
+function decodeJWT(token: string) {
+  const payload = token.split('.')[1]
+  const decoded = atob(payload)
+  return JSON.parse(decoded)
+}
+
 export function runInTop() {
   const disposeList: Dispose[] = [hideOriginPlayer(), mountParser()]
 
@@ -65,16 +76,6 @@ function hideOriginPlayer() {
 }
 
 const API = {
-  randomUUID: () => {
-    try {
-      if (
-        typeof crypto !== 'undefined' &&
-        typeof crypto.randomUUID == 'function'
-      )
-        return crypto.randomUUID()
-    } catch {}
-    return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
-  },
   commonHeaders: <Record<string, string>>{
     'x-app-name': 'cyc_web',
     'x-app-version': 'cycweb',
@@ -82,16 +83,36 @@ const API = {
   },
   ensureLogin: async () => {
     type Auth = {
-      version: number
-      scope: string
       token: string
       expiresAt: string
     }
 
-    const auth = local.getItem<Auth>('cycweb:auth:v2')
+    const checkAuth = (auth: Auth | undefined): auth is Auth => {
+      if (!auth) return false
+      if (!auth.expiresAt) return false
+      if (new Date(auth.expiresAt) <= new Date()) return false
+      return true
+    }
 
-    if (auth && auth.expiresAt && new Date(auth.expiresAt) > new Date()) {
-      API.commonHeaders['authorization'] = auth.token
+    const userAuth = local.getItem<Auth>('cycweb:auth:v2')
+    if (checkAuth(userAuth)) {
+      try {
+        // 如果当前登录的账号是 ironuserscripts，则清除本地存储的登录信息，避免影响用户正常使用
+        const payload = decodeJWT(userAuth.token)
+        if (payload.username === DEFAULT_ACCOUNT.username) {
+          delete API.commonHeaders.authorization
+          local.removeItem('cycweb:auth:v2')
+        } else {
+          API.commonHeaders.authorization = userAuth.token
+          // 直接返回，使用用户的登录信息
+          return
+        }
+      } catch (error) {}
+    }
+
+    const userscriptsAuth = local.getItem<Auth>('agefans-enhance:auth:v2')
+    if (checkAuth(userscriptsAuth)) {
+      API.commonHeaders.authorization = userscriptsAuth.token
       return
     }
 
@@ -113,10 +134,7 @@ const API = {
 
     const res: LoginResponse = await fetch(`/api/auth/login`, {
       method: 'POST',
-      body: JSON.stringify({
-        username: 'ironuserscripts',
-        password: 'U5PXEp.vc.LTj3',
-      }),
+      body: JSON.stringify(DEFAULT_ACCOUNT),
       headers: { ...API.commonHeaders, 'content-type': 'application/json' },
     }).then((res) => res.json())
 
@@ -127,14 +145,13 @@ const API = {
       return
     }
 
-    local.setItem('cycweb:auth:v2', <Auth>{
-      version: 2,
-      scope: API.randomUUID(),
+    // 将登录信息保存到本地存储中，供后续请求使用，并且不修改用户的登录状态
+    local.setItem('agefans-enhance:auth:v2', {
       expiresAt: res.data.expires_at,
       token: res.data.token,
-    })
+    } satisfies Auth)
 
-    API.commonHeaders['authorization'] = res.data.token
+    API.commonHeaders.authorization = res.data.token
   },
   getSctions: memoize(async (animeId: number) => {
     type Section = {
