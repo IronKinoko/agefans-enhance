@@ -18,6 +18,27 @@ type AnimeEpisode = {
 }
 export type SubscribedAnime = AnimeInfo & AnimeMetadata & AnimeEpisode
 
+function trimUrlOrigin(url: string) {
+  if (!url) return url
+  if (!/^https?:\/\//.test(url)) return url
+
+  try {
+    const parsed = new URL(url)
+    return `${parsed.pathname}${parsed.search}${parsed.hash}`
+  } catch (error) {
+    return url
+  }
+}
+
+function normalizeSubscription(sub: SubscribedAnime): SubscribedAnime {
+  return {
+    ...sub,
+    url: trimUrlOrigin(sub.url),
+    current: { ...sub.current, url: trimUrlOrigin(sub.current.url) },
+    last: { ...sub.last, url: trimUrlOrigin(sub.last.url) },
+  }
+}
+
 export class SubscriptionManager {
   private static instances = new Map<string, SubscriptionManager>()
 
@@ -59,7 +80,9 @@ export class SubscriptionManager {
 
   // --- store ---
   getSubscriptions() {
-    return gm.getItem<SubscribedAnime[]>(this.storageKey, [])
+    return gm
+      .getItem<SubscribedAnime[]>(this.storageKey, [])
+      .map(normalizeSubscription)
   }
 
   /** 根据更新顺序做排序，按天成组 */
@@ -105,10 +128,11 @@ export class SubscriptionManager {
     if (exists) {
       throw new Error('Subscription already exists')
     }
-    subscriptions.push(subscription)
+    const nextSub = normalizeSubscription(subscription)
+    subscriptions.push(nextSub)
     gm.setItem(this.storageKey, subscriptions)
     this.notify()
-    return subscription
+    return nextSub
   }
 
   updateSubscription(id: string, updates: Partial<SubscribedAnime>) {
@@ -117,7 +141,10 @@ export class SubscriptionManager {
     if (index === -1) {
       throw new Error('Subscription not found')
     }
-    subscriptions[index] = { ...subscriptions[index], ...updates }
+    subscriptions[index] = normalizeSubscription({
+      ...subscriptions[index],
+      ...updates,
+    })
     gm.setItem(this.storageKey, subscriptions)
     this.notify()
     return subscriptions[index]

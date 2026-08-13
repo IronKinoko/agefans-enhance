@@ -1,7 +1,9 @@
-import { memoize } from 'lodash-es'
+import { memoize, template } from 'lodash-es'
 import { KPlayer } from '../../player'
 import { queryDom } from '../../utils/queryDom'
 import { local } from '../../utils/storage'
+import { defineSubscribe } from '../common/defineSubscribe'
+import T from './subscribe.template.html'
 
 type Dispose = () => void
 
@@ -23,8 +25,142 @@ function decodeJWT(token: string) {
   return JSON.parse(decoded)
 }
 
+function parseAnimeId() {
+  return window.location.pathname.match(/\/anime\/(\d+)/)?.[1] || ''
+}
+
+async function getCurrentSubInfo() {
+  const currentTitle = $('[aria-current="page"]').first().text().trim()
+  if (currentTitle) {
+    return { title: currentTitle, url: window.location.href }
+  }
+
+  const match = window.location.href.match(/\/anime\/(\d+)\/play\/(\d+)/)
+  if (!match) return { title: '', url: window.location.href }
+
+  const animeId = +match[1]
+  const episodeIndex = +match[2] - 1
+  const sections = await API.getSctions(animeId)
+
+  return {
+    title: sections[episodeIndex]?.title || '',
+    url: window.location.href,
+  }
+}
+
+export const subscribe = defineSubscribe({
+  getCurrent: getCurrentSubInfo,
+  subscribe: {
+    storageKey: 'cycanime-subscribe',
+    getId: parseAnimeId,
+    async getAnimeInfo(id, sm) {
+      const animeId = +id
+      if (!animeId) {
+        throw new Error('Failed to parse anime id')
+      }
+
+      const [animeInfo, sections] = await Promise.all([
+        API.getVideoInfo(animeId),
+        API.getSctions(animeId),
+      ])
+      if (!sections.length) {
+        throw new Error('No sections found')
+      }
+
+      const lastIndex = sections.length
+      const lastSection = sections[lastIndex - 1]
+      const lastUrl = `/anime/${animeId}/play/${lastIndex}`
+      let sub = sm.getSubscription(id)
+
+      const updateInfo = {
+        updatedAt: Date.now(),
+        status: animeInfo.completed ? '已完结' : animeInfo.remarks,
+        last: {
+          title: lastSection.title,
+          url: lastUrl,
+        },
+      }
+
+      if (sub) {
+        if (sub.last.url === lastUrl) {
+          updateInfo.updatedAt = sub.updatedAt
+        }
+      } else {
+        const firstSection = sections[0]
+        const defaultCurrent = {
+          title: firstSection.title,
+          url: `/anime/${animeId}/play/1`,
+        }
+        const current =
+          parseAnimeId() === id ? await getCurrentSubInfo() : defaultCurrent
+
+        sub = {
+          id,
+          title: animeInfo.title,
+          url: `/anime/${animeId}`,
+          thumbnail: animeInfo.cover_url,
+          createdAt: Date.now(),
+          checkedAt: Date.now(),
+          current,
+          ...updateInfo,
+        }
+      }
+
+      return { ...sub, ...updateInfo }
+    },
+    renderSubscribedAnimes: (sm) => {
+      const $root = $(T.subListContainer)
+      const $tvSection = $('h2')
+        .filter((_, el) => $(el).text().trim() === 'TV番组')
+        .first()
+        .closest('section')
+      if ($tvSection.length) {
+        $root.insertBefore($tvSection)
+      } else {
+        $('main .container').first().prepend($root)
+      }
+
+      sm.onChange(
+        () => {
+          const groups = sm.getSubscriptionsGroupByDay()
+          const list = groups.reduce((acc, group) => {
+            acc.push(...group.list)
+            return acc
+          }, [] as (typeof groups)[number]['list'])
+          $root.find('#subList').replaceWith(template(T.subList)({ list }))
+        },
+        { immediate: true }
+      )
+      return $root
+    },
+    renderSubscribeBtn: ($btn) => {
+      $('.k-subscribe-btn-wrap').remove()
+      $btn.addClass(
+        'k-subscribe-btn inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 py-2 h-9 px-3.5 text-xs'
+      )
+
+      const $wrap = $(
+        '<div class="relative shrink-0 k-subscribe-btn-wrap"></div>'
+      )
+      $wrap.append($btn)
+
+      const $followWrap = $('button')
+        .filter((_, el) => $(el).text().trim().includes('追番'))
+        .first()
+        .parent()
+
+      if ($followWrap.length) {
+        $wrap.insertAfter($followWrap)
+      } else {
+        $('h1').first().closest('section').append($wrap)
+      }
+    },
+  },
+})
+
 export function runInTop() {
   const disposeList: Dispose[] = [hideOriginPlayer(), mountParser()]
+  subscribe.renderSubscribeBtn()
 
   return () => disposeList.forEach((dispose) => dispose())
 }
@@ -199,6 +335,27 @@ const API = {
 
     return sections
   }),
+  getVideoInfo: memoize(async (animeId: number) => {
+    type VideoInfoResponse = {
+      code: number
+      msg: string
+      data: {
+        title: string
+        cover_url: string
+        remarks: string
+        completed: boolean
+      } | null
+    }
+
+    const res: VideoInfoResponse = await fetch(`/api/videos/${animeId}`, {
+      headers: API.commonHeaders,
+    }).then((res) => res.json())
+
+    if (res.code !== 0 || !res.data) {
+      throw new Error(`Failed to fetch anime info: ${res.msg}`)
+    }
+    return res.data
+  }),
 
   getEpisodePlayUrl: async (episodeId: number) => {
     await API.ensureLogin()
@@ -245,6 +402,9 @@ async function initPlayer(
   player = new KPlayer(playerRoot)
   player.on('prev', () => startPlayHandler?.(-1))
   player.on('next', () => startPlayHandler?.(1))
+  player.on('canplay', () => {
+    void subscribe.onCanPlay()
+  })
 
   player.on('enterwidescreen', () => document.body.classList.add('widescreen'))
   player.on('exitwidescreen', () =>
