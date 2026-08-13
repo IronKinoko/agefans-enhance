@@ -29,13 +29,15 @@ interface Config {
 }
 export function defineIframePlayer(config: Config) {
   const { iframeSelector, search } = config
-  const subscribe = defineSubscribe({
-    subscribe: config.subscribe,
-    getCurrent: async () => ({
-      title: await search.getEpisode(),
-      url: window.location.href,
-    }),
-  })
+  const subscribe = config.subscribe
+    ? defineSubscribe({
+        subscribe: config.subscribe,
+        getCurrent: async () => ({
+          title: await search.getEpisode(),
+          url: window.location.href,
+        }),
+      })
+    : undefined
 
   function createIframeReadyToChangeIframeSrc(url: string) {
     const iframe = document.createElement('iframe')
@@ -192,13 +194,13 @@ export function defineIframePlayer(config: Config) {
         }
 
         case 'canplay': {
-          await subscribe.onCanPlay()
+          await subscribe?.onCanPlay()
         }
       }
       config.onPlayerMessage?.(e.data.key, e.data, e)
     })
 
-    subscribe.renderSubscribeBtn()
+    subscribe?.renderSubscribeBtn()
   }
 
   function runInIframe() {
@@ -217,8 +219,12 @@ export function defineIframePlayer(config: Config) {
     runInIframe,
     createHistory,
     subscribe: {
-      renderSubscribedAnimes: subscribe.renderSubscribedAnimes,
-      renderSubscribeBtn: subscribe.renderSubscribeBtn,
+      renderSubscribedAnimes: () => {
+        subscribe?.renderSubscribedAnimes()
+      },
+      renderSubscribeBtn: () => {
+        subscribe?.renderSubscribeBtn()
+      },
     },
   }
 }

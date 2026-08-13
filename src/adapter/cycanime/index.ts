@@ -1,5 +1,5 @@
 import { runtime } from '../../runtime'
-import { runInTop, subscribe } from './play'
+import { runInTop, runInHome } from './play'
 import './index.scss'
 import { wait } from '../../utils/wait'
 
@@ -10,7 +10,7 @@ runtime.register({
       test: '*',
       setup: () => $('body').addClass('cycanime'),
     },
-    { test: /^\/(\?.*)?$/, run: subscribe.renderSubscribedAnimes },
+    { test: /^\/(\?.*)?$/, run: runInHome },
     { test: /anime\/\d+\/play/, run: runInTop },
   ],
   spa: true,

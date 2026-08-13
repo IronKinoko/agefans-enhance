@@ -13,6 +13,8 @@ const PLAY_PATH_RE = /\/anime\/\d+\/play\/\d+/
 let currentParserSession = 0
 let player: KPlayer | undefined
 let startPlayHandler: ((diff: number) => void) | undefined
+let stopObserveSubscribedListMount: (() => void) | undefined
+let stopObserveSubscribeBtnMount: (() => void) | undefined
 
 const DEFAULT_ACCOUNT = {
   username: 'ironuserscripts',
@@ -23,6 +25,14 @@ function decodeJWT(token: string) {
   const payload = token.split('.')[1]
   const decoded = atob(payload)
   return JSON.parse(decoded)
+}
+
+function observeDomMutations(onChange: () => void) {
+  const observer = new MutationObserver(() => {
+    onChange()
+  })
+  observer.observe(document.body, { childList: true, subtree: true })
+  return () => observer.disconnect()
 }
 
 function parseAnimeId() {
@@ -110,15 +120,26 @@ export const subscribe = defineSubscribe({
     },
     renderSubscribedAnimes: (sm) => {
       const $root = $(T.subListContainer)
-      const $tvSection = $('h2')
-        .filter((_, el) => $(el).text().trim() === 'TV番组')
-        .first()
-        .closest('section')
-      if ($tvSection.length) {
-        $root.insertBefore($tvSection)
-      } else {
-        $('main .container').first().prepend($root)
+
+      const mount = () => {
+        if (document.body.contains($root[0])) return
+
+        $('#subListContainer').not($root).remove()
+        const $tvSection = $('h2')
+          .filter((_, el) => $(el).text().trim() === 'TV番组')
+          .first()
+          .closest('section')
+
+        if ($tvSection.length) {
+          $root.insertBefore($tvSection)
+        } else {
+          $('main .container').first().prepend($root)
+        }
       }
+      mount()
+
+      stopObserveSubscribedListMount?.()
+      stopObserveSubscribedListMount = observeDomMutations(mount)
 
       sm.onChange(
         () => {
@@ -134,26 +155,44 @@ export const subscribe = defineSubscribe({
       return $root
     },
     renderSubscribeBtn: ($btn) => {
-      $('.k-subscribe-btn-wrap').remove()
-      $btn.addClass(
-        'k-subscribe-btn inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 py-2 h-9 px-3.5 text-xs'
-      )
-
       const $wrap = $(
         '<div class="relative shrink-0 k-subscribe-btn-wrap"></div>'
       )
+
+      const mount = () => {
+        if (document.body.contains($wrap[0])) return
+
+        $('.k-subscribe-btn-wrap').not($wrap).remove()
+        const $followWrap = $('button')
+          .filter((_, el) => $(el).text().trim().includes('追番'))
+          .first()
+          .parent()
+
+        if ($followWrap.length) {
+          $wrap.insertAfter($followWrap)
+        } else {
+          $('h1').first().closest('section').append($wrap)
+        }
+      }
+
+      $btn.addClass(
+        [
+          'k-subscribe-btn',
+          'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md',
+          'font-medium transition-colors',
+          'focus-visible:outline-none focus-visible:ring-2',
+          'focus-visible:ring-ring focus-visible:ring-offset-2',
+          'focus-visible:ring-offset-background',
+          'disabled:pointer-events-none disabled:opacity-50',
+          'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+          'py-2 h-9 px-3.5 text-xs',
+        ].join(' ')
+      )
       $wrap.append($btn)
 
-      const $followWrap = $('button')
-        .filter((_, el) => $(el).text().trim().includes('追番'))
-        .first()
-        .parent()
-
-      if ($followWrap.length) {
-        $wrap.insertAfter($followWrap)
-      } else {
-        $('h1').first().closest('section').append($wrap)
-      }
+      mount()
+      stopObserveSubscribeBtnMount?.()
+      stopObserveSubscribeBtnMount = observeDomMutations(mount)
     },
   },
 })
@@ -162,7 +201,22 @@ export function runInTop() {
   const disposeList: Dispose[] = [hideOriginPlayer(), mountParser()]
   subscribe.renderSubscribeBtn()
 
-  return () => disposeList.forEach((dispose) => dispose())
+  return () => {
+    stopObserveSubscribeBtnMount?.()
+    stopObserveSubscribeBtnMount = undefined
+    $('.k-subscribe-btn-wrap').remove()
+
+    disposeList.forEach((dispose) => dispose())
+  }
+}
+
+export function runInHome() {
+  subscribe.renderSubscribedAnimes()
+  return () => {
+    stopObserveSubscribedListMount?.()
+    stopObserveSubscribedListMount = undefined
+    $('#subListContainer').remove()
+  }
 }
 
 function mountParser() {
