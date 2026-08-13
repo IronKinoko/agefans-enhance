@@ -10,6 +10,9 @@ importers:
       '@ironkinoko/danmaku':
         specifier: 1.4.5
         version: 1.4.5
+      dayjs:
+        specifier: ^1.11.21
+        version: 1.11.21
       hls.js:
         specifier: 1.6.15
         version: 1.6.15
@@ -932,6 +935,12 @@ packages:
     resolution:
       {
         integrity: sha512-TDDkd5DkaZxZFM8p+1I3yAlvM3rSr1wbrOliG4yJiwinMZN8z/iGL7BTlDkrJcYTmgUSb4ywVCc3ZaUtOtC76w==,
+      }
+
+  dayjs@1.11.21:
+    resolution:
+      {
+        integrity: sha512-98IT+HOahAisibz/yjKbzuOBwYcjJ7BCLPzARyHiyEBmRz4fatF+KPJszEHXsGYjUG234aH/cOjW1wwTbKUZlA==,
       }
 
   debug@4.4.3:
@@ -2481,6 +2490,8 @@ snapshots:
   css-what@6.2.2: {}
 
   custom-event-polyfill@1.0.7: {}
+
+  dayjs@1.11.21: {}
 
   debug@4.4.3(supports-color@8.1.1):
     dependencies:

@@ -93,21 +93,11 @@ export function defineSubscribe(config: Config) {
     const $btn = $<HTMLButtonElement>('<button></button>')
     const sm = SubscriptionManager.getInstance(config.subscribe.storageKey)
     const id = config.subscribe.getId()
-    console.debug('[agefans-enhance][subscribe] renderSubscribeBtn', {
-      storageKey: config.subscribe.storageKey,
-      id,
-    })
 
     stopSyncSubscribeBtn?.()
     stopSyncSubscribeBtn = sm.onChange(
       () => {
         const sub = sm.getSubscription(id)
-        console.debug('[agefans-enhance][subscribe] onChange', {
-          id,
-          subscribed: !!sub,
-          current: sub?.current,
-          last: sub?.last,
-        })
         $btn.html(`
           ${sub ? ICON_SUBSCRIBED : ICON_SUBSCRIBE}
             <span>${sub ? '已订阅' : '订阅'}</span>
@@ -119,23 +109,12 @@ export function defineSubscribe(config: Config) {
     $btn.on('click', async () => {
       $btn.text('处理中...')
       const sub = sm.getSubscription(id)
-      console.debug('[agefans-enhance][subscribe] click', {
-        id,
-        action: sub ? 'unsubscribe' : 'subscribe',
-      })
 
       if (sub) {
         sm.deleteSubscription(id)
-        console.debug('[agefans-enhance][subscribe] unsubscribed', { id })
       } else {
         const nextSub = await config.subscribe.getAnimeInfo(id, sm)
         sm.createSubscription(nextSub)
-        console.debug('[agefans-enhance][subscribe] subscribed', {
-          id,
-          title: nextSub.title,
-          current: nextSub.current,
-          last: nextSub.last,
-        })
       }
     })
 

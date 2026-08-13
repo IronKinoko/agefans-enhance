@@ -4,6 +4,7 @@ import { queryDom } from '../../utils/queryDom'
 import { local } from '../../utils/storage'
 import { defineSubscribe } from '../common/defineSubscribe'
 import T from './subscribe.template.html'
+import dayjs from 'dayjs'
 
 type Dispose = () => void
 
@@ -37,6 +38,70 @@ function observeDomMutations(onChange: () => void) {
 
 function parseAnimeId() {
   return window.location.pathname.match(/\/anime\/(\d+)/)?.[1] || ''
+}
+
+function remarksToStatus(remarks: string) {
+  remarks = remarks?.trim() || '已完结'
+  const regexp = /周(.)(\d{2}):(\d{2})/
+  const match = remarks.match(regexp)
+  if (match) {
+    const [, weekDayZhCN, hourStr, minuteStr] = match
+    const DayZh = '日一二三四五六'
+    let idx = DayZh.indexOf(weekDayZhCN)
+    let hour = +hourStr
+    if (hour >= 24) {
+      hour = hour - 24
+      idx = (idx + 1) % 7
+    }
+    return `周${DayZh[idx]}${hour.toString().padStart(2, '0')}:${minuteStr}`
+  }
+
+  return remarks
+}
+
+function calcRecentUpdatedAt({
+  status,
+  publish_date,
+  isUpdated,
+}: {
+  status: string
+  publish_date: string
+  isUpdated?: boolean
+}) {
+  publish_date ||= '2000-01-01'
+  status = status?.trim() || '已完结'
+  if (status === '已完结') {
+    return new Date(publish_date).getTime()
+  }
+  if (status === '不定时') {
+    // 不定时更新的番组，默认认为6天内没有更新过，约等于每天都会重新查询一次
+    return dayjs().subtract(6, 'day').valueOf()
+  }
+  if (isUpdated) {
+    const publishDay = new Date(publish_date).getDay()
+    const now = dayjs()
+    const nowDay = now.day()
+    const diffDays = (nowDay - publishDay + 7) % 7
+    return now.subtract(diffDays, 'day').valueOf()
+  }
+
+  const regexp = /周(.)(\d{2}):(\d{2})/
+  const match = status.match(regexp)
+  if (match) {
+    const [, weekDayZhCN, hourStr, minuteStr] = match
+    const updateDay = '日一二三四五六'.indexOf(weekDayZhCN)
+    const now = dayjs()
+    const nowDay = now.day()
+    const diffDays = (nowDay - updateDay + 7) % 7
+    const rencent = now
+      .subtract(diffDays, 'day')
+      .hour(+hourStr)
+      .minute(+minuteStr)
+      .second(0)
+    return rencent.valueOf()
+  }
+
+  return new Date(publish_date).getTime()
 }
 
 async function getCurrentSubInfo() {
@@ -82,20 +147,21 @@ export const subscribe = defineSubscribe({
       const lastUrl = `/anime/${animeId}/play/${lastIndex}`
       let sub = sm.getSubscription(id)
 
+      const status = remarksToStatus(animeInfo.remarks)
       const updateInfo = {
-        updatedAt: Date.now(),
-        status: animeInfo.completed ? '已完结' : animeInfo.remarks,
+        updatedAt: calcRecentUpdatedAt({
+          status,
+          publish_date: animeInfo.publish_date,
+          isUpdated: sub ? sub.last.title !== lastSection.title : true,
+        }),
+        status,
         last: {
           title: lastSection.title,
           url: lastUrl,
         },
       }
 
-      if (sub) {
-        if (sub.last.url === lastUrl) {
-          updateInfo.updatedAt = sub.updatedAt
-        }
-      } else {
+      if (!sub) {
         const firstSection = sections[0]
         const defaultCurrent = {
           title: firstSection.title,
@@ -397,7 +463,7 @@ const API = {
         title: string
         cover_url: string
         remarks: string
-        completed: boolean
+        publish_date: string
       } | null
     }
 

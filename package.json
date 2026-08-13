@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "@ironkinoko/danmaku": "1.4.5",
+    "dayjs": "^1.11.21",
     "hls.js": "1.6.15",
     "lodash-es": "^4.17.21",
     "opencc-js": "1.0.5",
