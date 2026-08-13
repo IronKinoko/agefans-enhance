@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.57.4
+// @version      1.58.0
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -66,6 +66,7 @@
 	var __getOwnPropNames = Object.getOwnPropertyNames;
 	var __getProtoOf = Object.getPrototypeOf;
 	var __hasOwnProp = Object.prototype.hasOwnProperty;
+	var __commonJSMin = (cb, mod) => () => (mod || (cb((mod = { exports: {} }).exports, mod), cb = null), mod.exports);
 	var __copyProps = (to, from, except, desc) => {
 		if (from && typeof from === "object" || typeof from === "function") for (var keys = __getOwnPropNames(from), i = 0, n = keys.length, key; i < n; i++) {
 			key = keys[i];
@@ -3618,7 +3619,7 @@
 				content: `
     <table class="k-table">
       <tbody>
-      <tr><td>脚本版本</td><td>1.57.4</td></tr>
+      <tr><td>脚本版本</td><td>1.58.0</td></tr>
       <tr>
         <td>脚本作者</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -3744,7 +3745,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: 1.57.4
+脚本版本: 1.58.0
 `;
 	//#endregion
 	//#region src/player/plugins/shortcuts/help/index.ts
@@ -6372,27 +6373,6 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		return date;
 	}
 	//#endregion
-	//#region src/utils/concurrency.ts
-	async function concurrency(tasks, limit, onProgress) {
-		if (limit <= 0) throw new Error("limit must be > 0");
-		const results = new Array(tasks.length);
-		let nextIndex = 0;
-		let done = 0;
-		async function worker() {
-			while (true) {
-				const current = nextIndex++;
-				if (current >= tasks.length) break;
-				results[current] = await tasks[current]();
-				done++;
-				onProgress === null || onProgress === void 0 || onProgress(done, tasks.length);
-			}
-		}
-		const workers = Array.from({ length: Math.min(limit, tasks.length) }, () => worker());
-		onProgress === null || onProgress === void 0 || onProgress(done, tasks.length);
-		await Promise.all(workers);
-		return results;
-	}
-	//#endregion
 	//#region src/adapter/common/history.scss
 	injectStyle(".k-episode-anchor:visited {\n  color: rgb(220, 53, 69) !important;\n}\n\n.k-his-table {\n  width: 100%;\n  line-height: 1.4;\n  border-spacing: 0;\n  border-collapse: separate;\n}\n.k-his-table th,\n.k-his-table td {\n  padding: 6px 8px;\n}\n.k-his-table tr {\n  transition: background 0.3s ease;\n}\n.k-his-table tr:hover {\n  background: #f1f1f1;\n}\n.k-his-table a {\n  text-decoration: none;\n  transition: color 0.15s ease;\n}\n.k-his-table a:hover {\n  color: var(--k-player-primary-color);\n}\n.k-his-table .k-btn {\n  color: var(--k-player-primary-color);\n}");
 	//#endregion
@@ -6464,7 +6444,45 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		});
 	}
 	//#endregion
+	//#region src/utils/concurrency.ts
+	async function concurrency(tasks, limit, onProgress) {
+		if (limit <= 0) throw new Error("limit must be > 0");
+		const results = new Array(tasks.length);
+		let nextIndex = 0;
+		let done = 0;
+		async function worker() {
+			while (true) {
+				const current = nextIndex++;
+				if (current >= tasks.length) break;
+				results[current] = await tasks[current]();
+				done++;
+				onProgress === null || onProgress === void 0 || onProgress(done, tasks.length);
+			}
+		}
+		const workers = Array.from({ length: Math.min(limit, tasks.length) }, () => worker());
+		onProgress === null || onProgress === void 0 || onProgress(done, tasks.length);
+		await Promise.all(workers);
+		return results;
+	}
+	//#endregion
 	//#region src/adapter/common/subscribe.ts
+	function trimUrlOrigin(url) {
+		if (!url) return url;
+		if (!/^https?:\/\//.test(url)) return url;
+		try {
+			const parsed = new URL(url);
+			return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+		} catch (error) {
+			return url;
+		}
+	}
+	function normalizeSubscription(sub) {
+		return _objectSpread2(_objectSpread2({}, sub), {}, {
+			url: trimUrlOrigin(sub.url),
+			current: _objectSpread2(_objectSpread2({}, sub.current), {}, { url: trimUrlOrigin(sub.current.url) }),
+			last: _objectSpread2(_objectSpread2({}, sub.last), {}, { url: trimUrlOrigin(sub.last.url) })
+		});
+	}
 	var SubscriptionManager = class SubscriptionManager {
 		constructor(storageKey) {
 			this.storageKey = storageKey;
@@ -6492,7 +6510,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			this.listeners.forEach((cb) => cb(this.getSubscriptions()));
 		}
 		getSubscriptions() {
-			return gm.getItem(this.storageKey, []);
+			return gm.getItem(this.storageKey, []).map(normalizeSubscription);
 		}
 		/** 根据更新顺序做排序，按天成组 */
 		getSubscriptionsGroupByDay() {
@@ -6528,16 +6546,17 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		createSubscription(subscription) {
 			const subscriptions = this.getSubscriptions();
 			if (subscriptions.some((sub) => sub.id === subscription.id)) throw new Error("Subscription already exists");
-			subscriptions.push(subscription);
+			const nextSub = normalizeSubscription(subscription);
+			subscriptions.push(nextSub);
 			gm.setItem(this.storageKey, subscriptions);
 			this.notify();
-			return subscription;
+			return nextSub;
 		}
 		updateSubscription(id, updates) {
 			const subscriptions = this.getSubscriptions();
 			const index = subscriptions.findIndex((sub) => sub.id === id);
 			if (index === -1) throw new Error("Subscription not found");
-			subscriptions[index] = _objectSpread2(_objectSpread2({}, subscriptions[index]), updates);
+			subscriptions[index] = normalizeSubscription(_objectSpread2(_objectSpread2({}, subscriptions[index]), updates));
 			gm.setItem(this.storageKey, subscriptions);
 			this.notify();
 			return subscriptions[index];
@@ -6553,9 +6572,93 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	};
 	_defineProperty(SubscriptionManager, "instances", /* @__PURE__ */ new Map());
 	//#endregion
+	//#region src/adapter/common/defineSubscribe.ts
+	const ICON_SUBSCRIBE = `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 -960 960 960"  fill="currentColor" style="display: inline-block; vertical-align: -0.125em;"><path d="M480-500Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80Zm240-360v-120H600v-80h120v-120h80v120h120v80H800v120h-80ZM160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q14 4 27.5 8.5T593-772q-15 14-27 30.5T545-706q-15-7-31.5-10.5T480-720q-66 0-113 47t-47 113v280h320v-112q18 11 38 18t42 11v83h80v80H160Z"/></svg>`;
+	const ICON_SUBSCRIBED = `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 -960 960 960"  fill="currentColor" style="display: inline-block; vertical-align: -0.125em;"><path d="M160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h80v80H160Zm320-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z"/></svg>`;
+	function defineSubscribe(config) {
+		let stopSyncSubscribeBtn;
+		async function checkSubscriptionUpdate(id, force = false) {
+			const sm = SubscriptionManager.getInstance(config.subscribe.storageKey);
+			const sub = sm.getSubscription(id);
+			if (!sub) return;
+			const now = Date.now();
+			if (!force) {
+				if (sub.checkedAt - sub.updatedAt > 1e3 * 60 * 60 * 24 * 15) return;
+				if (now - sub.updatedAt < 1e3 * 60 * 60 * 163) return;
+				if (now - sub.checkedAt < 1e3 * 60 * 60) return;
+			}
+			const animeInfo = await config.subscribe.getAnimeInfo(id, sm);
+			Object.assign(animeInfo, { checkedAt: now });
+			sm.updateSubscription(id, animeInfo);
+		}
+		async function onCanPlay() {
+			const sm = SubscriptionManager.getInstance(config.subscribe.storageKey);
+			const id = config.subscribe.getId();
+			if (!id || !sm.getSubscription(id)) return;
+			sm.updateSubscription(id, { current: await config.getCurrent() });
+			await checkSubscriptionUpdate(id, true);
+		}
+		function renderSubscribedAnimes() {
+			const sm = SubscriptionManager.getInstance(config.subscribe.storageKey);
+			const $updateInfo = config.subscribe.renderSubscribedAnimes(sm).find(".update-info");
+			let isCheckingUpdate = false;
+			async function checkSubscriptionsUpdate(force = false) {
+				if (isCheckingUpdate) return;
+				isCheckingUpdate = true;
+				try {
+					await concurrency(sm.getSubscriptions().map((sub) => () => checkSubscriptionUpdate(sub.id, force)), 3, (done, total) => {
+						$updateInfo.text(`更新中(${done}/${total})`);
+					});
+					$updateInfo.text(`于 ${(/* @__PURE__ */ new Date()).toLocaleTimeString()} 完成更新检查`);
+				} finally {
+					isCheckingUpdate = false;
+				}
+			}
+			$updateInfo.off("click").on("click", () => {
+				checkSubscriptionsUpdate(true);
+			});
+			checkSubscriptionsUpdate();
+		}
+		function renderSubscribeBtn() {
+			const $btn = $("<button></button>");
+			const sm = SubscriptionManager.getInstance(config.subscribe.storageKey);
+			const id = config.subscribe.getId();
+			stopSyncSubscribeBtn === null || stopSyncSubscribeBtn === void 0 || stopSyncSubscribeBtn();
+			stopSyncSubscribeBtn = sm.onChange(() => {
+				const sub = sm.getSubscription(id);
+				$btn.html(`
+          ${sub ? ICON_SUBSCRIBED : ICON_SUBSCRIBE}
+            <span>${sub ? "已订阅" : "订阅"}</span>
+         `);
+			}, { immediate: true });
+			$btn.on("click", async () => {
+				$btn.text("处理中...");
+				if (sm.getSubscription(id)) sm.deleteSubscription(id);
+				else {
+					const nextSub = await config.subscribe.getAnimeInfo(id, sm);
+					sm.createSubscription(nextSub);
+				}
+			});
+			config.subscribe.renderSubscribeBtn($btn, sm);
+		}
+		return {
+			onCanPlay,
+			renderSubscribedAnimes,
+			renderSubscribeBtn,
+			checkSubscriptionUpdate
+		};
+	}
+	//#endregion
 	//#region src/adapter/common/defineIframePlayer.ts
 	function defineIframePlayer(config) {
 		const { iframeSelector, search } = config;
+		const subscribe = config.subscribe ? defineSubscribe({
+			subscribe: config.subscribe,
+			getCurrent: async () => ({
+				title: await search.getEpisode(),
+				url: window.location.href
+			})
+		}) : void 0;
 		function createIframeReadyToChangeIframeSrc(url) {
 			const iframe = document.createElement("iframe");
 			iframe.className = "ready-to-change-iframe-src";
@@ -6678,22 +6781,11 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 							url: window.location.href
 						}, e.data.video.currentTime);
 						break;
-					case "canplay": {
-						if (!config.subscribe) break;
-						const sm = SubscriptionManager.getInstance(config.subscribe.storageKey);
-						const id = config.subscribe.getId();
-						if (id && sm.getSubscription(id)) {
-							sm.updateSubscription(id, { current: {
-								title: await search.getEpisode(),
-								url: window.location.href
-							} });
-							checkSubscriptionUpdate(id, true);
-						}
-					}
+					case "canplay": await (subscribe === null || subscribe === void 0 ? void 0 : subscribe.onCanPlay());
 				}
 				(_config$onPlayerMessa = config.onPlayerMessage) === null || _config$onPlayerMessa === void 0 || _config$onPlayerMessa.call(config, e.data.key, e.data, e);
 			});
-			renderSubscribeBtn();
+			subscribe === null || subscribe === void 0 || subscribe.renderSubscribeBtn();
 		}
 		function runInIframe() {
 			var _top;
@@ -6703,79 +6795,23 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 				title: document.title
 			}, "*");
 		}
-		function renderSubscribedAnimes() {
-			if (!config.subscribe) return;
-			const sm = SubscriptionManager.getInstance(config.subscribe.storageKey);
-			const $updateInfo = config.subscribe.renderSubscribedAnimes(sm).find(".update-info");
-			let isChekingUpdate = false;
-			async function checkSubscriptionsUpdate(force = false) {
-				if (isChekingUpdate) return;
-				isChekingUpdate = true;
-				await concurrency(sm.getSubscriptions().map((sub) => () => checkSubscriptionUpdate(sub.id, force)), 3, (done, total) => {
-					$updateInfo.text(`更新中(${done}/${total})`);
-				});
-				$updateInfo.text(`于 ${(/* @__PURE__ */ new Date()).toLocaleTimeString()} 完成更新检查`);
-				isChekingUpdate = false;
-			}
-			$updateInfo.on("click", () => {
-				checkSubscriptionsUpdate(true);
-			});
-			checkSubscriptionsUpdate();
-		}
-		function renderSubscribeBtn() {
-			if (!config.subscribe) return;
-			const $btn = $("<button></button>");
-			const sm = SubscriptionManager.getInstance(config.subscribe.storageKey);
-			const id = config.subscribe.getId();
-			const ICON_SUBSCRIBE = `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 -960 960 960"  fill="currentColor" style="display: inline-block; vertical-align: -0.125em;"><path d="M480-500Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80Zm240-360v-120H600v-80h120v-120h80v120h120v80H800v120h-80ZM160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q14 4 27.5 8.5T593-772q-15 14-27 30.5T545-706q-15-7-31.5-10.5T480-720q-66 0-113 47t-47 113v280h320v-112q18 11 38 18t42 11v83h80v80H160Z"/></svg>`;
-			const ICON_SUBSCRIBED = `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 -960 960 960"  fill="currentColor" style="display: inline-block; vertical-align: -0.125em;"><path d="M160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h80v80H160Zm320-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z"/></svg>`;
-			sm.onChange(() => {
-				const sub = sm.getSubscription(id);
-				$btn.html(`
-          ${sub ? ICON_SUBSCRIBED : ICON_SUBSCRIBE}
-            <span>${sub ? "已订阅" : "订阅"}</span>
-         `);
-			}, { immediate: true });
-			$btn.on("click", async () => {
-				$btn.text("处理中...");
-				if (sm.getSubscription(id)) sm.deleteSubscription(id);
-				else {
-					const sub = await config.subscribe.getAnimeInfo(id, sm);
-					sm.createSubscription(sub);
-				}
-			});
-			config.subscribe.renderSubscribeBtn($btn, sm);
-		}
-		async function checkSubscriptionUpdate(id, force = false) {
-			if (!config.subscribe) return;
-			const sm = SubscriptionManager.getInstance(config.subscribe.storageKey);
-			const sub = sm.getSubscription(id);
-			if (!sub) return;
-			const now = Date.now();
-			if (!force) {
-				if (sub.checkedAt - sub.updatedAt > 1e3 * 60 * 60 * 24 * 15) return;
-				if (now - sub.updatedAt < 1e3 * 60 * 60 * 163) return;
-				if (now - sub.checkedAt < 1e3 * 60 * 60) return;
-			}
-			try {
-				const animeInfo = await config.subscribe.getAnimeInfo(id, sm);
-				Object.assign(animeInfo, { checkedAt: now });
-				sm.updateSubscription(id, animeInfo);
-			} catch (error) {}
-		}
 		return {
 			runInTop,
 			runInIframe,
 			createHistory,
 			subscribe: {
-				renderSubscribedAnimes,
-				renderSubscribeBtn
+				renderSubscribedAnimes: () => {
+					subscribe === null || subscribe === void 0 || subscribe.renderSubscribedAnimes();
+				},
+				renderSubscribeBtn: () => {
+					subscribe === null || subscribe === void 0 || subscribe.renderSubscribeBtn();
+				}
 			}
 		};
 	}
 	//#endregion
 	//#region src/adapter/agefans/subscribe.template.html
-	var subscribe_template_default$1 = {
+	var subscribe_template_default$2 = {
 		"subListContainer": "<div id=\"subListContainer\" class=\"text_list_box mb-4\">\n  <div class=\"text_list_box--hd\">\n    <h6 class=\"title\">\n      <span class=\"float-end\">\n        <span class=\"update-info\" title=\"点击可强制更新数据\"></span>\n      </span>\n      订阅列表\n    </h6>\n  </div>\n  <div id=\"subList\"></div>\n</div>",
 		"subList": "<div id=\"subList\">\n  {{# if (groups.every(o => o.list.length === 0)) { }}\n  <div class=\"text_list_box--bd\">\n    <div class=\"text_list_box_wrapper\">\n      <ul class=\"text_list_item\">\n        <li>\n          <div class=\"d-flex position-relative\">\n            <div class=\"flex-grow-1 text-truncate pe-2\">\n              订阅喜欢的番剧，在播放页面标题右侧添加订阅\n            </div>\n          </div>\n        </li>\n      </ul>\n    </div>\n  </div>\n  {{# } }}\n  \n  {{# groups.filter(o => !!o.list.length).forEach(({list, day}) => { }}\n  <div class=\"text_list_box--bd\">\n    <div class=\"sub-group-day\">{{day}}</div>\n    <div class=\"text_list_box_wrapper\">\n      <ul class=\"text_list_item\">\n        {{# list.forEach(item => { }}\n        <li>\n          <div class=\"d-flex position-relative\">\n            <div class=\"text-truncate pe-2\">\n              <a                 href=\"{{item.current.url}}\"\n                class=\"text-decoration-none link-light common_alink\"\n                >{{item.title}}</a>\n            </div>\n            <div class=\"flex-grow-1 title_new\"></div>\n            <div class=\"title_sub text-truncate\">\n              <a                 class=\"text-decoration-none link-light common_alink\"\n                href=\"{{item.current.url}}\"\n                >{{item.current.title}}</a>\n              <span>/</span>\n              <a                 class=\"text-decoration-none link-light common_alink\"\n                href=\"{{item.last.url}}\"\n                >{{item.last.title}}</a>\n            </div>\n\n            <div class=\"sub-thumbnail-box\">\n              <img                 class=\"sub-thumbnail\"\n                src=\"{{item.thumbnail}}\"\n                alt=\"{{item.title}}\"\n              >\n            </div>\n          </div>\n        </li>\n        {{# }) }}\n      </ul>\n    </div>\n  </div>\n  {{# }) }}\n</div>"
 	};
@@ -6933,11 +6969,11 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 				return _objectSpread2(_objectSpread2({}, sub), updateInfo);
 			},
 			renderSubscribedAnimes: function(sm) {
-				const $root = $(subscribe_template_default$1.subListContainer);
+				const $root = $(subscribe_template_default$2.subListContainer);
 				$root.insertBefore(".weekly_list");
 				sm.onChange(() => {
 					const groups = sm.getSubscriptionsGroupByDay();
-					$root.find("#subList").replaceWith(template(subscribe_template_default$1.subList)({ groups }));
+					$root.find("#subList").replaceWith(template(subscribe_template_default$2.subList)({ groups }));
 				}, { immediate: true });
 				return $root;
 			},
@@ -7125,12 +7161,316 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		}
 	});
 	//#endregion
+	//#region src/adapter/cycanime/subscribe.template.html
+	var subscribe_template_default$1 = {
+		"subListContainer": "<div id=\"subListContainer\" class=\"content-visibility-auto space-y-4\">\n  <div class=\"mb-4\">\n    <h2 class=\"text-xl font-semibold text-foreground md:text-2xl\">订阅列表</h2>\n    <button       class=\"update-info inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground\"\n      title=\"点击可强制更新数据\"\n      type=\"button\"\n    >\n      检查更新\n    </button>\n  </div>\n  <div id=\"subList\"></div>\n</div>",
+		"subList": "<div id=\"subList\">\n  {{# if (list.length === 0) { }}\n  <div     class=\"flex min-h-24 items-center justify-center rounded-lg border border-dashed border-border/70 bg-card/50 py-4 text-center text-sm text-muted-foreground\"\n  >\n    订阅喜欢的番剧，在播放页面标题右侧添加订阅\n  </div>\n  {{# } else { }}\n  <div     class=\"grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 lg:grid-cols-6 lg:gap-5\"\n  >\n    {{# list.forEach((item) => { }}\n    <div       class=\"group block min-w-0 rounded-lg transition-transform duration-200 hover:-translate-y-0.5\"\n    >\n      <a href=\"{{item.current.url}}\">\n        <span           class=\"relative block overflow-hidden bg-muted aspect-[3/4] isolate rounded-lg [backface-visibility:hidden] [clip-path:inset(0_round_0.5rem)] [contain:paint] [transform:translateZ(0)]\"\n        >\n          <img             alt=\"{{item.title}}\"\n            loading=\"lazy\"\n            decoding=\"async\"\n            class=\"block h-full w-full object-cover transform-gpu transition-transform duration-300 [backface-visibility:hidden] group-hover:scale-[1.04]\"\n            src=\"{{item.thumbnail}}\"\n          >\n          <span             class=\"absolute bottom-2 right-2 inline-flex h-[22px] max-w-[calc(100%-16px)] items-center rounded-md bg-black/60 px-2 text-xs font-semibold text-white backdrop-blur truncate max-sm:bottom-1.5 max-sm:right-1.5 max-sm:h-[18px] max-sm:px-1.5 max-sm:text-[10px]\"\n            >{{item.status || item.last.title}}</span>\n        </span>\n      </a>\n      <div class=\"mt-2.5 space-y-1 max-sm:mt-1.5\">\n        <a           href=\"{{item.current.url}}\"\n          class=\"line-clamp-2 text-sm font-medium leading-[1.4] text-card-foreground transition-colors group-hover:text-primary max-sm:text-xs\"\n        >\n          {{item.title}}\n        </a>\n        <div class=\"line-clamp-1 text-xs text-muted-foreground\">\n          观看至\n          <a href=\"{{item.current.url}}\" class=\"hover:text-foreground\">\n            {{item.current.title}}\n          </a>\n          /\n          <a href=\"{{item.last.url}}\" class=\"hover:text-foreground\">\n            {{item.last.title}}\n          </a>\n        </div>\n      </div>\n    </div>\n    {{# }) }}\n  </div>\n  {{# } }}\n</div>"
+	};
+	//#endregion
 	//#region src/adapter/cycanime/play.ts
+	var import_dayjs_min = /* @__PURE__ */ __toESM((/* @__PURE__ */ __commonJSMin(((exports, module) => {
+		(function(t, e) {
+			"object" == typeof exports && "undefined" != typeof module ? module.exports = e() : "function" == typeof define && define.amd ? define(e) : (t = "undefined" != typeof globalThis ? globalThis : t || self).dayjs = e();
+		})(exports, (function() {
+			"use strict";
+			var t = 1e3, e = 6e4, n = 36e5, r = "millisecond", i = "second", s = "minute", u = "hour", a = "day", o = "week", c = "month", f = "quarter", h = "year", d = "date", l = "Invalid Date", $ = /^(\d{4})[-/]?(\d{1,2})?[-/]?(\d{0,2})[Tt\s]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?[.:]?(\d+)?$/, y = /\[([^\]]+)]|YYYY|YY|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g, M = {
+				name: "en",
+				weekdays: "Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),
+				months: "January_February_March_April_May_June_July_August_September_October_November_December".split("_"),
+				ordinal: function(t) {
+					var e = [
+						"th",
+						"st",
+						"nd",
+						"rd"
+					], n = t % 100;
+					return "[" + t + (e[(n - 20) % 10] || e[n] || e[0]) + "]";
+				}
+			}, m = function(t, e, n) {
+				var r = String(t);
+				return !r || r.length >= e ? t : "" + Array(e + 1 - r.length).join(n) + t;
+			}, v = {
+				s: m,
+				z: function(t) {
+					var e = -t.utcOffset(), n = Math.abs(e), r = Math.floor(n / 60), i = n % 60;
+					return (e <= 0 ? "+" : "-") + m(r, 2, "0") + ":" + m(i, 2, "0");
+				},
+				m: function t(e, n) {
+					if (e.date() < n.date()) return -t(n, e);
+					var r = 12 * (n.year() - e.year()) + (n.month() - e.month()), i = e.clone().add(r, c), s = n - i < 0, u = e.clone().add(r + (s ? -1 : 1), c);
+					return +(-(r + (n - i) / (s ? i - u : u - i)) || 0);
+				},
+				a: function(t) {
+					return t < 0 ? Math.ceil(t) || 0 : Math.floor(t);
+				},
+				p: function(t) {
+					return {
+						M: c,
+						y: h,
+						w: o,
+						d: a,
+						D: d,
+						h: u,
+						m: s,
+						s: i,
+						ms: r,
+						Q: f
+					}[t] || String(t || "").toLowerCase().replace(/s$/, "");
+				},
+				u: function(t) {
+					return void 0 === t;
+				}
+			}, g = "en", D = {};
+			D[g] = M;
+			var p = "$isDayjsObject", S = function(t) {
+				return t instanceof _ || !(!t || !t[p]);
+			}, w = function t(e, n, r) {
+				var i;
+				if (!e) return g;
+				if ("string" == typeof e) {
+					var s = e.toLowerCase();
+					D[s] && (i = s), n && (D[s] = n, i = s);
+					var u = e.split("-");
+					if (!i && u.length > 1) return t(u[0]);
+				} else {
+					var a = e.name;
+					D[a] = e, i = a;
+				}
+				return !r && i && (g = i), i || !r && g;
+			}, O = function(t, e) {
+				if (S(t)) return t.clone();
+				var n = "object" == typeof e ? e : {};
+				return n.date = t, n.args = arguments, new _(n);
+			}, b = v;
+			b.l = w, b.i = S, b.w = function(t, e) {
+				return O(t, {
+					locale: e.$L,
+					utc: e.$u,
+					x: e.$x,
+					$offset: e.$offset
+				});
+			};
+			var _ = function() {
+				function M(t) {
+					this.$L = w(t.locale, null, !0), this.parse(t), this.$x = this.$x || t.x || {}, this[p] = !0;
+				}
+				var m = M.prototype;
+				return m.parse = function(t) {
+					this.$d = function(t) {
+						var e = t.date, n = t.utc;
+						if (null === e) return /* @__PURE__ */ new Date(NaN);
+						if (b.u(e)) return /* @__PURE__ */ new Date();
+						if (e instanceof Date) return new Date(e);
+						if ("string" == typeof e && !/Z$/i.test(e)) {
+							var r = e.match($);
+							if (r) {
+								var i = r[2] - 1 || 0, s = (r[7] || "0").substring(0, 3);
+								return n ? new Date(Date.UTC(r[1], i, r[3] || 1, r[4] || 0, r[5] || 0, r[6] || 0, s)) : new Date(r[1], i, r[3] || 1, r[4] || 0, r[5] || 0, r[6] || 0, s);
+							}
+						}
+						return new Date(e);
+					}(t), this.init();
+				}, m.init = function() {
+					var t = this.$d;
+					this.$y = t.getFullYear(), this.$M = t.getMonth(), this.$D = t.getDate(), this.$W = t.getDay(), this.$H = t.getHours(), this.$m = t.getMinutes(), this.$s = t.getSeconds(), this.$ms = t.getMilliseconds();
+				}, m.$utils = function() {
+					return b;
+				}, m.isValid = function() {
+					return !(this.$d.toString() === l);
+				}, m.isSame = function(t, e) {
+					var n = O(t);
+					return this.startOf(e) <= n && n <= this.endOf(e);
+				}, m.isAfter = function(t, e) {
+					return O(t) < this.startOf(e);
+				}, m.isBefore = function(t, e) {
+					return this.endOf(e) < O(t);
+				}, m.$g = function(t, e, n) {
+					return b.u(t) ? this[e] : this.set(n, t);
+				}, m.unix = function() {
+					return Math.floor(this.valueOf() / 1e3);
+				}, m.valueOf = function() {
+					return this.$d.getTime();
+				}, m.startOf = function(t, e) {
+					var n = this, r = !!b.u(e) || e, f = b.p(t), l = function(t, e) {
+						var i = b.w(n.$u ? Date.UTC(n.$y, e, t) : new Date(n.$y, e, t), n);
+						return r ? i : i.endOf(a);
+					}, $ = function(t, e) {
+						return b.w(n.toDate()[t].apply(n.toDate("s"), (r ? [
+							0,
+							0,
+							0,
+							0
+						] : [
+							23,
+							59,
+							59,
+							999
+						]).slice(e)), n);
+					}, y = this.$W, M = this.$M, m = this.$D, v = "set" + (this.$u ? "UTC" : "");
+					switch (f) {
+						case h: return r ? l(1, 0) : l(31, 11);
+						case c: return r ? l(1, M) : l(0, M + 1);
+						case o:
+							var g = this.$locale().weekStart || 0, D = (y < g ? y + 7 : y) - g;
+							return l(r ? m - D : m + (6 - D), M);
+						case a:
+						case d: return $(v + "Hours", 0);
+						case u: return $(v + "Minutes", 1);
+						case s: return $(v + "Seconds", 2);
+						case i: return $(v + "Milliseconds", 3);
+						default: return this.clone();
+					}
+				}, m.endOf = function(t) {
+					return this.startOf(t, !1);
+				}, m.$set = function(t, e) {
+					var n, o = b.p(t), f = "set" + (this.$u ? "UTC" : ""), l = (n = {}, n[a] = f + "Date", n[d] = f + "Date", n[c] = f + "Month", n[h] = f + "FullYear", n[u] = f + "Hours", n[s] = f + "Minutes", n[i] = f + "Seconds", n[r] = f + "Milliseconds", n)[o], $ = o === a ? this.$D + (e - this.$W) : e;
+					if (o === c || o === h) {
+						var y = this.clone().set(d, 1);
+						y.$d[l]($), y.init(), this.$d = y.set(d, Math.min(this.$D, y.daysInMonth())).$d;
+					} else l && this.$d[l]($);
+					return this.init(), this;
+				}, m.set = function(t, e) {
+					return this.clone().$set(t, e);
+				}, m.get = function(t) {
+					return this[b.p(t)]();
+				}, m.add = function(r, f) {
+					var d, l = this;
+					r = Number(r);
+					var $ = b.p(f), y = function(t) {
+						var e = O(l);
+						return b.w(e.date(e.date() + Math.round(t * r)), l);
+					};
+					if ($ === c) return this.set(c, this.$M + r);
+					if ($ === h) return this.set(h, this.$y + r);
+					if ($ === a) return y(1);
+					if ($ === o) return y(7);
+					var M = (d = {}, d[s] = e, d[u] = n, d[i] = t, d)[$] || 1, m = this.$d.getTime() + r * M;
+					return b.w(m, this);
+				}, m.subtract = function(t, e) {
+					return this.add(-1 * t, e);
+				}, m.format = function(t) {
+					var e = this, n = this.$locale();
+					if (!this.isValid()) return n.invalidDate || l;
+					var r = t || "YYYY-MM-DDTHH:mm:ssZ", i = b.z(this), s = this.$H, u = this.$m, a = this.$M, o = n.weekdays, c = n.months, f = n.meridiem, h = function(t, n, i, s) {
+						return t && (t[n] || t(e, r)) || i[n].slice(0, s);
+					}, d = function(t) {
+						return b.s(s % 12 || 12, t, "0");
+					}, $ = f || function(t, e, n) {
+						var r = t < 12 ? "AM" : "PM";
+						return n ? r.toLowerCase() : r;
+					};
+					return r.replace(y, (function(t, r) {
+						return r || function(t) {
+							switch (t) {
+								case "YY": return String(e.$y).slice(-2);
+								case "YYYY": return b.s(e.$y, 4, "0");
+								case "M": return a + 1;
+								case "MM": return b.s(a + 1, 2, "0");
+								case "MMM": return h(n.monthsShort, a, c, 3);
+								case "MMMM": return h(c, a);
+								case "D": return e.$D;
+								case "DD": return b.s(e.$D, 2, "0");
+								case "d": return String(e.$W);
+								case "dd": return h(n.weekdaysMin, e.$W, o, 2);
+								case "ddd": return h(n.weekdaysShort, e.$W, o, 3);
+								case "dddd": return o[e.$W];
+								case "H": return String(s);
+								case "HH": return b.s(s, 2, "0");
+								case "h": return d(1);
+								case "hh": return d(2);
+								case "a": return $(s, u, !0);
+								case "A": return $(s, u, !1);
+								case "m": return String(u);
+								case "mm": return b.s(u, 2, "0");
+								case "s": return String(e.$s);
+								case "ss": return b.s(e.$s, 2, "0");
+								case "SSS": return b.s(e.$ms, 3, "0");
+								case "Z": return i;
+							}
+							return null;
+						}(t) || i.replace(":", "");
+					}));
+				}, m.utcOffset = function() {
+					return 15 * -Math.round(this.$d.getTimezoneOffset() / 15);
+				}, m.diff = function(r, d, l) {
+					var $, y = this, M = b.p(d), m = O(r), v = (m.utcOffset() - this.utcOffset()) * e, g = this - m, D = function() {
+						return b.m(y, m);
+					};
+					switch (M) {
+						case h:
+							$ = D() / 12;
+							break;
+						case c:
+							$ = D();
+							break;
+						case f:
+							$ = D() / 3;
+							break;
+						case o:
+							$ = (g - v) / 6048e5;
+							break;
+						case a:
+							$ = (g - v) / 864e5;
+							break;
+						case u:
+							$ = g / n;
+							break;
+						case s:
+							$ = g / e;
+							break;
+						case i:
+							$ = g / t;
+							break;
+						default: $ = g;
+					}
+					return l ? $ : b.a($);
+				}, m.daysInMonth = function() {
+					return this.endOf(c).$D;
+				}, m.$locale = function() {
+					return D[this.$L];
+				}, m.locale = function(t, e) {
+					if (!t) return this.$L;
+					var n = this.clone(), r = w(t, e, !0);
+					return r && (n.$L = r), n;
+				}, m.clone = function() {
+					return b.w(this.$d, this);
+				}, m.toDate = function() {
+					return new Date(this.valueOf());
+				}, m.toJSON = function() {
+					return this.isValid() ? this.toISOString() : null;
+				}, m.toISOString = function() {
+					return this.$d.toISOString();
+				}, m.toString = function() {
+					return this.$d.toUTCString();
+				}, M;
+			}(), Y = _.prototype;
+			return O.prototype = Y, [
+				["$ms", r],
+				["$s", i],
+				["$m", s],
+				["$H", u],
+				["$W", a],
+				["$M", c],
+				["$y", h],
+				["$D", d]
+			].forEach((function(t) {
+				Y[t[1]] = function(e) {
+					return this.$g(e, t[0], t[1]);
+				};
+			})), O.extend = function(t, e) {
+				return t.$i || (t(e, _, O), t.$i = !0), O;
+			}, O.locale = w, O.isDayjs = S, O.unix = function(t) {
+				return O(1e3 * t);
+			}, O.en = D[g], O.Ls = D, O.p = {}, O;
+		}));
+	})))(), 1);
 	const PLAYER_SELECTOR = "#k-player-wrapper";
 	const PLAY_PATH_RE = /\/anime\/\d+\/play\/\d+/;
 	let currentParserSession = 0;
 	let player;
 	let startPlayHandler;
+	let stopObserveSubscribedListMount;
+	let stopObserveSubscribeBtnMount;
 	const DEFAULT_ACCOUNT = {
 		username: "ironuserscripts",
 		password: "U5PXEp.vc.LTj3"
@@ -7140,9 +7480,186 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		const decoded = atob(payload);
 		return JSON.parse(decoded);
 	}
+	function observeDomMutations(onChange) {
+		const observer = new MutationObserver(() => {
+			onChange();
+		});
+		observer.observe(document.body, {
+			childList: true,
+			subtree: true
+		});
+		return () => observer.disconnect();
+	}
+	function parseAnimeId() {
+		var _window$location$path;
+		return ((_window$location$path = window.location.pathname.match(/\/anime\/(\d+)/)) === null || _window$location$path === void 0 ? void 0 : _window$location$path[1]) || "";
+	}
+	function remarksToStatus(remarks) {
+		remarks = (remarks === null || remarks === void 0 ? void 0 : remarks.trim()) || "已完结";
+		const match = remarks.match(/周(.)(\d{2}):(\d{2})/);
+		if (match) {
+			const [, weekDayZhCN, hourStr, minuteStr] = match;
+			const DayZh = "日一二三四五六";
+			let idx = DayZh.indexOf(weekDayZhCN);
+			let hour = +hourStr;
+			if (hour >= 24) {
+				hour = hour - 24;
+				idx = (idx + 1) % 7;
+			}
+			return `周${DayZh[idx]}${hour.toString().padStart(2, "0")}:${minuteStr}`;
+		}
+		return remarks;
+	}
+	function calcRecentUpdatedAt({ status, publish_date, isUpdated }) {
+		publish_date || (publish_date = "2000-01-01");
+		status = (status === null || status === void 0 ? void 0 : status.trim()) || "已完结";
+		if (status === "已完结") return new Date(publish_date).getTime();
+		if (status === "不定时") return (0, import_dayjs_min.default)().subtract(6, "day").valueOf();
+		if (isUpdated) {
+			const publishDay = new Date(publish_date).getDay();
+			const now = (0, import_dayjs_min.default)();
+			const diffDays = (now.day() - publishDay + 7) % 7;
+			return now.subtract(diffDays, "day").valueOf();
+		}
+		const match = status.match(/周(.)(\d{2}):(\d{2})/);
+		if (match) {
+			const [, weekDayZhCN, hourStr, minuteStr] = match;
+			const updateDay = "日一二三四五六".indexOf(weekDayZhCN);
+			const now = (0, import_dayjs_min.default)();
+			const diffDays = (now.day() - updateDay + 7) % 7;
+			return now.subtract(diffDays, "day").hour(+hourStr).minute(+minuteStr).second(0).valueOf();
+		}
+		return new Date(publish_date).getTime();
+	}
+	async function getCurrentSubInfo() {
+		var _sections$episodeInde;
+		const currentTitle = $("[aria-current=\"page\"]").first().text().trim();
+		if (currentTitle) return {
+			title: currentTitle,
+			url: window.location.href
+		};
+		const match = window.location.href.match(/\/anime\/(\d+)\/play\/(\d+)/);
+		if (!match) return {
+			title: "",
+			url: window.location.href
+		};
+		const animeId = +match[1];
+		const episodeIndex = +match[2] - 1;
+		return {
+			title: ((_sections$episodeInde = (await API.getSctions(animeId))[episodeIndex]) === null || _sections$episodeInde === void 0 ? void 0 : _sections$episodeInde.title) || "",
+			url: window.location.href
+		};
+	}
+	const subscribe = defineSubscribe({
+		getCurrent: getCurrentSubInfo,
+		subscribe: {
+			storageKey: "cycanime-subscribe",
+			getId: parseAnimeId,
+			async getAnimeInfo(id, sm) {
+				const animeId = +id;
+				if (!animeId) throw new Error("Failed to parse anime id");
+				const [animeInfo, sections] = await Promise.all([API.getVideoInfo(animeId), API.getSctions(animeId)]);
+				if (!sections.length) throw new Error("No sections found");
+				const lastIndex = sections.length;
+				const lastSection = sections[lastIndex - 1];
+				const lastUrl = `/anime/${animeId}/play/${lastIndex}`;
+				let sub = sm.getSubscription(id);
+				const status = remarksToStatus(animeInfo.remarks);
+				const updateInfo = {
+					updatedAt: calcRecentUpdatedAt({
+						status,
+						publish_date: animeInfo.publish_date,
+						isUpdated: sub ? sub.last.title !== lastSection.title : true
+					}),
+					status,
+					last: {
+						title: lastSection.title,
+						url: lastUrl
+					}
+				};
+				if (!sub) {
+					const defaultCurrent = {
+						title: sections[0].title,
+						url: `/anime/${animeId}/play/1`
+					};
+					const current = parseAnimeId() === id ? await getCurrentSubInfo() : defaultCurrent;
+					sub = _objectSpread2({
+						id,
+						title: animeInfo.title,
+						url: `/anime/${animeId}`,
+						thumbnail: animeInfo.cover_url,
+						createdAt: Date.now(),
+						checkedAt: Date.now(),
+						current
+					}, updateInfo);
+				}
+				return _objectSpread2(_objectSpread2({}, sub), updateInfo);
+			},
+			renderSubscribedAnimes: (sm) => {
+				const $root = $(subscribe_template_default$1.subListContainer);
+				const mount = () => {
+					if (document.body.contains($root[0])) return;
+					$("#subListContainer").not($root).remove();
+					const $tvSection = $("h2").filter((_, el) => $(el).text().trim() === "TV番组").first().closest("section");
+					if ($tvSection.length) $root.insertBefore($tvSection);
+					else $("main .container").first().prepend($root);
+				};
+				mount();
+				stopObserveSubscribedListMount === null || stopObserveSubscribedListMount === void 0 || stopObserveSubscribedListMount();
+				stopObserveSubscribedListMount = observeDomMutations(mount);
+				sm.onChange(() => {
+					const list = sm.getSubscriptionsGroupByDay().reduce((acc, group) => {
+						acc.push(...group.list);
+						return acc;
+					}, []);
+					$root.find("#subList").replaceWith(template(subscribe_template_default$1.subList)({ list }));
+				}, { immediate: true });
+				return $root;
+			},
+			renderSubscribeBtn: ($btn) => {
+				const $wrap = $("<div class=\"relative shrink-0 k-subscribe-btn-wrap\"></div>");
+				const mount = () => {
+					if (document.body.contains($wrap[0])) return;
+					$(".k-subscribe-btn-wrap").not($wrap).remove();
+					const $followWrap = $("button").filter((_, el) => $(el).text().trim().includes("追番")).first().parent();
+					if ($followWrap.length) $wrap.insertAfter($followWrap);
+					else $("h1").first().closest("section").append($wrap);
+				};
+				$btn.addClass([
+					"k-subscribe-btn",
+					"inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md",
+					"font-medium transition-colors",
+					"focus-visible:outline-none focus-visible:ring-2",
+					"focus-visible:ring-ring focus-visible:ring-offset-2",
+					"focus-visible:ring-offset-background",
+					"disabled:pointer-events-none disabled:opacity-50",
+					"bg-secondary text-secondary-foreground hover:bg-secondary/80",
+					"py-2 h-9 px-3.5 text-xs"
+				].join(" "));
+				$wrap.append($btn);
+				mount();
+				stopObserveSubscribeBtnMount === null || stopObserveSubscribeBtnMount === void 0 || stopObserveSubscribeBtnMount();
+				stopObserveSubscribeBtnMount = observeDomMutations(mount);
+			}
+		}
+	});
 	function runInTop$3() {
 		const disposeList = [hideOriginPlayer(), mountParser()];
-		return () => disposeList.forEach((dispose) => dispose());
+		subscribe.renderSubscribeBtn();
+		return () => {
+			stopObserveSubscribeBtnMount === null || stopObserveSubscribeBtnMount === void 0 || stopObserveSubscribeBtnMount();
+			stopObserveSubscribeBtnMount = void 0;
+			$(".k-subscribe-btn-wrap").remove();
+			disposeList.forEach((dispose) => dispose());
+		};
+	}
+	function runInHome() {
+		subscribe.renderSubscribedAnimes();
+		return () => {
+			stopObserveSubscribedListMount === null || stopObserveSubscribedListMount === void 0 || stopObserveSubscribedListMount();
+			stopObserveSubscribedListMount = void 0;
+			$("#subListContainer").remove();
+		};
 	}
 	function mountParser() {
 		const sessionId = ++currentParserSession;
@@ -7150,7 +7667,6 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		return () => {
 			if (currentParserSession === sessionId) currentParserSession++;
 			if (!isPlayPage()) destroyPlayer();
-			document.body.classList.remove("widescreen");
 		};
 	}
 	function cleanupInjectedPlayer() {
@@ -7162,6 +7678,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		player === null || player === void 0 || player.destroy();
 		player = void 0;
 		cleanupInjectedPlayer();
+		document.body.classList.remove("widescreen");
 	}
 	function isPlayPage() {
 		return PLAY_PATH_RE.test(window.location.pathname);
@@ -7237,6 +7754,11 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			}
 			return sections;
 		}),
+		getVideoInfo: memoize(async (animeId) => {
+			const res = await fetch(`/api/videos/${animeId}`, { headers: API.commonHeaders }).then((res) => res.json());
+			if (res.code !== 0 || !res.data) throw new Error(`Failed to fetch anime info: ${res.msg}`);
+			return res.data;
+		}),
 		getEpisodePlayUrl: async (episodeId) => {
 			await API.ensureLogin();
 			return (await fetch(`/api/v2/sections/${episodeId}/play-url`, { headers: API.commonHeaders }).then((res) => res.json())).data;
@@ -7261,6 +7783,9 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		player = new KPlayer(playerRoot);
 		player.on("prev", () => startPlayHandler === null || startPlayHandler === void 0 ? void 0 : startPlayHandler(-1));
 		player.on("next", () => startPlayHandler === null || startPlayHandler === void 0 ? void 0 : startPlayHandler(1));
+		player.on("canplay", () => {
+			subscribe.onCanPlay();
+		});
 		player.on("enterwidescreen", () => document.body.classList.add("widescreen"));
 		player.on("exitwidescreen", () => document.body.classList.remove("widescreen"));
 		return player;
@@ -7305,13 +7830,20 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	//#region src/adapter/cycanime/index.ts
 	runtime.register({
 		domains: [".cycani."],
-		opts: [{
-			test: "*",
-			setup: () => $("body").addClass("cycanime")
-		}, {
-			test: /anime\/\d+\/play/,
-			run: runInTop$3
-		}],
+		opts: [
+			{
+				test: "*",
+				setup: () => $("body").addClass("cycanime")
+			},
+			{
+				test: /^\/(\?.*)?$/,
+				run: runInHome
+			},
+			{
+				test: /anime\/\d+\/play/,
+				run: runInTop$3
+			}
+		],
 		spa: true,
 		search: {
 			name: "次元城",
