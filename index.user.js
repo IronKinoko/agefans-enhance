@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.58.0
+// @version      1.58.1
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -3619,7 +3619,7 @@
 				content: `
     <table class="k-table">
       <tbody>
-      <tr><td>脚本版本</td><td>1.58.0</td></tr>
+      <tr><td>脚本版本</td><td>1.58.1</td></tr>
       <tr>
         <td>脚本作者</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -3745,7 +3745,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: 1.58.0
+脚本版本: 1.58.1
 `;
 	//#endregion
 	//#region src/player/plugins/shortcuts/help/index.ts
@@ -4329,6 +4329,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			_defineProperty(this, "hls", void 0);
 			_defineProperty(this, "destroyList", []);
 			_defineProperty(this, "destroyed", false);
+			_defineProperty(this, "playTimeStoreKey", void 0);
 			_defineProperty(this, "setCurrentTimeLogThrottled", throttle(() => {
 				if (this.currentTime > 3) this.setCurrentTimeLog();
 			}, 1e3));
@@ -4437,7 +4438,9 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			return local.getItem(_this2.localPlayTimeKey, {})[await _this2.getPlayTimeStoreKey()];
 		}
 		async getPlayTimeStoreKey() {
-			return await runtime.getTopLocationHref();
+			var _this3 = this;
+			if (!_this3.playTimeStoreKey) _this3.playTimeStoreKey = await runtime.getTopLocationHref();
+			return _this3.playTimeStoreKey;
 		}
 		async getAnimeScope() {
 			return await runtime.getAnimeScope();
@@ -4452,19 +4455,19 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			});
 		}
 		async jumpToLogTime() {
-			var _this3 = this;
-			if (_this3.isJumped) return;
-			if (_this3.currentTime < 3) {
-				_this3.isJumped = true;
-				const logTime = await _this3.getCurrentTimeLog();
-				if (logTime && _this3.plyr.duration - logTime > 10) {
-					_this3.message.info(`已自动跳转至历史播放位置 ${parseTime(logTime)}`);
-					_this3.currentTime = logTime;
+			var _this4 = this;
+			if (_this4.isJumped) return;
+			if (_this4.currentTime < 3) {
+				_this4.isJumped = true;
+				const logTime = await _this4.getCurrentTimeLog();
+				if (logTime && _this4.plyr.duration - logTime > 10) {
+					_this4.message.info(`已自动跳转至历史播放位置 ${parseTime(logTime)}`);
+					_this4.currentTime = logTime;
 				}
 			}
 		}
 		initEvent() {
-			var _this4 = this;
+			var _this5 = this;
 			this.onDrop((e) => {
 				var _e$dataTransfer, _e$dataTransfer2;
 				e.preventDefault();
@@ -4497,11 +4500,11 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 				this.$loading.hide();
 				if (this.localConfig.autoplay) (async () => {
 					try {
-						await _this4.plyr.play();
+						await _this5.plyr.play();
 					} catch (error) {} finally {
-						if (_this4.media.paused) window.addEventListener("click", () => {
+						if (_this5.media.paused) window.addEventListener("click", () => {
 							setTimeout(() => {
-								if (_this4.media.paused) _this4.plyr.play();
+								if (_this5.media.paused) _this5.plyr.play();
 							}, 100);
 						}, {
 							capture: true,
@@ -4731,26 +4734,26 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			this.$videoWrapper.removeClass("k-player-fullscreen");
 		}
 		async injectSearchActions() {
-			var _this5 = this;
-			_this5.$searchActions = createSearchActionsHTML().toggle(_this5.localConfig.showSearchActions);
-			_this5.$searchActions.insertBefore(_this5.$speed);
+			var _this6 = this;
+			_this6.$searchActions = createSearchActionsHTML().toggle(_this6.localConfig.showSearchActions);
+			_this6.$searchActions.insertBefore(_this6.$speed);
 			const actions = await runtime.getSearchActions();
 			if (actions.length === 0) return;
-			_this5.$searchActions.find(".k-menu").append(actions.map(({ name, search }) => {
+			_this6.$searchActions.find(".k-menu").append(actions.map(({ name, search }) => {
 				return $(`<li class="k-menu-item k-speed-item">${name}</li>`).on("click", search);
 			}));
 		}
 		async loadSubtitles(file) {
-			var _this6 = this;
+			var _this7 = this;
 			const blob = await parseSubtitles(file);
-			const nextTrack = _this6.plyr.currentTrack + 1;
+			const nextTrack = _this7.plyr.currentTrack + 1;
 			const track = document.createElement("track");
 			track.kind = "subtitles";
 			track.src = URL.createObjectURL(blob);
 			track.srclang = "zh";
-			_this6.media.append(track);
+			_this7.media.append(track);
 			await sleep(10);
-			_this6.plyr.currentTrack = nextTrack;
+			_this7.plyr.currentTrack = nextTrack;
 		}
 		toggleWidescreen(bool = !this.isWideScreen) {
 			if (this.isWideScreen === bool) return;
@@ -4778,11 +4781,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		get src() {
 			return this.media.currentSrc;
 		}
-		/** 如果直接设置src满足不了需求，则使用这个方法去加载*/
 		setM3u8(src) {
-			var _this$hls;
-			(_this$hls = this.hls) === null || _this$hls === void 0 || _this$hls.destroy();
-			this.hls = void 0;
+			this.beforeChangeSrc();
 			if (hls_js.default.isSupported()) {
 				const hls = new hls_js.default();
 				this.hls = hls;
@@ -4793,21 +4793,19 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			this.afterChangeSrc();
 		}
 		setMp4(src) {
-			var _this$hls2;
-			(_this$hls2 = this.hls) === null || _this$hls2 === void 0 || _this$hls2.destroy();
-			this.hls = void 0;
+			this.beforeChangeSrc();
 			this.$video.attr("src", src);
 			this.afterChangeSrc();
 		}
 		destroy() {
-			var _this$hls3;
+			var _this$hls;
 			if (this.destroyed) return;
 			this.destroyed = true;
 			this.hideControlsDebounced.cancel();
 			this.hideCursorDebounced.cancel();
 			this.setCurrentTimeLogThrottled.cancel();
 			this.message.destroy();
-			(_this$hls3 = this.hls) === null || _this$hls3 === void 0 || _this$hls3.destroy();
+			(_this$hls = this.hls) === null || _this$hls === void 0 || _this$hls.destroy();
 			this.hls = void 0;
 			this.shortcuts.destroy();
 			try {
@@ -4824,6 +4822,15 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			this.media.load();
 			this.plyr.destroy();
 			this.$wrapper.remove();
+		}
+		beforeChangeSrc() {
+			var _this$hls2;
+			(_this$hls2 = this.hls) === null || _this$hls2 === void 0 || _this$hls2.destroy();
+			this.hls = void 0;
+			this.playTimeStoreKey = void 0;
+			this.hideControlsDebounced.cancel();
+			this.hideCursorDebounced.cancel();
+			this.setCurrentTimeLogThrottled.cancel();
 		}
 		afterChangeSrc() {
 			this.isJumped = false;
@@ -6812,8 +6819,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	//#endregion
 	//#region src/adapter/agefans/subscribe.template.html
 	var subscribe_template_default$2 = {
-		"subListContainer": "<div id=\"subListContainer\" class=\"text_list_box mb-4\">\n  <div class=\"text_list_box--hd\">\n    <h6 class=\"title\">\n      <span class=\"float-end\">\n        <span class=\"update-info\" title=\"点击可强制更新数据\"></span>\n      </span>\n      订阅列表\n    </h6>\n  </div>\n  <div id=\"subList\"></div>\n</div>",
-		"subList": "<div id=\"subList\">\n  {{# if (groups.every(o => o.list.length === 0)) { }}\n  <div class=\"text_list_box--bd\">\n    <div class=\"text_list_box_wrapper\">\n      <ul class=\"text_list_item\">\n        <li>\n          <div class=\"d-flex position-relative\">\n            <div class=\"flex-grow-1 text-truncate pe-2\">\n              订阅喜欢的番剧，在播放页面标题右侧添加订阅\n            </div>\n          </div>\n        </li>\n      </ul>\n    </div>\n  </div>\n  {{# } }}\n  \n  {{# groups.filter(o => !!o.list.length).forEach(({list, day}) => { }}\n  <div class=\"text_list_box--bd\">\n    <div class=\"sub-group-day\">{{day}}</div>\n    <div class=\"text_list_box_wrapper\">\n      <ul class=\"text_list_item\">\n        {{# list.forEach(item => { }}\n        <li>\n          <div class=\"d-flex position-relative\">\n            <div class=\"text-truncate pe-2\">\n              <a                 href=\"{{item.current.url}}\"\n                class=\"text-decoration-none link-light common_alink\"\n                >{{item.title}}</a>\n            </div>\n            <div class=\"flex-grow-1 title_new\"></div>\n            <div class=\"title_sub text-truncate\">\n              <a                 class=\"text-decoration-none link-light common_alink\"\n                href=\"{{item.current.url}}\"\n                >{{item.current.title}}</a>\n              <span>/</span>\n              <a                 class=\"text-decoration-none link-light common_alink\"\n                href=\"{{item.last.url}}\"\n                >{{item.last.title}}</a>\n            </div>\n\n            <div class=\"sub-thumbnail-box\">\n              <img                 class=\"sub-thumbnail\"\n                src=\"{{item.thumbnail}}\"\n                alt=\"{{item.title}}\"\n              >\n            </div>\n          </div>\n        </li>\n        {{# }) }}\n      </ul>\n    </div>\n  </div>\n  {{# }) }}\n</div>"
+		"subListContainer": "<div id=\"subListContainer\" class=\"text_list_box mb-4\">\r\n  <div class=\"text_list_box--hd\">\r\n    <h6 class=\"title\">\r\n      <span class=\"float-end\">\r\n        <span class=\"update-info\" title=\"点击可强制更新数据\"></span>\r\n      </span>\r\n      订阅列表\r\n    </h6>\r\n  </div>\r\n  <div id=\"subList\"></div>\r\n</div>",
+		"subList": "<div id=\"subList\">\r\n  {{# if (groups.every(o => o.list.length === 0)) { }}\r\n  <div class=\"text_list_box--bd\">\r\n    <div class=\"text_list_box_wrapper\">\r\n      <ul class=\"text_list_item\">\r\n        <li>\r\n          <div class=\"d-flex position-relative\">\r\n            <div class=\"flex-grow-1 text-truncate pe-2\">\r\n              订阅喜欢的番剧，在播放页面标题右侧添加订阅\r\n            </div>\r\n          </div>\r\n        </li>\r\n      </ul>\r\n    </div>\r\n  </div>\r\n  {{# } }}\r\n  \r\n  {{# groups.filter(o => !!o.list.length).forEach(({list, day}) => { }}\r\n  <div class=\"text_list_box--bd\">\r\n    <div class=\"sub-group-day\">{{day}}</div>\r\n    <div class=\"text_list_box_wrapper\">\r\n      <ul class=\"text_list_item\">\r\n        {{# list.forEach(item => { }}\r\n        <li>\r\n          <div class=\"d-flex position-relative\">\r\n            <div class=\"text-truncate pe-2\">\r\n              <a \n                href=\"{{item.current.url}}\"\r\n                class=\"text-decoration-none link-light common_alink\"\r\n                >{{item.title}}</a>\r\n            </div>\r\n            <div class=\"flex-grow-1 title_new\"></div>\r\n            <div class=\"title_sub text-truncate\">\r\n              <a \n                class=\"text-decoration-none link-light common_alink\"\r\n                href=\"{{item.current.url}}\"\r\n                >{{item.current.title}}</a>\r\n              <span>/</span>\r\n              <a \n                class=\"text-decoration-none link-light common_alink\"\r\n                href=\"{{item.last.url}}\"\r\n                >{{item.last.title}}</a>\r\n            </div>\r\n\r\n            <div class=\"sub-thumbnail-box\">\r\n              <img \n                class=\"sub-thumbnail\"\r\n                src=\"{{item.thumbnail}}\"\r\n                alt=\"{{item.title}}\"\r\n              >\r\n            </div>\r\n          </div>\r\n        </li>\r\n        {{# }) }}\r\n      </ul>\r\n    </div>\r\n  </div>\r\n  {{# }) }}\r\n</div>"
 	};
 	//#endregion
 	//#region src/adapter/agefans/play.ts
@@ -7097,10 +7104,10 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	async function parser$4() {
 		const video = await queryDom("video");
 		video.src = "";
+		video.load();
 		const url = await execInUnsafeWindow(() => window.url);
 		const player = new KPlayer("#player", { eventToParentWindow: true });
-		if (url.includes("m3u8")) player.setM3u8(url);
-		else player.src = url;
+		player.src = url;
 	}
 	//#endregion
 	//#region src/adapter/bimiacg/index.ts
@@ -7163,8 +7170,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	//#endregion
 	//#region src/adapter/cycanime/subscribe.template.html
 	var subscribe_template_default$1 = {
-		"subListContainer": "<div id=\"subListContainer\" class=\"content-visibility-auto space-y-4\">\n  <div class=\"mb-4\">\n    <h2 class=\"text-xl font-semibold text-foreground md:text-2xl\">订阅列表</h2>\n    <button       class=\"update-info inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground\"\n      title=\"点击可强制更新数据\"\n      type=\"button\"\n    >\n      检查更新\n    </button>\n  </div>\n  <div id=\"subList\"></div>\n</div>",
-		"subList": "<div id=\"subList\">\n  {{# if (list.length === 0) { }}\n  <div     class=\"flex min-h-24 items-center justify-center rounded-lg border border-dashed border-border/70 bg-card/50 py-4 text-center text-sm text-muted-foreground\"\n  >\n    订阅喜欢的番剧，在播放页面标题右侧添加订阅\n  </div>\n  {{# } else { }}\n  <div     class=\"grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 lg:grid-cols-6 lg:gap-5\"\n  >\n    {{# list.forEach((item) => { }}\n    <div       class=\"group block min-w-0 rounded-lg transition-transform duration-200 hover:-translate-y-0.5\"\n    >\n      <a href=\"{{item.current.url}}\">\n        <span           class=\"relative block overflow-hidden bg-muted aspect-[3/4] isolate rounded-lg [backface-visibility:hidden] [clip-path:inset(0_round_0.5rem)] [contain:paint] [transform:translateZ(0)]\"\n        >\n          <img             alt=\"{{item.title}}\"\n            loading=\"lazy\"\n            decoding=\"async\"\n            class=\"block h-full w-full object-cover transform-gpu transition-transform duration-300 [backface-visibility:hidden] group-hover:scale-[1.04]\"\n            src=\"{{item.thumbnail}}\"\n          >\n          <span             class=\"absolute bottom-2 right-2 inline-flex h-[22px] max-w-[calc(100%-16px)] items-center rounded-md bg-black/60 px-2 text-xs font-semibold text-white backdrop-blur truncate max-sm:bottom-1.5 max-sm:right-1.5 max-sm:h-[18px] max-sm:px-1.5 max-sm:text-[10px]\"\n            >{{item.status || item.last.title}}</span>\n        </span>\n      </a>\n      <div class=\"mt-2.5 space-y-1 max-sm:mt-1.5\">\n        <a           href=\"{{item.current.url}}\"\n          class=\"line-clamp-2 text-sm font-medium leading-[1.4] text-card-foreground transition-colors group-hover:text-primary max-sm:text-xs\"\n        >\n          {{item.title}}\n        </a>\n        <div class=\"line-clamp-1 text-xs text-muted-foreground\">\n          观看至\n          <a href=\"{{item.current.url}}\" class=\"hover:text-foreground\">\n            {{item.current.title}}\n          </a>\n          /\n          <a href=\"{{item.last.url}}\" class=\"hover:text-foreground\">\n            {{item.last.title}}\n          </a>\n        </div>\n      </div>\n    </div>\n    {{# }) }}\n  </div>\n  {{# } }}\n</div>"
+		"subListContainer": "<div id=\"subListContainer\" class=\"content-visibility-auto space-y-4\">\r\n  <div class=\"mb-4\">\r\n    <h2 class=\"text-xl font-semibold text-foreground md:text-2xl\">订阅列表</h2>\r\n    <button \n      class=\"update-info inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground\"\r\n      title=\"点击可强制更新数据\"\r\n      type=\"button\"\r\n    >\r\n      检查更新\r\n    </button>\r\n  </div>\r\n  <div id=\"subList\"></div>\r\n</div>",
+		"subList": "<div id=\"subList\">\r\n  {{# if (list.length === 0) { }}\r\n  <div \n    class=\"flex min-h-24 items-center justify-center rounded-lg border border-dashed border-border/70 bg-card/50 py-4 text-center text-sm text-muted-foreground\"\r\n  >\r\n    订阅喜欢的番剧，在播放页面标题右侧添加订阅\r\n  </div>\r\n  {{# } else { }}\r\n  <div \n    class=\"grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 lg:grid-cols-6 lg:gap-5\"\r\n  >\r\n    {{# list.forEach((item) => { }}\r\n    <div \n      class=\"group block min-w-0 rounded-lg transition-transform duration-200 hover:-translate-y-0.5\"\r\n    >\r\n      <a href=\"{{item.current.url}}\">\r\n        <span \n          class=\"relative block overflow-hidden bg-muted aspect-[3/4] isolate rounded-lg [backface-visibility:hidden] [clip-path:inset(0_round_0.5rem)] [contain:paint] [transform:translateZ(0)]\"\r\n        >\r\n          <img \n            alt=\"{{item.title}}\"\r\n            loading=\"lazy\"\r\n            decoding=\"async\"\r\n            class=\"block h-full w-full object-cover transform-gpu transition-transform duration-300 [backface-visibility:hidden] group-hover:scale-[1.04]\"\r\n            src=\"{{item.thumbnail}}\"\r\n          >\r\n          <span \n            class=\"absolute bottom-2 right-2 inline-flex h-[22px] max-w-[calc(100%-16px)] items-center rounded-md bg-black/60 px-2 text-xs font-semibold text-white backdrop-blur truncate max-sm:bottom-1.5 max-sm:right-1.5 max-sm:h-[18px] max-sm:px-1.5 max-sm:text-[10px]\"\r\n            >{{item.status || item.last.title}}</span>\r\n        </span>\r\n      </a>\r\n      <div class=\"mt-2.5 space-y-1 max-sm:mt-1.5\">\r\n        <a \n          href=\"{{item.current.url}}\"\r\n          class=\"line-clamp-2 text-sm font-medium leading-[1.4] text-card-foreground transition-colors group-hover:text-primary max-sm:text-xs\"\r\n        >\r\n          {{item.title}}\r\n        </a>\r\n        <div class=\"line-clamp-1 text-xs text-muted-foreground\">\r\n          观看至\r\n          <a href=\"{{item.current.url}}\" class=\"hover:text-foreground\">\r\n            {{item.current.title}}\r\n          </a>\r\n          /\r\n          <a href=\"{{item.last.url}}\" class=\"hover:text-foreground\">\r\n            {{item.last.title}}\r\n          </a>\r\n        </div>\r\n      </div>\r\n    </div>\r\n    {{# }) }}\r\n  </div>\r\n  {{# } }}\r\n</div>"
 	};
 	//#endregion
 	//#region src/adapter/cycanime/play.ts
@@ -8250,8 +8257,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	//#endregion
 	//#region src/adapter/girigirilove/subscribe.template.html
 	var subscribe_template_default = {
-		"subListContainer": "<div id=\"subListContainer\" class=\"box-width wow fadeInUp\">\n  <div class=\"overflow\">\n    <div class=\"title flex between top40 rel\">\n      <div class=\"title-left\">\n        <h4 class=\"title-h cor4\">订阅列表</h4>\n        <div class=\"update-info cor5\"></div>\n      </div>\n    </div>\n\n    <div id=\"subList\"></div>\n  </div>\n</div>",
-		"subList": "<div id=\"subList\">\n  {{# if (groups.every(o => o.list.length === 0)) { }}\n  <div class=\"cor4 empty-tip\">订阅喜欢的番剧，在播放页面标题右侧添加订阅</div>\n  {{# } }}\n  \n  <div class=\"sub-list rel border-box public-r hide-b-2 diy-center1 mask2\">\n    <div class=\"swiper-wrapper\">\n      {{# groups.filter(o => !!o.list.length).forEach((group) => {\n      group.list.forEach((item) => { }}\n      <div class=\"public-list-box public-pic-b swiper-slide\">\n        <div class=\"public-list-div public-list-bj\">\n          <a             target=\"_blank\"\n            class=\"public-list-exp\"\n            href=\"{{item.current.url}}\"\n            title=\"{{item.title}}\"\n          >\n            <img               class=\"lazy lazy1 gen-movie-img entered loaded\"\n              referrerpolicy=\"no-referrer\"\n              src=\"{{item.thumbnail}}\"\n              alt=\"{{item.title}}\"\n              data-src=\"{{item.thumbnail}}\"\n              data-ll-status=\"loaded\"\n            >\n            <span class=\"public-bg\"></span>\n            <div class=\"public-prt k-day-{{group.dayNum}}\">\n              {{group.day + ' ' + new\n              Date(item.updatedAt).toLocaleTimeString().slice(0,-3) }}\n            </div>\n            <span class=\"public-list-prb hide ft2\">{{item.status}}</span>\n          </a>\n        </div>\n        <div class=\"public-list-button\">\n          <a             target=\"_blank\"\n            class=\"time-title hide ft4 bold\"\n            href=\"{{item.current.url}}\"\n            title=\"{{item.title}}\"\n            >{{item.title}}</a>\n          <div class=\"public-list-subtitle cor5 hide ft2\">\n            <span>观看至</span>\n            <a               target=\"_blank\"\n              href=\"{{item.current.url}}\"\n              title=\"{{item.current.title}}\"\n              >{{item.current.title}}</a>\n            <span>/</span>\n            <a               target=\"_blank\"\n              href=\"{{item.last.url}}\"\n              title=\"{{item.last.title}}\"\n              >{{item.last.title}}</a>\n          </div>\n        </div>\n      </div>\n      {{# })}) }}\n    </div>\n\n    <div class=\"vod-list-page\">\n      <a class=\"swiper-button-prev\" href=\"javascript:\" tabindex=\"-1\">\n        <i class=\"fa ds-fanhui\"></i>\n      </a>\n      <a class=\"swiper-button-next\" href=\"javascript:\" tabindex=\"0\">\n        <i class=\"fa ds-jiantouyou\"> </i>\n      </a>\n    </div>\n  </div>\n</div>"
+		"subListContainer": "<div id=\"subListContainer\" class=\"box-width wow fadeInUp\">\r\n  <div class=\"overflow\">\r\n    <div class=\"title flex between top40 rel\">\r\n      <div class=\"title-left\">\r\n        <h4 class=\"title-h cor4\">订阅列表</h4>\r\n        <div class=\"update-info cor5\"></div>\r\n      </div>\r\n    </div>\r\n\r\n    <div id=\"subList\"></div>\r\n  </div>\r\n</div>",
+		"subList": "<div id=\"subList\">\r\n  {{# if (groups.every(o => o.list.length === 0)) { }}\r\n  <div class=\"cor4 empty-tip\">订阅喜欢的番剧，在播放页面标题右侧添加订阅</div>\r\n  {{# } }}\r\n  \r\n  <div class=\"sub-list rel border-box public-r hide-b-2 diy-center1 mask2\">\r\n    <div class=\"swiper-wrapper\">\r\n      {{# groups.filter(o => !!o.list.length).forEach((group) => {\r\n      group.list.forEach((item) => { }}\r\n      <div class=\"public-list-box public-pic-b swiper-slide\">\r\n        <div class=\"public-list-div public-list-bj\">\r\n          <a \n            target=\"_blank\"\r\n            class=\"public-list-exp\"\r\n            href=\"{{item.current.url}}\"\r\n            title=\"{{item.title}}\"\r\n          >\r\n            <img \n              class=\"lazy lazy1 gen-movie-img entered loaded\"\r\n              referrerpolicy=\"no-referrer\"\r\n              src=\"{{item.thumbnail}}\"\r\n              alt=\"{{item.title}}\"\r\n              data-src=\"{{item.thumbnail}}\"\r\n              data-ll-status=\"loaded\"\r\n            >\r\n            <span class=\"public-bg\"></span>\r\n            <div class=\"public-prt k-day-{{group.dayNum}}\">\r\n              {{group.day + ' ' + new\r\n              Date(item.updatedAt).toLocaleTimeString().slice(0,-3) }}\r\n            </div>\r\n            <span class=\"public-list-prb hide ft2\">{{item.status}}</span>\r\n          </a>\r\n        </div>\r\n        <div class=\"public-list-button\">\r\n          <a \n            target=\"_blank\"\r\n            class=\"time-title hide ft4 bold\"\r\n            href=\"{{item.current.url}}\"\r\n            title=\"{{item.title}}\"\r\n            >{{item.title}}</a>\r\n          <div class=\"public-list-subtitle cor5 hide ft2\">\r\n            <span>观看至</span>\r\n            <a \n              target=\"_blank\"\r\n              href=\"{{item.current.url}}\"\r\n              title=\"{{item.current.title}}\"\r\n              >{{item.current.title}}</a>\r\n            <span>/</span>\r\n            <a \n              target=\"_blank\"\r\n              href=\"{{item.last.url}}\"\r\n              title=\"{{item.last.title}}\"\r\n              >{{item.last.title}}</a>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      {{# })}) }}\r\n    </div>\r\n\r\n    <div class=\"vod-list-page\">\r\n      <a class=\"swiper-button-prev\" href=\"javascript:\" tabindex=\"-1\">\r\n        <i class=\"fa ds-fanhui\"></i>\r\n      </a>\r\n      <a class=\"swiper-button-next\" href=\"javascript:\" tabindex=\"0\">\r\n        <i class=\"fa ds-jiantouyou\"> </i>\r\n      </a>\r\n    </div>\r\n  </div>\r\n</div>"
 	};
 	//#endregion
 	//#region src/adapter/girigirilove/play.ts
