@@ -74,12 +74,9 @@ export const iframePlayer = defineIframePlayer({
 export async function parser() {
   const video = await queryDom<HTMLVideoElement>('video')
   video.src = ''
+  video.load()
 
   const url = await execInUnsafeWindow(() => window.url)
   const player = new KPlayer('#player', { eventToParentWindow: true })
-  if (url.includes('m3u8')) {
-    player.setM3u8(url)
-  } else {
-    player.src = url
-  }
+  player.src = url
 }

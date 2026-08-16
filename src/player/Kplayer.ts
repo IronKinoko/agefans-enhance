@@ -99,6 +99,7 @@ export class KPlayer {
   private hls?: Hls
   private destroyList: (() => void)[] = []
   private destroyed = false
+  playTimeStoreKey?: string
 
   constructor(selector: string | Element, opts: KPlayerOpts = {}) {
     this.opts = opts
@@ -231,7 +232,11 @@ export class KPlayer {
   }
 
   async getPlayTimeStoreKey() {
-    return await runtime.getTopLocationHref()
+    if (!this.playTimeStoreKey) {
+      this.playTimeStoreKey = await runtime.getTopLocationHref()
+    }
+
+    return this.playTimeStoreKey
   }
   async getAnimeScope() {
     return await runtime.getAnimeScope()
@@ -734,10 +739,8 @@ export class KPlayer {
     return this.media.currentSrc
   }
 
-  /** 如果直接设置src满足不了需求，则使用这个方法去加载*/
-  setM3u8(src: string) {
-    this.hls?.destroy()
-    this.hls = undefined
+  private setM3u8(src: string) {
+    this.beforeChangeSrc()
 
     if (Hls.isSupported()) {
       const hls = new Hls()
@@ -749,12 +752,14 @@ export class KPlayer {
     } else {
       throw new Error('不支持播放 hls 文件')
     }
+
     this.afterChangeSrc()
   }
-  setMp4(src: string) {
-    this.hls?.destroy()
-    this.hls = undefined
+  private setMp4(src: string) {
+    this.beforeChangeSrc()
+
     this.$video.attr('src', src)
+
     this.afterChangeSrc()
   }
 
@@ -790,6 +795,15 @@ export class KPlayer {
 
     this.plyr.destroy()
     this.$wrapper.remove()
+  }
+
+  private beforeChangeSrc() {
+    this.hls?.destroy()
+    this.hls = undefined
+    this.playTimeStoreKey = undefined
+    this.hideControlsDebounced.cancel()
+    this.hideCursorDebounced.cancel()
+    this.setCurrentTimeLogThrottled.cancel()
   }
 
   private afterChangeSrc() {
