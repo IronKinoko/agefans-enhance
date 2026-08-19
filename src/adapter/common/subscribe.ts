@@ -106,7 +106,7 @@ export class SubscriptionManager {
     })
 
     groups.forEach((group) => {
-      group.list.sort((a, b) => a.updatedAt - b.updatedAt)
+      group.list.sort((a, b) => b.updatedAt - a.updatedAt)
     })
     const day = new Date().getDay()
     groups = [
