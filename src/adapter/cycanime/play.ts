@@ -198,8 +198,6 @@ export const subscribe = defineSubscribe({
 
         if ($tvSection.length) {
           $root.insertBefore($tvSection)
-        } else {
-          $('main .container').first().prepend($root)
         }
       }
       mount()
@@ -236,8 +234,6 @@ export const subscribe = defineSubscribe({
 
         if ($followWrap.length) {
           $wrap.insertAfter($followWrap)
-        } else {
-          $('h1').first().closest('section').append($wrap)
         }
       }
 
