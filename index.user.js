@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.58.1
+// @version      1.58.2
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -3619,7 +3619,7 @@
 				content: `
     <table class="k-table">
       <tbody>
-      <tr><td>脚本版本</td><td>1.58.1</td></tr>
+      <tr><td>脚本版本</td><td>1.58.2</td></tr>
       <tr>
         <td>脚本作者</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -3745,7 +3745,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: 1.58.1
+脚本版本: 1.58.2
 `;
 	//#endregion
 	//#region src/player/plugins/shortcuts/help/index.ts
@@ -6541,7 +6541,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 				groups[day].list.push(sub);
 			});
 			groups.forEach((group) => {
-				group.list.sort((a, b) => a.updatedAt - b.updatedAt);
+				group.list.sort((a, b) => b.updatedAt - a.updatedAt);
 			});
 			const day = (/* @__PURE__ */ new Date()).getDay();
 			groups = [...groups.slice(0, day + 1).reverse(), ...groups.slice(day + 1).reverse()];
@@ -7609,7 +7609,6 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 					$("#subListContainer").not($root).remove();
 					const $tvSection = $("h2").filter((_, el) => $(el).text().trim() === "TV番组").first().closest("section");
 					if ($tvSection.length) $root.insertBefore($tvSection);
-					else $("main .container").first().prepend($root);
 				};
 				mount();
 				stopObserveSubscribedListMount === null || stopObserveSubscribedListMount === void 0 || stopObserveSubscribedListMount();
@@ -7630,7 +7629,6 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 					$(".k-subscribe-btn-wrap").not($wrap).remove();
 					const $followWrap = $("button").filter((_, el) => $(el).text().trim().includes("追番")).first().parent();
 					if ($followWrap.length) $wrap.insertAfter($followWrap);
-					else $("h1").first().closest("section").append($wrap);
 				};
 				$btn.addClass([
 					"k-subscribe-btn",
