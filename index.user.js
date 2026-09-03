@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.58.2
+// @version      1.58.3
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -3619,7 +3619,7 @@
 				content: `
     <table class="k-table">
       <tbody>
-      <tr><td>脚本版本</td><td>1.58.2</td></tr>
+      <tr><td>脚本版本</td><td>1.58.3</td></tr>
       <tr>
         <td>脚本作者</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -3745,7 +3745,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: 1.58.2
+脚本版本: 1.58.3
 `;
 	//#endregion
 	//#region src/player/plugins/shortcuts/help/index.ts
@@ -6591,8 +6591,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			const now = Date.now();
 			if (!force) {
 				if (sub.checkedAt - sub.updatedAt > 1e3 * 60 * 60 * 24 * 15) return;
-				if (now - sub.updatedAt < 1e3 * 60 * 60 * 163) return;
-				if (now - sub.checkedAt < 1e3 * 60 * 60) return;
+				if (now - sub.updatedAt < 1e3 * 60 * 60 * 24 * 6) return;
+				if (now - sub.checkedAt < 1e3 * 60 * 5) return;
 			}
 			const animeInfo = await config.subscribe.getAnimeInfo(id, sm);
 			Object.assign(animeInfo, { checkedAt: now });
@@ -7741,7 +7741,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			});
 			API.commonHeaders.authorization = res.data.token;
 		},
-		getSctions: memoize(async (animeId) => {
+		getSctions: async (animeId) => {
 			const pageSize = 100;
 			const getSectionByPage = async (page) => {
 				return (await fetch(`/api/videos/${animeId}/sections?player_code=cychub&page=${page + 1}&page_size=${pageSize}`, { headers: API.commonHeaders }).then((res) => res.json())).data;
@@ -7758,12 +7758,12 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 				});
 			}
 			return sections;
-		}),
-		getVideoInfo: memoize(async (animeId) => {
+		},
+		getVideoInfo: async (animeId) => {
 			const res = await fetch(`/api/videos/${animeId}`, { headers: API.commonHeaders }).then((res) => res.json());
 			if (res.code !== 0 || !res.data) throw new Error(`Failed to fetch anime info: ${res.msg}`);
 			return res.data;
-		}),
+		},
 		getEpisodePlayUrl: async (episodeId) => {
 			await API.ensureLogin();
 			return (await fetch(`/api/v2/sections/${episodeId}/play-url`, { headers: API.commonHeaders }).then((res) => res.json())).data;
