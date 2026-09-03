@@ -1,4 +1,4 @@
-import { memoize, template } from 'lodash-es'
+import { template } from 'lodash-es'
 import { KPlayer } from '../../player'
 import { queryDom } from '../../utils/queryDom'
 import { local } from '../../utils/storage'
@@ -405,7 +405,7 @@ const API = {
 
     API.commonHeaders.authorization = res.data.token
   },
-  getSctions: memoize(async (animeId: number) => {
+  getSctions: async (animeId: number) => {
     type Section = {
       id: number
       title: string
@@ -450,8 +450,8 @@ const API = {
     }
 
     return sections
-  }),
-  getVideoInfo: memoize(async (animeId: number) => {
+  },
+  getVideoInfo: async (animeId: number) => {
     type VideoInfoResponse = {
       code: number
       msg: string
@@ -471,7 +471,7 @@ const API = {
       throw new Error(`Failed to fetch anime info: ${res.msg}`)
     }
     return res.data
-  }),
+  },
 
   getEpisodePlayUrl: async (episodeId: number) => {
     await API.ensureLogin()

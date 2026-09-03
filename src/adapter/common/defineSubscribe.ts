@@ -37,10 +37,10 @@ export function defineSubscribe(config: Config) {
     if (!force) {
       // 15天内没有更新过的跳过
       if (sub.checkedAt - sub.updatedAt > 1000 * 60 * 60 * 24 * 15) return
-      // 近一周内更新过了
-      if (now - sub.updatedAt < 1000 * 60 * 60 * (24 * 7 - 5)) return
-      // 一小时内检查过了
-      if (now - sub.checkedAt < 1000 * 60 * 60) return
+      // 近6天内更新过了
+      if (now - sub.updatedAt < 1000 * 60 * 60 * 24 * 6) return
+      // 5分钟内检查过了
+      if (now - sub.checkedAt < 1000 * 60 * 5) return
     }
 
     const animeInfo = await config.subscribe.getAnimeInfo(id, sm)
