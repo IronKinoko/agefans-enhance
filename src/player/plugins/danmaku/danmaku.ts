@@ -334,10 +334,12 @@ class DanmakuPlugin {
   }
 
   autoMatchEpisode = async () => {
-    let episodeName = this.state.videoInfo.episode
+    const episodeName = this.state.videoInfo.episode
+    const normalizedEpisodeName = episodeName.trim()
+    const episodeNumber = +normalizedEpisodeName
     let episode: Episode | undefined
 
-    let storedEpisodeId = storageEpisodeName(
+    const storedEpisodeId = storageEpisodeName(
       `${this.state.videoInfo.rawName}.${this.state.videoInfo.episode}`
     )
     if (storedEpisodeId) {
@@ -345,13 +347,47 @@ class DanmakuPlugin {
         (episode) => String(episode.id) === storedEpisodeId
       )
     }
-    if (!episode && !isNaN(+episodeName)) {
-      episode = this.state.episodes.find((episode) =>
-        new RegExp(`${+episodeName}[话集]`).test(episode.name)
-      )
-      if (!episode) {
+
+    if (!episode && normalizedEpisodeName && !isNaN(episodeNumber)) {
+      const prefix = `${this.state.videoInfo.rawName}.`
+      let closestDistance = Infinity
+
+      for (const [key, episodeId] of storageEpisodeName.entries()) {
+        if (!key.startsWith(prefix)) continue
+
+        const storedEpisodeName = key.slice(prefix.length)
+        const storedEpisodeNumber = +storedEpisodeName
+        if (!storedEpisodeName || isNaN(storedEpisodeNumber)) continue
+
+        const storedEpisodeIndex = this.state.episodes.findIndex(
+          (episode) => String(episode.id) === episodeId
+        )
+        if (storedEpisodeIndex < 0) continue
+
+        const indexOffset = episodeNumber - storedEpisodeNumber
+        if (!Number.isInteger(indexOffset)) continue
+
+        const matchedEpisode =
+          this.state.episodes[storedEpisodeIndex + indexOffset]
+        const distance = Math.abs(indexOffset)
+        if (!matchedEpisode || distance >= closestDistance) continue
+
+        episode = matchedEpisode
+        closestDistance = distance
+      }
+    }
+
+    if (!episode && normalizedEpisodeName) {
+      if (!isNaN(episodeNumber)) {
+        episode = this.state.episodes.find(({ name }) => {
+          const matched = name.match(
+            /(?:^|[^0-9.])0*([0-9]+(?:\.[0-9]+)?|\.[0-9]+)\s*[集话]/
+          )
+          return !!matched && +matched[1] === episodeNumber
+        })
+      } else {
         episode = this.state.episodes.find((episode) =>
-          episode.name.includes(episodeName)
+          episode.name.includes(normalizedEpisodeName)
         )
       }
     }

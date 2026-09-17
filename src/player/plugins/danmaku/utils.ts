@@ -2,10 +2,14 @@ import { local } from '../../../utils/storage'
 import { KPlayer, LocalConfig } from '../../Kplayer'
 import { Anime } from './types'
 
-function createStorage<T = string>(storageKey: string) {
-  function storage(key: string): T | undefined
-  function storage(key: string, value: T): void
-  function storage(key: string, value?: T): T | undefined {
+type StorageAccessor<T> = {
+  (key: string): T | undefined
+  (key: string, value: T): void
+  entries(): [string, T][]
+}
+
+function createStorage<T = string>(storageKey: string): StorageAccessor<T> {
+  const storage = ((key: string, value?: T) => {
     const store = local.getItem<Record<string, T>>(storageKey, {})
     if (value) {
       store[key] = value
@@ -13,6 +17,9 @@ function createStorage<T = string>(storageKey: string) {
     } else {
       return store[key]
     }
+  }) as StorageAccessor<T>
+  storage.entries = () => {
+    return Object.entries(local.getItem<Record<string, T>>(storageKey, {}))
   }
   return storage
 }
