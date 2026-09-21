@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.59.0
+// @version      1.60.0
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -18,6 +18,7 @@
 // @include      https://*43.240.156.118*
 // @include      https://www.cycani.org/*
 // @include      https://anime.xifanacg.com/*
+// @include      https://next.xifanacg.com/*
 // @include      https://player.moedot.net/*
 // @include      https://www.anime1.me/*
 // @include      https://anime1.me/*
@@ -3619,7 +3620,7 @@
 				content: `
     <table class="k-table">
       <tbody>
-      <tr><td>脚本版本</td><td>1.59.0</td></tr>
+      <tr><td>脚本版本</td><td>1.60.0</td></tr>
       <tr>
         <td>脚本作者</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -3745,7 +3746,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: 1.59.0
+脚本版本: 1.60.0
 `;
 	//#endregion
 	//#region src/player/plugins/shortcuts/help/index.ts
@@ -6218,7 +6219,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	}
 	//#endregion
 	//#region src/adapter/_iframe_player_parser/parser.ts
-	let player$1;
+	let player$2;
 	const parser$5 = {
 		"danmu.yhdmjx.com": async () => {
 			function detectLoadError() {
@@ -6250,14 +6251,14 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			const video = await queryDom("video");
 			video.src = "";
 			dispose();
-			player$1 = new KPlayer("#player", { eventToParentWindow: true });
-			player$1.src = await execInUnsafeWindow(() => window.v_decrypt(window.config.url, window._token_key, window.key_token));
+			player$2 = new KPlayer("#player", { eventToParentWindow: true });
+			player$2.src = await execInUnsafeWindow(() => window.v_decrypt(window.config.url, window._token_key, window.key_token));
 		},
 		"pro.ascepan.top": async () => {
 			const video = await queryDom("video");
 			video.src = "";
-			player$1 = new KPlayer("#player", { eventToParentWindow: true });
-			player$1.src = await execInUnsafeWindow(() => window.config.url);
+			player$2 = new KPlayer("#player", { eventToParentWindow: true });
+			player$2.src = await execInUnsafeWindow(() => window.config.url);
 		},
 		"sp-flv.com": async () => {
 			const video = await queryDom("video");
@@ -6267,13 +6268,13 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 				url = await execInUnsafeWindow(() => window.video_url);
 				if (url) {
 					video.src = "";
-					player$1 = new KPlayer("#mplayer-media-wrapper", { eventToParentWindow: true });
-					player$1.src = url;
+					player$2 = new KPlayer("#mplayer-media-wrapper", { eventToParentWindow: true });
+					player$2.src = url;
 				}
 			} else {
 				video.src = "";
-				player$1 = new KPlayer("#mplayer-media-wrapper", { eventToParentWindow: true });
-				player$1.src = url;
+				player$2 = new KPlayer("#mplayer-media-wrapper", { eventToParentWindow: true });
+				player$2.src = url;
 			}
 		},
 		/**
@@ -6291,8 +6292,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			}
 			$("#artplayer").remove();
 			$("body").append("<div id=\"k-player-container\"/>");
-			player$1 = new KPlayer("#k-player-container", { eventToParentWindow: true });
-			player$1.src = url;
+			player$2 = new KPlayer("#k-player-container", { eventToParentWindow: true });
+			player$2.src = url;
 		},
 		/**
 		* agefans-02
@@ -6310,8 +6311,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			await execInUnsafeWindow(() => window.art.destroy(false));
 			$("#loading").remove();
 			$("body").append("<div id=\"k-player-container\"/>");
-			player$1 = new KPlayer("#k-player-container", { eventToParentWindow: true });
-			player$1.src = url;
+			player$2 = new KPlayer("#k-player-container", { eventToParentWindow: true });
+			player$2.src = url;
 		}
 	};
 	//#endregion
@@ -6843,8 +6844,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	//#endregion
 	//#region src/adapter/agefans/subscribe.template.html
 	var subscribe_template_default$2 = {
-		"subListContainer": "<div id=\"subListContainer\" class=\"text_list_box mb-4\">\n  <div class=\"text_list_box--hd\">\n    <h6 class=\"title\">\n      <span class=\"float-end\">\n        <span class=\"update-info\" title=\"点击可强制更新数据\"></span>\n      </span>\n      订阅列表\n    </h6>\n  </div>\n  <div id=\"subList\"></div>\n</div>",
-		"subList": "<div id=\"subList\">\n  {{# if (groups.every(o => o.list.length === 0)) { }}\n  <div class=\"text_list_box--bd\">\n    <div class=\"text_list_box_wrapper\">\n      <ul class=\"text_list_item\">\n        <li>\n          <div class=\"d-flex position-relative\">\n            <div class=\"flex-grow-1 text-truncate pe-2\">\n              订阅喜欢的番剧，在播放页面标题右侧添加订阅\n            </div>\n          </div>\n        </li>\n      </ul>\n    </div>\n  </div>\n  {{# } }}\n  \n  {{# groups.filter(o => !!o.list.length).forEach(({list, day}) => { }}\n  <div class=\"text_list_box--bd\">\n    <div class=\"sub-group-day\">{{day}}</div>\n    <div class=\"text_list_box_wrapper\">\n      <ul class=\"text_list_item\">\n        {{# list.forEach(item => { }}\n        <li>\n          <div class=\"d-flex position-relative\">\n            <div class=\"text-truncate pe-2\">\n              <a                 href=\"{{item.current.url}}\"\n                class=\"text-decoration-none link-light common_alink\"\n                >{{item.title}}</a>\n            </div>\n            <div class=\"flex-grow-1 title_new\"></div>\n            <div class=\"title_sub text-truncate\">\n              <a                 class=\"text-decoration-none link-light common_alink\"\n                href=\"{{item.current.url}}\"\n                >{{item.current.title}}</a>\n              <span>/</span>\n              <a                 class=\"text-decoration-none link-light common_alink\"\n                href=\"{{item.last.url}}\"\n                >{{item.last.title}}</a>\n            </div>\n\n            <div class=\"sub-thumbnail-box\">\n              <img                 class=\"sub-thumbnail\"\n                src=\"{{item.thumbnail}}\"\n                alt=\"{{item.title}}\"\n              >\n            </div>\n          </div>\n        </li>\n        {{# }) }}\n      </ul>\n    </div>\n  </div>\n  {{# }) }}\n</div>"
+		"subListContainer": "<div id=\"subListContainer\" class=\"text_list_box mb-4\">\r\n  <div class=\"text_list_box--hd\">\r\n    <h6 class=\"title\">\r\n      <span class=\"float-end\">\r\n        <span class=\"update-info\" title=\"点击可强制更新数据\"></span>\r\n      </span>\r\n      订阅列表\r\n    </h6>\r\n  </div>\r\n  <div id=\"subList\"></div>\r\n</div>",
+		"subList": "<div id=\"subList\">\r\n  {{# if (groups.every(o => o.list.length === 0)) { }}\r\n  <div class=\"text_list_box--bd\">\r\n    <div class=\"text_list_box_wrapper\">\r\n      <ul class=\"text_list_item\">\r\n        <li>\r\n          <div class=\"d-flex position-relative\">\r\n            <div class=\"flex-grow-1 text-truncate pe-2\">\r\n              订阅喜欢的番剧，在播放页面标题右侧添加订阅\r\n            </div>\r\n          </div>\r\n        </li>\r\n      </ul>\r\n    </div>\r\n  </div>\r\n  {{# } }}\r\n  \r\n  {{# groups.filter(o => !!o.list.length).forEach(({list, day}) => { }}\r\n  <div class=\"text_list_box--bd\">\r\n    <div class=\"sub-group-day\">{{day}}</div>\r\n    <div class=\"text_list_box_wrapper\">\r\n      <ul class=\"text_list_item\">\r\n        {{# list.forEach(item => { }}\r\n        <li>\r\n          <div class=\"d-flex position-relative\">\r\n            <div class=\"text-truncate pe-2\">\r\n              <a \n                href=\"{{item.current.url}}\"\r\n                class=\"text-decoration-none link-light common_alink\"\r\n                >{{item.title}}</a>\r\n            </div>\r\n            <div class=\"flex-grow-1 title_new\"></div>\r\n            <div class=\"title_sub text-truncate\">\r\n              <a \n                class=\"text-decoration-none link-light common_alink\"\r\n                href=\"{{item.current.url}}\"\r\n                >{{item.current.title}}</a>\r\n              <span>/</span>\r\n              <a \n                class=\"text-decoration-none link-light common_alink\"\r\n                href=\"{{item.last.url}}\"\r\n                >{{item.last.title}}</a>\r\n            </div>\r\n\r\n            <div class=\"sub-thumbnail-box\">\r\n              <img \n                class=\"sub-thumbnail\"\r\n                src=\"{{item.thumbnail}}\"\r\n                alt=\"{{item.title}}\"\r\n              >\r\n            </div>\r\n          </div>\r\n        </li>\r\n        {{# }) }}\r\n      </ul>\r\n    </div>\r\n  </div>\r\n  {{# }) }}\r\n</div>"
 	};
 	//#endregion
 	//#region src/adapter/agefans/play.ts
@@ -7194,8 +7195,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	//#endregion
 	//#region src/adapter/cycanime/subscribe.template.html
 	var subscribe_template_default$1 = {
-		"subListContainer": "<div id=\"subListContainer\" class=\"content-visibility-auto space-y-4\">\n  <div class=\"mb-4\">\n    <h2 class=\"text-xl font-semibold text-foreground md:text-2xl\">订阅列表</h2>\n    <button       class=\"update-info inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground\"\n      title=\"点击可强制更新数据\"\n      type=\"button\"\n    >\n      检查更新\n    </button>\n  </div>\n  <div id=\"subList\"></div>\n</div>",
-		"subList": "<div id=\"subList\">\n  {{# if (list.length === 0) { }}\n  <div     class=\"flex min-h-24 items-center justify-center rounded-lg border border-dashed border-border/70 bg-card/50 py-4 text-center text-sm text-muted-foreground\"\n  >\n    订阅喜欢的番剧，在播放页面标题右侧添加订阅\n  </div>\n  {{# } else { }}\n  <div     class=\"grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 lg:grid-cols-6 lg:gap-5\"\n  >\n    {{# list.forEach((item) => { }}\n    <div       class=\"group block min-w-0 rounded-lg transition-transform duration-200 hover:-translate-y-0.5\"\n    >\n      <a href=\"{{item.current.url}}\">\n        <span           class=\"relative block overflow-hidden bg-muted aspect-[3/4] isolate rounded-lg [backface-visibility:hidden] [clip-path:inset(0_round_0.5rem)] [contain:paint] [transform:translateZ(0)]\"\n        >\n          <img             alt=\"{{item.title}}\"\n            loading=\"lazy\"\n            decoding=\"async\"\n            class=\"block h-full w-full object-cover transform-gpu transition-transform duration-300 [backface-visibility:hidden] group-hover:scale-[1.04]\"\n            src=\"{{item.thumbnail}}\"\n          >\n          <span             class=\"absolute bottom-2 right-2 inline-flex h-[22px] max-w-[calc(100%-16px)] items-center rounded-md bg-black/60 px-2 text-xs font-semibold text-white backdrop-blur truncate max-sm:bottom-1.5 max-sm:right-1.5 max-sm:h-[18px] max-sm:px-1.5 max-sm:text-[10px]\"\n            >{{item.status || item.last.title}}</span>\n        </span>\n      </a>\n      <div class=\"mt-2.5 space-y-1 max-sm:mt-1.5\">\n        <a           href=\"{{item.current.url}}\"\n          class=\"line-clamp-2 text-sm font-medium leading-[1.4] text-card-foreground transition-colors group-hover:text-primary max-sm:text-xs\"\n        >\n          {{item.title}}\n        </a>\n        <div class=\"line-clamp-1 text-xs text-muted-foreground\">\n          观看至\n          <a href=\"{{item.current.url}}\" class=\"hover:text-foreground\">\n            {{item.current.title}}\n          </a>\n          /\n          <a href=\"{{item.last.url}}\" class=\"hover:text-foreground\">\n            {{item.last.title}}\n          </a>\n        </div>\n      </div>\n    </div>\n    {{# }) }}\n  </div>\n  {{# } }}\n</div>"
+		"subListContainer": "<div id=\"subListContainer\" class=\"content-visibility-auto space-y-4\">\r\n  <div class=\"mb-4\">\r\n    <h2 class=\"text-xl font-semibold text-foreground md:text-2xl\">订阅列表</h2>\r\n    <button \n      class=\"update-info inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground\"\r\n      title=\"点击可强制更新数据\"\r\n      type=\"button\"\r\n    >\r\n      检查更新\r\n    </button>\r\n  </div>\r\n  <div id=\"subList\"></div>\r\n</div>",
+		"subList": "<div id=\"subList\">\r\n  {{# if (list.length === 0) { }}\r\n  <div \n    class=\"flex min-h-24 items-center justify-center rounded-lg border border-dashed border-border/70 bg-card/50 py-4 text-center text-sm text-muted-foreground\"\r\n  >\r\n    订阅喜欢的番剧，在播放页面标题右侧添加订阅\r\n  </div>\r\n  {{# } else { }}\r\n  <div \n    class=\"grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 lg:grid-cols-6 lg:gap-5\"\r\n  >\r\n    {{# list.forEach((item) => { }}\r\n    <div \n      class=\"group block min-w-0 rounded-lg transition-transform duration-200 hover:-translate-y-0.5\"\r\n    >\r\n      <a href=\"{{item.current.url}}\">\r\n        <span \n          class=\"relative block overflow-hidden bg-muted aspect-[3/4] isolate rounded-lg [backface-visibility:hidden] [clip-path:inset(0_round_0.5rem)] [contain:paint] [transform:translateZ(0)]\"\r\n        >\r\n          <img \n            alt=\"{{item.title}}\"\r\n            loading=\"lazy\"\r\n            decoding=\"async\"\r\n            class=\"block h-full w-full object-cover transform-gpu transition-transform duration-300 [backface-visibility:hidden] group-hover:scale-[1.04]\"\r\n            src=\"{{item.thumbnail}}\"\r\n          >\r\n          <span \n            class=\"absolute bottom-2 right-2 inline-flex h-[22px] max-w-[calc(100%-16px)] items-center rounded-md bg-black/60 px-2 text-xs font-semibold text-white backdrop-blur truncate max-sm:bottom-1.5 max-sm:right-1.5 max-sm:h-[18px] max-sm:px-1.5 max-sm:text-[10px]\"\r\n            >{{item.status || item.last.title}}</span>\r\n        </span>\r\n      </a>\r\n      <div class=\"mt-2.5 space-y-1 max-sm:mt-1.5\">\r\n        <a \n          href=\"{{item.current.url}}\"\r\n          class=\"line-clamp-2 text-sm font-medium leading-[1.4] text-card-foreground transition-colors group-hover:text-primary max-sm:text-xs\"\r\n        >\r\n          {{item.title}}\r\n        </a>\r\n        <div class=\"line-clamp-1 text-xs text-muted-foreground\">\r\n          观看至\r\n          <a href=\"{{item.current.url}}\" class=\"hover:text-foreground\">\r\n            {{item.current.title}}\r\n          </a>\r\n          /\r\n          <a href=\"{{item.last.url}}\" class=\"hover:text-foreground\">\r\n            {{item.last.title}}\r\n          </a>\r\n        </div>\r\n      </div>\r\n    </div>\r\n    {{# }) }}\r\n  </div>\r\n  {{# } }}\r\n</div>"
 	};
 	//#endregion
 	//#region src/adapter/cycanime/play.ts
@@ -7496,9 +7497,9 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		}));
 	})))(), 1);
 	const PLAYER_SELECTOR = "#k-player-wrapper";
-	const PLAY_PATH_RE = /\/anime\/\d+\/play\/\d+/;
+	const PLAY_PATH_RE$1 = /\/anime\/\d+\/play\/\d+/;
 	let currentParserSession = 0;
-	let player;
+	let player$1;
 	let startPlayHandler;
 	let stopObserveSubscribedListMount;
 	let stopObserveSubscribeBtnMount;
@@ -7695,22 +7696,22 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		parser$3(() => sessionId !== currentParserSession);
 		return () => {
 			if (currentParserSession === sessionId) currentParserSession++;
-			if (!isPlayPage()) destroyPlayer();
+			if (!isPlayPage$1()) destroyPlayer$1();
 		};
 	}
 	function cleanupInjectedPlayer() {
 		var _document$querySelect;
 		(_document$querySelect = document.querySelector(PLAYER_SELECTOR)) === null || _document$querySelect === void 0 || _document$querySelect.remove();
 	}
-	function destroyPlayer() {
+	function destroyPlayer$1() {
 		startPlayHandler = void 0;
-		player === null || player === void 0 || player.destroy();
-		player = void 0;
+		player$1 === null || player$1 === void 0 || player$1.destroy();
+		player$1 = void 0;
 		cleanupInjectedPlayer();
 		document.body.classList.remove("widescreen");
 	}
-	function isPlayPage() {
-		return PLAY_PATH_RE.test(window.location.pathname);
+	function isPlayPage$1() {
+		return PLAY_PATH_RE$1.test(window.location.pathname);
 	}
 	function hideOriginPlayer() {
 		const cleanly = async () => {
@@ -7803,21 +7804,21 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	}
 	async function initPlayer(isDisposed, onSwitchEpisode) {
 		startPlayHandler = onSwitchEpisode;
-		if (player) return player;
+		if (player$1) return player$1;
 		const container = await queryDom(".relative.aspect-video");
 		if (isDisposed()) return;
 		cleanupInjectedPlayer();
 		const playerRoot = document.createElement("div");
 		container.append(playerRoot);
-		player = new KPlayer(playerRoot);
-		player.on("prev", () => startPlayHandler === null || startPlayHandler === void 0 ? void 0 : startPlayHandler(-1));
-		player.on("next", () => startPlayHandler === null || startPlayHandler === void 0 ? void 0 : startPlayHandler(1));
-		player.on("canplay", () => {
+		player$1 = new KPlayer(playerRoot);
+		player$1.on("prev", () => startPlayHandler === null || startPlayHandler === void 0 ? void 0 : startPlayHandler(-1));
+		player$1.on("next", () => startPlayHandler === null || startPlayHandler === void 0 ? void 0 : startPlayHandler(1));
+		player$1.on("canplay", () => {
 			subscribe.onCanPlay();
 		});
-		player.on("enterwidescreen", () => document.body.classList.add("widescreen"));
-		player.on("exitwidescreen", () => document.body.classList.remove("widescreen"));
-		return player;
+		player$1.on("enterwidescreen", () => document.body.classList.add("widescreen"));
+		player$1.on("exitwidescreen", () => document.body.classList.remove("widescreen"));
+		return player$1;
 	}
 	async function parser$3(isDisposed) {
 		try {
@@ -7835,21 +7836,21 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 					const episodeId = episode.id;
 					const playUrlData = await API.getEpisodePlayUrl(episodeId);
 					if (isDisposed()) return;
-					if (!player) return;
-					player.src = playUrlData.url;
+					if (!player$1) return;
+					player$1.src = playUrlData.url;
 				}
 			};
 			const nextPlayer = await initPlayer(isDisposed, startPlay);
 			if (isDisposed()) return;
-			player = nextPlayer;
-			if (!player) return;
+			player$1 = nextPlayer;
+			if (!player$1) return;
 			const { animeId } = parsePageId();
 			const sections = await API.getSctions(animeId);
 			if (isDisposed()) return;
 			startPlay(0);
 		} catch (error) {
 			if (isDisposed()) return;
-			player === null || player === void 0 || player.message.info("页面初始化失败了，请刷新页面重新尝试");
+			player$1 === null || player$1 === void 0 || player$1.message.info("页面初始化失败了，请刷新页面重新尝试");
 		}
 	}
 	//#endregion
@@ -7941,13 +7942,162 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		player.src = new URLSearchParams(window.location.search).get("url");
 	}
 	//#endregion
+	//#region src/adapter/xfani/next.ts
+	/** 站点自带的播放器，是 media-chrome 的 web component */
+	const SITE_PLAYER_SELECTOR = "media-controller";
+	/**
+	* 站点播放器所在的路由容器。
+	* 站点是 SPA，切换路由后旧页面不会销毁、只是被置为 display:none，
+	* 所以要用「可见的那个容器」来区分当前页面。
+	*/
+	const ROUTE_ISOLATE_SELECTOR = "div.relative.isolate";
+	/** 播放页路由 /anime/{animeId}/play/{episodeId} */
+	const PLAY_PATH_RE = /^\/anime\/(\d+)\/play\/(\d+)/;
+	/** 我们自己的播放器容器，KPlayer 会把它替换成 #k-player-wrapper */
+	const HOST_ID = "k-player-host";
+	/** 轮询间隔：站点切集不会派发任何事件，只能轮询它的视频地址 */
+	const TICK_INTERVAL = 500;
+	let player;
+	let tickTimer;
+	/** 当前 KPlayer 正在播放的地址，用于发现站点已经切集 */
+	let playingSrc = "";
+	function isNextXifan() {
+		return location.hostname.endsWith("next.xifanacg.com");
+	}
+	function isPlayPage() {
+		return PLAY_PATH_RE.test(location.pathname);
+	}
+	function getVisibleIsolate() {
+		return Array.from(document.querySelectorAll(ROUTE_ISOLATE_SELECTOR)).find((el) => getComputedStyle(el).display !== "none");
+	}
+	function getSitePlayer() {
+		var _getVisibleIsolate;
+		return (_getVisibleIsolate = getVisibleIsolate()) === null || _getVisibleIsolate === void 0 ? void 0 : _getVisibleIsolate.querySelector(SITE_PLAYER_SELECTOR);
+	}
+	function getSiteVideo() {
+		var _getSitePlayer;
+		return (_getSitePlayer = getSitePlayer()) === null || _getSitePlayer === void 0 ? void 0 : _getSitePlayer.querySelector("video");
+	}
+	/** 站点取到的真实视频地址，取到之后我们才接管播放 */
+	function getSiteVideoSrc() {
+		var _getSiteVideo;
+		return ((_getSiteVideo = getSiteVideo()) === null || _getSiteVideo === void 0 ? void 0 : _getSiteVideo.getAttribute("src")) || "";
+	}
+	function getActiveEpisode() {
+		return $("main a[aria-current='true']").first();
+	}
+	function getAnimeName() {
+		return $("main h1 a").first().text().trim();
+	}
+	function getEpisodeName() {
+		const $active = getActiveEpisode();
+		return $active.attr("title") || $active.text().trim();
+	}
+	function getEpisodeList() {
+		return getActiveEpisode().closest("ul").find("a");
+	}
+	/** 站点是 SPA，点击站点自己的选集按钮，让 React 完成路由切换 */
+	function switchEpisode(next) {
+		const list = getEpisodeList().get();
+		const idx = list.indexOf(getActiveEpisode()[0]);
+		const target = idx < 0 ? void 0 : list[next ? idx + 1 : idx - 1];
+		if (!target) {
+			player === null || player === void 0 || player.message.info(next ? "没有下一集了" : "没有上一集了");
+			return;
+		}
+		target.click();
+	}
+	/** 站点播放器只用来取流地址，静音暂停，避免和 KPlayer 双重播放 */
+	function muteSiteVideo() {
+		const video = getSiteVideo();
+		if (!video) return;
+		video.pause();
+		video.muted = true;
+		video.volume = 0;
+	}
+	function destroyPlayer() {
+		player === null || player === void 0 || player.destroy();
+		player = void 0;
+		playingSrc = "";
+		$(`#k-player-wrapper`).remove();
+		document.body.classList.remove("k-widescreen");
+	}
+	function mountPlayer(src) {
+		const sitePlayer = getSitePlayer();
+		const parent = sitePlayer === null || sitePlayer === void 0 ? void 0 : sitePlayer.parentElement;
+		if (!sitePlayer || !parent) return;
+		destroyPlayer();
+		const host = document.createElement("div");
+		host.id = HOST_ID;
+		parent.insertBefore(host, sitePlayer);
+		const instance = new KPlayer(`#${HOST_ID}`);
+		player = instance;
+		playingSrc = src;
+		instance.src = src;
+		instance.on("prev", () => switchEpisode(false));
+		instance.on("next", () => switchEpisode(true));
+		instance.on("enterwidescreen", () => document.body.classList.add("k-widescreen"));
+		instance.on("exitwidescreen", () => document.body.classList.remove("k-widescreen"));
+		muteSiteVideo();
+	}
+	function tick() {
+		var _getSitePlayer2;
+		if (!isPlayPage()) {
+			destroyPlayer();
+			return;
+		}
+		const src = getSiteVideoSrc();
+		const parent = (_getSitePlayer2 = getSitePlayer()) === null || _getSitePlayer2 === void 0 ? void 0 : _getSitePlayer2.parentElement;
+		if (!src || !parent) return;
+		if (!player || !player.$wrapper[0] || src !== playingSrc || player.$wrapper[0].parentElement !== parent) {
+			mountPlayer(src);
+			return;
+		}
+		muteSiteVideo();
+	}
+	/**
+	* 站点是 SPA，首页进入播放页不会重新执行脚本，
+	* 所以这里注册一个匹配整个站点的 opt，用轮询统一处理路由与切集
+	*/
+	function runInNextTop() {
+		$("body").addClass("xfani-next");
+		tick();
+		window.clearInterval(tickTimer);
+		tickTimer = window.setInterval(tick, TICK_INTERVAL);
+	}
+	//#endregion
 	//#region src/adapter/xfani/index.scss
 	injectStyle(".xfani.widescreen .header_nav0,\n.xfani.widescreen .top-back.hoa,\n.xfani.widescreen .fixedGroup {\n  visibility: hidden;\n  pointer-events: none;\n}");
 	//#endregion
+	//#region src/adapter/xfani/next.scss
+	injectStyle(".xfani-next media-controller {\n  display: none !important;\n}\n.xfani-next #k-player-wrapper {\n  position: relative;\n  width: 100%;\n  height: auto;\n  aspect-ratio: 16/9;\n  z-index: 20;\n  overflow: hidden;\n  border-radius: 12px;\n}\n.xfani-next #k-player-wrapper.k-player-widescreen {\n  position: fixed;\n  inset: 0;\n  aspect-ratio: auto;\n  z-index: 10000;\n  border-radius: 0;\n}\n.xfani-next.k-widescreen header,\n.xfani-next.k-widescreen nav[data-mobile-chrome] {\n  visibility: hidden;\n  pointer-events: none;\n}");
+	//#endregion
 	//#region src/adapter/xfani/index.ts
+	/**
+	* 旧站是 iframe 播放器，通过 postMessage 从 iframe 里取信息；
+	* 新站（next.xifanacg.com）是 SPA + 原生 video，直接在页面里读 DOM。
+	*/
+	function fromIframe(key) {
+		return () => {
+			return new Promise((resolve) => {
+				const fn = (e) => {
+					if (e.data.key === key) {
+						resolve(e.data.name);
+						window.removeEventListener("message", fn);
+					}
+				};
+				window.addEventListener("message", fn);
+				parent.postMessage({ key }, "*");
+			});
+		};
+	}
 	runtime.register({
 		domains: [".xifanacg.", "player.moedot"],
 		opts: [
+			{
+				test: () => isNextXifan(),
+				run: runInNextTop
+			},
 			{
 				test: "/watch",
 				run: runInTop$2
@@ -7965,34 +8115,12 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		],
 		search: {
 			name: "稀饭动漫",
-			search: (cn) => `https://anime.xifanacg.com/search.html?wd=${cn}`,
-			getSearchName: () => {
-				return new Promise((resolve) => {
-					const fn = (e) => {
-						if (e.data.key === "getSearchName") {
-							resolve(e.data.name);
-							window.removeEventListener("message", fn);
-						}
-					};
-					window.addEventListener("message", fn);
-					parent.postMessage({ key: "getSearchName" }, "*");
-				});
-			},
-			getEpisode: () => {
-				return new Promise((resolve) => {
-					const fn = (e) => {
-						if (e.data.key === "getEpisode") {
-							resolve(e.data.name);
-							window.removeEventListener("message", fn);
-						}
-					};
-					window.addEventListener("message", fn);
-					parent.postMessage({ key: "getEpisode" }, "*");
-				});
-			},
+			search: (cn) => `https://next.xifanacg.com/search?q=${cn}`,
+			getSearchName: () => isNextXifan() ? getAnimeName() : fromIframe("getSearchName")(),
+			getEpisode: () => isNextXifan() ? getEpisodeName() : fromIframe("getEpisode")(),
 			getAnimeScope: () => {
-				var _window$location$href;
-				return ((_window$location$href = window.location.href.match(/\/watch\/(\d+)\//)) === null || _window$location$href === void 0 ? void 0 : _window$location$href[1]) || "";
+				var _window$location$href, _window$location$href2;
+				return isNextXifan() ? ((_window$location$href = window.location.href.match(/\/anime\/(\d+)\//)) === null || _window$location$href === void 0 ? void 0 : _window$location$href[1]) || "" : ((_window$location$href2 = window.location.href.match(/\/watch\/(\d+)\//)) === null || _window$location$href2 === void 0 ? void 0 : _window$location$href2[1]) || "";
 			}
 		}
 	});
@@ -8279,8 +8407,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	//#endregion
 	//#region src/adapter/girigirilove/subscribe.template.html
 	var subscribe_template_default = {
-		"subListContainer": "<div id=\"subListContainer\" class=\"box-width wow fadeInUp\">\n  <div class=\"overflow\">\n    <div class=\"title flex between top40 rel\">\n      <div class=\"title-left\">\n        <h4 class=\"title-h cor4\">订阅列表</h4>\n        <div class=\"update-info cor5\"></div>\n      </div>\n    </div>\n\n    <div id=\"subList\"></div>\n  </div>\n</div>",
-		"subList": "<div id=\"subList\">\n  {{# if (groups.every(o => o.list.length === 0)) { }}\n  <div class=\"cor4 empty-tip\">订阅喜欢的番剧，在播放页面标题右侧添加订阅</div>\n  {{# } }}\n  \n  <div class=\"sub-list rel border-box public-r hide-b-2 diy-center1 mask2\">\n    <div class=\"swiper-wrapper\">\n      {{# groups.filter(o => !!o.list.length).forEach((group) => {\n      group.list.forEach((item) => { }}\n      <div class=\"public-list-box public-pic-b swiper-slide\">\n        <div class=\"public-list-div public-list-bj\">\n          <a             target=\"_blank\"\n            class=\"public-list-exp\"\n            href=\"{{item.current.url}}\"\n            title=\"{{item.title}}\"\n          >\n            <img               class=\"lazy lazy1 gen-movie-img entered loaded\"\n              referrerpolicy=\"no-referrer\"\n              src=\"{{item.thumbnail}}\"\n              alt=\"{{item.title}}\"\n              data-src=\"{{item.thumbnail}}\"\n              data-ll-status=\"loaded\"\n            >\n            <span class=\"public-bg\"></span>\n            <div class=\"public-prt k-day-{{group.dayNum}}\">\n              {{group.day + ' ' + new\n              Date(item.updatedAt).toLocaleTimeString().slice(0,-3) }}\n            </div>\n            <span class=\"public-list-prb hide ft2\">{{item.status}}</span>\n          </a>\n        </div>\n        <div class=\"public-list-button\">\n          <a             target=\"_blank\"\n            class=\"time-title hide ft4 bold\"\n            href=\"{{item.current.url}}\"\n            title=\"{{item.title}}\"\n            >{{item.title}}</a>\n          <div class=\"public-list-subtitle cor5 hide ft2\">\n            <span>观看至</span>\n            <a               target=\"_blank\"\n              href=\"{{item.current.url}}\"\n              title=\"{{item.current.title}}\"\n              >{{item.current.title}}</a>\n            <span>/</span>\n            <a               target=\"_blank\"\n              href=\"{{item.last.url}}\"\n              title=\"{{item.last.title}}\"\n              >{{item.last.title}}</a>\n          </div>\n        </div>\n      </div>\n      {{# })}) }}\n    </div>\n\n    <div class=\"vod-list-page\">\n      <a class=\"swiper-button-prev\" href=\"javascript:\" tabindex=\"-1\">\n        <i class=\"fa ds-fanhui\"></i>\n      </a>\n      <a class=\"swiper-button-next\" href=\"javascript:\" tabindex=\"0\">\n        <i class=\"fa ds-jiantouyou\"> </i>\n      </a>\n    </div>\n  </div>\n</div>"
+		"subListContainer": "<div id=\"subListContainer\" class=\"box-width wow fadeInUp\">\r\n  <div class=\"overflow\">\r\n    <div class=\"title flex between top40 rel\">\r\n      <div class=\"title-left\">\r\n        <h4 class=\"title-h cor4\">订阅列表</h4>\r\n        <div class=\"update-info cor5\"></div>\r\n      </div>\r\n    </div>\r\n\r\n    <div id=\"subList\"></div>\r\n  </div>\r\n</div>",
+		"subList": "<div id=\"subList\">\r\n  {{# if (groups.every(o => o.list.length === 0)) { }}\r\n  <div class=\"cor4 empty-tip\">订阅喜欢的番剧，在播放页面标题右侧添加订阅</div>\r\n  {{# } }}\r\n  \r\n  <div class=\"sub-list rel border-box public-r hide-b-2 diy-center1 mask2\">\r\n    <div class=\"swiper-wrapper\">\r\n      {{# groups.filter(o => !!o.list.length).forEach((group) => {\r\n      group.list.forEach((item) => { }}\r\n      <div class=\"public-list-box public-pic-b swiper-slide\">\r\n        <div class=\"public-list-div public-list-bj\">\r\n          <a \n            target=\"_blank\"\r\n            class=\"public-list-exp\"\r\n            href=\"{{item.current.url}}\"\r\n            title=\"{{item.title}}\"\r\n          >\r\n            <img \n              class=\"lazy lazy1 gen-movie-img entered loaded\"\r\n              referrerpolicy=\"no-referrer\"\r\n              src=\"{{item.thumbnail}}\"\r\n              alt=\"{{item.title}}\"\r\n              data-src=\"{{item.thumbnail}}\"\r\n              data-ll-status=\"loaded\"\r\n            >\r\n            <span class=\"public-bg\"></span>\r\n            <div class=\"public-prt k-day-{{group.dayNum}}\">\r\n              {{group.day + ' ' + new\r\n              Date(item.updatedAt).toLocaleTimeString().slice(0,-3) }}\r\n            </div>\r\n            <span class=\"public-list-prb hide ft2\">{{item.status}}</span>\r\n          </a>\r\n        </div>\r\n        <div class=\"public-list-button\">\r\n          <a \n            target=\"_blank\"\r\n            class=\"time-title hide ft4 bold\"\r\n            href=\"{{item.current.url}}\"\r\n            title=\"{{item.title}}\"\r\n            >{{item.title}}</a>\r\n          <div class=\"public-list-subtitle cor5 hide ft2\">\r\n            <span>观看至</span>\r\n            <a \n              target=\"_blank\"\r\n              href=\"{{item.current.url}}\"\r\n              title=\"{{item.current.title}}\"\r\n              >{{item.current.title}}</a>\r\n            <span>/</span>\r\n            <a \n              target=\"_blank\"\r\n              href=\"{{item.last.url}}\"\r\n              title=\"{{item.last.title}}\"\r\n              >{{item.last.title}}</a>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      {{# })}) }}\r\n    </div>\r\n\r\n    <div class=\"vod-list-page\">\r\n      <a class=\"swiper-button-prev\" href=\"javascript:\" tabindex=\"-1\">\r\n        <i class=\"fa ds-fanhui\"></i>\r\n      </a>\r\n      <a class=\"swiper-button-next\" href=\"javascript:\" tabindex=\"0\">\r\n        <i class=\"fa ds-jiantouyou\"> </i>\r\n      </a>\r\n    </div>\r\n  </div>\r\n</div>"
 	};
 	//#endregion
 	//#region src/adapter/girigirilove/play.ts
