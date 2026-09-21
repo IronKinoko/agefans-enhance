@@ -1,0 +1,35 @@
+.xfani-next {
+  // 站点自带的播放器只用于取流地址，显示交给 KPlayer
+  media-controller {
+    display: none !important;
+  }
+
+  // KPlayer 会把挂载点替换成 #k-player-wrapper，
+  // 所以尺寸要给到 wrapper 上（站点播放器同款 16/9）
+  #k-player-wrapper {
+    position: relative;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    z-index: 20;
+    overflow: hidden;
+    border-radius: 12px;
+
+    &.k-player-widescreen {
+      position: fixed;
+      inset: 0;
+      aspect-ratio: auto;
+      z-index: 10000;
+      border-radius: 0;
+    }
+  }
+
+  // 宽屏播放时隐藏站点顶栏与移动端底栏，避免遮挡
+  &.k-widescreen {
+    header,
+    nav[data-mobile-chrome] {
+      visibility: hidden;
+      pointer-events: none;
+    }
+  }
+}
