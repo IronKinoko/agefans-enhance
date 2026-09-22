@@ -1,5 +1,9 @@
 # AGENTS.md
 
+## Verification
+
+A code change is done when `pnpm lint` passes and `pnpm build` has regenerated `dist/`. Whether a page actually behaves is checked by hand, so report runtime effects as unverified rather than building browser automation or live-site smoke tests.
+
 ## Agent skills
 
 ### Issue tracker
