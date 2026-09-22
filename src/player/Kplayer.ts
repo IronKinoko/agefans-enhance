@@ -434,6 +434,14 @@ export class KPlayer {
       }
     })
 
+    // 这两个是原生 video 事件，plyr 只调用 requestPictureInPicture()，
+    // 并不会代为转发事件，所以必须直接监听 media 元素。
+    this.bindEvent(this.media, 'enterpictureinpicture', () => {
+      this.trigger('enterpictureinpicture')
+    })
+    this.bindEvent(this.media, 'leavepictureinpicture', () => {
+      this.trigger('leavepictureinpicture')
+    })
     this.on('enterpictureinpicture', () => {
       this.setRandomTsuma()
       this.$pip.fadeIn()
@@ -510,6 +518,8 @@ export class KPlayer {
         'enterwidescreen',
         'exitwidescreen',
         'skiperror',
+        'enterpictureinpicture',
+        'leavepictureinpicture',
       ].includes(event)
     ) {
       if (!this.eventMap[event]) this.eventMap[event] = []
