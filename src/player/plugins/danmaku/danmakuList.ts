@@ -1,5 +1,4 @@
 import { KPlayer } from '../..'
-import { alert } from '../../../utils/alert'
 import { modal } from '../../../utils/modal'
 import { parseTime } from '../../../utils/parseTime'
 
@@ -12,10 +11,6 @@ export function createDanmakuList(player: KPlayer) {
 
     const $root = $(`
       <div class="k-player-danmaku-list-wrapper">
-        <div class="k-player-danmaku-list-source-filter">
-          ${alert('由于弹弹play开放平台相关接口下架，弹幕来源功能已不再可用')}
-        </div>
-      
         <div class="k-player-danmaku-list-table-wrapper">
           <div class="k-player-danmaku-list-table-content">
             <table class="k-table k-player-danmaku-list-table">
