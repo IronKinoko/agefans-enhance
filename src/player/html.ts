@@ -159,6 +159,7 @@ export const createSpeedHTML = () =>
   <span id="k-speed-text" class="k-text-btn-text">倍速</span>
 </div>
 `,
+    className: 'k-popover-content--menu',
     overlay: `<ul class="k-menu">
 ${[...speedList]
   .reverse()
@@ -214,6 +215,7 @@ export const createSearchActionsHTML = () =>
   <span class="k-text-btn-text">画质</span>
 </div>
 `,
+    className: 'k-popover-content--menu',
     overlay: `<ul class="k-menu"></ul>`,
   })
 

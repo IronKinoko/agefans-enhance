@@ -10,9 +10,9 @@
   position: relative;
   display: flex;
   align-items: center;
-  padding: 8px 15px;
+  padding: 10px 15px;
   word-wrap: break-word;
-  border-radius: 2px;
+  border-radius: var(--k-radius-sm);
   &-icon {
     margin-right: 8px;
     display: block;

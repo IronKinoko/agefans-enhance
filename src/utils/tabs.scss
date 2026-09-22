@@ -21,9 +21,10 @@
   &-indicator {
     position: absolute;
     width: 0;
-    height: 1px;
+    height: 3px;
     left: 0;
     bottom: -1px;
+    border-radius: 999px;
     background-color: var(--k-player-primary-color);
     transition: all 0.3s;
   }

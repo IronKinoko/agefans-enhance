@@ -43,6 +43,10 @@
     }
   }
 
+  // Normalise colour mode, font and wrapping for everything we inject so the
+  // host page's stylesheet cannot leak in. Deliberately does NOT set the
+  // background, ink or padding of fields: those belong to the component, which
+  // knows whether it sits on a light modal or the player's dark popover.
   #k-player-wrapper,
   .k-modal {
     button,
@@ -57,11 +61,13 @@
       font-weight: 400;
       word-wrap: break-word;
     }
+
     input[type='text'],
     select {
       color: #232323;
-      padding: unset;
-      background: white;
+      // `background-color`, not the `background` shorthand: the shorthand would
+      // wipe `.k-select`'s chevron (background-image/position/size/repeat).
+      background-color: white;
     }
 
     table {
@@ -72,21 +78,23 @@
     td {
       background: white;
     }
+  }
+
+  // The player popovers float over video on a dark panel, so their fields keep
+  // the dark well treatment the components define.
+  #k-player-wrapper {
+    input[type='text'],
+    select {
+      color: inherit;
+      background-color: var(--k-field-fill);
+    }
 
     .k-input,
     .k-select {
-      background: white;
-      border: 1px solid #f1f1f1;
-      color: black;
-      outline: 0;
-      border-radius: 2px;
-      transition: all 0.15s ease;
-      &:focus,
-      &:hover {
-        border-color: var(--k-player-primary-color);
-      }
+      border-color: var(--k-field-line);
+      color: var(--k-field-ink);
       &::placeholder {
-        color: #999;
+        color: var(--k-field-placeholder);
       }
     }
   }

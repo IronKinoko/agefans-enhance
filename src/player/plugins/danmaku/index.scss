@@ -62,17 +62,21 @@
     input,
     select {
       display: block;
-      margin-top: 4px;
+      margin-top: 6px;
       width: 100%;
     }
     label {
       display: block;
-      span {
+      // The label is the field's caption, so it steps back and lets the value
+      // carry the row. `.open-danmaku-list` is an action, not a caption, so
+      // it is excluded and keeps full-strength ink.
+      > span:not(.open-danmaku-list) {
         line-height: 1.4;
+        color: var(--k-player-field-label);
       }
     }
     label + label {
-      margin-top: 8px;
+      margin-top: 12px;
     }
 
     .open-danmaku-list {
@@ -84,7 +88,8 @@
     }
 
     .specific-thanks {
-      color: #757575;
+      // Attribution, not a control: quiet, but still readable over video.
+      color: rgba(255, 255, 255, 0.72);
       font-size: 12px;
       position: absolute;
       left: 8px;
@@ -244,18 +249,11 @@
 }
 
 .k-player-danmaku-list {
-  * {
-    box-sizing: border-box;
-    font-size: 14px;
-    line-height: normal;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-      Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
-      sans-serif;
-  }
-  .k-modal-body {
-    padding: 0;
-  }
-
+  box-sizing: border-box;
+  font-size: 14px;
+  line-height: normal;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   &-wrapper {
     height: 500px;
     max-height: 80vh;
@@ -264,7 +262,7 @@
   }
 
   &-source-filter {
-    padding: 16px;
+    padding: 0 0 12px;
 
     .k-alert {
       margin-bottom: 0;
@@ -281,7 +279,7 @@
     }
     &::-webkit-scrollbar-thumb {
       background: rgba(0, 0, 0, 0.15);
-      border-radius: 4px;
+      border-radius: 999px;
       &:hover {
         background-color: rgba(0, 0, 0, 0.45);
       }
@@ -295,8 +293,8 @@
 
     th,
     td {
-      padding: 8px;
-      border-bottom: 1px solid #f1f1f1;
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--k-modal-line);
       word-wrap: break-word;
       word-break: break-all;
       white-space: nowrap;
@@ -324,7 +322,7 @@
       color: var(--k-player-primary-color);
       margin: -4px 0 -4px -8px;
       padding: 4px 8px;
-      border-radius: 4px;
+      border-radius: var(--k-radius-xs);
       text-decoration: none;
       cursor: pointer;
       display: inline-block;

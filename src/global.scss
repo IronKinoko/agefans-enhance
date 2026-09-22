@@ -4,34 +4,113 @@
   --k-player-color: white;
   --k-player-primary-color: #00b3ff;
   --k-player-primary-color-highlight: rgba(0, 179, 255, 0.1);
+
+  // Rounding scale, kept to multiples of 4px: 4 (inline chips and links),
+  // 8 (controls: inputs, selects, buttons, alerts), 16 (floating surfaces).
+  --k-radius-xs: 4px;
+  --k-radius-sm: 8px;
+  --k-radius-md: 12px;
+  --k-radius-lg: 16px;
+
+  // Player popover menus. Every fill is a white veil over the panel, so opacity
+  // is the only variable; no second hue appears anywhere in a row's states.
+  // Hover, press and selection all share the one highlight, and brightness is
+  // bounded by legibility: the panel floats over video and the worst case is a
+  // pure white frame, where the veil lightens the panel and so *reduces* label
+  // contrast. Measured there: base 5.74:1, highlight 4.59:1. That is the
+  // brightest veil that still clears 4.5:1, so there is no headroom left for a
+  // separate pressed shade.
+  --k-menu-surface: rgba(0, 0, 0, 0.6);
+  --k-menu-padding: 8px;
+  --k-menu-item-highlight: rgba(255, 255, 255, 0.1);
+
+  // Form controls. Fields read as wells sunk into whatever surface holds
+  // them, so one set of tokens serves both themes: only the fills flip.
+  --k-field-height: 28px;
+  --k-field-gutter: 8px;
+
+  // Dark theme (player popovers)
+  --k-player-field-fill: rgba(255, 255, 255, 0.08);
+  --k-player-field-fill-hover: rgba(255, 255, 255, 0.14);
+  --k-player-field-line: rgba(255, 255, 255, 0.18);
+  --k-player-field-line-hover: rgba(255, 255, 255, 0.32);
+  --k-player-field-ink: #ffffff;
+  // Captions sit directly on the panel, so they must clear 4.5:1 even over a
+  // white frame (worst case for a dark translucent panel).
+  --k-player-field-label: rgba(255, 255, 255, 0.78);
+  // Hint text only. Kept below label strength on purpose so it reads as "empty"
+  // rather than as a filled value, which caps it at ~3.5:1 over bright video.
+  --k-player-field-placeholder: rgba(255, 255, 255, 0.62);
+
+  // Modal surface
+  --k-modal-surface: #ffffff;
+  --k-modal-surface-muted: #f6f7f9;
+  --k-modal-ink: #1b1e23;
+  --k-modal-ink-muted: #6b7280;
+  --k-modal-line: #eceef2;
+  --k-modal-scrim: rgba(15, 18, 24, 0.55);
+  // Ink on the primary (cyan) button fill. White by request, which measures
+  // 2.36:1 — below the 4.5:1 the rest of this palette holds to (the previous
+  // #05232f measured 6.9:1). Kept as a token so the choice is one edit.
+  --k-modal-on-primary: #ffffff;
+  --k-modal-shadow: 0 24px 60px -20px rgba(15, 23, 42, 0.35),
+    0 8px 24px -12px rgba(15, 23, 42, 0.25);
+
+  // Light theme fields (modals)
+  --k-modal-field-fill: #ffffff;
+  --k-modal-field-line: #d9d9d9;
+  --k-modal-field-ink: #1b1e23;
+  --k-modal-field-placeholder: #9aa1ac;
 }
 
 .k-menu {
   list-style: none;
   margin: 0;
   padding: 0;
-  border-radius: 4px;
+  // The menu is a rounded surface in its own right, inset from the popover
+  // edge by exactly its own radius, so the two radii sit concentrically:
+  // popover 16 = menu inset 8 + menu radius 8.
+  border-radius: var(--k-radius-sm);
   overflow: hidden;
-  &-item {
-    padding: 0 16px;
-    line-height: 36px;
-    height: 36px;
-    cursor: pointer;
-    width: 100%;
-    white-space: nowrap;
-    color: white;
-    transition: all 0.3s;
-    text-align: center;
 
+  &-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    min-height: 36px;
+    // Each row is its own rounded surface, so the highlight reads as a distinct
+    // rounded chip rather than a full-bleed band. Full width keeps the rows'
+    // outer corners flush with the menu, whose 8px radius matches.
+    border-radius: var(--k-radius-sm);
+    cursor: pointer;
+    white-space: nowrap;
+    color: inherit;
+    text-align: center;
+    transition: background 0.12s ease;
+    user-select: none;
+
+    // Hover and selection share this one fill, which is what says "the pointer
+    // is here" and "this is the current value" in the same visual language.
     &:hover {
-      background: var(--k-player-background-highlight);
+      background: var(--k-menu-item-highlight);
     }
   }
 }
+
+// Selection is carried by that shared highlight alone; there is no check glyph
+// reserving trailing width, so the label stays centred. Painting hover and
+// selected identically means hovering the selected row changes nothing, which
+// is the accepted cost of one flat accent-free state.
+.k-menu-item.k-menu-active {
+  background: var(--k-menu-item-highlight);
+  font-weight: 600;
+}
+
 .k-btn {
   color: var(--k-player-primary-color);
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 4px 10px;
+  border-radius: var(--k-radius-sm);
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.15s;
@@ -55,43 +134,110 @@
   }
 }
 
-.k-menu-item.k-menu-active {
-  color: var(--k-player-primary-color);
-}
+// One field implementation for both themes. The surface that owns the field
+// supplies the *-field-* tokens, so the shape, sizing and interaction states
+// stay identical whether the field sits on a white modal or inside the
+// player's dark popover.
+//
+// The fill is always set with `background-color`, never the `background`
+// shorthand: `.k-select` draws its chevron with `background-image`, and the
+// shorthand would reset that (and `background-position`/`-size`/`-repeat`)
+// back to their initial values on every state change.
 .k-input,
 .k-select {
-  background: white;
-  border: 1px solid #d9d9d9;
-  color: black;
+  box-sizing: border-box;
+  height: var(--k-field-height);
+  padding: 0 var(--k-field-gutter);
+  border: 1px solid var(--k-field-line, #d9d9d9);
+  border-radius: var(--k-radius-sm);
+  background-color: var(--k-field-fill, #ffffff);
+  color: var(--k-field-ink, #1b1e23);
+  font-family: inherit;
+  font-size: 13px;
+  line-height: normal;
   outline: 0;
-  border-radius: 2px;
-  transition: all 0.15s ease;
-  &:focus,
-  &:hover {
+  // Only the fill colour animates. Transitioning the `background` shorthand
+  // would also animate background-position.
+  transition: background-color 0.15s ease, border-color 0.15s ease,
+    box-shadow 0.15s ease;
+  appearance: none;
+
+  &:hover:not(:disabled) {
+    background-color: var(--k-field-fill-hover, var(--k-field-fill, #ffffff));
+    border-color: var(--k-field-line-hover, var(--k-player-primary-color));
+  }
+  &:focus {
     border-color: var(--k-player-primary-color);
   }
+  &:focus-visible {
+    border-color: var(--k-player-primary-color);
+    box-shadow: 0 0 0 3px var(--k-player-primary-color-highlight);
+  }
   &::placeholder {
-    color: #999;
+    color: var(--k-field-placeholder, #9aa1ac);
+    opacity: 1;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 }
+
+// A select needs its own chevron once `appearance` is reset, otherwise the
+// native control renders a light-theme arrow on the dark panel. `currentColor`
+// keeps one rule correct in both themes.
+.k-select {
+  padding-right: calc(var(--k-field-gutter) + 18px);
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 14px) calc(50% + 1px),
+    calc(100% - 9px) calc(50% + 1px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+
+  // The folded-out list is drawn by the OS, which ignores alpha, so it needs
+  // opaque colors. Without this a white field text colour would land as white
+  // on the OS menu's white background.
+  option {
+    background-color: var(--k-field-option-fill, #ffffff);
+    color: var(--k-field-option-ink, #1b1e23);
+  }
+}
+
 .k-checkbox {
   display: inline-flex;
   align-items: center;
   cursor: pointer;
   input {
     margin: 0;
-    margin-right: 4px;
+    margin-right: 6px;
+    accent-color: var(--k-player-primary-color);
+    cursor: pointer;
   }
 }
 
 .k-settings {
   &-list {
     margin: 0;
-    padding: 8px;
+    padding: 10px 0;
     text-align: left;
 
     label {
       cursor: pointer;
+    }
+
+    // Checkboxes here are bare `<input>`s inside their label, not `.k-checkbox`,
+    // so they need the brand accent to match the sliders beside them.
+    input[type='checkbox'] {
+      accent-color: var(--k-player-primary-color);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    // Sliders are themed by plyr inside the player and by accent-color in
+    // modals; pin the accent so both agree.
+    input[type='range'] {
+      accent-color: var(--k-player-primary-color);
     }
   }
   &-item {
@@ -103,7 +249,7 @@
     gap: 8px;
   }
   &-list > &-item + &-item {
-    margin-top: 8px;
+    margin-top: 10px;
   }
 }
 
@@ -114,26 +260,21 @@
 
   th,
   td {
-    padding: 8px;
+    padding: 10px 8px;
     border: none;
-    border-bottom: 1px solid #f1f1f1;
+    border-bottom: 1px solid var(--k-modal-line, #eceef2);
     word-wrap: break-word;
     word-break: break-all;
   }
 }
 
+// Numeric variant. Size comes from the same token as every other field, so it
+// only owns what actually makes it different: a narrow default and no spinner.
 .k-input-number {
   @extend .k-input;
 
-  height: 32px;
   width: 100px;
-  border-radius: 4px;
-  padding: 0 8px;
-  box-sizing: border-box;
-  font-size: 14px;
 
-  -webkit-appearance: none;
-  appearance: none;
   &[type='number'] {
     &::-webkit-outer-spin-button,
     &::-webkit-inner-spin-button {

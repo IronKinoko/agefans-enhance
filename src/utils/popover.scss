@@ -11,13 +11,59 @@
   }
   &-content {
     background: var(--k-player-background);
-    border-radius: 4px;
+    // Floating surface, like the modal: it must stay rounder than the 8px
+    // controls it contains.
+    border-radius: var(--k-radius-md);
     overflow-x: hidden;
     overflow-y: auto;
     cursor: initial;
     max-height: var(--k-player-popover-max-height, 70vh);
+    color: var(--k-player-color);
+
+    // Fields inside a player popover sit on dark glass, so they are wells in
+    // that same material rather than opaque slabs laid over it.
+    --k-field-fill: var(--k-player-field-fill);
+    --k-field-fill-hover: var(--k-player-field-fill-hover);
+    --k-field-ink: var(--k-player-field-ink);
+    --k-field-line: var(--k-player-field-line);
+    --k-field-line-hover: var(--k-player-field-line-hover);
+    --k-field-label: var(--k-player-field-label);
+    --k-field-placeholder: var(--k-player-field-placeholder);
+    // The OS-drawn option list cannot be translucent, so it gets the opaque
+    // tone the panel approximates against video.
+    --k-field-option-fill: #1c2026;
+    --k-field-option-ink: #ffffff;
+
     &::-webkit-scrollbar {
       display: none;
+    }
+
+    // Menu overlays (倍速 / 画质). The panel is inset by `--k-menu-padding`
+    // and the menu keeps its own 8px radius, so the corners are concentric:
+    // 16 (panel) = 8 (inset) + 8 (menu). Scrolling is handed to the menu so
+    // the inset does not scroll away.
+    &--menu {
+      padding: var(--k-menu-padding);
+      overflow: hidden;
+      // The panel carries the menu fill; rows stay transparent until hovered or
+      // selected, so this is what shows through between and around them.
+      background: var(--k-menu-surface);
+      // A flex column lets the menu absorb whatever height is left after the
+      // padding. Capping the menu at the same max-height as the panel would
+      // overflow the panel by the padding and clip the last rows, since the
+      // panel itself cannot scroll here.
+      display: flex;
+      flex-direction: column;
+
+      .k-menu {
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: none;
+        &::-webkit-scrollbar {
+          display: none;
+        }
+      }
     }
   }
 }

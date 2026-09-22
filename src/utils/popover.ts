@@ -3,15 +3,30 @@ export function popover(opts: {
   target: string | JQuery
   overlay: string | JQuery
   trigger?: 'hover' | 'click'
+  /**
+   * Extra class on `.k-popover-content`. Use `k-popover-content--menu` for
+   * menu-style overlays: it insets the content so the menu's own corners nest
+   * concentrically inside the panel's, and makes the menu (not the panel)
+   * scroll so the inset survives scrolling.
+   */
+  className?: string
   onVisibleChange?: (visible: boolean) => void
 }) {
-  const { target, overlay, trigger = 'hover', onVisibleChange } = opts
+  const {
+    target,
+    overlay,
+    trigger = 'hover',
+    className,
+    onVisibleChange,
+  } = opts
   const $target = $(target as JQuery)
   const $content = $(
     `<div class="k-popover-overlay"><div class="k-popover-content"></div></div>`
   )
   $content.on('click', (e) => e.stopPropagation())
-  $content.find('.k-popover-content').append(overlay)
+  const $panel = $content.find('.k-popover-content')
+  if (className) $panel.addClass(className)
+  $panel.append(overlay)
   $target.addClass('k-popover')
   $target.append($content)
 

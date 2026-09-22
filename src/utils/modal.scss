@@ -1,4 +1,18 @@
 .k-modal {
+  // Layout tokens local to the modal surface. Descendant controls that live
+  // inside a modal (list rows, tab panes) read --k-modal-gutter so their
+  // content lines up with the title.
+  --k-modal-gutter: 28px;
+  // Modals are roomy, so their fields are a size up from the player popovers.
+  --k-field-height: 32px;
+  --k-field-gutter: 12px;
+  --k-field-fill: var(--k-modal-field-fill);
+  --k-field-ink: var(--k-modal-field-ink);
+  --k-field-line: var(--k-modal-field-line);
+  --k-field-line-hover: var(--k-player-primary-color);
+  --k-field-label: var(--k-modal-ink-muted);
+  --k-field-placeholder: var(--k-modal-field-placeholder);
+
   position: fixed;
   left: 0;
   right: 0;
@@ -10,7 +24,7 @@
   z-index: 2147483647;
   text-align: left;
   animation: fadeIn 0.3s ease forwards;
-  color: rgba(0, 0, 0, 0.85);
+  color: var(--k-modal-ink);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
     Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 
@@ -20,6 +34,16 @@
     }
     to {
       opacity: 1;
+    }
+  }
+  @keyframes modalRise {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
     }
   }
   * {
@@ -32,7 +56,7 @@
     right: 0;
     bottom: 0;
     top: 0;
-    background: rgba(0, 0, 0, 0.45);
+    background: var(--k-modal-scrim);
     cursor: pointer;
   }
   &-wrap {
@@ -42,83 +66,146 @@
     bottom: 0;
     top: 0;
     overflow: auto;
-    text-align: center;
     user-select: none;
-    &::before {
-      content: '';
-      display: inline-block;
-      width: 0;
-      height: 100%;
-      vertical-align: middle;
-    }
-  }
-  &-container {
-    margin: 20px 0;
-    display: inline-block;
-    vertical-align: middle;
-    text-align: left;
-    position: relative;
-    width: 520px;
-    min-height: 100px;
-    background: white;
-    border-radius: 2px;
-    user-select: text;
-  }
-  &-header {
-    font-size: 16px;
-    border-bottom: 1px solid #f1f1f1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    &-title {
-      padding: 16px;
-      font-weight: 500;
-    }
-  }
-
-  &-close {
-    cursor: pointer;
-    height: 55px;
-    width: 55px;
-    position: absolute;
-    right: 0;
-    top: 0;
+    box-sizing: border-box;
+    padding: 24px 16px;
     display: flex;
     justify-content: center;
-    align-items: center;
-    user-select: none;
-    * {
-      color: rgba(0, 0, 0, 0.45);
-      transition: color 0.15s ease;
-    }
-    &:hover * {
-      color: rgba(0, 0, 0, 0.85);
+    // The container centres through `margin: auto`. Centring with
+    // `align-items: center` instead would make the top of an oversized
+    // container unreachable, because the overflow would be clipped above it.
+    align-items: flex-start;
+  }
+  &-container {
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    position: relative;
+    box-sizing: border-box;
+    width: 520px;
+    max-width: 100%;
+    min-height: 100px;
+    // The container never outgrows the viewport; the body scrolls instead so
+    // vertical centering stays correct.
+    max-height: calc(100vh - 48px);
+    max-height: calc(100dvh - 48px);
+    background: var(--k-modal-surface);
+    border-radius: var(--k-radius-lg);
+    box-shadow: var(--k-modal-shadow);
+    overflow: hidden;
+    user-select: text;
+    animation: modalRise 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  &-header {
+    flex: 0 0 auto;
+    padding: 26px var(--k-modal-gutter) 0;
+    &-title {
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1.45;
+      letter-spacing: 0.01em;
+      color: var(--k-modal-ink);
     }
   }
   &-body {
-    padding: 16px;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    padding: 14px var(--k-modal-gutter) 26px;
     font-size: 14px;
+    line-height: 1.6;
+    scrollbar-width: thin;
+    &::-webkit-scrollbar {
+      width: 10px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(15, 23, 42, 0.18);
+      border-radius: 999px;
+      border: 3px solid transparent;
+      background-clip: content-box;
+    }
+    // Untitled modals drop the header, so the body carries the top gutter.
+    &:first-child {
+      padding-top: 26px;
+    }
   }
   &-footer {
-    padding: 10px 16px;
-    font-size: 14px;
-    border-top: 1px solid #f1f1f1;
+    flex: 0 0 auto;
     display: flex;
     justify-content: flex-end;
+    gap: 12px;
+    padding: 0 var(--k-modal-gutter) 24px;
+    font-size: 14px;
   }
   &-btn {
     user-select: none;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 32px;
-    line-height: 32px;
-    border-radius: 2px;
-    border: 1px solid #1890ff;
-    background: #1890ff;
-    color: white;
-    min-width: 64px;
+    height: 40px;
+    padding: 0 22px;
+    min-width: 84px;
+    border: 0;
+    border-radius: var(--k-radius-sm);
+    background: var(--k-player-primary-color);
+    color: var(--k-modal-on-primary);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
     cursor: pointer;
-    padding: 0 8px;
+    transition: filter 0.15s ease, box-shadow 0.15s ease;
+    &:hover {
+      filter: brightness(1.06);
+    }
+    &:active {
+      filter: brightness(0.94);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--k-player-primary-color);
+      outline-offset: 2px;
+    }
+  }
+
+  // Content that opts out of the body gutter (tabs, full-bleed lists) applies
+  // the gutter itself so its text still aligns with the title.
+  .k-tabs {
+    border-bottom-color: var(--k-modal-line);
+  }
+  .k-tab {
+    padding: 12px 0;
+    color: var(--k-modal-ink-muted);
+    transition: color 0.15s ease;
+    &.active {
+      color: var(--k-modal-ink);
+      font-weight: 600;
+    }
+  }
+  .k-tab-pane {
+    padding: 12px 0 0;
+  }
+  // The body already insets by the gutter, so table cells only give back
+  // their own padding on the outer edges to keep columns flush with the title.
+  .k-table {
+    th:first-child,
+    td:first-child {
+      padding-left: 0;
+    }
+    th:last-child,
+    td:last-child {
+      padding-right: 0;
+    }
+  }
+
+  @media (max-width: 576px) {
+    --k-modal-gutter: 20px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &,
+    &-container {
+      animation: none;
+    }
   }
 }
