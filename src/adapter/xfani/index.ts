@@ -1,53 +1,27 @@
 import { runtime } from '../../runtime'
-import { iframePlayer, runInTop, parser } from './play'
-import { isNextXifan, runInNextTop, getAnimeName, getEpisodeName } from './next'
+import { getAnimeName, getEpisodeName, runInNextTop } from './play'
 import './index.scss'
-import './next.scss'
 
 /**
- * 旧站是 iframe 播放器，通过 postMessage 从 iframe 里取信息；
- * 新站（next.xifanacg.com）是 SPA + 原生 video，直接在页面里读 DOM。
+ * 稀饭动漫 Next 是 Next.js App Router 站点：整站 SPA + media-chrome 播放器，
+ * 切集走 history.pushState，所以用 runtime 的 spa 模式按路由驱动，
+ * 不再自己轮询。
  */
-function fromIframe(key: 'getSearchName' | 'getEpisode') {
-  return () => {
-    return new Promise<string>((resolve) => {
-      const fn = (e: MessageEvent<any>) => {
-        if (e.data.key === key) {
-          resolve(e.data.name)
-          window.removeEventListener('message', fn)
-        }
-      }
-      window.addEventListener('message', fn)
-      parent.postMessage({ key }, '*')
-    })
-  }
-}
-
 runtime.register({
-  // next.xifanacg.com 同样命中 .xifanacg.，因此新旧站共用同一个 register
-  domains: ['.xifanacg.', 'player.moedot'],
+  domains: ['next.xifanacg.com'],
   opts: [
-    // 新站是 SPA，首页进入播放页不会重新执行脚本，
-    // 所以用一个覆盖全站的 opt，由内部的轮询接管路由与切集
-    { test: () => isNextXifan(), run: runInNextTop },
-    { test: '/watch', run: runInTop },
-    { test: '/watch', run: iframePlayer.runInIframe, runInIframe: true },
-    {
-      test: () => location.hostname.includes('player.moedot'),
-      run: parser,
-      runInIframe: true,
-    },
+    // spa 模式下 setup 只执行一次，run 每次路由变化重新执行，
+    // 所以 body class 与监听器在 setup 里注册，挂载进 run 里。
+    { test: '*', setup: () => $('body').addClass('xfani-next') },
+    { test: /^\/anime\/\d+\/play\/\d+/, run: runInNextTop },
   ],
+  spa: true,
   search: {
     name: '稀饭动漫',
     search: (cn) => `https://next.xifanacg.com/search?q=${cn}`,
-    getSearchName: () =>
-      isNextXifan() ? getAnimeName() : fromIframe('getSearchName')(),
-    getEpisode: () =>
-      isNextXifan() ? getEpisodeName() : fromIframe('getEpisode')(),
+    getSearchName: () => getAnimeName(),
+    getEpisode: () => getEpisodeName(),
     getAnimeScope: () =>
-      isNextXifan()
-        ? window.location.href.match(/\/anime\/(\d+)\//)?.[1] || ''
-        : window.location.href.match(/\/watch\/(\d+)\//)?.[1] || '',
+      window.location.href.match(/\/anime\/(\d+)\//)?.[1] || '',
   },
 })
