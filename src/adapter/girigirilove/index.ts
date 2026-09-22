@@ -6,7 +6,8 @@ runtime.register({
   domains: ['.girigirilove.', 'giri.moemoekyu.com'],
   opts: [
     { test: '*', run: () => $('body').addClass('girigirilove') },
-    { test: '/', run: iframePlayer.subscribe.renderSubscribedAnimes },
+    // 字符串 test 是子串匹配，'/' 会命中所有路径，首页必须用锚定正则
+    { test: /^\/$/, run: iframePlayer.subscribe.renderSubscribedAnimes },
     { test: '/playGV', run: runInTop },
     { test: '/playGV', run: iframePlayer.runInIframe, runInIframe: true },
     { test: '/addons/aplyer', run: parser, runInIframe: true },

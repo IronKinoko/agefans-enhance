@@ -11,7 +11,8 @@ runtime.register({
         $('body').addClass('agefans-wrapper')
       },
     },
-    { test: '/', run: iframePlayer.subscribe.renderSubscribedAnimes },
+    // 字符串 test 是子串匹配，'/' 会命中所有路径，首页必须用锚定正则
+    { test: /^\/$/, run: iframePlayer.subscribe.renderSubscribedAnimes },
     { test: '/play', run: playModule },
     { test: '/play', run: playModuleInIframe, runInIframe: true },
   ],
