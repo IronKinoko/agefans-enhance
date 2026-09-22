@@ -1,4 +1,4 @@
-import { KPlayer } from '../../player'
+import { createKPlayer } from '../common/createKPlayer'
 import { execInUnsafeWindow } from '../../utils/execInUnsafeWindow'
 import { queryDom } from '../../utils/queryDom'
 import { sleep } from '../../utils/sleep'
@@ -55,7 +55,7 @@ export async function parser() {
     EC.dp?.destroy()
   })
 
-  const player = new KPlayer('#player', {
+  const player = createKPlayer('#player', {
     eventToParentWindow: true,
   })
   player.src = await execInUnsafeWindow(() => window.config.url)
@@ -79,7 +79,7 @@ export async function parser2() {
     window.MIZHI.art.destroy()
   })
 
-  const player = new KPlayer('#loading', {
+  const player = createKPlayer('#loading', {
     eventToParentWindow: true,
   })
   player.src = url

@@ -1,4 +1,4 @@
-import { KPlayer } from '../../player'
+import { createKPlayer } from '../common/createKPlayer'
 import { wait } from '../../utils/wait'
 
 export function main() {
@@ -17,7 +17,7 @@ async function replacePlayer() {
   video.src = ''
   video.remove()
 
-  const player = new KPlayer('#v_link_p')
+  const player = createKPlayer('#v_link_p')
   player.src = url
 
   player.on('prev', () => $('#prevLink').trigger('click'))

@@ -1,4 +1,4 @@
-import { KPlayer } from '../../player'
+import { createKPlayer } from '../common/createKPlayer'
 import { execInUnsafeWindow } from '../../utils/execInUnsafeWindow'
 import { queryDom } from '../../utils/queryDom'
 import { local } from '../../utils/storage'
@@ -77,6 +77,6 @@ export async function parser() {
   video.load()
 
   const url = await execInUnsafeWindow(() => window.url)
-  const player = new KPlayer('#player', { eventToParentWindow: true })
+  const player = createKPlayer('#player', { eventToParentWindow: true })
   player.src = url
 }

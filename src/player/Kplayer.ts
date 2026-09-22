@@ -1,7 +1,6 @@
 import Hls from 'hls.js'
 import { debounce, throttle } from 'lodash-es'
 import Plyr from 'plyr'
-import { runtime } from '../runtime'
 import { Message } from '../utils/message'
 import { parseTime } from '../utils/parseTime'
 import { gm, local, session } from '../utils/storage'
@@ -21,6 +20,7 @@ import { Shortcuts } from './plugins/shortcuts'
 import { isUrl } from '../utils/isUrl'
 import { parseSubtitles } from '../utils/subtitles'
 import { sleep } from '../utils/sleep'
+import { defaultPlayerContext, PlayerContext } from './context'
 
 const MediaErrorMessage: Record<number, string> = {
   1: '你中止了媒体播放',
@@ -33,6 +33,8 @@ const MediaErrorMessage: Record<number, string> = {
 export interface KPlayerOpts extends Plyr.Options {
   video?: HTMLVideoElement
   eventToParentWindow?: boolean
+  /** 宿主应用注入的外部信息，缺省时播放器退化为纯播放器 */
+  context?: Partial<PlayerContext>
 }
 
 type CustomEventMap =
@@ -95,6 +97,8 @@ export class KPlayer {
   $searchActions!: JQuery<HTMLElement>
   static plguinList: ((player: KPlayer) => void)[] = []
   opts: KPlayerOpts
+  /** 由宿主注入的外部信息，未注入的部分回落到 defaultPlayerContext */
+  context: PlayerContext
   speedList = speedList
   private hls?: Hls
   private destroyList: (() => void)[] = []
@@ -103,6 +107,7 @@ export class KPlayer {
 
   constructor(selector: string | Element, opts: KPlayerOpts = {}) {
     this.opts = opts
+    this.context = { ...defaultPlayerContext, ...opts.context }
     this.$wrapper = $('<div id="k-player-wrapper"/>').replaceAll(selector)
     this.$loading = $(loadingHTML)
     this.$error = $(errorHTML)
@@ -233,13 +238,13 @@ export class KPlayer {
 
   async getPlayTimeStoreKey() {
     if (!this.playTimeStoreKey) {
-      this.playTimeStoreKey = await runtime.getTopLocationHref()
+      this.playTimeStoreKey = await this.context.getTopLocationHref()
     }
 
     return this.playTimeStoreKey
   }
   async getAnimeScope() {
-    return await runtime.getAnimeScope()
+    return await this.context.getAnimeScope()
   }
 
   hideControlsDebounced = debounce(() => {
@@ -687,7 +692,7 @@ export class KPlayer {
     )
     this.$searchActions.insertBefore(this.$speed)
 
-    const actions = await runtime.getSearchActions()
+    const actions = await this.context.getSearchActions()
     if (actions.length === 0) return
 
     this.$searchActions.find('.k-menu').append(

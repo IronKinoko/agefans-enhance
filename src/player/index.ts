@@ -1,4 +1,5 @@
 export * from './Kplayer'
+export * from './context'
 import { KPlayer } from './Kplayer'
 import { setup as setupDanmaku } from './plugins/danmaku'
 import { setup as setupShortcuts } from './plugins/shortcuts'

@@ -1,5 +1,5 @@
 import Danmaku from '@ironkinoko/danmaku'
-import { runtime } from '../../../runtime'
+import { VideoInfo } from '../../context'
 import { KPlayer } from '../../Kplayer'
 import { Shortcuts } from '../shortcuts'
 import { getComments, queryAnimes, queryEpisodes } from './apis'
@@ -62,10 +62,6 @@ enum RunState {
   getComments,
 }
 
-type VideoInfo = NonNullable<
-  Awaited<ReturnType<typeof runtime.getCurrentVideoNameAndEpisode>>
->
-
 class DanmakuPlugin {
   elements: DanmakuElements
   player: KPlayer
@@ -75,9 +71,7 @@ class DanmakuPlugin {
     animes: Anime[]
     episodes: Episode[]
     comments: Comment[]
-    videoInfo: NonNullable<
-      Awaited<ReturnType<typeof runtime.getCurrentVideoNameAndEpisode>>
-    >
+    videoInfo: VideoInfo
     syncDiff: number
   }
   baseDanmkuSpeed = 130
@@ -478,7 +472,7 @@ class DanmakuPlugin {
     const mutationOb = new MutationObserver(async () => {
       Object.assign(
         this.state.videoInfo,
-        await runtime.getCurrentVideoNameAndEpisode()
+        await this.player.context.getCurrentVideoNameAndEpisode()
       )
       this.state.state = RunState.searchedAnimes
       this.autoStart()
@@ -694,7 +688,7 @@ const renderSelectOptions = (target: JQuery, options: (Anime | Episode)[]) => {
 }
 
 export async function setup(player: KPlayer) {
-  const info = await runtime.getCurrentVideoNameAndEpisode()
+  const info = await player.context.getCurrentVideoNameAndEpisode()
   if (!info) return
 
   new DanmakuPlugin(player, info)

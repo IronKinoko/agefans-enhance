@@ -1,4 +1,5 @@
 import { KPlayer } from '../../player'
+import { createKPlayer } from '../common/createKPlayer'
 import { execInUnsafeWindow } from '../../utils/execInUnsafeWindow'
 import { queryDom } from '../../utils/queryDom'
 import { sleep } from '../../utils/sleep'
@@ -45,7 +46,7 @@ export const parser = {
     video.src = ''
     dispose()
 
-    player = new KPlayer('#player', { eventToParentWindow: true })
+    player = createKPlayer('#player', { eventToParentWindow: true })
 
     player.src = await execInUnsafeWindow(() =>
       window.v_decrypt(window.config.url, window._token_key, window.key_token)
@@ -55,7 +56,7 @@ export const parser = {
     const video = await queryDom<HTMLVideoElement>('video')
     video.src = ''
 
-    player = new KPlayer('#player', { eventToParentWindow: true })
+    player = createKPlayer('#player', { eventToParentWindow: true })
     player.src = await execInUnsafeWindow(() => window.config.url)
   },
   'sp-flv.com': async () => {
@@ -69,14 +70,14 @@ export const parser = {
 
       if (url) {
         video.src = ''
-        player = new KPlayer('#mplayer-media-wrapper', {
+        player = createKPlayer('#mplayer-media-wrapper', {
           eventToParentWindow: true,
         })
         player.src = url
       }
     } else {
       video.src = ''
-      player = new KPlayer('#mplayer-media-wrapper', {
+      player = createKPlayer('#mplayer-media-wrapper', {
         eventToParentWindow: true,
       })
       player.src = url
@@ -94,7 +95,7 @@ export const parser = {
     }
     $('#artplayer').remove()
     $('body').append('<div id="k-player-container"/>')
-    player = new KPlayer('#k-player-container', { eventToParentWindow: true })
+    player = createKPlayer('#k-player-container', { eventToParentWindow: true })
     player.src = url
   },
   /**
@@ -112,7 +113,7 @@ export const parser = {
 
     $('#loading').remove()
     $('body').append('<div id="k-player-container"/>')
-    player = new KPlayer('#k-player-container', { eventToParentWindow: true })
+    player = createKPlayer('#k-player-container', { eventToParentWindow: true })
     player.src = url
   },
 }

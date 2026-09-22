@@ -1,4 +1,5 @@
 import { KPlayer } from '../../player'
+import { createKPlayer } from '../common/createKPlayer'
 
 /** 站点自带的播放器，是 media-chrome 的 web component */
 const SITE_PLAYER_SELECTOR = 'media-controller'
@@ -108,7 +109,7 @@ function mountPlayer(src: string) {
   host.id = HOST_ID
   parent.insertBefore(host, sitePlayer)
 
-  const instance = new KPlayer(`#${HOST_ID}`)
+  const instance = createKPlayer(`#${HOST_ID}`)
   player = instance
   playingSrc = src
   instance.src = src

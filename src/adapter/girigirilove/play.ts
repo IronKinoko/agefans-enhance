@@ -1,5 +1,5 @@
 import { template } from 'lodash-es'
-import { KPlayer } from '../../player'
+import { createKPlayer } from '../common/createKPlayer'
 import { queryDom } from '../../utils/queryDom'
 import { wait } from '../../utils/wait'
 import { defineIframePlayer } from '../common/defineIframePlayer'
@@ -132,7 +132,7 @@ export async function parser() {
   await wait(() => !!video.currentSrc)
   video.src = ''
 
-  const player = new KPlayer('#APlayer', {
+  const player = createKPlayer('#APlayer', {
     eventToParentWindow: true,
   })
   player.src = new URLSearchParams(location.search).get('url')!

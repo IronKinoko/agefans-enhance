@@ -1,4 +1,4 @@
-import { KPlayer } from '../../player'
+import { createKPlayer } from '../common/createKPlayer'
 import { logHis } from '../common/history'
 
 async function fetchVideoLinks(params: any) {
@@ -29,7 +29,7 @@ export async function runInSingle() {
   const $root = $('.video-js')
   const vlinks = await fetchVideoLinks($root.data())
 
-  const player = new KPlayer('.video-js', {
+  const player = createKPlayer('.video-js', {
     previewThumbnails: { enabled: true, src: vlinks.thumbnails },
   })
 

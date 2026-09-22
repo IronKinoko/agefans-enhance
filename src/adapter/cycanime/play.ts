@@ -1,5 +1,6 @@
 import { template } from 'lodash-es'
 import { KPlayer } from '../../player'
+import { createKPlayer } from '../common/createKPlayer'
 import { queryDom } from '../../utils/queryDom'
 import { local } from '../../utils/storage'
 import { defineSubscribe } from '../common/defineSubscribe'
@@ -515,7 +516,7 @@ async function initPlayer(
   const playerRoot = document.createElement('div')
   container.append(playerRoot)
 
-  player = new KPlayer(playerRoot)
+  player = createKPlayer(playerRoot)
   player.on('prev', () => startPlayHandler?.(-1))
   player.on('next', () => startPlayHandler?.(1))
   player.on('canplay', () => {

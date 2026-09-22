@@ -1,4 +1,4 @@
-import { KPlayer } from '../../player'
+import { createKPlayer } from '../common/createKPlayer'
 import { execInUnsafeWindow } from '../../utils/execInUnsafeWindow'
 import { queryDom } from '../../utils/queryDom'
 import { wait } from '../../utils/wait'
@@ -57,7 +57,7 @@ export async function parser() {
   $('#loading').hide()
   $('#player').hide()
   $('body').append('<div id="player2"></div>')
-  const player = new KPlayer('#player2', {
+  const player = createKPlayer('#player2', {
     eventToParentWindow: true,
   })
 
