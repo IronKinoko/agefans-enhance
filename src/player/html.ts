@@ -179,7 +179,7 @@ export const createSettingsHTML = () =>
 </button>
 `,
     overlay: `
-<div class="k-settings-list">
+<div class="k-settings-list k-player-settings">
   <label class="k-settings-item">
     <input type="checkbox" name="showSearchActions" />
     显示画质
