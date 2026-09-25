@@ -99,7 +99,7 @@
   }
   &-header {
     flex: 0 0 auto;
-    padding: 26px var(--k-modal-gutter) 0;
+    padding: 24px calc(var(--k-modal-gutter) + 32px) 0 var(--k-modal-gutter);
     &-title {
       font-size: 17px;
       font-weight: 600;
@@ -108,11 +108,44 @@
       color: var(--k-modal-ink);
     }
   }
+  &-close {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: var(--k-radius-sm);
+    background: transparent;
+    color: var(--k-modal-ink-muted);
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    &:hover {
+      background: rgba(15, 23, 42, 0.06);
+      color: var(--k-modal-ink);
+    }
+    &:active {
+      background: rgba(15, 23, 42, 0.12);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--k-player-primary-color);
+      outline-offset: 2px;
+    }
+    svg {
+      display: block;
+    }
+  }
   &-body {
     flex: 1 1 auto;
     min-height: 0;
     overflow: auto;
-    padding: 14px var(--k-modal-gutter) 26px;
+    padding: 14px var(--k-modal-gutter) 24px;
     font-size: 14px;
     line-height: 1.6;
     scrollbar-width: thin;
@@ -125,9 +158,11 @@
       border: 3px solid transparent;
       background-clip: content-box;
     }
-    // Untitled modals drop the header, so the body carries the top gutter.
+    // Untitled modals drop the header, so the body carries the top gutter
+    // and reserves room on the right so its content clears the close button.
     &:first-child {
-      padding-top: 26px;
+      padding-top: 24px;
+      padding-right: calc(var(--k-modal-gutter) + 32px);
     }
   }
   &-footer {
