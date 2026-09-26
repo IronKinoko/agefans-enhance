@@ -28,36 +28,11 @@ function switchPart(next: boolean) {
 }
 
 export function runInTop() {
-  $('#bkcl').remove()
-
-  if (local.getItem('bangumi-history')) {
-    local.setItem('k-history', local.getItem('bangumi-history'))
-    local.removeItem('bangumi-history')
-  }
-
-  $<HTMLAnchorElement>('.player_list a, .watch-episode-grid a').each(
-    (_, el) => {
-      if (el.href === location.href) {
-        el.classList.add('episode-active')
-        el.classList.add('is-current')
-
-        // 滚动到最高处
-        const parent = el.offsetParent as HTMLElement | null
-        if (parent) parent.scrollTop = el.offsetTop
-      }
-    }
-  )
-
-  $('.watch-screen, .tb.player')
-    .get(0)
-    ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-
   iframePlayer.runInTop()
 }
 
 export const iframePlayer = defineIframePlayer({
-  iframeSelector:
-    '.watch-player-mount iframe, [data-watch-mount] iframe, iframe[data-artplayer], #playleft iframe',
+  iframeSelector: '.watch-player-mount iframe',
   getActive,
   setActive: (href) => {
     $<HTMLAnchorElement>('.player_list a, .watch-episode-grid a').each(
@@ -85,21 +60,12 @@ export const iframePlayer = defineIframePlayer({
   getSwitchEpisodeURL: (next) => switchPart(next),
   history: {
     creator: (renderHistory) => {
-      const $btn = $('<li class="item"><a>历史</a></li>')
+      const $btn = $('<a>历史</a>')
       $btn.on('click', renderHistory)
 
-      $('.header-top__nav ul, .site-nav__list, nav.site-nav').append($btn)
+      $('.main-nav').append($btn)
     },
     getId: () => location.pathname.match(/\/(?<id>\d+)\/play/)!.groups!.id,
-  },
-  onPlayerMessage: (key, data) => {
-    if (key === 'canplay') {
-      const video = data.video
-      const width = $('#video, .watch-screen').width()
-      if (width && video?.width && video?.height) {
-        $('#video').height((video.height / video.width) * width)
-      }
-    }
   },
 })
 
