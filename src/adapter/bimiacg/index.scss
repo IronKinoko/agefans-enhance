@@ -8,7 +8,8 @@
   .k-episode-anchor:visited {
     color: white !important;
   }
-  a.episode-active {
+  a.episode-active,
+  a.is-current {
     background: var(--k-player-primary-color) !important;
     color: var(--k-player-color) !important;
   }
