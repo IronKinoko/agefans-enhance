@@ -1,15 +1,15 @@
 .bimi-wrapper {
   .play-full,
   #bkcl,
+  .watch-toolbar,
+  .site-ad,
   marquee {
     display: none !important;
   }
 
-  .k-episode-anchor:visited {
-    color: white !important;
-  }
-  a.episode-active {
-    background: var(--k-player-primary-color) !important;
-    color: var(--k-player-color) !important;
+  &.widescreen {
+    .site-header {
+      display: none !important;
+    }
   }
 }

@@ -146,7 +146,16 @@ export function defineIframePlayer(config: Config) {
 
         case 'changeIframeSrc': {
           const iframe = $<HTMLIFrameElement>(iframeSelector)[0]
-          iframe.contentWindow?.location.replace(e.data.url)
+
+          try {
+            let url = new URL(e.data.url)
+            // 防止只改变hash导致replace不会刷新页面
+            url.searchParams.append('_k_', Date.now().toString())
+            iframe.contentWindow?.location.replace(url.toString())
+          } catch (error) {
+            iframe.contentWindow?.location.replace(e.data.url)
+          }
+
           document.title = e.data.title
           $('.ready-to-change-iframe-src').remove()
           break
