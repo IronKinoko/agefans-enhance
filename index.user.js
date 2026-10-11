@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.60.1
+// @version      1.60.2
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -3622,7 +3622,7 @@
 				content: `
     <table class="k-table">
       <tbody>
-      <tr><td>脚本版本</td><td>1.60.1</td></tr>
+      <tr><td>脚本版本</td><td>1.60.2</td></tr>
       <tr>
         <td>脚本作者</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -3748,7 +3748,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: 1.60.1
+脚本版本: 1.60.2
 `;
 	//#endregion
 	//#region src/player/plugins/shortcuts/help/index.ts
@@ -7895,8 +7895,16 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		player$1.on("canplay", () => {
 			subscribe.onCanPlay();
 		});
-		player$1.on("enterwidescreen", () => document.body.classList.add("widescreen"));
-		player$1.on("exitwidescreen", () => document.body.classList.remove("widescreen"));
+		player$1.on("enterwidescreen", () => {
+			document.body.classList.add("widescreen");
+			document.documentElement.style.overflow = "hidden";
+			document.documentElement.style.scrollbarGutter = "auto";
+		});
+		player$1.on("exitwidescreen", () => {
+			document.body.classList.remove("widescreen");
+			document.documentElement.style.overflow = "";
+			document.documentElement.style.scrollbarGutter = "";
+		});
 		return player$1;
 	}
 	async function parser$2(isDisposed) {
