@@ -523,10 +523,16 @@ async function initPlayer(
     void subscribe.onCanPlay()
   })
 
-  player.on('enterwidescreen', () => document.body.classList.add('widescreen'))
-  player.on('exitwidescreen', () =>
+  player.on('enterwidescreen', () => {
+    document.body.classList.add('widescreen')
+    document.documentElement.style.overflow = 'hidden'
+    document.documentElement.style.scrollbarGutter = 'auto'
+  })
+  player.on('exitwidescreen', () => {
     document.body.classList.remove('widescreen')
-  )
+    document.documentElement.style.overflow = ''
+    document.documentElement.style.scrollbarGutter = ''
+  })
 
   return player
 }
