@@ -151,7 +151,7 @@ export const pipHTML = `
   </div>
 </div>`
 
-export const speedList = [0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3, 3.5, 4]
+export const speedList = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3]
 export const createSpeedHTML = () =>
   popover({
     target: `
