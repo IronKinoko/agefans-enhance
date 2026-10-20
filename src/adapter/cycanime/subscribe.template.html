@@ -25,7 +25,7 @@
   >
     {{# list.forEach((item) => { }}
     <div
-      class="group block min-w-0 rounded-lg transition-transform duration-200 hover:-translate-y-0.5"
+      class="group k-subscription-card block min-w-0 rounded-lg transition-transform duration-200 hover:-translate-y-0.5"
     >
       <a href="{{item.current.url}}">
         <span
@@ -51,15 +51,41 @@
         >
           {{item.title}}
         </a>
-        <div class="line-clamp-1 text-xs text-muted-foreground">
-          观看至
-          <a href="{{item.current.url}}" class="hover:text-foreground">
-            {{item.current.title}}
-          </a>
-          /
-          <a href="{{item.last.url}}" class="hover:text-foreground">
-            {{item.last.title}}
-          </a>
+        <div
+          class="k-watch-row flex min-w-0 items-center gap-1 text-xs text-muted-foreground"
+        >
+          <span class="k-watch-progress min-w-0 flex-1 truncate">
+            观看至
+            <a href="{{item.current.url}}" class="hover:text-foreground">
+              {{item.current.title}}
+            </a>
+            /
+            <a href="{{item.last.url}}" class="hover:text-foreground">
+              {{item.last.title}}
+            </a>
+          </span>
+          <button
+            type="button"
+            class="k-unsubscribe-btn"
+            data-subscription-id="{{item.id}}"
+            title="取消订阅"
+            aria-label="取消订阅 {{item.title}}"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-4 w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M15 18H4c0-2 3-2 3-9a5 5 0 0 1 8.5-3.5" />
+              <path d="M9 21h4" />
+              <path d="m16 14 5 5m0-5-5 5" />
+            </svg>
+          </button>
         </div>
       </div>
     </div>

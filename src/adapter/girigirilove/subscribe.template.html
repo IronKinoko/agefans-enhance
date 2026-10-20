@@ -52,21 +52,44 @@
             title="{{item.title}}"
             >{{item.title}}</a
           >
-          <div class="public-list-subtitle cor5 hide ft2">
-            <span>观看至</span>
-            <a
-              target="_blank"
-              href="{{item.current.url}}"
-              title="{{item.current.title}}"
-              >{{item.current.title}}</a
+          <div class="public-list-subtitle cor5 hide ft2 k-subtitle-row">
+            <span class="k-watch-progress">
+              <span>观看至</span>
+              <a
+                target="_blank"
+                href="{{item.current.url}}"
+                title="{{item.current.title}}"
+                >{{item.current.title}}</a
+              >
+              <span>/</span>
+              <a
+                target="_blank"
+                href="{{item.last.url}}"
+                title="{{item.last.title}}"
+                >{{item.last.title}}</a
+              >
+            </span>
+            <button
+              type="button"
+              class="k-unsubscribe-btn"
+              data-subscription-id="{{item.id}}"
+              title="取消订阅"
+              aria-label="取消订阅 {{item.title}}"
             >
-            <span>/</span>
-            <a
-              target="_blank"
-              href="{{item.last.url}}"
-              title="{{item.last.title}}"
-              >{{item.last.title}}</a
-            >
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M15 18H4c0-2 3-2 3-9a5 5 0 0 1 8.5-3.5" />
+                <path d="M9 21h4" />
+                <path d="m16 14 5 5m0-5-5 5" />
+              </svg>
+            </button>
           </div>
         </div>
       </div>

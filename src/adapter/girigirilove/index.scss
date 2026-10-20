@@ -17,6 +17,84 @@
     }
   }
 
+  .k-subtitle-row {
+    position: relative;
+  }
+
+  .k-watch-progress {
+    display: block;
+    overflow: hidden;
+    padding-right: 0;
+    text-overflow: ellipsis;
+    transition: padding-right 180ms ease;
+    white-space: nowrap;
+  }
+
+  .k-unsubscribe-btn {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    display: inline-flex;
+    width: 24px;
+    height: 24px;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border: none;
+    border-radius: 8px;
+    background-color: rgb(220 38 38 / 14%);
+    color: #dc2626;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(8px, -50%);
+    transition: background-color 180ms ease, opacity 180ms ease,
+      transform 180ms ease;
+    visibility: hidden;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    &:hover {
+      background-color: rgb(220 38 38 / 24%);
+    }
+
+    &:focus-visible {
+      opacity: 1;
+      pointer-events: auto;
+      outline: 2px solid #dc2626;
+      outline-offset: 2px;
+    }
+  }
+
+  .public-list-box:hover .k-watch-progress,
+  .public-list-box:focus-within .k-watch-progress {
+    padding-right: 28px;
+  }
+
+  .public-list-box:hover .k-unsubscribe-btn,
+  .public-list-box:focus-within .k-unsubscribe-btn {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(0, -50%);
+    visibility: visible;
+  }
+
+  @media (hover: none) {
+    .k-watch-progress {
+      padding-right: 28px;
+    }
+
+    .k-unsubscribe-btn {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(0, -50%);
+      visibility: visible;
+    }
+  }
+
   .MacPlayer {
     padding: 0 !important;
   }

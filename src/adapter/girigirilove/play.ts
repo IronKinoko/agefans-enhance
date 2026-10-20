@@ -111,6 +111,15 @@ export const iframePlayer = defineIframePlayer({
       const $root = $(T.subListContainer)
       $root.insertBefore('#week-module-box')
 
+      $root
+        .off('click', '[data-subscription-id]')
+        .on('click', '[data-subscription-id]', (event) => {
+          event.preventDefault()
+          event.stopPropagation()
+          const id = $(event.currentTarget).attr('data-subscription-id')
+          if (id) sm.deleteSubscription(id)
+        })
+
       sm.onChange(
         () => {
           const groups = sm.getSubscriptionsGroupByDay()

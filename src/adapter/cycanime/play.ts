@@ -206,6 +206,15 @@ export const subscribe = defineSubscribe({
       stopObserveSubscribedListMount?.()
       stopObserveSubscribedListMount = observeDomMutations(mount)
 
+      $root
+        .off('click', '[data-subscription-id]')
+        .on('click', '[data-subscription-id]', (event) => {
+          event.preventDefault()
+          event.stopPropagation()
+          const id = $(event.currentTarget).attr('data-subscription-id')
+          if (id) sm.deleteSubscription(id)
+        })
+
       sm.onChange(
         () => {
           const groups = sm.getSubscriptionsGroupByDay()
