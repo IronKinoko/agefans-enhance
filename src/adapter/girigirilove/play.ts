@@ -68,22 +68,36 @@ export const iframePlayer = defineIframePlayer({
       }, $lists[0])
       const $last = $(longest).find('li a').last()
 
+      let sub = sm.getSubscription(id)
+      const title =
+        $doc.find('.player-title-link').first().text().trim() ||
+        sub?.title ||
+        $('.player-title-link').text().trim()
+      const url =
+        $doc.find('.player-title-link').attr('href') || sub?.url || `/GV${id}/`
+      const thumbnail =
+        $doc.find('.play-details-top .this-pic img').attr('data-src') ||
+        $doc.find('.play-details-top .this-pic img').attr('src') ||
+        $doc.find('meta[property="og:image"]').attr('content') ||
+        sub?.thumbnail ||
+        $('.play-details-top .this-pic img').attr('data-src') ||
+        $('.play-details-top .this-pic img').attr('src') ||
+        ''
+
       const updateInfo = {
+        title,
+        url,
+        thumbnail,
         updatedAt: new Date(updatedAtText).getTime(),
         status: statusText,
         last: { title: $last.text(), url: $last.attr('href')! },
       }
-
-      let sub = sm.getSubscription(id)
 
       if (!sub) {
         const $current = getActive()
 
         sub = {
           id,
-          title: $('.player-title-link').text(),
-          url: $('.player-title-link').attr('href')!,
-          thumbnail: $('.play-details-top .this-pic img').attr('data-src')!,
           createdAt: Date.now(),
           checkedAt: Date.now(),
           current: { title: $current.text(), url: $current.attr('href')! },

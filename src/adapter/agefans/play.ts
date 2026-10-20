@@ -182,8 +182,30 @@ export const iframePlayer = defineIframePlayer({
       const $last = $(longest).find('li a').last()
 
       let sub = sm.getSubscription(id)
+      const title =
+        $doc
+          .find('.video_detail_wrapper .cata_video_item .card-title')
+          .first()
+          .text()
+          .trim() ||
+        sub?.title ||
+        $('.video_detail_wrapper .cata_video_item .card-title').text().trim()
+      const url =
+        $doc.find('.player-title-link').attr('href') ||
+        sub?.url ||
+        `/detail/${id}/`
+      const thumbnail =
+        $doc.find('.video_thumbs').attr('data-src') ||
+        $doc.find('.video_thumbs').attr('src') ||
+        $doc.find('meta[property="og:image"]').attr('content') ||
+        sub?.thumbnail ||
+        $('.video_thumbs').attr('src') ||
+        ''
 
       const updateInfo = {
+        title,
+        url,
+        thumbnail,
         updatedAt: 0,
         status: statusText,
         last: { title: $last.text(), url: $last.attr('href')! },
@@ -201,9 +223,6 @@ export const iframePlayer = defineIframePlayer({
         const $current = getActive()
         sub = {
           id,
-          title: $('.video_detail_wrapper .cata_video_item .card-title').text(),
-          url: $('.player-title-link').attr('href')!,
-          thumbnail: $('.video_thumbs').attr('src')!,
           createdAt: Date.now(),
           checkedAt: Date.now(),
           current: {

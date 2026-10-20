@@ -150,6 +150,9 @@ export const subscribe = defineSubscribe({
 
       const status = remarksToStatus(animeInfo.remarks)
       const updateInfo = {
+        title: animeInfo.title,
+        url: `/anime/${animeId}`,
+        thumbnail: animeInfo.cover_url,
         updatedAt: calcRecentUpdatedAt({
           status,
           publish_date: animeInfo.publish_date,
@@ -173,9 +176,6 @@ export const subscribe = defineSubscribe({
 
         sub = {
           id,
-          title: animeInfo.title,
-          url: `/anime/${animeId}`,
-          thumbnail: animeInfo.cover_url,
           createdAt: Date.now(),
           checkedAt: Date.now(),
           current,
