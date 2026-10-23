@@ -270,7 +270,7 @@ function getModernDetailInfo(
     const episodeIndex = Number(url.searchParams.get('episodeIndex'))
     if (!Number.isInteger(episodeIndex) || episodeIndex < 0) return
 
-    const label = link.textContent?.trim() ?? ''
+    const label = link.querySelector(':scope > span')?.textContent?.trim() ?? ''
     if (skipLabels.test(label)) return
 
     const sourceIndex = url.searchParams.get('sourceIndex') ?? '0'
@@ -293,7 +293,7 @@ function getModernDetailInfo(
   )[0]
   const apiEpisodes = apiInfo && getApiEpisodes(apiInfo, id)
   const episodes = (
-    domEpisodes?.[1].length ? domEpisodes[1] : apiEpisodes?.episodes
+    apiEpisodes?.episodes.length ? apiEpisodes.episodes : domEpisodes?.[1]
   )?.sort((left, right) => left.index - right.index)
   const first = episodes?.[0]
   const last = episodes?.[episodes.length - 1]
@@ -325,10 +325,7 @@ function getModernDetailInfo(
     url: `/detail/${id}`,
     thumbnail,
     updatedAt: sub ? (lastChanged ? now : sub.updatedAt) : now,
-    status: sub?.status ?? '',
-    releaseSchedule: apiInfo
-      ? getReleaseSchedule(apiInfo)
-      : sub?.releaseSchedule ?? '',
+    status: apiInfo ? getStatus(apiInfo) : sub?.status ?? '',
     last: { title: last.title, url: last.url },
   }
 }
@@ -373,7 +370,7 @@ function getApiEpisodes(info: GirigiriDetailApiInfo, id: string) {
     .sort((left, right) => right.episodes.length - left.episodes.length)[0]
 }
 
-function getReleaseSchedule(info: GirigiriDetailApiInfo) {
+function getStatus(info: GirigiriDetailApiInfo) {
   const remarks = info.vod_remarks ?? ''
   if (Number(info.vod_isend) === 1 || /已完结|已完結|完结|完結/.test(remarks)) {
     return '已完结'
@@ -524,7 +521,6 @@ export const iframePlayer = defineIframePlayer({
   subscribe: {
     storageKey: STORAGE_KEY,
     getId: getEpisodeId,
-    refreshWhen: (subscription) => !subscription.releaseSchedule,
     getAnimeInfo: getGirigiriAnimeInfo,
     renderSubscribedAnimes: (sm) => {
       stopRenderSubscribedAnimes?.()

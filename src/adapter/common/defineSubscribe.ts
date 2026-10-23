@@ -16,7 +16,6 @@ export interface SubscribeConfig {
     id: string,
     sm: SubscriptionManager
   ) => Promise<SubscribedAnime>
-  refreshWhen?: (subscription: SubscribedAnime) => boolean
 }
 
 interface Config {
@@ -39,13 +38,10 @@ export function defineSubscribe(config: Config) {
       // 5分钟内检查过了
       if (now - sub.checkedAt < 1000 * 60 * 5) return
 
-      const refreshRequired = config.subscribe.refreshWhen?.(sub) ?? false
-      if (!refreshRequired) {
-        // 15天内没有更新过的跳过
-        if (sub.checkedAt - sub.updatedAt > 1000 * 60 * 60 * 24 * 15) return
-        // 近6天内更新过了
-        if (now - sub.updatedAt < 1000 * 60 * 60 * 24 * 6) return
-      }
+      // 15天内没有更新过的跳过
+      if (sub.checkedAt - sub.updatedAt > 1000 * 60 * 60 * 24 * 15) return
+      // 近6天内更新过了
+      if (now - sub.updatedAt < 1000 * 60 * 60 * 24 * 6) return
     }
 
     const animeInfo = await config.subscribe.getAnimeInfo(id, sm)
