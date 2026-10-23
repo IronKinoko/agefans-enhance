@@ -6,6 +6,7 @@ type AnimeInfo = {
   url: string
   thumbnail: string
   status: string
+  releaseSchedule?: string
 }
 type AnimeMetadata = {
   createdAt: number

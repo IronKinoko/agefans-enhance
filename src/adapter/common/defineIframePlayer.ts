@@ -232,7 +232,7 @@ export function defineIframePlayer(config: Config) {
         subscribe?.renderSubscribedAnimes()
       },
       renderSubscribeBtn: () => {
-        subscribe?.renderSubscribeBtn()
+        return subscribe?.renderSubscribeBtn()
       },
     },
   }

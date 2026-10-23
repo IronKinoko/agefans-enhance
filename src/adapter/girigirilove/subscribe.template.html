@@ -1,108 +1,102 @@
-<div id="subListContainer" class="box-width wow fadeInUp">
-  <div class="overflow">
-    <div class="title flex between top40 rel">
-      <div class="title-left">
-        <h4 class="title-h cor4">订阅列表</h4>
-        <div class="update-info cor5"></div>
-      </div>
+<section id="subListContainer" class="min-w-0 k-subscription-section">
+  <div
+    class="section-heading flex flex-wrap items-center justify-between gap-3 pb-5"
+  >
+    <div class="flex min-w-0 flex-col items-start gap-1">
+      <h2
+        class="flex min-w-0 items-center gap-3 text-xl font-bold tracking-tight"
+      >
+        <span
+          aria-hidden="true"
+          class="h-5 w-1 shrink-0 rounded-full bg-primary"
+        ></span>
+        <span>订阅列表</span>
+      </h2>
+      <button
+        class="update-info w-fit p-0 text-left text-xs text-muted-foreground transition-colors hover:text-foreground"
+        title="点击可强制更新数据"
+        type="button"
+      >
+        检查更新
+      </button>
     </div>
-
-    <div id="subList"></div>
   </div>
-</div>
+  <div id="subList"></div>
+</section>
 
 <div id="subList">
-  {{# if (groups.every(o => o.list.length === 0)) { }}
-  <div class="cor4 empty-tip">订阅喜欢的番剧，在播放页面标题右侧添加订阅</div>
-  {{# } }}
-  <!--  -->
-  <div class="sub-list rel border-box public-r hide-b-2 diy-center1 mask2">
-    <div class="swiper-wrapper">
-      {{# groups.filter(o => !!o.list.length).forEach((group) => {
-      group.list.forEach((item) => { }}
-      <div class="public-list-box public-pic-b swiper-slide">
-        <div class="public-list-div public-list-bj">
-          <a
-            target="_blank"
-            class="public-list-exp"
-            href="{{item.current.url}}"
-            title="{{item.title}}"
+  {{# if (list.length === 0) { }}
+  <div
+    class="flex min-h-24 items-center justify-center rounded-xl border border-dashed border-border bg-card/50 px-4 py-8 text-center text-sm text-muted-foreground"
+  >
+    订阅喜欢的番剧，在播放页面标题右侧添加订阅
+  </div>
+  {{# } else { }}
+  <div class="media-grid pb-2" aria-label="订阅列表">
+    {{# list.forEach((item) => { }}
+    <article class="k-subscription-card group min-w-0">
+      <a class="block" href="{{item.current.url}}" title="{{item.title}}">
+        <div class="media-card min-w-0 flex flex-col gap-2.5">
+          <div
+            class="poster relative aspect-[2/3] overflow-hidden rounded-xl bg-muted"
           >
             <img
-              class="lazy lazy1 gen-movie-img entered loaded"
-              referrerpolicy="no-referrer"
-              src="{{item.thumbnail}}"
               alt="{{item.title}}"
-              data-src="{{item.thumbnail}}"
-              data-ll-status="loaded"
+              loading="lazy"
+              decoding="async"
+              class="size-full object-cover"
+              src="{{item.thumbnail}}"
             />
-            <span class="public-bg"></span>
-            <div class="public-prt k-day-{{group.dayNum}}">
-              {{group.day + ' ' + new
-              Date(item.updatedAt).toLocaleTimeString().slice(0,-3) }}
-            </div>
-            <span class="public-list-prb hide ft2">{{item.status}}</span>
-          </a>
-        </div>
-        <div class="public-list-button">
-          <a
-            target="_blank"
-            class="time-title hide ft4 bold"
-            href="{{item.current.url}}"
-            title="{{item.title}}"
-            >{{item.title}}</a
-          >
-          <div class="public-list-subtitle cor5 hide ft2 k-subtitle-row">
-            <span class="k-watch-progress">
-              <span>观看至</span>
-              <a
-                target="_blank"
-                href="{{item.current.url}}"
-                title="{{item.current.title}}"
-                >{{item.current.title}}</a
-              >
-              <span>/</span>
-              <a
-                target="_blank"
-                href="{{item.last.url}}"
-                title="{{item.last.title}}"
-                >{{item.last.title}}</a
-              >
-            </span>
-            <button
-              type="button"
-              class="k-unsubscribe-btn"
-              data-subscription-id="{{item.id}}"
-              title="取消订阅"
-              aria-label="取消订阅 {{item.title}}"
+            <div
+              class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent px-3 pb-3 pt-8 text-xs text-white"
             >
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M15 18H4c0-2 3-2 3-9a5 5 0 0 1 8.5-3.5" />
-                <path d="M9 21h4" />
-                <path d="m16 14 5 5m0-5-5 5" />
-              </svg>
-            </button>
+              {{item.releaseSchedule || item.status || item.last.title}}
+            </div>
           </div>
+          <h3
+            class="line-clamp-2 text-sm font-semibold leading-relaxed group-hover:text-primary"
+          >
+            {{item.title}}
+          </h3>
         </div>
+      </a>
+      <div
+        class="k-watch-row flex min-w-0 items-center gap-1 text-xs text-muted-foreground"
+      >
+        <span class="k-watch-progress min-w-0 flex-1 truncate">
+          观看至
+          <a href="{{item.current.url}}" title="{{item.current.title}}">
+            {{item.current.title}}
+          </a>
+          /
+          <a href="{{item.last.url}}" title="{{item.last.title}}">
+            {{item.last.title}}
+          </a>
+        </span>
+        <button
+          type="button"
+          class="k-unsubscribe-btn"
+          data-subscription-id="{{item.id}}"
+          title="取消订阅"
+          aria-label="取消订阅 {{item.title}}"
+        >
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M15 18H4c0-2 3-2 3-9a5 5 0 0 1 8.5-3.5" />
+            <path d="M9 21h4" />
+            <path d="m16 14 5 5m0-5-5 5" />
+          </svg>
+        </button>
       </div>
-      {{# })}) }}
-    </div>
-
-    <div class="vod-list-page">
-      <a class="swiper-button-prev" href="javascript:" tabindex="-1">
-        <i class="fa ds-fanhui"></i>
-      </a>
-      <a class="swiper-button-next" href="javascript:" tabindex="0">
-        <i class="fa ds-jiantouyou"> </i>
-      </a>
-    </div>
+    </article>
+    {{# }) }}
   </div>
+  {{# } }}
 </div>

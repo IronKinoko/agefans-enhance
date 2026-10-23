@@ -294,7 +294,7 @@ export function runInHome() {
 function mountParser() {
   const sessionId = ++currentParserSession
 
-  void parser(() => sessionId !== currentParserSession)
+  parser(() => sessionId !== currentParserSession)
 
   return () => {
     if (currentParserSession === sessionId) {
@@ -529,7 +529,7 @@ async function initPlayer(
   player.on('prev', () => startPlayHandler?.(-1))
   player.on('next', () => startPlayHandler?.(1))
   player.on('canplay', () => {
-    void subscribe.onCanPlay()
+    subscribe.onCanPlay()
   })
 
   player.on('enterwidescreen', () => {
