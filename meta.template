@@ -35,6 +35,7 @@
 // @require      https://unpkg.com/opencc-js@1.0.5/dist/umd/full.js
 // @grant        GM_getValue
 // @grant        GM_setValue
+// @grant        GM_deleteValue
 // @grant        GM_xmlhttpRequest
 // @grant        GM_registerMenuCommand
 // @connect      dandanplay.net

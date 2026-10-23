@@ -24,7 +24,10 @@ function createStorage(storage: Storage) {
 export const session = createStorage(window.sessionStorage)
 export const local = createStorage(window.localStorage)
 
-let gm: Pick<ReturnType<typeof createStorage>, 'getItem' | 'setItem'>
+let gm: Pick<
+  ReturnType<typeof createStorage>,
+  'getItem' | 'setItem' | 'removeItem'
+>
 try {
   if (typeof GM_getValue === 'undefined')
     throw new Error('GM_getValue is not defined')
@@ -46,6 +49,10 @@ try {
     setItem(key: string, value: any) {
       local.setItem(key, value)
       GM_setValue(key, value)
+    },
+    removeItem(key: string) {
+      local.removeItem(key)
+      if (typeof GM_deleteValue !== 'undefined') GM_deleteValue(key)
     },
   }
 } catch (error) {

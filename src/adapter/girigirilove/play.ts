@@ -463,35 +463,37 @@ function getLegacySubscriptionIds(raw: unknown) {
 }
 
 export function migrateLegacySubscriptions() {
-  if (gm.getItem(MIGRATION_DONE_KEY, false)) return
   if (migrationPromise) return migrationPromise
 
   migrationPromise = (async () => {
-    const ids = getLegacySubscriptionIds(
-      gm.getItem<unknown>(LEGACY_STORAGE_KEY, [])
-    )
     const sm = SubscriptionManager.getInstance(STORAGE_KEY)
-    const pendingIds = ids.filter((id) => !sm.getSubscription(id))
+    if (!gm.getItem(MIGRATION_DONE_KEY, false)) {
+      const ids = getLegacySubscriptionIds(
+        gm.getItem<unknown>(LEGACY_STORAGE_KEY, [])
+      )
+      const pendingIds = ids.filter((id) => !sm.getSubscription(id))
 
-    const animeInfoList = await concurrency(
-      pendingIds.map((id) => async () => {
-        try {
-          return await getGirigiriAnimeInfo(id, sm)
-        } catch {
-          return
-        }
-      }),
-      3
-    )
+      const animeInfoList = await concurrency(
+        pendingIds.map((id) => async () => {
+          try {
+            return await getGirigiriAnimeInfo(id, sm)
+          } catch {
+            return
+          }
+        }),
+        3
+      )
 
-    animeInfoList.forEach((animeInfo) => {
-      if (!animeInfo || sm.getSubscription(animeInfo.id)) return
-      sm.createSubscription(animeInfo)
-    })
+      animeInfoList.forEach((animeInfo) => {
+        if (!animeInfo || sm.getSubscription(animeInfo.id)) return
+        sm.createSubscription(animeInfo)
+      })
 
-    if (ids.every((id) => sm.getSubscription(id))) {
+      if (!ids.every((id) => sm.getSubscription(id))) return
       gm.setItem(MIGRATION_DONE_KEY, true)
     }
+
+    gm.removeItem(LEGACY_STORAGE_KEY)
   })().finally(() => {
     migrationPromise = undefined
   })
