@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.60.3
+// @version      1.61.0
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -35,6 +35,7 @@
 // @require      https://unpkg.com/opencc-js@1.0.5/dist/umd/full.js
 // @grant        GM_getValue
 // @grant        GM_setValue
+// @grant        GM_deleteValue
 // @grant        GM_xmlhttpRequest
 // @grant        GM_registerMenuCommand
 // @connect      dandanplay.net
@@ -3009,6 +3010,10 @@
 			setItem(key, value) {
 				local.setItem(key, value);
 				GM_setValue(key, value);
+			},
+			removeItem(key) {
+				local.removeItem(key);
+				if (typeof GM_deleteValue !== "undefined") GM_deleteValue(key);
 			}
 		};
 	} catch (error) {
@@ -3622,7 +3627,7 @@
 				content: `
     <table class="k-table">
       <tbody>
-      <tr><td>脚本版本</td><td>1.60.3</td></tr>
+      <tr><td>脚本版本</td><td>1.61.0</td></tr>
       <tr>
         <td>脚本作者</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -3748,7 +3753,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: 1.60.3
+脚本版本: 1.61.0
 `;
 	//#endregion
 	//#region src/player/plugins/shortcuts/help/index.ts
@@ -6259,7 +6264,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	//#endregion
 	//#region src/adapter/_iframe_player_parser/parser.ts
 	let player$2;
-	const parser$4 = {
+	const parser$3 = {
 		"danmu.yhdmjx.com": async () => {
 			function detectLoadError() {
 				let timeId = setInterval(() => {
@@ -6373,28 +6378,28 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			{
 				test: () => window.location.href.includes("danmu.yhdmjx.com/m3u8.php"),
 				runInIframe: true,
-				run: parser$4["danmu.yhdmjx.com"]
+				run: parser$3["danmu.yhdmjx.com"]
 			},
 			{
 				test: () => window.location.href.includes("pro.ascepan.top/player"),
 				runInIframe: true,
-				run: parser$4["pro.ascepan.top"],
+				run: parser$3["pro.ascepan.top"],
 				setup: () => $("body").addClass("pro-ascepan-top")
 			},
 			{
 				test: () => !!window.location.href.match(/sp-flv\.com.*url=/),
 				runInIframe: true,
-				run: parser$4["sp-flv.com"]
+				run: parser$3["sp-flv.com"]
 			},
 			{
 				test: () => !!window.location.href.match(/((43\.240\.74\.134)|(43\.240\.156\.118)|(jx\.ejtsyc\.com)|(jx\.wuzhoupai\.com)).*vip.*url=/),
 				runInIframe: true,
-				run: parser$4["agefans-01"]
+				run: parser$3["agefans-01"]
 			},
 			{
 				test: () => !!window.location.href.match(/((43\.240\.74\.134)|(43\.240\.156\.118)|(jx\.ejtsyc\.com)|(jx\.wuzhoupai\.com)).*m3u8.*url=/),
 				runInIframe: true,
-				run: parser$4["agefans-02"]
+				run: parser$3["agefans-02"]
 			}
 		],
 		search: {
@@ -6548,11 +6553,18 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		}
 	}
 	function normalizeSubscription(sub) {
-		return _objectSpread2(_objectSpread2({}, sub), {}, {
+		return {
+			id: sub.id,
+			title: sub.title,
 			url: trimUrlOrigin(sub.url),
+			thumbnail: sub.thumbnail,
+			status: sub.status,
+			createdAt: sub.createdAt,
+			updatedAt: sub.updatedAt,
+			checkedAt: sub.checkedAt,
 			current: _objectSpread2(_objectSpread2({}, sub.current), {}, { url: trimUrlOrigin(sub.current.url) }),
 			last: _objectSpread2(_objectSpread2({}, sub.last), {}, { url: trimUrlOrigin(sub.last.url) })
-		});
+		};
 	}
 	var SubscriptionManager = class SubscriptionManager {
 		constructor(storageKey) {
@@ -6654,9 +6666,9 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			if (!sub) return;
 			const now = Date.now();
 			if (!force) {
+				if (now - sub.checkedAt < 1e3 * 60 * 5) return;
 				if (sub.checkedAt - sub.updatedAt > 1e3 * 60 * 60 * 24 * 15) return;
 				if (now - sub.updatedAt < 1e3 * 60 * 60 * 24 * 6) return;
-				if (now - sub.checkedAt < 1e3 * 60 * 5) return;
 			}
 			const animeInfo = await config.subscribe.getAnimeInfo(id, sm);
 			Object.assign(animeInfo, { checkedAt: now });
@@ -6695,13 +6707,14 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			const sm = SubscriptionManager.getInstance(config.subscribe.storageKey);
 			const id = config.subscribe.getId();
 			stopSyncSubscribeBtn === null || stopSyncSubscribeBtn === void 0 || stopSyncSubscribeBtn();
-			stopSyncSubscribeBtn = sm.onChange(() => {
+			const stopSync = sm.onChange(() => {
 				const sub = sm.getSubscription(id);
 				$btn.html(`
           ${sub ? ICON_SUBSCRIBED : ICON_SUBSCRIBE}
             <span>${sub ? "已订阅" : "订阅"}</span>
          `);
 			}, { immediate: true });
+			stopSyncSubscribeBtn = stopSync;
 			$btn.on("click", async () => {
 				$btn.text("处理中...");
 				if (sm.getSubscription(id)) sm.deleteSubscription(id);
@@ -6711,6 +6724,11 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 				}
 			});
 			config.subscribe.renderSubscribeBtn($btn, sm);
+			return () => {
+				stopSync();
+				$btn.off();
+				if (stopSyncSubscribeBtn === stopSync) stopSyncSubscribeBtn = void 0;
+			};
 		}
 		return {
 			onCanPlay,
@@ -6884,7 +6902,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 					subscribe === null || subscribe === void 0 || subscribe.renderSubscribedAnimes();
 				},
 				renderSubscribeBtn: () => {
-					subscribe === null || subscribe === void 0 || subscribe.renderSubscribeBtn();
+					return subscribe === null || subscribe === void 0 ? void 0 : subscribe.renderSubscribeBtn();
 				}
 			}
 		};
@@ -6892,8 +6910,8 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	//#endregion
 	//#region src/adapter/agefans/subscribe.template.html
 	var subscribe_template_default$2 = {
-		"subListContainer": "<div id=\"subListContainer\" class=\"text_list_box mb-4\">\r\n  <div class=\"text_list_box--hd\">\r\n    <h6 class=\"title\">\r\n      <span class=\"float-end\">\r\n        <span class=\"update-info\" title=\"点击可强制更新数据\"></span>\r\n      </span>\r\n      订阅列表\r\n    </h6>\r\n  </div>\r\n  <div id=\"subList\"></div>\r\n</div>",
-		"subList": "<div id=\"subList\">\r\n  {{# if (groups.every(o => o.list.length === 0)) { }}\r\n  <div class=\"text_list_box--bd\">\r\n    <div class=\"text_list_box_wrapper\">\r\n      <ul class=\"text_list_item\">\r\n        <li>\r\n          <div class=\"d-flex position-relative\">\r\n            <div class=\"flex-grow-1 text-truncate pe-2\">\r\n              订阅喜欢的番剧，在播放页面标题右侧添加订阅\r\n            </div>\r\n          </div>\r\n        </li>\r\n      </ul>\r\n    </div>\r\n  </div>\r\n  {{# } }}\r\n  \r\n  {{# groups.filter(o => !!o.list.length).forEach(({list, day}) => { }}\r\n  <div class=\"text_list_box--bd\">\r\n    <div class=\"sub-group-day\">{{day}}</div>\r\n    <div class=\"text_list_box_wrapper\">\r\n      <ul class=\"text_list_item\">\r\n        {{# list.forEach(item => { }}\r\n        <li>\r\n          <div class=\"d-flex position-relative\">\r\n            <div class=\"text-truncate pe-2\">\r\n              <a \n                href=\"{{item.current.url}}\"\r\n                class=\"text-decoration-none link-light common_alink\"\r\n                >{{item.title}}</a>\r\n            </div>\r\n            <div class=\"flex-grow-1 title_new\"></div>\r\n            <div class=\"title_sub text-truncate\">\r\n              <a \n                class=\"text-decoration-none link-light common_alink\"\r\n                href=\"{{item.current.url}}\"\r\n                >{{item.current.title}}</a>\r\n              <span>/</span>\r\n              <a \n                class=\"text-decoration-none link-light common_alink\"\r\n                href=\"{{item.last.url}}\"\r\n                >{{item.last.title}}</a>\r\n            </div>\r\n\r\n            <div class=\"sub-thumbnail-box\">\r\n              <img \n                class=\"sub-thumbnail\"\r\n                src=\"{{item.thumbnail}}\"\r\n                alt=\"{{item.title}}\"\r\n              >\r\n            </div>\r\n          </div>\r\n        </li>\r\n        {{# }) }}\r\n      </ul>\r\n    </div>\r\n  </div>\r\n  {{# }) }}\r\n</div>"
+		"subListContainer": "<div id=\"subListContainer\" class=\"text_list_box mb-4\">\n  <div class=\"text_list_box--hd\">\n    <h6 class=\"title\">\n      <span class=\"float-end\">\n        <span class=\"update-info\" title=\"点击可强制更新数据\"></span>\n      </span>\n      订阅列表\n    </h6>\n  </div>\n  <div id=\"subList\"></div>\n</div>",
+		"subList": "<div id=\"subList\">\n  {{# if (groups.every(o => o.list.length === 0)) { }}\n  <div class=\"text_list_box--bd\">\n    <div class=\"text_list_box_wrapper\">\n      <ul class=\"text_list_item\">\n        <li>\n          <div class=\"d-flex position-relative\">\n            <div class=\"flex-grow-1 text-truncate pe-2\">\n              订阅喜欢的番剧，在播放页面标题右侧添加订阅\n            </div>\n          </div>\n        </li>\n      </ul>\n    </div>\n  </div>\n  {{# } }}\n  \n  {{# groups.filter(o => !!o.list.length).forEach(({list, day}) => { }}\n  <div class=\"text_list_box--bd\">\n    <div class=\"sub-group-day\">{{day}}</div>\n    <div class=\"text_list_box_wrapper\">\n      <ul class=\"text_list_item\">\n        {{# list.forEach(item => { }}\n        <li>\n          <div class=\"d-flex position-relative\">\n            <div class=\"text-truncate pe-2\">\n              <a                 href=\"{{item.current.url}}\"\n                class=\"text-decoration-none link-light common_alink\"\n                >{{item.title}}</a>\n            </div>\n            <div class=\"flex-grow-1 title_new\"></div>\n            <div class=\"title_sub text-truncate\">\n              <a                 class=\"text-decoration-none link-light common_alink\"\n                href=\"{{item.current.url}}\"\n                >{{item.current.title}}</a>\n              <span>/</span>\n              <a                 class=\"text-decoration-none link-light common_alink\"\n                href=\"{{item.last.url}}\"\n                >{{item.last.title}}</a>\n            </div>\n\n            <div class=\"sub-thumbnail-box\">\n              <img                 class=\"sub-thumbnail\"\n                src=\"{{item.thumbnail}}\"\n                alt=\"{{item.title}}\"\n              >\n            </div>\n          </div>\n        </li>\n        {{# }) }}\n      </ul>\n    </div>\n  </div>\n  {{# }) }}\n</div>"
 	};
 	//#endregion
 	//#region src/adapter/agefans/play.ts
@@ -7130,7 +7148,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		if (sibling) return sibling;
 		return (_$active$parent$find$ = $active.parent()[next ? "next" : "prev"]().find("a")[0]) === null || _$active$parent$find$ === void 0 ? void 0 : _$active$parent$find$.href;
 	}
-	function runInTop$3() {
+	function runInTop$2() {
 		iframePlayer$2.runInTop();
 	}
 	const iframePlayer$2 = defineIframePlayer({
@@ -7162,7 +7180,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			getId: () => location.pathname.match(/* @__PURE__ */ new RegExp("\\/(?<id>\\d+)\\/play", "")).groups.id
 		}
 	});
-	async function parser$3() {
+	async function parser$2() {
 		let url = "";
 		let retryCount = 0;
 		while (!url && retryCount < 300) {
@@ -7224,7 +7242,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			},
 			{
 				test: /^\/(video|bangumi)\/\d+\/play\//,
-				run: runInTop$3
+				run: runInTop$2
 			},
 			{
 				test: /^\/(video|bangumi)\/\d+\/play\//,
@@ -7234,7 +7252,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			{
 				test: "/static/danmu",
 				runInIframe: true,
-				run: parser$3
+				run: parser$2
 			}
 		],
 		search: {
@@ -7757,7 +7775,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			}
 		}
 	});
-	function runInTop$2() {
+	function runInTop$1() {
 		const disposeList = [hideOriginPlayer(), mountParser()];
 		subscribe.renderSubscribeBtn();
 		return () => {
@@ -7767,7 +7785,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			disposeList.forEach((dispose) => dispose());
 		};
 	}
-	function runInHome() {
+	function runInHome$1() {
 		subscribe.renderSubscribedAnimes();
 		return () => {
 			stopObserveSubscribedListMount === null || stopObserveSubscribedListMount === void 0 || stopObserveSubscribedListMount();
@@ -7777,7 +7795,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	}
 	function mountParser() {
 		const sessionId = ++currentParserSession;
-		parser$2(() => sessionId !== currentParserSession);
+		parser$1(() => sessionId !== currentParserSession);
 		return () => {
 			if (currentParserSession === sessionId) currentParserSession++;
 			if (!isPlayPage$1()) destroyPlayer$1();
@@ -7912,7 +7930,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		});
 		return player$1;
 	}
-	async function parser$2(isDisposed) {
+	async function parser$1(isDisposed) {
 		try {
 			const startPlay = async (diff) => {
 				if (isDisposed()) return;
@@ -7959,11 +7977,11 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			},
 			{
 				test: /^\/(\?.*)?$/,
-				run: runInHome
+				run: runInHome$1
 			},
 			{
 				test: /anime\/\d+\/play/,
-				run: runInTop$2
+				run: runInTop$1
 			}
 		],
 		spa: true,
@@ -8394,7 +8412,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		var _getActive$parent$fin;
 		return (_getActive$parent$fin = getActive$1().parent()[next ? "next" : "prev"]().find("a")[0]) === null || _getActive$parent$fin === void 0 ? void 0 : _getActive$parent$fin.href;
 	}
-	function runInTop$1() {
+	function runInTop() {
 		$("body").addClass("gugufan");
 		$(".player-news,#buffer,#install").remove();
 		iframePlayer$1.runInTop();
@@ -8417,7 +8435,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		getEpisodeList: () => $(".anthology-list-play li a"),
 		getSwitchEpisodeURL: (next) => switchPart$1(next)
 	});
-	async function parser$1() {
+	async function parser() {
 		const video = await queryDom("video");
 		await wait(() => !!video.currentSrc);
 		video.src = "";
@@ -8458,7 +8476,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		opts: [
 			{
 				test: /^\/index.php\/vod\/play/,
-				run: runInTop$1
+				run: runInTop
 			},
 			{
 				test: /^\/index.php\/vod\/play/,
@@ -8467,7 +8485,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			},
 			{
 				test: "/addons/dp/player",
-				run: parser$1,
+				run: parser,
 				runInIframe: true
 			},
 			{
@@ -8512,11 +8530,18 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	//#endregion
 	//#region src/adapter/girigirilove/subscribe.template.html
 	var subscribe_template_default = {
-		"subListContainer": "<div id=\"subListContainer\" class=\"box-width wow fadeInUp\">\n  <div class=\"overflow\">\n    <div class=\"title flex between top40 rel\">\n      <div class=\"title-left\">\n        <h4 class=\"title-h cor4\">订阅列表</h4>\n        <div class=\"update-info cor5\"></div>\n      </div>\n    </div>\n\n    <div id=\"subList\"></div>\n  </div>\n</div>",
-		"subList": "<div id=\"subList\">\n  {{# if (groups.every(o => o.list.length === 0)) { }}\n  <div class=\"cor4 empty-tip\">订阅喜欢的番剧，在播放页面标题右侧添加订阅</div>\n  {{# } }}\n  \n  <div class=\"sub-list rel border-box public-r hide-b-2 diy-center1 mask2\">\n    <div class=\"swiper-wrapper\">\n      {{# groups.filter(o => !!o.list.length).forEach((group) => {\n      group.list.forEach((item) => { }}\n      <div class=\"public-list-box public-pic-b swiper-slide\">\n        <div class=\"public-list-div public-list-bj\">\n          <a             target=\"_blank\"\n            class=\"public-list-exp\"\n            href=\"{{item.current.url}}\"\n            title=\"{{item.title}}\"\n          >\n            <img               class=\"lazy lazy1 gen-movie-img entered loaded\"\n              referrerpolicy=\"no-referrer\"\n              src=\"{{item.thumbnail}}\"\n              alt=\"{{item.title}}\"\n              data-src=\"{{item.thumbnail}}\"\n              data-ll-status=\"loaded\"\n            >\n            <span class=\"public-bg\"></span>\n            <div class=\"public-prt k-day-{{group.dayNum}}\">\n              {{group.day + ' ' + new\n              Date(item.updatedAt).toLocaleTimeString().slice(0,-3) }}\n            </div>\n            <span class=\"public-list-prb hide ft2\">{{item.status}}</span>\n          </a>\n        </div>\n        <div class=\"public-list-button\">\n          <a             target=\"_blank\"\n            class=\"time-title hide ft4 bold\"\n            href=\"{{item.current.url}}\"\n            title=\"{{item.title}}\"\n            >{{item.title}}</a>\n          <div class=\"public-list-subtitle cor5 hide ft2 k-subtitle-row\">\n            <span class=\"k-watch-progress\">\n              <span>观看至</span>\n              <a                 target=\"_blank\"\n                href=\"{{item.current.url}}\"\n                title=\"{{item.current.title}}\"\n                >{{item.current.title}}</a>\n              <span>/</span>\n              <a                 target=\"_blank\"\n                href=\"{{item.last.url}}\"\n                title=\"{{item.last.title}}\"\n                >{{item.last.title}}</a>\n            </span>\n            <button               type=\"button\"\n              class=\"k-unsubscribe-btn\"\n              data-subscription-id=\"{{item.id}}\"\n              title=\"取消订阅\"\n              aria-label=\"取消订阅 {{item.title}}\"\n            >\n              <svg                 aria-hidden=\"true\"\n                viewBox=\"0 0 24 24\"\n                fill=\"none\"\n                stroke=\"currentColor\"\n                stroke-width=\"2\"\n                stroke-linecap=\"round\"\n                stroke-linejoin=\"round\"\n              >\n                <path d=\"M15 18H4c0-2 3-2 3-9a5 5 0 0 1 8.5-3.5\" ></path>\n                <path d=\"M9 21h4\" ></path>\n                <path d=\"m16 14 5 5m0-5-5 5\" ></path>\n              </svg>\n            </button>\n          </div>\n        </div>\n      </div>\n      {{# })}) }}\n    </div>\n\n    <div class=\"vod-list-page\">\n      <a class=\"swiper-button-prev\" href=\"javascript:\" tabindex=\"-1\">\n        <i class=\"fa ds-fanhui\"></i>\n      </a>\n      <a class=\"swiper-button-next\" href=\"javascript:\" tabindex=\"0\">\n        <i class=\"fa ds-jiantouyou\"> </i>\n      </a>\n    </div>\n  </div>\n</div>"
+		"subListContainer": "<section id=\"subListContainer\" class=\"min-w-0 k-subscription-section\">\n  <div     class=\"section-heading flex flex-wrap items-center justify-between gap-3 pb-5\"\n  >\n    <div class=\"flex min-w-0 flex-col items-start gap-1\">\n      <h2         class=\"flex min-w-0 items-center gap-3 text-xl font-bold tracking-tight\"\n      >\n        <span           aria-hidden=\"true\"\n          class=\"h-5 w-1 shrink-0 rounded-full bg-primary\"\n        ></span>\n        <span>订阅列表</span>\n      </h2>\n      <button         class=\"update-info w-fit p-0 text-left text-xs text-muted-foreground transition-colors hover:text-foreground\"\n        title=\"点击可强制更新数据\"\n        type=\"button\"\n      >\n        检查更新\n      </button>\n    </div>\n  </div>\n  <div id=\"subList\"></div>\n</section>",
+		"subList": "<div id=\"subList\">\n  {{# if (list.length === 0) { }}\n  <div     class=\"flex min-h-24 items-center justify-center rounded-xl border border-dashed border-border bg-card/50 px-4 py-8 text-center text-sm text-muted-foreground\"\n  >\n    订阅喜欢的番剧，在播放页面标题右侧添加订阅\n  </div>\n  {{# } else { }}\n  <div class=\"media-grid pb-2\" aria-label=\"订阅列表\">\n    {{# list.forEach((item) => { }}\n    <article class=\"k-subscription-card group min-w-0\">\n      <a class=\"block\" href=\"{{item.current.url}}\" title=\"{{item.title}}\">\n        <div class=\"media-card min-w-0 flex flex-col gap-2.5\">\n          <div             class=\"poster relative aspect-[2/3] overflow-hidden rounded-xl bg-muted\"\n          >\n            <img               alt=\"{{item.title}}\"\n              loading=\"lazy\"\n              decoding=\"async\"\n              class=\"size-full object-cover\"\n              src=\"{{item.thumbnail}}\"\n            >\n            <div               class=\"absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent px-3 pb-3 pt-8 text-xs text-white\"\n            >\n              {{item.status || item.last.title}}\n            </div>\n          </div>\n          <h3             class=\"line-clamp-2 text-sm font-semibold leading-relaxed group-hover:text-primary\"\n          >\n            {{item.title}}\n          </h3>\n        </div>\n      </a>\n      <div         class=\"k-watch-row flex min-w-0 items-center gap-1 text-xs text-muted-foreground\"\n      >\n        <span class=\"k-watch-progress min-w-0 flex-1 truncate\">\n          观看至\n          <a href=\"{{item.current.url}}\" title=\"{{item.current.title}}\">\n            {{item.current.title}}\n          </a>\n          /\n          <a href=\"{{item.last.url}}\" title=\"{{item.last.title}}\">\n            {{item.last.title}}\n          </a>\n        </span>\n        <button           type=\"button\"\n          class=\"k-unsubscribe-btn\"\n          data-subscription-id=\"{{item.id}}\"\n          title=\"取消订阅\"\n          aria-label=\"取消订阅 {{item.title}}\"\n        >\n          <svg             aria-hidden=\"true\"\n            viewBox=\"0 0 24 24\"\n            fill=\"none\"\n            stroke=\"currentColor\"\n            stroke-width=\"2\"\n            stroke-linecap=\"round\"\n            stroke-linejoin=\"round\"\n          >\n            <path d=\"M15 18H4c0-2 3-2 3-9a5 5 0 0 1 8.5-3.5\" ></path>\n            <path d=\"M9 21h4\" ></path>\n            <path d=\"m16 14 5 5m0-5-5 5\" ></path>\n          </svg>\n        </button>\n      </div>\n    </article>\n    {{# }) }}\n  </div>\n  {{# } }}\n</div>"
 	};
 	//#endregion
 	//#region src/adapter/girigirilove/play.ts
+	const LEGACY_STORAGE_KEY = "girigirilove_subscriptions";
+	const STORAGE_KEY = "girigirilove_subscriptions_v2";
+	const MIGRATION_DONE_KEY = "girigirilove_subscriptions_v1_migrated";
+	function getModernAnimeId() {
+		var _window$location$path;
+		return (_window$location$path = window.location.pathname.match(/^\/(?:detail|play)\/(\d+)(?:\/|$)/)) === null || _window$location$path === void 0 ? void 0 : _window$location$path[1];
+	}
 	function getActive() {
 		return $(".anthology-list-play li.on > a");
 	}
@@ -8525,12 +8550,315 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		return (_getActive$parent$fin = getActive().parent()[next ? "next" : "prev"]().find("a")[0]) === null || _getActive$parent$fin === void 0 ? void 0 : _getActive$parent$fin.href;
 	}
 	function getEpisodeId() {
-		var _window$location$path;
-		return ((_window$location$path = window.location.pathname.match(/\/playGV(\d+)-/)) === null || _window$location$path === void 0 ? void 0 : _window$location$path[1]) || "";
+		return getModernAnimeId() || "";
 	}
-	function runInTop() {
-		$(".player-news,#buffer,#install").remove();
-		iframePlayer.runInTop();
+	let stopRenderSubscribedAnimes;
+	function findHomeCalendarSection() {
+		return $(".site-container .page-stack h2").filter((_, el) => /^(追番日曆|追番日历)$/.test($(el).text().trim())).first().closest("section")[0];
+	}
+	function runInHome() {
+		iframePlayer.subscribe.renderSubscribedAnimes();
+		const stop = stopRenderSubscribedAnimes;
+		return () => stop === null || stop === void 0 ? void 0 : stop();
+	}
+	let replacedDetailShareButton;
+	function runInDetail() {
+		let stopSubscribeButton;
+		const mount = () => {
+			if (!/^\/detail\/\d+\/?$/.test(window.location.pathname)) return;
+			const actions = document.querySelector(".detail-actions");
+			if (!actions || actions.querySelector(".k-girigirilove-subscribe-btn")) return;
+			if (!Array.from(actions.querySelectorAll("button")).some((button) => {
+				var _button$textContent;
+				return ((_button$textContent = button.textContent) === null || _button$textContent === void 0 ? void 0 : _button$textContent.trim()) === "分享";
+			})) return;
+			stopSubscribeButton === null || stopSubscribeButton === void 0 || stopSubscribeButton();
+			stopSubscribeButton = iframePlayer.subscribe.renderSubscribeBtn();
+		};
+		const observer = new MutationObserver(mount);
+		observer.observe(document.body, {
+			childList: true,
+			subtree: true
+		});
+		mount();
+		return () => {
+			observer.disconnect();
+			stopSubscribeButton === null || stopSubscribeButton === void 0 || stopSubscribeButton();
+			stopSubscribeButton = void 0;
+			const button = document.querySelector(".detail-actions .k-girigirilove-subscribe-btn");
+			if (button && (replacedDetailShareButton === null || replacedDetailShareButton === void 0 ? void 0 : replacedDetailShareButton.isConnected) === false) button.replaceWith(replacedDetailShareButton);
+			else button === null || button === void 0 || button.remove();
+			replacedDetailShareButton = void 0;
+		};
+	}
+	function getModernCurrentEpisodeTitle() {
+		const currentText = Array.from(document.querySelectorAll("#main-content *")).filter((element) => element.children.length === 0).map((element) => {
+			var _element$textContent$, _element$textContent;
+			return (_element$textContent$ = (_element$textContent = element.textContent) === null || _element$textContent === void 0 ? void 0 : _element$textContent.trim()) !== null && _element$textContent$ !== void 0 ? _element$textContent$ : "";
+		}).find((text) => /^(當前播放|当前播放)\s*[:：]/.test(text));
+		if (currentText) {
+			var _currentText$replace$;
+			return (_currentText$replace$ = currentText.replace(/^(當前播放|当前播放)\s*[:：]/, "").split(/[·•]/).pop()) === null || _currentText$replace$ === void 0 ? void 0 : _currentText$replace$.trim();
+		}
+		const episodeIndexParam = new URLSearchParams(window.location.search).get("episodeIndex");
+		if (episodeIndexParam === null) return;
+		const episodeIndex = Number(episodeIndexParam);
+		if (Number.isInteger(episodeIndex) && episodeIndex >= 0) return String(episodeIndex + 1).padStart(2, "0");
+	}
+	function runInModernPlay() {
+		var _window$location$path2;
+		const id = (_window$location$path2 = window.location.pathname.match(/^\/play\/(\d+)\/?$/)) === null || _window$location$path2 === void 0 ? void 0 : _window$location$path2[1];
+		if (!id) return;
+		const sm = SubscriptionManager.getInstance(STORAGE_KEY);
+		let player;
+		let playerContainer;
+		let playerSource = "";
+		const syncCurrentEpisode = () => {
+			var _window$location$path3;
+			if (((_window$location$path3 = window.location.pathname.match(/^\/play\/(\d+)\/?$/)) === null || _window$location$path3 === void 0 ? void 0 : _window$location$path3[1]) !== id) return;
+			if (!sm.getSubscription(id)) return;
+			const title = getModernCurrentEpisodeTitle();
+			if (!title) return;
+			const url = `${window.location.pathname}${window.location.search}`;
+			const sub = sm.getSubscription(id);
+			if (!sub || sub.current.title === title && sub.current.url === url) return;
+			sm.updateSubscription(id, { current: {
+				title,
+				url
+			} });
+		};
+		const switchEpisode = (offset) => {
+			const episodeIndexParam = new URLSearchParams(window.location.search).get("episodeIndex");
+			if (episodeIndexParam === null) return;
+			const currentIndex = Number(episodeIndexParam);
+			if (!Number.isInteger(currentIndex)) return;
+			const targetIndex = currentIndex + offset;
+			if (targetIndex < 0) return;
+			const target = Array.from(document.querySelectorAll("#main-content button")).find((button) => {
+				var _button$textContent2;
+				const episodeNumber = Number((_button$textContent2 = button.textContent) === null || _button$textContent2 === void 0 ? void 0 : _button$textContent2.trim());
+				return Number.isInteger(episodeNumber) && episodeNumber - 1 === targetIndex;
+			});
+			target === null || target === void 0 || target.click();
+		};
+		const mountPlayer = () => {
+			var _window$location$path4, _nativeVideo$querySel;
+			if (((_window$location$path4 = window.location.pathname.match(/^\/play\/(\d+)\/?$/)) === null || _window$location$path4 === void 0 ? void 0 : _window$location$path4[1]) !== id) return;
+			const container = document.querySelector(".video-player");
+			const nativeVideo = container === null || container === void 0 ? void 0 : container.querySelector("video");
+			const source = (nativeVideo === null || nativeVideo === void 0 || (_nativeVideo$querySel = nativeVideo.querySelector("source[src]")) === null || _nativeVideo$querySel === void 0 ? void 0 : _nativeVideo$querySel.src) || ((nativeVideo === null || nativeVideo === void 0 ? void 0 : nativeVideo.src.startsWith("blob:")) ? "" : nativeVideo === null || nativeVideo === void 0 ? void 0 : nativeVideo.src);
+			if (!container || !nativeVideo || !source) return;
+			if (playerContainer !== container) {
+				player === null || player === void 0 || player.destroy();
+				player = void 0;
+				playerSource = "";
+				playerContainer === null || playerContainer === void 0 || playerContainer.classList.remove("k-girigirilove-player-mounted");
+				playerContainer = container;
+			}
+			if (!player) {
+				const playerRoot = document.createElement("div");
+				container.append(playerRoot);
+				container.classList.add("k-girigirilove-player-mounted");
+				player = createKPlayer(playerRoot);
+				player.on("prev", () => switchEpisode(-1));
+				player.on("next", () => switchEpisode(1));
+				player.on("canplay", syncCurrentEpisode);
+				player.on("enterwidescreen", () => {
+					document.body.classList.add("widescreen");
+					document.documentElement.style.overflow = "hidden";
+					document.documentElement.style.scrollbarGutter = "auto";
+				});
+				player.on("exitwidescreen", () => {
+					document.body.classList.remove("widescreen");
+					document.documentElement.style.overflow = "";
+					document.documentElement.style.scrollbarGutter = "";
+				});
+				const poster = container.querySelector(":scope > img");
+				if (poster === null || poster === void 0 ? void 0 : poster.src) player.media.poster = poster.src;
+				player.media.crossOrigin = nativeVideo.crossOrigin || "anonymous";
+			}
+			nativeVideo.pause();
+			nativeVideo.muted = true;
+			if (playerSource !== source) {
+				playerSource = source;
+				player.src = source;
+			}
+		};
+		const observer = new MutationObserver(() => {
+			mountPlayer();
+			syncCurrentEpisode();
+		});
+		observer.observe(document.body, {
+			childList: true,
+			characterData: true,
+			subtree: true,
+			attributes: true,
+			attributeFilter: ["src"]
+		});
+		mountPlayer();
+		syncCurrentEpisode();
+		return () => {
+			observer.disconnect();
+			player === null || player === void 0 || player.destroy();
+			player = void 0;
+			playerContainer === null || playerContainer === void 0 || playerContainer.classList.remove("k-girigirilove-player-mounted");
+			playerContainer = void 0;
+			playerSource = "";
+			document.body.classList.remove("widescreen");
+			document.documentElement.style.overflow = "";
+			document.documentElement.style.scrollbarGutter = "";
+		};
+	}
+	function getModernDetailInfo(root, id, sm, apiInfo) {
+		var _apiInfo$vod_name, _main$querySelector, _ref, _apiInfo$vod_pic, _Array$from$find, _Array$from$find2, _sub$createdAt, _sub$current, _sub$status;
+		const main = root.querySelector("#main-content") || root;
+		const sub = sm.getSubscription(id);
+		const title = (apiInfo === null || apiInfo === void 0 || (_apiInfo$vod_name = apiInfo.vod_name) === null || _apiInfo$vod_name === void 0 ? void 0 : _apiInfo$vod_name.trim()) || (sub === null || sub === void 0 ? void 0 : sub.title) || ((_main$querySelector = main.querySelector("h1")) === null || _main$querySelector === void 0 || (_main$querySelector = _main$querySelector.textContent) === null || _main$querySelector === void 0 ? void 0 : _main$querySelector.trim());
+		if (!title) return;
+		const episodeGroups = /* @__PURE__ */ new Map();
+		const skipLabels = /^(開始觀看|开始观看|立即播放|繼續觀看|继续观看|播放)$/i;
+		main.querySelectorAll("a[href]").forEach((link) => {
+			var _link$querySelector$t, _link$querySelector, _url$searchParams$get, _episodeGroups$get;
+			const href = link.getAttribute("href");
+			if (!href) return;
+			let url;
+			try {
+				url = new URL(href, window.location.origin);
+			} catch (_unused) {
+				return;
+			}
+			if (url.pathname !== `/play/${id}`) return;
+			const episodeIndex = Number(url.searchParams.get("episodeIndex"));
+			if (!Number.isInteger(episodeIndex) || episodeIndex < 0) return;
+			const label = (_link$querySelector$t = (_link$querySelector = link.querySelector(":scope > span")) === null || _link$querySelector === void 0 || (_link$querySelector = _link$querySelector.textContent) === null || _link$querySelector === void 0 ? void 0 : _link$querySelector.trim()) !== null && _link$querySelector$t !== void 0 ? _link$querySelector$t : "";
+			if (skipLabels.test(label)) return;
+			const sourceIndex = (_url$searchParams$get = url.searchParams.get("sourceIndex")) !== null && _url$searchParams$get !== void 0 ? _url$searchParams$get : "0";
+			const episodes = (_episodeGroups$get = episodeGroups.get(sourceIndex)) !== null && _episodeGroups$get !== void 0 ? _episodeGroups$get : [];
+			const episode = {
+				index: episodeIndex,
+				title: label || String(episodeIndex + 1).padStart(2, "0"),
+				url: `${url.pathname}${url.search}`
+			};
+			const duplicateIndex = episodes.findIndex((item) => item.index === episodeIndex);
+			if (duplicateIndex === -1) episodes.push(episode);
+			else if (!episodes[duplicateIndex].title) episodes[duplicateIndex] = episode;
+			episodeGroups.set(sourceIndex, episodes);
+		});
+		const domEpisodes = Array.from(episodeGroups.entries()).sort((left, right) => right[1].length - left[1].length)[0];
+		const apiEpisodes = apiInfo && getApiEpisodes(apiInfo, id);
+		const episodes = (_ref = (apiEpisodes === null || apiEpisodes === void 0 ? void 0 : apiEpisodes.episodes.length) ? apiEpisodes.episodes : domEpisodes === null || domEpisodes === void 0 ? void 0 : domEpisodes[1]) === null || _ref === void 0 ? void 0 : _ref.sort((left, right) => left.index - right.index);
+		const first = episodes === null || episodes === void 0 ? void 0 : episodes[0];
+		const last = episodes === null || episodes === void 0 ? void 0 : episodes[episodes.length - 1];
+		if (!first || !last) return;
+		const now = Date.now();
+		const lastChanged = sub && (sub.last.title !== last.title || sub.last.url !== last.url);
+		const thumbnail = ((apiInfo === null || apiInfo === void 0 || (_apiInfo$vod_pic = apiInfo.vod_pic) === null || _apiInfo$vod_pic === void 0 ? void 0 : _apiInfo$vod_pic.trim()) ? new URL(apiInfo.vod_pic.trim(), "https://jpg.girigirilove.net/").href : "") || ((_Array$from$find = Array.from(main.querySelectorAll("img")).find((image) => image.alt.trim() === title)) === null || _Array$from$find === void 0 ? void 0 : _Array$from$find.currentSrc) || ((_Array$from$find2 = Array.from(main.querySelectorAll("img")).find((image) => image.alt.trim() === title)) === null || _Array$from$find2 === void 0 ? void 0 : _Array$from$find2.getAttribute("src")) || (sub === null || sub === void 0 ? void 0 : sub.thumbnail) || "";
+		return {
+			id,
+			createdAt: (_sub$createdAt = sub === null || sub === void 0 ? void 0 : sub.createdAt) !== null && _sub$createdAt !== void 0 ? _sub$createdAt : now,
+			checkedAt: now,
+			current: (_sub$current = sub === null || sub === void 0 ? void 0 : sub.current) !== null && _sub$current !== void 0 ? _sub$current : {
+				title: first.title,
+				url: first.url
+			},
+			title,
+			url: `/detail/${id}`,
+			thumbnail,
+			updatedAt: sub ? lastChanged ? now : sub.updatedAt : now,
+			status: apiInfo ? getStatus(apiInfo) : (_sub$status = sub === null || sub === void 0 ? void 0 : sub.status) !== null && _sub$status !== void 0 ? _sub$status : "",
+			last: {
+				title: last.title,
+				url: last.url
+			}
+		};
+	}
+	function getApiEpisodes(info, id) {
+		var _info$vod_play_url;
+		return ((_info$vod_play_url = info.vod_play_url) !== null && _info$vod_play_url !== void 0 ? _info$vod_play_url : "").split("$$$").map((source, sourceIndex) => ({
+			sourceIndex,
+			episodes: source.split("#").map((item, episodeIndex) => {
+				const separator = item.indexOf("$");
+				if (separator < 0) return;
+				const title = item.slice(0, separator).trim();
+				if (!title) return;
+				return {
+					index: episodeIndex,
+					title,
+					url: `/play/${id}?${new URLSearchParams({
+						sourceIndex: String(sourceIndex),
+						episodeIndex: String(episodeIndex)
+					}).toString()}`
+				};
+			}).filter((episode) => Boolean(episode))
+		})).sort((left, right) => right.episodes.length - left.episodes.length)[0];
+	}
+	function getStatus(info) {
+		var _info$vod_remarks, _info$vod_weekday;
+		const remarks = (_info$vod_remarks = info.vod_remarks) !== null && _info$vod_remarks !== void 0 ? _info$vod_remarks : "";
+		if (Number(info.vod_isend) === 1 || /已完结|已完結|完结|完結/.test(remarks)) return "已完结";
+		const weekdayMatch = ((_info$vod_weekday = info.vod_weekday) !== null && _info$vod_weekday !== void 0 ? _info$vod_weekday : "").match(/(?:星期|週|周)?([一二三四五六日天])/);
+		const weekday = (weekdayMatch === null || weekdayMatch === void 0 ? void 0 : weekdayMatch[1]) === "天" ? "日" : weekdayMatch === null || weekdayMatch === void 0 ? void 0 : weekdayMatch[1];
+		const timeMatch = remarks.match(/(\d{1,2})\s*[点點时時:：]\s*(\d{1,2})\s*分?/);
+		const hour = timeMatch ? Number(timeMatch[1]) : void 0;
+		const minute = timeMatch ? Number(timeMatch[2]) : void 0;
+		const time = hour !== void 0 && minute !== void 0 && hour >= 0 && hour < 24 && minute >= 0 && minute < 60 ? `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}` : "";
+		return [weekday ? `周${weekday}` : "", time].filter(Boolean).join(" ") || "播出时间待定";
+	}
+	async function getGirigiriAnimeInfo(id, sm) {
+		var _getApiEpisodes;
+		const isModernDetail = new RegExp(`^/detail/${id}/?$`).test(window.location.pathname);
+		let detailDocument = document;
+		const apiInfo = await fetch(`https://m3u8.girigirilove.com/api.php/Vod/get_detail?vod_id=${encodeURIComponent(id)}&user_id=`, {
+			cache: "no-store",
+			headers: { accept: "application/json" }
+		}).then(async (response) => {
+			if (!response.ok) return;
+			const result = await response.json();
+			return result.code === 1 ? result.info : void 0;
+		}).catch(() => void 0);
+		const hasApiEpisodes = Boolean(apiInfo && ((_getApiEpisodes = getApiEpisodes(apiInfo, id)) === null || _getApiEpisodes === void 0 ? void 0 : _getApiEpisodes.episodes.length));
+		if (!isModernDetail && !hasApiEpisodes) {
+			const response = await fetch(`/detail/${id}`);
+			if (!response.ok) throw new Error("Failed to fetch anime detail");
+			detailDocument = new DOMParser().parseFromString(await response.text(), "text/html");
+		}
+		const modernInfo = getModernDetailInfo(detailDocument, id, sm, apiInfo);
+		if (!modernInfo) throw new Error("Failed to parse anime detail");
+		return modernInfo;
+	}
+	let migrationPromise;
+	function getLegacySubscriptionIds(raw) {
+		if (!Array.isArray(raw)) return [];
+		return Array.from(new Set(raw.map((item) => {
+			if (!item || typeof item !== "object") return;
+			const id = item.id;
+			return typeof id === "string" || typeof id === "number" ? String(id).trim() : "";
+		}).filter((id) => Boolean(id && /^\d+$/.test(id)))));
+	}
+	function migrateLegacySubscriptions() {
+		if (migrationPromise) return migrationPromise;
+		migrationPromise = (async () => {
+			const sm = SubscriptionManager.getInstance(STORAGE_KEY);
+			if (!gm.getItem(MIGRATION_DONE_KEY, false)) {
+				const ids = getLegacySubscriptionIds(gm.getItem(LEGACY_STORAGE_KEY, []));
+				(await concurrency(ids.filter((id) => !sm.getSubscription(id)).map((id) => async () => {
+					try {
+						return await getGirigiriAnimeInfo(id, sm);
+					} catch (_unused2) {
+						return;
+					}
+				}), 3)).forEach((animeInfo) => {
+					if (!animeInfo || sm.getSubscription(animeInfo.id)) return;
+					sm.createSubscription(animeInfo);
+				});
+				if (!ids.every((id) => sm.getSubscription(id))) return;
+				gm.setItem(MIGRATION_DONE_KEY, true);
+			}
+			gm.removeItem(LEGACY_STORAGE_KEY);
+		})().finally(() => {
+			migrationPromise = void 0;
+		});
+		return migrationPromise;
 	}
 	const iframePlayer = defineIframePlayer({
 		iframeSelector: "#playleft iframe",
@@ -8550,154 +8878,105 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		getEpisodeList: () => $(".anthology-list-play li a"),
 		getSwitchEpisodeURL: (next) => switchPart(next),
 		subscribe: {
-			storageKey: "girigirilove_subscriptions",
+			storageKey: STORAGE_KEY,
 			getId: getEpisodeId,
-			async getAnimeInfo(id, sm) {
-				const res = await fetch(`/GV${id}/`);
-				if (res.status < 200 || res.status >= 300) throw new Error("Failed to fetch anime info");
-				const html = await res.text();
-				const $doc = $(html);
-				const buildLabelSelector = (labels) => labels.map((label) => `em.cor4:contains('${label}')`).join(",");
-				const getLabelValue = ($context, keywords) => {
-					var _$context$find$0$next, _$context$find$;
-					return (_$context$find$0$next = (_$context$find$ = $context.find(buildLabelSelector(keywords))[0]) === null || _$context$find$ === void 0 || (_$context$find$ = _$context$find$.nextSibling) === null || _$context$find$ === void 0 || (_$context$find$ = _$context$find$.textContent) === null || _$context$find$ === void 0 ? void 0 : _$context$find$.trim()) !== null && _$context$find$0$next !== void 0 ? _$context$find$0$next : "";
-				};
-				const updatedAtText = getLabelValue($doc, ["更新"]);
-				const statusText = getLabelValue($doc, [
-					"状态",
-					"狀态",
-					"狀態"
-				]);
-				const $lists = $doc.find(".anthology-list-play");
-				const longest = $lists.get().reduce((max, el) => {
-					return max.children.length >= el.children.length ? max : el;
-				}, $lists[0]);
-				const $last = $(longest).find("li a").last();
-				let sub = sm.getSubscription(id);
-				const updateInfo = {
-					title: $doc.find(".player-title-link").first().text().trim() || (sub === null || sub === void 0 ? void 0 : sub.title) || $(".player-title-link").text().trim(),
-					url: $doc.find(".player-title-link").attr("href") || (sub === null || sub === void 0 ? void 0 : sub.url) || `/GV${id}/`,
-					thumbnail: $doc.find(".play-details-top .this-pic img").attr("data-src") || $doc.find(".play-details-top .this-pic img").attr("src") || $doc.find("meta[property=\"og:image\"]").attr("content") || (sub === null || sub === void 0 ? void 0 : sub.thumbnail) || $(".play-details-top .this-pic img").attr("data-src") || $(".play-details-top .this-pic img").attr("src") || "",
-					updatedAt: new Date(updatedAtText).getTime(),
-					status: statusText,
-					last: {
-						title: $last.text(),
-						url: $last.attr("href")
-					}
-				};
-				if (!sub) {
-					const $current = getActive();
-					sub = _objectSpread2({
-						id,
-						createdAt: Date.now(),
-						checkedAt: Date.now(),
-						current: {
-							title: $current.text(),
-							url: $current.attr("href")
-						}
-					}, updateInfo);
-				}
-				return _objectSpread2(_objectSpread2({}, sub), updateInfo);
-			},
+			getAnimeInfo: getGirigiriAnimeInfo,
 			renderSubscribedAnimes: (sm) => {
+				stopRenderSubscribedAnimes === null || stopRenderSubscribedAnimes === void 0 || stopRenderSubscribedAnimes();
 				const $root = $(subscribe_template_default.subListContainer);
-				$root.insertBefore("#week-module-box");
+				const root = $root[0];
+				const mount = () => {
+					if (!/^\/(?:home)?\/?$/.test(window.location.pathname)) return;
+					const calendar = findHomeCalendarSection();
+					if (!(calendar === null || calendar === void 0 ? void 0 : calendar.parentElement)) return;
+					if (root.parentElement === calendar.parentElement && root.nextElementSibling === calendar) return;
+					calendar.parentElement.insertBefore(root, calendar);
+				};
+				const observer = new MutationObserver(mount);
+				const observeTarget = document.querySelector("#main-content") || $("#app")[0];
+				if (observeTarget) observer.observe(observeTarget, {
+					childList: true,
+					subtree: true
+				});
+				mount();
 				$root.off("click", "[data-subscription-id]").on("click", "[data-subscription-id]", (event) => {
 					event.preventDefault();
 					event.stopPropagation();
 					const id = $(event.currentTarget).attr("data-subscription-id");
 					if (id) sm.deleteSubscription(id);
 				});
-				sm.onChange(() => {
-					const groups = sm.getSubscriptionsGroupByDay();
-					$root.find("#subList").replaceWith(template(subscribe_template_default.subList)({ groups }));
-					execInUnsafeWindow(() => {
-						if (typeof window.Swiper !== "undefined") new window.Swiper(".sub-list", {
-							slidesPerView: "auto",
-							slidesPerGroup: 2,
-							navigation: {
-								nextEl: ".swiper-button-next",
-								prevEl: ".swiper-button-prev"
-							}
-						});
-					});
+				const stopListening = sm.onChange(() => {
+					const list = sm.getSubscriptionsGroupByDay().reduce((items, group) => {
+						items.push(...group.list);
+						return items;
+					}, []);
+					$root.find("#subList").replaceWith(template(subscribe_template_default.subList)({ list }));
 				}, { immediate: true });
+				const cleanup = () => {
+					observer.disconnect();
+					stopListening();
+					$root.off();
+					root.remove();
+					if (stopRenderSubscribedAnimes === cleanup) stopRenderSubscribedAnimes = void 0;
+				};
+				stopRenderSubscribedAnimes = cleanup;
 				return $root;
 			},
 			renderSubscribeBtn($btn) {
+				if (/^\/detail\/\d+\/?$/.test(window.location.pathname)) {
+					var _$share$attr;
+					const $share = $(".detail-actions").first().children("button").filter((_, button) => $(button).text().trim() === "分享").first();
+					if (!$share.length) return;
+					replacedDetailShareButton = $share[0];
+					$btn.attr("class", (_$share$attr = $share.attr("class")) !== null && _$share$attr !== void 0 ? _$share$attr : "").attr("type", "button").addClass("k-girigirilove-subscribe-btn");
+					$share.replaceWith($btn);
+					return;
+				}
 				$btn.addClass("cor5 r6");
 				$btn.prependTo($(".anthology-header .function"));
 			}
 		}
 	});
-	async function parser() {
-		const video = await queryDom("video");
-		await wait(() => !!video.currentSrc);
-		video.src = "";
-		const player = createKPlayer("#APlayer", { eventToParentWindow: true });
-		player.src = new URLSearchParams(location.search).get("url");
-	}
 	//#endregion
 	//#region src/adapter/girigirilove/index.scss
-	injectStyle(".girigirilove .empty-tip {\n  width: 100%;\n  padding: 40px 20px 20px;\n  text-align: center;\n}\n.girigirilove .update-info {\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  font-size: 12px;\n  margin-top: 4px;\n}\n.girigirilove .update-info:hover {\n  cursor: pointer;\n  text-decoration: underline;\n}\n.girigirilove .k-subtitle-row {\n  position: relative;\n}\n.girigirilove .k-watch-progress {\n  display: block;\n  overflow: hidden;\n  padding-right: 0;\n  text-overflow: ellipsis;\n  transition: padding-right 180ms ease;\n  white-space: nowrap;\n}\n.girigirilove .k-unsubscribe-btn {\n  position: absolute;\n  top: 50%;\n  right: 0;\n  display: inline-flex;\n  width: 24px;\n  height: 24px;\n  align-items: center;\n  justify-content: center;\n  padding: 4px;\n  border: none;\n  border-radius: 8px;\n  background-color: rgba(220, 38, 38, 0.14);\n  color: #dc2626;\n  cursor: pointer;\n  opacity: 0;\n  pointer-events: none;\n  transform: translate(8px, -50%);\n  transition: background-color 180ms ease, opacity 180ms ease, transform 180ms ease;\n  visibility: hidden;\n}\n.girigirilove .k-unsubscribe-btn svg {\n  width: 18px;\n  height: 18px;\n}\n.girigirilove .k-unsubscribe-btn:hover {\n  background-color: rgba(220, 38, 38, 0.24);\n}\n.girigirilove .k-unsubscribe-btn:focus-visible {\n  opacity: 1;\n  pointer-events: auto;\n  outline: 2px solid #dc2626;\n  outline-offset: 2px;\n}\n.girigirilove .public-list-box:hover .k-watch-progress,\n.girigirilove .public-list-box:focus-within .k-watch-progress {\n  padding-right: 28px;\n}\n.girigirilove .public-list-box:hover .k-unsubscribe-btn,\n.girigirilove .public-list-box:focus-within .k-unsubscribe-btn {\n  opacity: 1;\n  pointer-events: auto;\n  transform: translate(0, -50%);\n  visibility: visible;\n}\n@media (hover: none) {\n  .girigirilove .k-watch-progress {\n    padding-right: 28px;\n  }\n  .girigirilove .k-unsubscribe-btn {\n    opacity: 1;\n    pointer-events: auto;\n    transform: translate(0, -50%);\n    visibility: visible;\n  }\n}\n.girigirilove .MacPlayer {\n  padding: 0 !important;\n}\n.girigirilove .k-day-0 {\n  background-color: rgb(232, 93, 188);\n}\n.girigirilove .k-day-1 {\n  background-color: rgb(255, 82, 82);\n}\n.girigirilove .k-day-2 {\n  background-color: rgb(255, 145, 77);\n}\n.girigirilove .k-day-3 {\n  background-color: rgb(255, 212, 61);\n}\n.girigirilove .k-day-4 {\n  background-color: rgb(72, 219, 151);\n}\n.girigirilove .k-day-5 {\n  background-color: rgb(66, 184, 221);\n}\n.girigirilove .k-day-6 {\n  background-color: rgb(141, 104, 232);\n}\n.girigirilove.widescreen .head,\n.girigirilove.widescreen .header_nav0,\n.girigirilove.widescreen .header_nav1,\n.girigirilove.widescreen .top-back.hoa,\n.girigirilove.widescreen .fixedGroup {\n  visibility: hidden;\n  pointer-events: none;\n}");
+	injectStyle(".girigirilove [rel~=sponsored] {\n  display: none !important;\n}\n.girigirilove .site-container .page-stack > section.banner-ads.banner-ads-columns:nth-of-type(2),\n.girigirilove .site-container .page-stack > section.banner-ads.banner-ads-columns:nth-of-type(3) {\n  display: none !important;\n}\n.girigirilove .page-stack > .space-y-5:nth-of-type(2) > .min-w-0.space-y-5 > section.banner-ads.banner-ads-columns {\n  display: none !important;\n}\n.girigirilove #main-content section.banner-ads.banner-ads-compact {\n  display: none !important;\n}\n.girigirilove .video-player.k-girigirilove-player-mounted > :not(#k-player-wrapper) {\n  display: none !important;\n}\n.girigirilove .watch-video > .video-player {\n  display: flex;\n}\n.girigirilove .video-player #k-player-wrapper {\n  position: absolute;\n  inset: 0;\n  z-index: 30;\n}\n.girigirilove .video-player #k-player-wrapper.k-player-widescreen {\n  position: fixed;\n  inset: 0;\n  width: 100vw;\n  height: 100vh;\n  height: 100dvh;\n  z-index: 10000;\n}\n.girigirilove .update-info {\n  cursor: pointer;\n  margin-left: 16px;\n}\n.girigirilove .k-watch-row {\n  position: relative;\n  min-height: 24px;\n}\n.girigirilove .k-watch-progress {\n  display: block;\n  overflow: hidden;\n  padding-right: 0;\n  text-overflow: ellipsis;\n  transition: padding-right 180ms ease;\n  white-space: nowrap;\n}\n.girigirilove .k-watch-progress a {\n  color: inherit;\n}\n.girigirilove .k-watch-progress a:hover {\n  color: var(--foreground);\n}\n.girigirilove .k-unsubscribe-btn {\n  position: absolute;\n  top: 50%;\n  right: 0;\n  display: inline-flex;\n  width: 24px;\n  height: 24px;\n  align-items: center;\n  justify-content: center;\n  padding: 4px;\n  border: none;\n  border-radius: 6px;\n  background-color: rgba(220, 38, 38, 0.14);\n  color: #dc2626;\n  cursor: pointer;\n  opacity: 0;\n  pointer-events: none;\n  transform: translate(8px, -50%);\n  transition: background-color 180ms ease, opacity 180ms ease, transform 180ms ease;\n  visibility: hidden;\n}\n.girigirilove .k-unsubscribe-btn svg {\n  width: 18px;\n  height: 18px;\n}\n.girigirilove .k-unsubscribe-btn:hover {\n  background-color: rgba(220, 38, 38, 0.24);\n}\n.girigirilove .k-unsubscribe-btn:focus-visible {\n  opacity: 1;\n  pointer-events: auto;\n  outline: 2px solid #dc2626;\n  outline-offset: 2px;\n}\n.girigirilove .k-subscription-card:hover .k-watch-progress,\n.girigirilove .k-subscription-card:focus-within .k-watch-progress {\n  padding-right: 28px;\n}\n.girigirilove .k-subscription-card:hover .k-unsubscribe-btn,\n.girigirilove .k-subscription-card:focus-within .k-unsubscribe-btn {\n  opacity: 1;\n  pointer-events: auto;\n  transform: translate(0, -50%);\n  visibility: visible;\n}\n@media (hover: none) {\n  .girigirilove .k-watch-progress {\n    padding-right: 28px;\n  }\n  .girigirilove .k-unsubscribe-btn {\n    opacity: 1;\n    pointer-events: auto;\n    transform: translate(0, -50%);\n    visibility: visible;\n  }\n}\n.girigirilove .MacPlayer {\n  padding: 0 !important;\n}\n.girigirilove.widescreen .video-player {\n  z-index: 10001;\n  overflow: visible;\n  contain: none;\n  isolation: auto;\n}\n.girigirilove.widescreen .head,\n.girigirilove.widescreen .header_nav0,\n.girigirilove.widescreen .header_nav1,\n.girigirilove.widescreen .top-back.hoa,\n.girigirilove.widescreen .fixedGroup {\n  visibility: hidden;\n  pointer-events: none;\n}");
 	//#endregion
 	//#region src/adapter/girigirilove/index.ts
 	runtime.register({
 		domains: [".girigirilove.", "giri.moemoekyu.com"],
+		spa: true,
 		opts: [
 			{
 				test: "*",
-				run: () => $("body").addClass("girigirilove")
+				setup: () => {
+					$("body").addClass("girigirilove");
+					migrateLegacySubscriptions();
+				}
 			},
 			{
-				test: /^\/$/,
-				run: iframePlayer.subscribe.renderSubscribedAnimes
+				test: [/^\/$/, /^\/home\/?(?:\?.*)?$/],
+				run: runInHome
 			},
 			{
-				test: "/playGV",
-				run: runInTop
+				test: /^\/detail\/\d+\/?(?:\?.*)?$/,
+				run: runInDetail
 			},
 			{
-				test: "/playGV",
-				run: iframePlayer.runInIframe,
-				runInIframe: true
-			},
-			{
-				test: "/addons/aplyer",
-				run: parser,
-				runInIframe: true
+				test: /^\/play\/\d+\/?(?:\?.*)?$/,
+				run: runInModernPlay
 			}
 		],
 		search: {
 			name: "girigiri爱",
 			search: (cn) => `https://ani.girigirilove.com/search/-------------/?wd=${cn}`,
 			getSearchName: () => {
-				return new Promise((resolve) => {
-					const fn = (e) => {
-						if (e.data.key === "getSearchName") {
-							resolve(e.data.name);
-							window.removeEventListener("message", fn);
-						}
-					};
-					window.addEventListener("message", fn);
-					parent.postMessage({ key: "getSearchName" }, "*");
-				});
+				var _document$querySelect;
+				return ((_document$querySelect = document.querySelector("#main-content h1")) === null || _document$querySelect === void 0 || (_document$querySelect = _document$querySelect.textContent) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.trim()) || "";
 			},
-			getEpisode: () => {
-				return new Promise((resolve) => {
-					const fn = (e) => {
-						if (e.data.key === "getEpisode") {
-							resolve(e.data.name);
-							window.removeEventListener("message", fn);
-						}
-					};
-					window.addEventListener("message", fn);
-					parent.postMessage({ key: "getEpisode" }, "*");
-				});
-			},
+			getEpisode: () => getModernCurrentEpisodeTitle() || "",
 			getAnimeScope: () => {
-				var _window$location$href;
-				return ((_window$location$href = window.location.href.match(/\/playGV(\d+)-/)) === null || _window$location$href === void 0 ? void 0 : _window$location$href[1]) || "";
+				var _window$location$path;
+				return ((_window$location$path = window.location.pathname.match(/^\/(?:detail|play)\/(\d+)(?:\/|$)/)) === null || _window$location$path === void 0 ? void 0 : _window$location$path[1]) || "";
 			}
 		}
 	});
