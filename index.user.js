@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.61.0
+// @version      1.61.1
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -20,8 +20,6 @@
 // @include      https://next.xifanacg.com/*
 // @include      https://www.anime1.me/*
 // @include      https://anime1.me/*
-// @include      https://www.gugu3.com/*
-// @include      https://player.gugu3.com/*
 // @include      https://*.girigirilove.com/*
 // @include      https://play.girigirilove.top/*
 // @include      https://giri.moemoekyu.com/*
@@ -31,7 +29,7 @@
 // @require      https://unpkg.com/jquery@3.6.0/dist/jquery.min.js
 // @require      https://unpkg.com/plyr@3.6.4/dist/plyr.min.js
 // @require      https://unpkg.com/hls.js@1.6.15/dist/hls.min.js
-// @require      https://unpkg.com/@ironkinoko/danmaku@1.5.0/dist/danmaku.umd.js
+// @require      https://unpkg.com/@ironkinoko/danmaku@2.0.0/dist/danmaku.umd.js
 // @require      https://unpkg.com/opencc-js@1.0.5/dist/umd/full.js
 // @grant        GM_getValue
 // @grant        GM_setValue
@@ -3627,7 +3625,7 @@
 				content: `
     <table class="k-table">
       <tbody>
-      <tr><td>脚本版本</td><td>1.61.0</td></tr>
+      <tr><td>脚本版本</td><td>1.61.1</td></tr>
       <tr>
         <td>脚本作者</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -3753,7 +3751,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: 1.61.0
+脚本版本: 1.61.1
 `;
 	//#endregion
 	//#region src/player/plugins/shortcuts/help/index.ts
@@ -6264,7 +6262,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	//#endregion
 	//#region src/adapter/_iframe_player_parser/parser.ts
 	let player$2;
-	const parser$3 = {
+	const parser$2 = {
 		"danmu.yhdmjx.com": async () => {
 			function detectLoadError() {
 				let timeId = setInterval(() => {
@@ -6378,28 +6376,28 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			{
 				test: () => window.location.href.includes("danmu.yhdmjx.com/m3u8.php"),
 				runInIframe: true,
-				run: parser$3["danmu.yhdmjx.com"]
+				run: parser$2["danmu.yhdmjx.com"]
 			},
 			{
 				test: () => window.location.href.includes("pro.ascepan.top/player"),
 				runInIframe: true,
-				run: parser$3["pro.ascepan.top"],
+				run: parser$2["pro.ascepan.top"],
 				setup: () => $("body").addClass("pro-ascepan-top")
 			},
 			{
 				test: () => !!window.location.href.match(/sp-flv\.com.*url=/),
 				runInIframe: true,
-				run: parser$3["sp-flv.com"]
+				run: parser$2["sp-flv.com"]
 			},
 			{
 				test: () => !!window.location.href.match(/((43\.240\.74\.134)|(43\.240\.156\.118)|(jx\.ejtsyc\.com)|(jx\.wuzhoupai\.com)).*vip.*url=/),
 				runInIframe: true,
-				run: parser$3["agefans-01"]
+				run: parser$2["agefans-01"]
 			},
 			{
 				test: () => !!window.location.href.match(/((43\.240\.74\.134)|(43\.240\.156\.118)|(jx\.ejtsyc\.com)|(jx\.wuzhoupai\.com)).*m3u8.*url=/),
 				runInIframe: true,
-				run: parser$3["agefans-02"]
+				run: parser$2["agefans-02"]
 			}
 		],
 		search: {
@@ -6917,7 +6915,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	//#region src/adapter/agefans/play.ts
 	function calcSortDirection() {
 		var _$prev$text$match, _$next$text$match, _$active$text$match;
-		const $active = getActive$3();
+		const $active = getActive$2();
 		const $prev = $active.prev();
 		const $next = $active.next();
 		const prevText = (_$prev$text$match = $prev.text().match(/\d+/)) === null || _$prev$text$match === void 0 ? void 0 : _$prev$text$match[0];
@@ -6959,7 +6957,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		if (getSortDirection() === "desc") getSortButon().trigger("click");
 	}
 	function activeScrollIntoView() {
-		const $active = getActive$3();
+		const $active = getActive$2();
 		function getScrollParent() {
 			let parent = $active.parent()[0];
 			while (parent && parent.tagName !== "BODY") {
@@ -6989,21 +6987,21 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			activeScrollIntoView();
 		}).prependTo(".playlist-source-tab .float-end");
 	}
-	function getActive$3() {
+	function getActive$2() {
 		return $(".video_detail_episode .video_detail_spisode_playing").parent();
 	}
-	function switchPart$3(next) {
+	function switchPart$2(next) {
 		var _$nextActive$find$get;
-		const $active = getActive$3();
+		const $active = getActive$2();
 		const sortDirection = getSortDirection();
 		let $nextActive;
 		if (sortDirection === "asc") $nextActive = $active[next ? "next" : "prev"]();
 		else $nextActive = $active[next ? "prev" : "next"]();
 		return (_$nextActive$find$get = $nextActive.find("a").get(0)) === null || _$nextActive$find$get === void 0 ? void 0 : _$nextActive$find$get.href;
 	}
-	const iframePlayer$3 = defineIframePlayer({
+	const iframePlayer$2 = defineIframePlayer({
 		iframeSelector: ".video_play_wrapper iframe",
-		getActive: getActive$3,
+		getActive: getActive$2,
 		setActive: (href) => {
 			$(".video_detail_episode a").each((_, el) => {
 				const $el = $(el);
@@ -7013,10 +7011,10 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		},
 		search: {
 			getSearchName: () => $(".video_detail_wrapper .cata_video_item .card-title").text(),
-			getEpisode: () => getActive$3().text()
+			getEpisode: () => getActive$2().text()
 		},
 		getEpisodeList: () => $(".video_detail_episode a"),
-		getSwitchEpisodeURL: (next) => switchPart$3(next),
+		getSwitchEpisodeURL: (next) => switchPart$2(next),
 		subscribe: {
 			storageKey: "agefans-subscribe",
 			getId: () => window.location.pathname.match(/play\/(\d+)/)[1],
@@ -7053,7 +7051,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 				else updateInfo.updatedAt = sub.updatedAt;
 				else {
 					updateInfo.updatedAt = closestSameDay(createdAtText).getTime();
-					const $current = getActive$3();
+					const $current = getActive$2();
 					sub = _objectSpread2({
 						id,
 						createdAt: Date.now(),
@@ -7085,14 +7083,14 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		$(".video_detail_episode a").each((_, el) => {
 			if (el.href) el.href = el.href.replace("http://", "https://");
 		});
-		iframePlayer$3.runInTop();
+		iframePlayer$2.runInTop();
 		rememberSortDirection();
 		restoreSortDirection();
 		insertFocusBtn();
 		activeScrollIntoView();
 	}
 	function playModuleInIframe() {
-		iframePlayer$3.runInIframe();
+		iframePlayer$2.runInIframe();
 	}
 	//#endregion
 	//#region src/adapter/agefans/index.ts
@@ -7111,7 +7109,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			},
 			{
 				test: /^\/$/,
-				run: iframePlayer$3.subscribe.renderSubscribedAnimes
+				run: iframePlayer$2.subscribe.renderSubscribedAnimes
 			},
 			{
 				test: "/play",
@@ -7134,26 +7132,26 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	injectStyle(".bimi-wrapper .play-full,\n.bimi-wrapper #bkcl,\n.bimi-wrapper .watch-toolbar,\n.bimi-wrapper .site-ad,\n.bimi-wrapper marquee {\n  display: none !important;\n}\n.bimi-wrapper.widescreen .site-header {\n  display: none !important;\n}\n.bimi-wrapper iframe {\n  background: black;\n}");
 	//#endregion
 	//#region src/adapter/bimiacg/play.ts
-	function getActive$2() {
+	function getActive$1() {
 		const $newActive = $(".watch-episode-grid a.is-current, .watch-episode-grid a.episode-active, .watch-episode-grid a[aria-current=\"page\"]");
 		if ($newActive.length) return $newActive;
 		return $(".episode-active");
 	}
-	function switchPart$2(next) {
+	function switchPart$1(next) {
 		var _$$, _$active$, _$active$parent$find$;
 		const directLink = (_$$ = $(next ? ".watch-episode-nav a.watch-next, .watch-episode-nav a[rel=\"next\"]" : ".watch-episode-nav a[rel=\"prev\"]")[0]) === null || _$$ === void 0 ? void 0 : _$$.href;
 		if (directLink) return directLink;
-		const $active = getActive$2();
+		const $active = getActive$1();
 		const sibling = (_$active$ = $active[next ? "next" : "prev"]("a")[0]) === null || _$active$ === void 0 ? void 0 : _$active$.href;
 		if (sibling) return sibling;
 		return (_$active$parent$find$ = $active.parent()[next ? "next" : "prev"]().find("a")[0]) === null || _$active$parent$find$ === void 0 ? void 0 : _$active$parent$find$.href;
 	}
-	function runInTop$2() {
-		iframePlayer$2.runInTop();
+	function runInTop$1() {
+		iframePlayer$1.runInTop();
 	}
-	const iframePlayer$2 = defineIframePlayer({
+	const iframePlayer$1 = defineIframePlayer({
 		iframeSelector: ".watch-player-mount iframe",
-		getActive: getActive$2,
+		getActive: getActive$1,
 		setActive: (href) => {
 			$(".player_list a, .watch-episode-grid a").each((_, el) => {
 				if (el.href === href) {
@@ -7167,10 +7165,10 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		},
 		search: {
 			getSearchName: () => $(".watch-crumb-name, #watch-title a, .v_path a.current").first().text().trim(),
-			getEpisode: () => getActive$2().text().trim() || $(".watch-now span").first().text().trim()
+			getEpisode: () => getActive$1().text().trim() || $(".watch-now span").first().text().trim()
 		},
 		getEpisodeList: () => $(".player_list a, .watch-episode-grid a"),
-		getSwitchEpisodeURL: (next) => switchPart$2(next),
+		getSwitchEpisodeURL: (next) => switchPart$1(next),
 		history: {
 			creator: (renderHistory) => {
 				const $btn = $("<a>历史</a>");
@@ -7180,7 +7178,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			getId: () => location.pathname.match(/* @__PURE__ */ new RegExp("\\/(?<id>\\d+)\\/play", "")).groups.id
 		}
 	});
-	async function parser$2() {
+	async function parser$1() {
 		let url = "";
 		let retryCount = 0;
 		while (!url && retryCount < 300) {
@@ -7238,21 +7236,21 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			{
 				test: "*",
 				setup: () => $("body").addClass("bimi-wrapper"),
-				run: iframePlayer$2.createHistory
+				run: iframePlayer$1.createHistory
 			},
 			{
 				test: /^\/(video|bangumi)\/\d+\/play\//,
-				run: runInTop$2
+				run: runInTop$1
 			},
 			{
 				test: /^\/(video|bangumi)\/\d+\/play\//,
-				run: iframePlayer$2.runInIframe,
+				run: iframePlayer$1.runInIframe,
 				runInIframe: true
 			},
 			{
 				test: "/static/danmu",
 				runInIframe: true,
-				run: parser$2
+				run: parser$1
 			}
 		],
 		search: {
@@ -7775,7 +7773,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			}
 		}
 	});
-	function runInTop$1() {
+	function runInTop() {
 		const disposeList = [hideOriginPlayer(), mountParser()];
 		subscribe.renderSubscribeBtn();
 		return () => {
@@ -7795,7 +7793,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	}
 	function mountParser() {
 		const sessionId = ++currentParserSession;
-		parser$1(() => sessionId !== currentParserSession);
+		parser(() => sessionId !== currentParserSession);
 		return () => {
 			if (currentParserSession === sessionId) currentParserSession++;
 			if (!isPlayPage$1()) destroyPlayer$1();
@@ -7930,7 +7928,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		});
 		return player$1;
 	}
-	async function parser$1(isDisposed) {
+	async function parser(isDisposed) {
 		try {
 			const startPlay = async (diff) => {
 				if (isDisposed()) return;
@@ -7981,7 +7979,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			},
 			{
 				test: /anime\/\d+\/play/,
-				run: runInTop$1
+				run: runInTop
 			}
 		],
 		spa: true,
@@ -8400,130 +8398,6 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 				} catch (error) {
 					return "";
 				}
-			}
-		}
-	});
-	//#endregion
-	//#region src/adapter/gugufan/play.ts
-	function getActive$1() {
-		return $(".anthology-list-play li.on > a");
-	}
-	function switchPart$1(next) {
-		var _getActive$parent$fin;
-		return (_getActive$parent$fin = getActive$1().parent()[next ? "next" : "prev"]().find("a")[0]) === null || _getActive$parent$fin === void 0 ? void 0 : _getActive$parent$fin.href;
-	}
-	function runInTop() {
-		$("body").addClass("gugufan");
-		$(".player-news,#buffer,#install").remove();
-		iframePlayer$1.runInTop();
-	}
-	const iframePlayer$1 = defineIframePlayer({
-		iframeSelector: "#playleft iframe",
-		getActive: getActive$1,
-		setActive: (href) => {
-			$(".anthology-list-play li a").each((_, el) => {
-				if (el.href === href) {
-					el.parentElement.classList.add("ecnav-dt", "on");
-					$(".play-on").insertAfter($(el).find("span"));
-				} else el.parentElement.classList.remove("ecnav-dt", "on");
-			});
-		},
-		search: {
-			getSearchName: () => $(".player-title-link").text(),
-			getEpisode: () => getActive$1().text()
-		},
-		getEpisodeList: () => $(".anthology-list-play li a"),
-		getSwitchEpisodeURL: (next) => switchPart$1(next)
-	});
-	async function parser() {
-		const video = await queryDom("video");
-		await wait(() => !!video.currentSrc);
-		video.src = "";
-		$("#ADplayer").remove();
-		$("#ADtip").remove();
-		await execInUnsafeWindow(() => {
-			var _EC$ad, _EC$dp;
-			(_EC$ad = EC.ad) === null || _EC$ad === void 0 || _EC$ad.destroy();
-			(_EC$dp = EC.dp) === null || _EC$dp === void 0 || _EC$dp.destroy();
-		});
-		const player = createKPlayer("#player", { eventToParentWindow: true });
-		player.src = await execInUnsafeWindow(() => window.config.url);
-	}
-	async function parser2() {
-		const video = await queryDom("video");
-		let url = "";
-		while (!url) {
-			url = await execInUnsafeWindow(() => window.MIZHI.player_url);
-			await sleep(16);
-		}
-		await wait(() => !!video.currentSrc);
-		URL.revokeObjectURL(video.currentSrc);
-		video.src = "";
-		await execInUnsafeWindow(() => {
-			window.MIZHI.art.destroy();
-		});
-		const player = createKPlayer("#loading", { eventToParentWindow: true });
-		player.src = url;
-		$(".layui-layer").remove();
-	}
-	//#endregion
-	//#region src/adapter/gugufan/index.scss
-	injectStyle(".gugufan.widescreen .header_nav0,\n.gugufan.widescreen .header_nav1,\n.gugufan.widescreen .top-back.hoa,\n.gugufan.widescreen .fixedGroup {\n  visibility: hidden;\n  pointer-events: none;\n}");
-	//#endregion
-	//#region src/adapter/gugufan/index.ts
-	runtime.register({
-		domains: [".gugu3."],
-		opts: [
-			{
-				test: /^\/index.php\/vod\/play/,
-				run: runInTop
-			},
-			{
-				test: /^\/index.php\/vod\/play/,
-				run: iframePlayer$1.runInIframe,
-				runInIframe: true
-			},
-			{
-				test: "/addons/dp/player",
-				run: parser,
-				runInIframe: true
-			},
-			{
-				test: "?url=",
-				run: parser2,
-				runInIframe: true
-			}
-		],
-		search: {
-			name: "咕咕番",
-			search: (cn) => `https://www.gugu3.com/index.php/vod/search.html?wd=${cn}`,
-			getSearchName: () => {
-				return new Promise((resolve) => {
-					const fn = (e) => {
-						if (e.data.key === "getSearchName") {
-							resolve(e.data.name);
-							window.removeEventListener("message", fn);
-						}
-					};
-					window.addEventListener("message", fn);
-					parent.postMessage({ key: "getSearchName" }, "*");
-				});
-			},
-			getEpisode: () => {
-				return new Promise((resolve) => {
-					const fn = (e) => {
-						if (e.data.key === "getEpisode") {
-							resolve(e.data.name);
-							window.removeEventListener("message", fn);
-						}
-					};
-					window.addEventListener("message", fn);
-					parent.postMessage({ key: "getEpisode" }, "*");
-				});
-			},
-			getAnimeScope: () => {
-				var _window$location$href;
-				return ((_window$location$href = window.location.href.match(/\/id\/(\d+)\//)) === null || _window$location$href === void 0 ? void 0 : _window$location$href[1]) || "";
 			}
 		}
 	});
