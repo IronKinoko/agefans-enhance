@@ -32,7 +32,10 @@
     }
   }
 
-  .danmaku {
+  // danmaku 2.x 把弹幕节点与舞台的类名改成了 k-danmaku / k-danmaku-stage，
+  // 旧的 .danmaku 选择器在升级后会全部失配（字号、字体、描边一起失效）。
+  .danmaku,
+  .k-danmaku {
     font-size: calc(
       var(--danmaku-font-size, 24px) * var(--danmaku-font-size-scale, 1)
     );
@@ -42,8 +45,14 @@
       black -1px 0px 1px;
     line-height: 1.3;
   }
+  // 2.x 只把滚动弹幕的纵向位置写进 --top，样式表里却只有 --top/--bottom 修饰类
+  // 消费它，滚动弹幕因而全部叠在第 0 行，需要自己接上。
+  .k-danmaku--scrolling {
+    top: var(--top);
+  }
   @media (max-width: 576px) {
-    .danmaku {
+    .danmaku,
+    .k-danmaku {
       --danmaku-font-size: 16px;
     }
   }
