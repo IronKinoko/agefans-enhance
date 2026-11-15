@@ -1,9 +1,9 @@
-import { template } from 'lodash-es'
 import { KPlayer } from '../../player'
 import { createKPlayer } from '../common/createKPlayer'
 import { queryDom } from '../../utils/queryDom'
 import { local } from '../../utils/storage'
 import { defineSubscribe } from '../common/defineSubscribe'
+import { createSubscriptionView } from '../common/subscriptionSchedule'
 import T from './subscribe.template.html'
 import dayjs from 'dayjs'
 
@@ -17,7 +17,9 @@ let player: KPlayer | undefined
 let startPlayHandler: ((diff: number) => void) | undefined
 let stopObserveSubscribedListMount: (() => void) | undefined
 let stopObserveSubscribeBtnMount: (() => void) | undefined
+let stopSyncSubscribedList: (() => void) | undefined
 
+const SUBSCRIPTION_VIEW_KEY = 'cycanime-subscription-view'
 const DEFAULT_ACCOUNT = {
   username: 'ironuserscripts',
   password: 'U5PXEp.vc.LTj3',
@@ -42,7 +44,7 @@ function parseAnimeId() {
 }
 
 function remarksToStatus(remarks: string) {
-  remarks = remarks?.trim() || '已完结'
+  remarks = remarks?.trim() || ''
   const regexp = /周(.)(\d{2}):(\d{2})/
   const match = remarks.match(regexp)
   if (match) {
@@ -187,6 +189,12 @@ export const subscribe = defineSubscribe({
     },
     renderSubscribedAnimes: (sm) => {
       const $root = $(T.subListContainer)
+      const subscriptionView = createSubscriptionView(
+        $root,
+        sm,
+        SUBSCRIPTION_VIEW_KEY,
+        T.subList
+      )
 
       const mount = () => {
         if (document.body.contains($root[0])) return
@@ -199,6 +207,7 @@ export const subscribe = defineSubscribe({
 
         if ($tvSection.length) {
           $root.insertBefore($tvSection)
+          subscriptionView.onMount()
         }
       }
       mount()
@@ -215,17 +224,12 @@ export const subscribe = defineSubscribe({
           if (id) sm.deleteSubscription(id)
         })
 
-      sm.onChange(
-        () => {
-          const groups = sm.getSubscriptionsGroupByDay()
-          const list = groups.reduce((acc, group) => {
-            acc.push(...group.list)
-            return acc
-          }, [] as (typeof groups)[number]['list'])
-          $root.find('#subList').replaceWith(template(T.subList)({ list }))
-        },
-        { immediate: true }
-      )
+      stopSyncSubscribedList?.()
+      const stopSync = sm.onChange(subscriptionView.render, { immediate: true })
+      stopSyncSubscribedList = () => {
+        stopSync()
+        subscriptionView.dispose()
+      }
       return $root
     },
     renderSubscribeBtn: ($btn) => {
@@ -287,6 +291,8 @@ export function runInHome() {
   return () => {
     stopObserveSubscribedListMount?.()
     stopObserveSubscribedListMount = undefined
+    stopSyncSubscribedList?.()
+    stopSyncSubscribedList = undefined
     $('#subListContainer').remove()
   }
 }

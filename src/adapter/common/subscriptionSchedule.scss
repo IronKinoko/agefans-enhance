@@ -1,0 +1,293 @@
+.cycanime,
+.girigirilove {
+  #subListContainer.k-schedule-view {
+    min-width: 0;
+    max-width: 1560px;
+  }
+
+  #subListContainer .k-subscription-view-switch {
+    display: flex;
+    flex-shrink: 0;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 9px;
+    background: rgb(128 128 128 / 12%);
+    color: inherit;
+
+    button {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      opacity: 0.6;
+
+      &[aria-pressed='true'] {
+        background: rgb(128 128 128 / 28%);
+        opacity: 1;
+      }
+
+      &:hover:not([aria-pressed='true']) {
+        background: rgb(128 128 128 / 16%);
+        opacity: 1;
+      }
+
+      &:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+      }
+    }
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  #subListContainer .k-schedule-scroll {
+    overflow-x: auto;
+    cursor: grab;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    user-select: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    &.is-dragging {
+      cursor: grabbing;
+      scroll-behavior: auto;
+      scroll-snap-type: none;
+
+      a,
+      button {
+        cursor: grabbing;
+      }
+    }
+  }
+
+  #subListContainer .k-schedule-day {
+    scroll-snap-align: start;
+  }
+
+  #subListContainer .k-schedule-indicator {
+    position: relative;
+    width: 80px;
+    max-width: 50%;
+    height: 4px;
+    margin: 12px auto 0;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgb(128 128 128 / 20%);
+  }
+
+  #subListContainer .k-schedule-indicator-thumb {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: rgb(128 128 128 / 70%);
+  }
+
+  #subListContainer .k-schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(200px, 1fr));
+    min-width: 1496px;
+    gap: 16px;
+  }
+
+  #subListContainer .k-schedule-heading {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0 0 12px;
+    padding: 4px 0 10px;
+    border-bottom: 2px solid rgb(128 128 128 / 20%);
+    font-size: 13px;
+    font-weight: normal;
+    line-height: 1.3;
+
+    span {
+      opacity: 0.6;
+    }
+
+    strong {
+      font-size: 16px;
+    }
+  }
+
+  #subListContainer .is-today .k-schedule-heading {
+    border-bottom-color: #fb7185;
+    color: #fb7185;
+  }
+
+  #subListContainer .k-schedule-items {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 70px;
+    padding-left: 9px;
+    border-left: 1px solid rgb(128 128 128 / 25%);
+  }
+
+  #subListContainer .k-schedule-empty {
+    margin: 0;
+    font-size: 12px;
+    opacity: 0.5;
+  }
+
+  #subListContainer .k-schedule-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 35px 54px minmax(0, 1fr);
+    align-items: start;
+    gap: 7px;
+    min-width: 0;
+
+    &.is-unscheduled {
+      grid-template-columns: 48px 54px minmax(0, 1fr);
+    }
+  }
+
+  #subListContainer .k-schedule-side {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  #subListContainer .k-schedule-time {
+    width: 100%;
+    padding-top: 2px;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+    opacity: 0.65;
+  }
+
+  #subListContainer .k-schedule-cover {
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 3 / 4;
+    border-radius: 6px;
+    background: rgb(128 128 128 / 15%);
+
+    &:hover,
+    &:focus-visible {
+      outline: 2px solid #fb7185;
+      outline-offset: 2px;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  #subListContainer .k-schedule-details {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 12px;
+  }
+
+  #subListContainer .k-schedule-title {
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    transition: color 150ms ease;
+  }
+
+  #subListContainer .k-schedule-title:hover,
+  #subListContainer .k-schedule-title:focus-visible,
+  #subListContainer
+    .k-schedule-cover:hover
+    + .k-schedule-details
+    .k-schedule-title,
+  #subListContainer
+    .k-schedule-cover:focus-visible
+    + .k-schedule-details
+    .k-schedule-title {
+    color: #fb7185;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  #subListContainer .k-schedule-progress {
+    display: grid;
+    grid-template-columns: 3em minmax(0, 1fr);
+    gap: 2px 4px;
+    min-width: 0;
+    font-size: 11px;
+    line-height: 1.45;
+
+    span {
+      opacity: 0.6;
+    }
+
+    a {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      opacity: 0.8;
+      transition: color 150ms ease, opacity 150ms ease;
+
+      &:hover,
+      &:focus-visible {
+        color: #fb7185;
+        opacity: 1;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+    }
+  }
+
+  #subListContainer .k-schedule-unscheduled {
+    margin-top: 18px;
+
+    h3 {
+      margin: 0 0 12px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+  }
+
+  #subListContainer .k-schedule-unscheduled-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 16px;
+  }
+
+  #subListContainer .k-schedule-item .k-unsubscribe-btn {
+    position: static;
+    transform: translateY(4px);
+  }
+
+  #subListContainer .k-schedule-item:hover .k-unsubscribe-btn,
+  #subListContainer .k-schedule-item:focus-within .k-unsubscribe-btn {
+    transform: none;
+  }
+
+  @media (hover: none) {
+    #subListContainer .k-schedule-item .k-unsubscribe-btn {
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #subListContainer .k-schedule-scroll {
+      scroll-behavior: auto;
+    }
+  }
+}

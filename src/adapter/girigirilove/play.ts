@@ -1,14 +1,15 @@
-import { template } from 'lodash-es'
 import { concurrency } from '../../utils/concurrency'
 import { gm } from '../../utils/storage'
 import { createKPlayer } from '../common/createKPlayer'
 import { defineIframePlayer } from '../common/defineIframePlayer'
 import { SubscriptionManager } from '../common/subscribe'
+import { createSubscriptionView } from '../common/subscriptionSchedule'
 import T from './subscribe.template.html'
 
 const LEGACY_STORAGE_KEY = 'girigirilove_subscriptions'
 const STORAGE_KEY = 'girigirilove_subscriptions_v2'
 const MIGRATION_DONE_KEY = 'girigirilove_subscriptions_v1_migrated'
+const SUBSCRIPTION_VIEW_KEY = 'girigirilove-subscription-view'
 
 function getModernAnimeId() {
   return window.location.pathname.match(
@@ -528,6 +529,12 @@ export const iframePlayer = defineIframePlayer({
       stopRenderSubscribedAnimes?.()
       const $root = $(T.subListContainer)
       const root = $root[0]
+      const subscriptionView = createSubscriptionView(
+        $root,
+        sm,
+        SUBSCRIPTION_VIEW_KEY,
+        T.subList
+      )
 
       const mount = () => {
         if (!/^\/(?:home)?\/?$/.test(window.location.pathname)) return
@@ -540,6 +547,7 @@ export const iframePlayer = defineIframePlayer({
           return
         }
         calendar.parentElement.insertBefore(root, calendar)
+        subscriptionView.onMount()
       }
 
       const observer = new MutationObserver(mount)
@@ -559,21 +567,14 @@ export const iframePlayer = defineIframePlayer({
           if (id) sm.deleteSubscription(id)
         })
 
-      const stopListening = sm.onChange(
-        () => {
-          const groups = sm.getSubscriptionsGroupByDay()
-          const list = groups.reduce((items, group) => {
-            items.push(...group.list)
-            return items
-          }, [] as (typeof groups)[number]['list'])
-          $root.find('#subList').replaceWith(template(T.subList)({ list }))
-        },
-        { immediate: true }
-      )
+      const stopListening = sm.onChange(subscriptionView.render, {
+        immediate: true,
+      })
 
       const cleanup = () => {
         observer.disconnect()
         stopListening()
+        subscriptionView.dispose()
         $root.off()
         root.remove()
         if (stopRenderSubscribedAnimes === cleanup) {

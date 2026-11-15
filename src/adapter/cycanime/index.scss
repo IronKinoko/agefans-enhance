@@ -46,8 +46,12 @@
     }
   }
 
-  #subListContainer .k-subscription-card:hover .k-watch-progress,
-  #subListContainer .k-subscription-card:focus-within .k-watch-progress {
+  #subListContainer
+    .k-subscription-card:not(.k-schedule-item):hover
+    .k-watch-progress,
+  #subListContainer
+    .k-subscription-card:not(.k-schedule-item):focus-within
+    .k-watch-progress {
     padding-right: 30px;
   }
 
@@ -60,7 +64,9 @@
   }
 
   @media (hover: none) {
-    #subListContainer .k-watch-progress {
+    #subListContainer
+      .k-subscription-card:not(.k-schedule-item)
+      .k-watch-progress {
       padding-right: 30px;
     }
 
