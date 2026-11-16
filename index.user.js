@@ -2,7 +2,7 @@
 // @name         agefans Enhance
 // @namespace    https://github.com/IronKinoko/agefans-enhance
 // @icon         https://www.age.tv/favicon.ico
-// @version      1.62.0
+// @version      1.62.1
 // @description  增强播放功能，实现自动换集、无缝换集、画中画、历史记录、断点续播、弹幕等功能。适配agefans、NT动漫、bimiacg、mutefun、次元城、稀饭动漫
 // @author       IronKinoko
 // @include      https://www.age.tv/*
@@ -3625,7 +3625,7 @@
 				content: `
     <table class="k-table">
       <tbody>
-      <tr><td>脚本版本</td><td>1.62.0</td></tr>
+      <tr><td>脚本版本</td><td>1.62.1</td></tr>
       <tr>
         <td>脚本作者</td>
         <td><a target="_blank" rel="noreferrer" href="https://github.com/IronKinoko">IronKinoko</a></td>
@@ -3751,7 +3751,7 @@ ${src}
 
 # 环境
 userAgent: ${navigator.userAgent}
-脚本版本: 1.62.0
+脚本版本: 1.62.1
 `;
 	//#endregion
 	//#region src/player/plugins/shortcuts/help/index.ts
@@ -6429,7 +6429,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	});
 	//#endregion
 	//#region src/adapter/agefans/index.scss
-	injectStyle(".agefans-wrapper .video_detail_episode a:visited {\n  color: rgb(220, 53, 69) !important;\n}\n.agefans-wrapper .update-info {\n  font-size: 12px;\n  color: #f8f9fa;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n}\n.agefans-wrapper .update-info:hover {\n  cursor: pointer;\n  text-decoration: underline;\n}\n.agefans-wrapper .sub-thumbnail-box {\n  transition: opacity 0.15s ease;\n  opacity: 0;\n  position: absolute;\n  top: -10px;\n  right: calc(100% + 12px);\n  width: 200px;\n  padding: 8px;\n  border-radius: 8px;\n  background-color: #282828;\n  border: 1px solid #404041;\n  box-shadow: 0px 6px 20px 8px rgba(0, 0, 0, 0.45);\n  pointer-events: none;\n  z-index: 10;\n}\n.agefans-wrapper .text_list_item li:hover .sub-thumbnail-box {\n  opacity: 1;\n}\n.agefans-wrapper .sub-thumbnail {\n  width: 100%;\n  border-radius: 4px;\n}\n.agefans-wrapper .sub-group-day {\n  margin-bottom: 4px;\n}");
+	injectStyle(".agefans-wrapper #subListContainer .k-subscription-view-switch[role=group] {\n  gap: 0;\n  padding: 2px;\n  border-radius: 7px;\n  background: rgba(255, 255, 255, 0.06);\n}\n.agefans-wrapper #subListContainer .k-subscription-view-switch[role=group] button {\n  width: 28px;\n  height: 28px;\n  border-radius: 5px;\n  opacity: 0.5;\n}\n.agefans-wrapper #subListContainer .k-subscription-view-switch[role=group] button[aria-pressed=true] {\n  background: rgba(255, 255, 255, 0.1);\n  color: #fff;\n  opacity: 1;\n}\n.agefans-wrapper #subListContainer .k-subscription-view-switch[role=group] button:hover:not([aria-pressed=true]) {\n  background: rgba(255, 255, 255, 0.06);\n  opacity: 0.85;\n}\n.agefans-wrapper #subListContainer .k-subscription-view-switch[role=group] svg {\n  width: 15px;\n  height: 15px;\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-empty-state {\n  min-height: 64px;\n  gap: 6px;\n  padding: 18px 8px 6px;\n  color: rgba(208, 224, 240, 0.45);\n  font-size: 13px;\n  text-align: center;\n  opacity: 1;\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-scroll {\n  overflow-x: visible;\n  scroll-snap-type: none;\n  cursor: default;\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-grid {\n  grid-template-columns: repeat(7, minmax(0, 1fr));\n  min-width: 0;\n  gap: 8px;\n  padding-top: 16px;\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-day {\n  min-width: 0;\n  padding: 0 10px;\n  border-left: 1px solid rgba(255, 255, 255, 0.07);\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-day:first-child {\n  padding-left: 0;\n  border-left: 0;\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-day:last-child {\n  padding-right: 0;\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-heading {\n  margin-bottom: 8px;\n  padding: 2px 0 8px;\n  border-bottom: 1px solid rgba(255, 255, 255, 0.1);\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-heading span {\n  font-size: 14px;\n  color: rgba(208, 224, 240, 0.38);\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-heading strong {\n  font-size: 14px;\n}\n.agefans-wrapper #subListContainer.k-schedule-view .is-today .k-schedule-heading {\n  border-bottom-color: rgba(251, 113, 133, 0.5);\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-items {\n  gap: 12px;\n  min-height: 50px;\n  padding-left: 0;\n  border-left: 0;\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-item {\n  display: grid;\n  grid-template-columns: 46px minmax(0, 1fr);\n  align-items: start;\n  gap: 5px 8px;\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-item.is-unscheduled {\n  grid-template-columns: 46px minmax(0, 1fr);\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-side {\n  display: flex;\n  min-width: 0;\n  grid-column: 1/-1;\n  flex-direction: row;\n  align-items: center;\n  justify-content: space-between;\n  gap: 4px;\n  padding-bottom: 2px;\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-time {\n  width: auto;\n  padding-top: 0;\n  font-size: 11px;\n  font-variant-numeric: tabular-nums;\n  color: rgba(208, 224, 240, 0.45);\n  opacity: 1;\n}\n.agefans-wrapper #subListContainer.k-schedule-view .is-today .k-schedule-time {\n  color: rgba(208, 224, 240, 0.45);\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-cover {\n  display: block;\n  grid-column: 1;\n  grid-row: 2;\n  aspect-ratio: 3/4;\n  border-radius: 3px;\n  background: rgba(255, 255, 255, 0.05);\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-cover:hover, .agefans-wrapper #subListContainer.k-schedule-view .k-schedule-cover:focus-visible {\n  outline: 1px solid #fb7185;\n  outline-offset: 1px;\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-details {\n  display: flex;\n  min-width: 0;\n  grid-column: 2;\n  grid-row: 2;\n  flex-direction: column;\n  gap: 2px;\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-title {\n  display: -webkit-box;\n  overflow: hidden;\n  font-size: 12px;\n  font-weight: 500;\n  line-height: 1.4;\n  color: rgba(240, 246, 255, 0.92);\n  -webkit-box-orient: vertical;\n  -webkit-line-clamp: 2;\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-progress {\n  display: grid;\n  grid-template-columns: auto minmax(0, 1fr);\n  min-width: 0;\n  gap: 1px 4px;\n  font-size: 11px;\n  line-height: 1.45;\n  color: rgba(208, 224, 240, 0.45);\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-progress span {\n  display: block;\n  white-space: nowrap;\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-progress a {\n  overflow: hidden;\n  max-width: 100%;\n  color: rgba(208, 224, 240, 0.45);\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-progress a:hover {\n  color: #fb7185;\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-item .k-unsubscribe-btn {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 18px;\n  height: 18px;\n  padding: 0;\n  border: 0;\n  border-radius: 4px;\n  background: transparent;\n  color: rgba(208, 224, 240, 0.4);\n  opacity: 0;\n  transform: none;\n  visibility: hidden;\n  box-sizing: border-box;\n  line-height: 0;\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-item .k-unsubscribe-btn:hover, .agefans-wrapper #subListContainer.k-schedule-view .k-schedule-item .k-unsubscribe-btn:focus-visible {\n  background: rgba(251, 113, 133, 0.12);\n  color: #fb7185;\n  outline: none;\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-item .k-unsubscribe-btn svg {\n  width: 13px;\n  height: 13px;\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-item:hover .k-unsubscribe-btn,\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-item:focus-within .k-unsubscribe-btn {\n  opacity: 1;\n  transform: none;\n  visibility: visible;\n}\n@media (hover: none) {\n  .agefans-wrapper #subListContainer.k-schedule-view .k-schedule-item .k-unsubscribe-btn {\n    opacity: 1;\n    visibility: visible;\n  }\n}\n.agefans-wrapper #subListContainer.k-schedule-view .k-schedule-empty {\n  margin: 0;\n  padding: 10px 0 0;\n  font-size: 11px;\n  color: rgba(208, 224, 240, 0.28);\n  opacity: 1;\n}\n@media (max-width: 1200px) {\n  .agefans-wrapper #subListContainer.k-schedule-view .k-schedule-day {\n    padding: 0 7px;\n  }\n  .agefans-wrapper #subListContainer.k-schedule-view .k-schedule-item {\n    grid-template-columns: 40px minmax(0, 1fr);\n    gap: 4px 6px;\n  }\n  .agefans-wrapper #subListContainer.k-schedule-view .k-schedule-item.is-unscheduled {\n    grid-template-columns: 40px minmax(0, 1fr);\n  }\n  .agefans-wrapper #subListContainer.k-schedule-view .k-schedule-title {\n    font-size: 11px;\n  }\n}\n.agefans-wrapper .video_detail_episode a:visited {\n  color: rgb(220, 53, 69) !important;\n}\n.agefans-wrapper .update-info {\n  font-size: 12px;\n  color: #f8f9fa;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n}\n.agefans-wrapper .update-info:hover {\n  cursor: pointer;\n  text-decoration: underline;\n}\n.agefans-wrapper .sub-thumbnail-box {\n  transition: opacity 0.15s ease;\n  opacity: 0;\n  position: absolute;\n  top: -10px;\n  right: calc(100% + 12px);\n  width: 200px;\n  padding: 8px;\n  border-radius: 8px;\n  background-color: #282828;\n  border: 1px solid #404041;\n  box-shadow: 0px 6px 20px 8px rgba(0, 0, 0, 0.45);\n  pointer-events: none;\n  z-index: 10;\n}\n.agefans-wrapper .text_list_item li:hover .sub-thumbnail-box {\n  opacity: 1;\n}\n.agefans-wrapper .sub-thumbnail {\n  width: 100%;\n  border-radius: 4px;\n}\n.agefans-wrapper .sub-group-day {\n  margin-bottom: 4px;\n}");
 	//#endregion
 	//#region src/utils/date.ts
 	/** 返回与当前日期最接近的同一周几的日期 */
@@ -6906,13 +6906,294 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		};
 	}
 	//#endregion
+	//#region src/adapter/common/subscriptionSchedule.template.html
+	var subscriptionSchedule_template_default = {
+		"viewSwitch": "<div   id=\"viewSwitch\"\n  class=\"k-subscription-view-switch\"\n  role=\"group\"\n  aria-label=\"订阅视图\"\n>\n  <button     type=\"button\"\n    data-subscription-view=\"list\"\n    aria-label=\"列表模式\"\n    title=\"列表模式\"\n  >\n    <svg       aria-hidden=\"true\"\n      viewBox=\"0 0 24 24\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"2\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    >\n      <rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\" ></rect>\n      <rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\" ></rect>\n      <rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\" ></rect>\n      <rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\" ></rect>\n    </svg>\n  </button>\n  <button     type=\"button\"\n    data-subscription-view=\"schedule\"\n    aria-label=\"时间表模式\"\n    title=\"时间表模式\"\n  >\n    <svg       aria-hidden=\"true\"\n      viewBox=\"0 0 24 24\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"2\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    >\n      <rect x=\"3\" y=\"5\" width=\"18\" height=\"16\" rx=\"2\" ></rect>\n      <path d=\"M16 3v4M8 3v4M3 10h18M8 14h2M14 14h2M8 17h2M14 17h2\" ></path>\n    </svg>\n  </button>\n</div>",
+		"subSchedule": "<div id=\"subSchedule\">\n  {{# if (isEmpty) { }}\n  <div class=\"k-schedule-empty-state\">\n    <svg       class=\"k-schedule-empty-icon\"\n      aria-hidden=\"true\"\n      viewBox=\"0 0 24 24\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"2\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    >\n      <path d=\"M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9\" ></path>\n      <path d=\"M13.7 21a2 2 0 0 1-3.4 0\" ></path>\n      <path d=\"M19 3v4M17 5h4\" ></path>\n    </svg>\n    <span>订阅喜欢的番剧，在播放页面标题右侧添加订阅</span>\n  </div>\n  {{# } else { }}\n  <div class=\"k-schedule-scroll\" tabindex=\"0\" aria-label=\"订阅时间表\">\n    <div class=\"k-schedule-grid\">\n      {{# days.forEach((day) => { }}\n      <section class=\"k-schedule-day{{ day.isToday ? ' is-today' : '' }}\">\n        <h3 class=\"k-schedule-heading\">\n          <span>{{ day.date }}</span>\n          <strong>{{ day.weekday }}{{ day.isToday ? ' · 今天' : '' }}</strong>\n        </h3>\n        <div class=\"k-schedule-items\">\n          {{# day.list.forEach((item) => { }} {{ renderItem({ item,\n          isUnscheduled: false }) }} {{# }) }} {{# if (!day.list.length) { }}\n          <p class=\"k-schedule-empty\">暂无更新</p>\n          {{# } }}\n        </div>\n      </section>\n      {{# }) }}\n    </div>\n  </div>\n  <div class=\"k-schedule-indicator\" aria-hidden=\"true\" hidden>\n    <div class=\"k-schedule-indicator-thumb\"></div>\n  </div>\n  {{# [ { title: '暂无固定更新时间', list: unscheduled }, { title: '已完结',\n  list: completed } ].filter((group) => group.list.length).forEach((group) => {\n  }}\n  <section class=\"k-schedule-unscheduled\">\n    <h3>{{ group.title }}</h3>\n    <div class=\"k-schedule-unscheduled-items\">\n      {{# group.list.forEach((item) => { }} {{ renderItem({ item, isUnscheduled:\n      true }) }} {{# }) }}\n    </div>\n  </section>\n  {{# }) }} {{# } }}\n</div>",
+		"subScheduleItem": "<article   id=\"subScheduleItem\"\n  class=\"k-subscription-card k-schedule-item{{ isUnscheduled ? ' is-unscheduled' : '' }}\"\n>\n  <div class=\"k-schedule-side\">\n    <span class=\"k-schedule-time\"\n      >{{- isUnscheduled ? (item.sub.status?.trim() || '未知状态') : (item.time\n      || '待定') }}</span>\n    <button       type=\"button\"\n      class=\"k-unsubscribe-btn\"\n      data-subscription-id=\"{{- item.sub.id }}\"\n      title=\"取消订阅\"\n      aria-label=\"取消订阅 {{- item.sub.title }}\"\n    >\n      <svg         aria-hidden=\"true\"\n        viewBox=\"0 0 24 24\"\n        fill=\"none\"\n        stroke=\"currentColor\"\n        stroke-width=\"2\"\n        stroke-linecap=\"round\"\n        stroke-linejoin=\"round\"\n      >\n        <path d=\"M15 18H4c0-2 3-2 3-9a5 5 0 0 1 8.5-3.5\" ></path>\n        <path d=\"M9 21h4\" ></path>\n        <path d=\"m16 14 5 5m0-5-5 5\" ></path>\n      </svg>\n    </button>\n  </div>\n  <a     class=\"k-schedule-cover\"\n    href=\"{{- item.sub.current.url }}\"\n    title=\"{{- item.sub.title }}\"\n  >\n    <img       src=\"{{- item.sub.thumbnail }}\"\n      alt=\"{{- item.sub.title }}\"\n      loading=\"lazy\"\n      decoding=\"async\"\n    >\n  </a>\n  <div class=\"k-schedule-details\">\n    <a class=\"k-schedule-title\" href=\"{{- item.sub.current.url }}\"\n      >{{- item.sub.title }}</a>\n    <div class=\"k-schedule-progress\">\n      <span>{{- labels.current }}</span>\n      <a href=\"{{- item.sub.current.url }}\">{{- item.sub.current.title }}</a>\n      <span>{{- labels.last }}</span>\n      <a href=\"{{- item.sub.last.url }}\">{{- item.sub.last.title }}</a>\n    </div>\n  </div>\n</article>"
+	};
+	//#endregion
+	//#region src/adapter/common/subscriptionSchedule.scss
+	injectStyle(".cycanime #subListContainer.k-schedule-view,\n.girigirilove #subListContainer.k-schedule-view,\n.agefans-wrapper #subListContainer.k-schedule-view {\n  min-width: 0;\n  max-width: 1560px;\n}\n.cycanime #subListContainer .k-subscription-view-switch,\n.girigirilove #subListContainer .k-subscription-view-switch,\n.agefans-wrapper #subListContainer .k-subscription-view-switch {\n  display: flex;\n  flex-shrink: 0;\n  gap: 2px;\n  padding: 3px;\n  border-radius: 9px;\n  background: rgba(128, 128, 128, 0.12);\n  color: inherit;\n}\n.cycanime #subListContainer .k-subscription-view-switch button,\n.girigirilove #subListContainer .k-subscription-view-switch button,\n.agefans-wrapper #subListContainer .k-subscription-view-switch button {\n  display: grid;\n  width: 34px;\n  height: 34px;\n  place-items: center;\n  border: 0;\n  border-radius: 6px;\n  background: transparent;\n  color: inherit;\n  cursor: pointer;\n  opacity: 0.6;\n}\n.cycanime #subListContainer .k-subscription-view-switch button[aria-pressed=true],\n.girigirilove #subListContainer .k-subscription-view-switch button[aria-pressed=true],\n.agefans-wrapper #subListContainer .k-subscription-view-switch button[aria-pressed=true] {\n  background: rgba(128, 128, 128, 0.28);\n  opacity: 1;\n}\n.cycanime #subListContainer .k-subscription-view-switch button:hover:not([aria-pressed=true]),\n.girigirilove #subListContainer .k-subscription-view-switch button:hover:not([aria-pressed=true]),\n.agefans-wrapper #subListContainer .k-subscription-view-switch button:hover:not([aria-pressed=true]) {\n  background: rgba(128, 128, 128, 0.16);\n  opacity: 1;\n}\n.cycanime #subListContainer .k-subscription-view-switch button:focus-visible,\n.girigirilove #subListContainer .k-subscription-view-switch button:focus-visible,\n.agefans-wrapper #subListContainer .k-subscription-view-switch button:focus-visible {\n  outline: 2px solid currentColor;\n  outline-offset: 2px;\n}\n.cycanime #subListContainer .k-subscription-view-switch svg,\n.girigirilove #subListContainer .k-subscription-view-switch svg,\n.agefans-wrapper #subListContainer .k-subscription-view-switch svg {\n  width: 18px;\n  height: 18px;\n}\n.cycanime #subListContainer .k-schedule-scroll,\n.girigirilove #subListContainer .k-schedule-scroll,\n.agefans-wrapper #subListContainer .k-schedule-scroll {\n  overflow-x: auto;\n  cursor: grab;\n  scrollbar-width: none;\n  scroll-behavior: smooth;\n  scroll-snap-type: x mandatory;\n  user-select: none;\n}\n.cycanime #subListContainer .k-schedule-scroll::-webkit-scrollbar,\n.girigirilove #subListContainer .k-schedule-scroll::-webkit-scrollbar,\n.agefans-wrapper #subListContainer .k-schedule-scroll::-webkit-scrollbar {\n  display: none;\n}\n.cycanime #subListContainer .k-schedule-scroll.is-dragging,\n.girigirilove #subListContainer .k-schedule-scroll.is-dragging,\n.agefans-wrapper #subListContainer .k-schedule-scroll.is-dragging {\n  cursor: grabbing;\n  scroll-behavior: auto;\n  scroll-snap-type: none;\n}\n.cycanime #subListContainer .k-schedule-scroll.is-dragging a,\n.cycanime #subListContainer .k-schedule-scroll.is-dragging button,\n.girigirilove #subListContainer .k-schedule-scroll.is-dragging a,\n.girigirilove #subListContainer .k-schedule-scroll.is-dragging button,\n.agefans-wrapper #subListContainer .k-schedule-scroll.is-dragging a,\n.agefans-wrapper #subListContainer .k-schedule-scroll.is-dragging button {\n  cursor: grabbing;\n}\n.cycanime #subListContainer .k-schedule-empty-state,\n.girigirilove #subListContainer .k-schedule-empty-state,\n.agefans-wrapper #subListContainer .k-schedule-empty-state {\n  display: flex;\n  min-height: 72px;\n  align-items: center;\n  justify-content: center;\n  gap: 7px;\n  padding: 16px 8px;\n  font-size: 13px;\n  text-align: center;\n  opacity: 0.7;\n}\n.cycanime #subListContainer .k-schedule-empty-icon,\n.girigirilove #subListContainer .k-schedule-empty-icon,\n.agefans-wrapper #subListContainer .k-schedule-empty-icon {\n  width: 15px;\n  height: 15px;\n  flex-shrink: 0;\n}\n.cycanime #subListContainer .k-schedule-day,\n.girigirilove #subListContainer .k-schedule-day,\n.agefans-wrapper #subListContainer .k-schedule-day {\n  scroll-snap-align: start;\n}\n.cycanime #subListContainer .k-schedule-indicator,\n.girigirilove #subListContainer .k-schedule-indicator,\n.agefans-wrapper #subListContainer .k-schedule-indicator {\n  position: relative;\n  width: 80px;\n  max-width: 50%;\n  height: 4px;\n  margin: 12px auto 0;\n  overflow: hidden;\n  border-radius: 999px;\n  background: rgba(128, 128, 128, 0.2);\n}\n.cycanime #subListContainer .k-schedule-indicator-thumb,\n.girigirilove #subListContainer .k-schedule-indicator-thumb,\n.agefans-wrapper #subListContainer .k-schedule-indicator-thumb {\n  position: absolute;\n  top: 0;\n  height: 100%;\n  border-radius: inherit;\n  background: rgba(128, 128, 128, 0.7);\n}\n.cycanime #subListContainer .k-schedule-grid,\n.girigirilove #subListContainer .k-schedule-grid,\n.agefans-wrapper #subListContainer .k-schedule-grid {\n  display: grid;\n  grid-template-columns: repeat(7, minmax(200px, 1fr));\n  min-width: 1496px;\n  gap: 16px;\n}\n.cycanime #subListContainer .k-schedule-heading,\n.girigirilove #subListContainer .k-schedule-heading,\n.agefans-wrapper #subListContainer .k-schedule-heading {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: 0 0 12px;\n  padding: 4px 0 10px;\n  border-bottom: 2px solid rgba(128, 128, 128, 0.2);\n  font-size: 13px;\n  font-weight: normal;\n  line-height: 1.3;\n}\n.cycanime #subListContainer .k-schedule-heading span,\n.girigirilove #subListContainer .k-schedule-heading span,\n.agefans-wrapper #subListContainer .k-schedule-heading span {\n  opacity: 0.6;\n}\n.cycanime #subListContainer .k-schedule-heading strong,\n.girigirilove #subListContainer .k-schedule-heading strong,\n.agefans-wrapper #subListContainer .k-schedule-heading strong {\n  font-size: 16px;\n}\n.cycanime #subListContainer .is-today .k-schedule-heading,\n.girigirilove #subListContainer .is-today .k-schedule-heading,\n.agefans-wrapper #subListContainer .is-today .k-schedule-heading {\n  border-bottom-color: #fb7185;\n  color: #fb7185;\n}\n.cycanime #subListContainer .k-schedule-items,\n.girigirilove #subListContainer .k-schedule-items,\n.agefans-wrapper #subListContainer .k-schedule-items {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  min-height: 70px;\n  padding-left: 9px;\n  border-left: 1px solid rgba(128, 128, 128, 0.25);\n}\n.cycanime #subListContainer .k-schedule-empty,\n.girigirilove #subListContainer .k-schedule-empty,\n.agefans-wrapper #subListContainer .k-schedule-empty {\n  margin: 0;\n  font-size: 12px;\n  opacity: 0.5;\n}\n.cycanime #subListContainer .k-schedule-item,\n.girigirilove #subListContainer .k-schedule-item,\n.agefans-wrapper #subListContainer .k-schedule-item {\n  position: relative;\n  display: grid;\n  grid-template-columns: 35px 54px minmax(0, 1fr);\n  align-items: start;\n  gap: 7px;\n  min-width: 0;\n}\n.cycanime #subListContainer .k-schedule-item.is-unscheduled,\n.girigirilove #subListContainer .k-schedule-item.is-unscheduled,\n.agefans-wrapper #subListContainer .k-schedule-item.is-unscheduled {\n  grid-template-columns: 48px 54px minmax(0, 1fr);\n}\n.cycanime #subListContainer .k-schedule-side,\n.girigirilove #subListContainer .k-schedule-side,\n.agefans-wrapper #subListContainer .k-schedule-side {\n  display: flex;\n  min-width: 0;\n  flex-direction: column;\n  align-items: center;\n  gap: 6px;\n}\n.cycanime #subListContainer .k-schedule-time,\n.girigirilove #subListContainer .k-schedule-time,\n.agefans-wrapper #subListContainer .k-schedule-time {\n  width: 100%;\n  padding-top: 2px;\n  font-size: 12px;\n  overflow-wrap: anywhere;\n  opacity: 0.65;\n}\n.cycanime #subListContainer .k-schedule-cover,\n.girigirilove #subListContainer .k-schedule-cover,\n.agefans-wrapper #subListContainer .k-schedule-cover {\n  display: block;\n  overflow: hidden;\n  aspect-ratio: 3/4;\n  border-radius: 6px;\n  background: rgba(128, 128, 128, 0.15);\n}\n.cycanime #subListContainer .k-schedule-cover:hover, .cycanime #subListContainer .k-schedule-cover:focus-visible,\n.girigirilove #subListContainer .k-schedule-cover:hover,\n.girigirilove #subListContainer .k-schedule-cover:focus-visible,\n.agefans-wrapper #subListContainer .k-schedule-cover:hover,\n.agefans-wrapper #subListContainer .k-schedule-cover:focus-visible {\n  outline: 2px solid #fb7185;\n  outline-offset: 2px;\n}\n.cycanime #subListContainer .k-schedule-cover img,\n.girigirilove #subListContainer .k-schedule-cover img,\n.agefans-wrapper #subListContainer .k-schedule-cover img {\n  width: 100%;\n  height: 100%;\n  object-fit: cover;\n}\n.cycanime #subListContainer .k-schedule-details,\n.girigirilove #subListContainer .k-schedule-details,\n.agefans-wrapper #subListContainer .k-schedule-details {\n  display: flex;\n  min-width: 0;\n  flex-direction: column;\n  gap: 5px;\n  font-size: 12px;\n}\n.cycanime #subListContainer .k-schedule-title,\n.girigirilove #subListContainer .k-schedule-title,\n.agefans-wrapper #subListContainer .k-schedule-title {\n  display: -webkit-box;\n  overflow: hidden;\n  font-size: 13px;\n  font-weight: 600;\n  line-height: 1.4;\n  -webkit-box-orient: vertical;\n  -webkit-line-clamp: 2;\n  transition: color 150ms ease;\n}\n.cycanime #subListContainer .k-schedule-title:hover,\n.cycanime #subListContainer .k-schedule-title:focus-visible,\n.cycanime #subListContainer .k-schedule-cover:hover + .k-schedule-details .k-schedule-title,\n.cycanime #subListContainer .k-schedule-cover:focus-visible + .k-schedule-details .k-schedule-title,\n.girigirilove #subListContainer .k-schedule-title:hover,\n.girigirilove #subListContainer .k-schedule-title:focus-visible,\n.girigirilove #subListContainer .k-schedule-cover:hover + .k-schedule-details .k-schedule-title,\n.girigirilove #subListContainer .k-schedule-cover:focus-visible + .k-schedule-details .k-schedule-title,\n.agefans-wrapper #subListContainer .k-schedule-title:hover,\n.agefans-wrapper #subListContainer .k-schedule-title:focus-visible,\n.agefans-wrapper #subListContainer .k-schedule-cover:hover + .k-schedule-details .k-schedule-title,\n.agefans-wrapper #subListContainer .k-schedule-cover:focus-visible + .k-schedule-details .k-schedule-title {\n  color: #fb7185;\n  text-decoration: underline;\n  text-underline-offset: 2px;\n}\n.cycanime #subListContainer .k-schedule-progress,\n.girigirilove #subListContainer .k-schedule-progress,\n.agefans-wrapper #subListContainer .k-schedule-progress {\n  display: grid;\n  grid-template-columns: 3em minmax(0, 1fr);\n  gap: 2px 4px;\n  min-width: 0;\n  font-size: 11px;\n  line-height: 1.45;\n}\n.cycanime #subListContainer .k-schedule-progress span,\n.girigirilove #subListContainer .k-schedule-progress span,\n.agefans-wrapper #subListContainer .k-schedule-progress span {\n  opacity: 0.6;\n}\n.cycanime #subListContainer .k-schedule-progress a,\n.girigirilove #subListContainer .k-schedule-progress a,\n.agefans-wrapper #subListContainer .k-schedule-progress a {\n  min-width: 0;\n  overflow-wrap: anywhere;\n  opacity: 0.8;\n  transition: color 150ms ease, opacity 150ms ease;\n}\n.cycanime #subListContainer .k-schedule-progress a:hover, .cycanime #subListContainer .k-schedule-progress a:focus-visible,\n.girigirilove #subListContainer .k-schedule-progress a:hover,\n.girigirilove #subListContainer .k-schedule-progress a:focus-visible,\n.agefans-wrapper #subListContainer .k-schedule-progress a:hover,\n.agefans-wrapper #subListContainer .k-schedule-progress a:focus-visible {\n  color: #fb7185;\n  opacity: 1;\n  text-decoration: underline;\n  text-underline-offset: 2px;\n}\n.cycanime #subListContainer .k-schedule-unscheduled,\n.girigirilove #subListContainer .k-schedule-unscheduled,\n.agefans-wrapper #subListContainer .k-schedule-unscheduled {\n  margin-top: 18px;\n}\n.cycanime #subListContainer .k-schedule-unscheduled h3,\n.girigirilove #subListContainer .k-schedule-unscheduled h3,\n.agefans-wrapper #subListContainer .k-schedule-unscheduled h3 {\n  margin: 0 0 12px;\n  font-size: 14px;\n  font-weight: 600;\n}\n.cycanime #subListContainer .k-schedule-unscheduled-items,\n.girigirilove #subListContainer .k-schedule-unscheduled-items,\n.agefans-wrapper #subListContainer .k-schedule-unscheduled-items {\n  display: grid;\n  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));\n  gap: 16px;\n}\n.cycanime #subListContainer .k-schedule-item .k-unsubscribe-btn,\n.girigirilove #subListContainer .k-schedule-item .k-unsubscribe-btn,\n.agefans-wrapper #subListContainer .k-schedule-item .k-unsubscribe-btn {\n  position: static;\n  transform: translateY(4px);\n}\n.cycanime #subListContainer .k-schedule-item:hover .k-unsubscribe-btn,\n.cycanime #subListContainer .k-schedule-item:focus-within .k-unsubscribe-btn,\n.girigirilove #subListContainer .k-schedule-item:hover .k-unsubscribe-btn,\n.girigirilove #subListContainer .k-schedule-item:focus-within .k-unsubscribe-btn,\n.agefans-wrapper #subListContainer .k-schedule-item:hover .k-unsubscribe-btn,\n.agefans-wrapper #subListContainer .k-schedule-item:focus-within .k-unsubscribe-btn {\n  transform: none;\n}\n@media (hover: none) {\n  .cycanime #subListContainer .k-schedule-item .k-unsubscribe-btn,\n  .girigirilove #subListContainer .k-schedule-item .k-unsubscribe-btn,\n  .agefans-wrapper #subListContainer .k-schedule-item .k-unsubscribe-btn {\n    transform: none;\n  }\n}\n@media (prefers-reduced-motion: reduce) {\n  .cycanime #subListContainer .k-schedule-scroll,\n  .girigirilove #subListContainer .k-schedule-scroll,\n  .agefans-wrapper #subListContainer .k-schedule-scroll {\n    scroll-behavior: auto;\n  }\n}");
+	//#endregion
+	//#region src/adapter/common/subscriptionSchedule.ts
+	function enableScheduleDragging(scroll) {
+		let start;
+		let dragged = false;
+		scroll.addEventListener("pointerdown", (event) => {
+			if (!event.isPrimary || event.pointerType === "touch" || event.button !== 0 || scroll.scrollWidth <= scroll.clientWidth) return;
+			start = {
+				pointerId: event.pointerId,
+				x: event.clientX,
+				scrollLeft: scroll.scrollLeft
+			};
+			dragged = false;
+		});
+		scroll.addEventListener("pointermove", (event) => {
+			if (!start || event.pointerId !== start.pointerId) return;
+			if (!(event.buttons & 1)) {
+				start = void 0;
+				dragged = false;
+				scroll.classList.remove("is-dragging");
+				return;
+			}
+			const distance = event.clientX - start.x;
+			if (!dragged && Math.abs(distance) < 6) return;
+			if (!dragged) {
+				dragged = true;
+				scroll.classList.add("is-dragging");
+				scroll.setPointerCapture(event.pointerId);
+			}
+			event.preventDefault();
+			scroll.scrollLeft = start.scrollLeft - distance;
+		});
+		const endDrag = (event) => {
+			if (!start || event.pointerId !== start.pointerId) return;
+			start = void 0;
+			scroll.classList.remove("is-dragging");
+			if (dragged) window.setTimeout(() => dragged = false, 0);
+		};
+		scroll.addEventListener("pointerup", endDrag);
+		scroll.addEventListener("pointercancel", endDrag);
+		scroll.addEventListener("lostpointercapture", endDrag);
+		scroll.addEventListener("dragstart", (event) => event.preventDefault());
+		scroll.addEventListener("click", (event) => {
+			if (!dragged) return;
+			event.preventDefault();
+			event.stopPropagation();
+		}, true);
+	}
+	function observeScheduleIndicator(scroll, indicator, onResize) {
+		const thumb = indicator.querySelector(".k-schedule-indicator-thumb");
+		if (!thumb) throw new Error("Schedule indicator thumb not found");
+		const update = () => {
+			const { clientWidth, scrollWidth } = scroll;
+			const maxScroll = Math.max(0, scrollWidth - clientWidth);
+			indicator.hidden = clientWidth === 0 || maxScroll <= 1;
+			if (indicator.hidden) return;
+			const left = Math.max(0, Math.min(scroll.scrollLeft, maxScroll));
+			thumb.style.width = `${clientWidth / scrollWidth * 100}%`;
+			thumb.style.left = `${left / scrollWidth * 100}%`;
+		};
+		const observer = new ResizeObserver(() => {
+			onResize();
+			update();
+		});
+		observer.observe(scroll);
+		if (scroll.firstElementChild) observer.observe(scroll.firstElementChild);
+		scroll.addEventListener("scroll", update, { passive: true });
+		update();
+		return {
+			update,
+			dispose: () => {
+				observer.disconnect();
+				scroll.removeEventListener("scroll", update);
+			}
+		};
+	}
+	function getSubscriptionSchedule(subscriptions, resolveSchedule) {
+		const weekdays = [
+			"周日",
+			"周一",
+			"周二",
+			"周三",
+			"周四",
+			"周五",
+			"周六"
+		];
+		const today = /* @__PURE__ */ new Date();
+		const todayIndex = (today.getDay() + 6) % 7;
+		const days = Array.from({ length: 7 }, (_, index) => {
+			const date = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+			date.setDate(date.getDate() + index - todayIndex);
+			return {
+				date: `${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`,
+				weekday: weekdays[date.getDay()],
+				dayNum: date.getDay(),
+				isToday: index === todayIndex,
+				list: []
+			};
+		});
+		const unscheduled = [];
+		const completed = [];
+		subscriptions.forEach((sub) => {
+			var _sub$status, _resolved$time;
+			const status = ((_sub$status = sub.status) === null || _sub$status === void 0 ? void 0 : _sub$status.trim()) || "";
+			if (/完结/.test(status)) {
+				completed.push({
+					sub,
+					time: null
+				});
+				return;
+			}
+			const resolved = resolveSchedule === null || resolveSchedule === void 0 ? void 0 : resolveSchedule(sub);
+			let dayNum = resolved === null || resolved === void 0 ? void 0 : resolved.dayNum;
+			let time = (_resolved$time = resolved === null || resolved === void 0 ? void 0 : resolved.time) !== null && _resolved$time !== void 0 ? _resolved$time : null;
+			if (dayNum === void 0) {
+				const match = status.match(/周([日天一二三四五六])(?:\s*(\d{1,2})[:：](\d{2}))?/);
+				if (!match) {
+					unscheduled.push({
+						sub,
+						time: null
+					});
+					return;
+				}
+				dayNum = "日一二三四五六".indexOf(match[1] === "天" ? "日" : match[1]);
+				if (match[2] !== void 0) {
+					const hour = Number(match[2]);
+					const minute = Number(match[3]);
+					if (hour >= 48 || minute >= 60) {
+						unscheduled.push({
+							sub,
+							time: null
+						});
+						return;
+					}
+					dayNum = (dayNum + Math.floor(hour / 24)) % 7;
+					time = `${String(hour % 24).padStart(2, "0")}:${match[3]}`;
+				}
+			}
+			if (!Number.isInteger(dayNum) || dayNum < 0 || dayNum > 6) {
+				unscheduled.push({
+					sub,
+					time: null
+				});
+				return;
+			}
+			days.find((day) => day.dayNum === dayNum).list.push({
+				sub,
+				time
+			});
+		});
+		days.forEach((day) => {
+			day.list.sort((a, b) => (a.time || "99:99").localeCompare(b.time || "99:99"));
+		});
+		return {
+			days,
+			unscheduled,
+			completed
+		};
+	}
+	function createSubscriptionView($root, sm, storageKey, listTemplate, options = {}) {
+		$root.find("[data-subscription-view-switch]").replaceWith(subscriptionSchedule_template_default.viewSwitch);
+		const itemTemplate = template(subscriptionSchedule_template_default.subScheduleItem.replace(" id=\"subScheduleItem\"", ""));
+		const labels = options.labels || {
+			current: "看至",
+			last: "最新"
+		};
+		const renderScheduleItem = (data) => itemTemplate(_objectSpread2(_objectSpread2({}, data), {}, { labels }));
+		let view = gm.getItem(storageKey) === "list" ? "list" : "schedule";
+		let indicatorObserver;
+		let pendingToday = false;
+		const positionToday = () => {
+			if (!pendingToday) return;
+			const scroll = $root.find(".k-schedule-scroll")[0];
+			const today = scroll === null || scroll === void 0 ? void 0 : scroll.querySelector(".is-today");
+			if (!(scroll === null || scroll === void 0 ? void 0 : scroll.isConnected) || !scroll.clientWidth || !today) return;
+			const todayRect = today.getBoundingClientRect();
+			if (!todayRect.width) return;
+			const left = todayRect.left - scroll.getBoundingClientRect().left + scroll.scrollLeft;
+			scroll.scrollTo({
+				left,
+				behavior: "instant"
+			});
+			pendingToday = false;
+		};
+		const render = () => {
+			var _options$onViewChange;
+			$root.toggleClass("k-schedule-view", view === "schedule");
+			$root.find("[data-subscription-view]").each((_, button) => {
+				const active = $(button).attr("data-subscription-view") === view;
+				$(button).attr("aria-pressed", String(active));
+			});
+			(_options$onViewChange = options.onViewChange) === null || _options$onViewChange === void 0 || _options$onViewChange.call(options, view);
+			const previousScroll = $root.find(".k-schedule-scroll")[0];
+			const scrollLeft = (previousScroll === null || previousScroll === void 0 ? void 0 : previousScroll.scrollLeft) || 0;
+			if (view === "schedule" && !previousScroll) pendingToday = true;
+			if (view === "list") pendingToday = false;
+			indicatorObserver === null || indicatorObserver === void 0 || indicatorObserver.dispose();
+			indicatorObserver = void 0;
+			if (view === "schedule") {
+				const subscriptions = sm.getSubscriptions();
+				const schedule = getSubscriptionSchedule(subscriptions, options.resolveSchedule);
+				$root.find("#subList, #subSchedule").replaceWith(template(subscriptionSchedule_template_default.subSchedule)(_objectSpread2(_objectSpread2({}, schedule), {}, {
+					isEmpty: subscriptions.length === 0,
+					renderItem: renderScheduleItem
+				})));
+				const scroll = $root.find(".k-schedule-scroll")[0];
+				const indicator = $root.find(".k-schedule-indicator")[0];
+				if (scroll && indicator) {
+					enableScheduleDragging(scroll);
+					scroll.scrollTo({
+						left: scrollLeft,
+						behavior: "instant"
+					});
+					positionToday();
+					indicatorObserver = observeScheduleIndicator(scroll, indicator, positionToday);
+				}
+			} else {
+				const groups = sm.getSubscriptionsGroupByDay();
+				const list = groups.reduce((items, group) => {
+					items.push(...group.list);
+					return items;
+				}, []);
+				$root.find("#subList, #subSchedule").replaceWith(template(listTemplate)({
+					list,
+					groups
+				}));
+			}
+		};
+		const onSwitch = (event) => {
+			const nextView = $(event.currentTarget).attr("data-subscription-view");
+			if (nextView !== "list" && nextView !== "schedule") return;
+			if (view === nextView) return;
+			view = nextView;
+			gm.setItem(storageKey, view);
+			render();
+		};
+		$root.on("click", "[data-subscription-view]", onSwitch);
+		return {
+			render,
+			getView: () => view,
+			onMount: () => {
+				positionToday();
+				indicatorObserver === null || indicatorObserver === void 0 || indicatorObserver.update();
+			},
+			dispose: () => {
+				indicatorObserver === null || indicatorObserver === void 0 || indicatorObserver.dispose();
+				$root.off("click", "[data-subscription-view]", onSwitch);
+			}
+		};
+	}
+	//#endregion
 	//#region src/adapter/agefans/subscribe.template.html
 	var subscribe_template_default$2 = {
-		"subListContainer": "<div id=\"subListContainer\" class=\"text_list_box mb-4\">\r\n  <div class=\"text_list_box--hd\">\r\n    <h6 class=\"title\">\r\n      <span class=\"float-end\">\r\n        <span class=\"update-info\" title=\"点击可强制更新数据\"></span>\r\n      </span>\r\n      订阅列表\r\n    </h6>\r\n  </div>\r\n  <div id=\"subList\"></div>\r\n</div>",
-		"subList": "<div id=\"subList\">\r\n  {{# if (groups.every(o => o.list.length === 0)) { }}\r\n  <div class=\"text_list_box--bd\">\r\n    <div class=\"text_list_box_wrapper\">\r\n      <ul class=\"text_list_item\">\r\n        <li>\r\n          <div class=\"d-flex position-relative\">\r\n            <div class=\"flex-grow-1 text-truncate pe-2\">\r\n              订阅喜欢的番剧，在播放页面标题右侧添加订阅\r\n            </div>\r\n          </div>\r\n        </li>\r\n      </ul>\r\n    </div>\r\n  </div>\r\n  {{# } }}\r\n  \r\n  {{# groups.filter(o => !!o.list.length).forEach(({list, day}) => { }}\r\n  <div class=\"text_list_box--bd\">\r\n    <div class=\"sub-group-day\">{{day}}</div>\r\n    <div class=\"text_list_box_wrapper\">\r\n      <ul class=\"text_list_item\">\r\n        {{# list.forEach(item => { }}\r\n        <li>\r\n          <div class=\"d-flex position-relative\">\r\n            <div class=\"text-truncate pe-2\">\r\n              <a \n                href=\"{{item.current.url}}\"\r\n                class=\"text-decoration-none link-light common_alink\"\r\n                >{{item.title}}</a>\r\n            </div>\r\n            <div class=\"flex-grow-1 title_new\"></div>\r\n            <div class=\"title_sub text-truncate\">\r\n              <a \n                class=\"text-decoration-none link-light common_alink\"\r\n                href=\"{{item.current.url}}\"\r\n                >{{item.current.title}}</a>\r\n              <span>/</span>\r\n              <a \n                class=\"text-decoration-none link-light common_alink\"\r\n                href=\"{{item.last.url}}\"\r\n                >{{item.last.title}}</a>\r\n            </div>\r\n\r\n            <div class=\"sub-thumbnail-box\">\r\n              <img \n                class=\"sub-thumbnail\"\r\n                src=\"{{item.thumbnail}}\"\r\n                alt=\"{{item.title}}\"\r\n              >\r\n            </div>\r\n          </div>\r\n        </li>\r\n        {{# }) }}\r\n      </ul>\r\n    </div>\r\n  </div>\r\n  {{# }) }}\r\n</div>"
+		"subListContainer": "<div id=\"subListContainer\" class=\"text_list_box mb-4\">\n  <div class=\"text_list_box--hd\">\n    <div class=\"d-flex align-items-start justify-content-between gap-2 pb-2\">\n      <div>\n        <h6 class=\"title mb-0\">订阅列表</h6>\n        <span class=\"update-info\" title=\"点击可强制更新数据\"></span>\n      </div>\n      <div data-subscription-view-switch></div>\n    </div>\n  </div>\n  <div id=\"subList\"></div>\n</div>",
+		"subList": "<div id=\"subList\">\n  {{# if (groups.every(o => o.list.length === 0)) { }}\n  <div class=\"text_list_box--bd\">\n    <div class=\"text_list_box_wrapper\">\n      <ul class=\"text_list_item\">\n        <li>\n          <div class=\"d-flex position-relative\">\n            <div class=\"flex-grow-1 text-truncate pe-2\">\n              订阅喜欢的番剧，在播放页面标题右侧添加订阅\n            </div>\n          </div>\n        </li>\n      </ul>\n    </div>\n  </div>\n  {{# } }}\n  \n  {{# groups.filter(o => !!o.list.length).forEach(({list, day}) => { }}\n  <div class=\"text_list_box--bd\">\n    <div class=\"sub-group-day\">{{day}}</div>\n    <div class=\"text_list_box_wrapper\">\n      <ul class=\"text_list_item\">\n        {{# list.forEach(item => { }}\n        <li>\n          <div class=\"d-flex position-relative\">\n            <div class=\"text-truncate pe-2\">\n              <a                 href=\"{{item.current.url}}\"\n                class=\"text-decoration-none link-light common_alink\"\n                >{{item.title}}</a>\n            </div>\n            <div class=\"flex-grow-1 title_new\"></div>\n            <div class=\"title_sub text-truncate\">\n              <a                 class=\"text-decoration-none link-light common_alink\"\n                href=\"{{item.current.url}}\"\n                >{{item.current.title}}</a>\n              <span>/</span>\n              <a                 class=\"text-decoration-none link-light common_alink\"\n                href=\"{{item.last.url}}\"\n                >{{item.last.title}}</a>\n            </div>\n\n            <div class=\"sub-thumbnail-box\">\n              <img                 class=\"sub-thumbnail\"\n                src=\"{{item.thumbnail}}\"\n                alt=\"{{item.title}}\"\n              >\n            </div>\n          </div>\n        </li>\n        {{# }) }}\n      </ul>\n    </div>\n  </div>\n  {{# }) }}\n</div>"
 	};
 	//#endregion
 	//#region src/adapter/agefans/play.ts
+	const SUBSCRIPTION_VIEW_KEY$2 = "agefans-subscription-view";
+	function getWeeklySchedule() {
+		const schedule = /* @__PURE__ */ new Map();
+		document.querySelectorAll(".weekly_list [id^=\"week-\"][id$=\"-pane\"]").forEach((pane) => {
+			var _pane$id$match;
+			const dayNum = Number((_pane$id$match = pane.id.match(/^week-(\d)-pane$/)) === null || _pane$id$match === void 0 ? void 0 : _pane$id$match[1]);
+			if (!Number.isInteger(dayNum)) return;
+			pane.querySelectorAll("li").forEach((item) => {
+				var _item$querySelector, _href$match, _item$querySelector2;
+				const href = (_item$querySelector = item.querySelector("a[href*=\"/detail/\"]")) === null || _item$querySelector === void 0 ? void 0 : _item$querySelector.getAttribute("href");
+				const id = href === null || href === void 0 || (_href$match = href.match(/\/detail\/(\d+)/)) === null || _href$match === void 0 ? void 0 : _href$match[1];
+				if (!id || schedule.has(id)) return;
+				const match = (((_item$querySelector2 = item.querySelector(".title_sub")) === null || _item$querySelector2 === void 0 ? void 0 : _item$querySelector2.textContent) || "").match(/(\d{1,2}):(\d{2})/);
+				schedule.set(id, {
+					dayNum,
+					time: match ? `${match[1].padStart(2, "0")}:${match[2]}` : null
+				});
+			});
+		});
+		return schedule;
+	}
 	function calcSortDirection() {
 		var _$prev$text$match, _$next$text$match, _$active$text$match;
 		const $active = getActive$2();
@@ -7039,7 +7320,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 				const updateInfo = {
 					title: $doc.find(".video_detail_wrapper .cata_video_item .card-title").first().text().trim() || (sub === null || sub === void 0 ? void 0 : sub.title) || $(".video_detail_wrapper .cata_video_item .card-title").text().trim(),
 					url: $doc.find(".player-title-link").attr("href") || (sub === null || sub === void 0 ? void 0 : sub.url) || `/detail/${id}/`,
-					thumbnail: $doc.find(".video_thumbs").attr("data-src") || $doc.find(".video_thumbs").attr("src") || $doc.find("meta[property=\"og:image\"]").attr("content") || (sub === null || sub === void 0 ? void 0 : sub.thumbnail) || $(".video_thumbs").attr("src") || "",
+					thumbnail: $doc.find(".video_detail_cover img").attr("data-original") || $doc.find(".video_detail_cover img").attr("src") || $doc.find(".video_thumbs").attr("data-src") || $doc.find(".video_thumbs").attr("src") || $doc.find("meta[property=\"og:image\"]").attr("content") || (sub === null || sub === void 0 ? void 0 : sub.thumbnail) || $(".video_thumbs").attr("src") || "",
 					updatedAt: 0,
 					status: statusText,
 					last: {
@@ -7066,11 +7347,55 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 			},
 			renderSubscribedAnimes: function(sm) {
 				const $root = $(subscribe_template_default$2.subListContainer);
-				$root.insertBefore(".weekly_list");
-				sm.onChange(() => {
-					const groups = sm.getSubscriptionsGroupByDay();
-					$root.find("#subList").replaceWith(template(subscribe_template_default$2.subList)({ groups }));
-				}, { immediate: true });
+				let weeklySchedule = getWeeklySchedule();
+				const placeRoot = (view) => {
+					const root = $root[0];
+					const weeklyList = document.querySelector(".weekly_list");
+					if (!(weeklyList === null || weeklyList === void 0 ? void 0 : weeklyList.parentElement)) return false;
+					if (view === "schedule") {
+						const section = weeklyList.closest("section");
+						const row = Array.from((section === null || section === void 0 ? void 0 : section.children) || []).find((el) => el.classList.contains("row"));
+						if (!(row === null || row === void 0 ? void 0 : row.parentElement)) return false;
+						if (root.parentElement !== row.parentElement) row.parentElement.insertBefore(root, row);
+						return true;
+					}
+					const parent = weeklyList.parentElement;
+					if (root.parentElement !== parent) parent.insertBefore(root, weeklyList);
+					return true;
+				};
+				const subscriptionView = createSubscriptionView($root, sm, SUBSCRIPTION_VIEW_KEY$2, subscribe_template_default$2.subList, {
+					resolveSchedule: (sub) => weeklySchedule.get(sub.id),
+					onViewChange: placeRoot,
+					labels: {
+						current: "看至",
+						last: "最新"
+					}
+				});
+				const mount = () => {
+					if (!placeRoot(subscriptionView.getView())) return false;
+					subscriptionView.onMount();
+					return true;
+				};
+				if (!mount()) {
+					const observer = new MutationObserver(() => {
+						if (mount()) observer.disconnect();
+					});
+					observer.observe(document.body, {
+						childList: true,
+						subtree: true
+					});
+				}
+				$root.on("click", ".k-unsubscribe-btn", (event) => {
+					event.preventDefault();
+					event.stopPropagation();
+					const id = $(event.currentTarget).attr("data-subscription-id");
+					if (id) sm.deleteSubscription(id);
+				});
+				const renderView = () => {
+					weeklySchedule = getWeeklySchedule();
+					subscriptionView.render();
+				};
+				sm.onChange(renderView, { immediate: true });
 				return $root;
 			},
 			renderSubscribeBtn($btn) {
@@ -7287,246 +7612,10 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 		}
 	});
 	//#endregion
-	//#region src/adapter/common/subscriptionSchedule.template.html
-	var subscriptionSchedule_template_default = {
-		"viewSwitch": "<div   id=\"viewSwitch\"\n  class=\"k-subscription-view-switch\"\n  role=\"group\"\n  aria-label=\"订阅视图\"\n>\n  <button     type=\"button\"\n    data-subscription-view=\"list\"\n    aria-label=\"列表模式\"\n    title=\"列表模式\"\n  >\n    <svg       aria-hidden=\"true\"\n      viewBox=\"0 0 24 24\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"2\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    >\n      <rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\" ></rect>\n      <rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\" ></rect>\n      <rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\" ></rect>\n      <rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\" ></rect>\n    </svg>\n  </button>\n  <button     type=\"button\"\n    data-subscription-view=\"schedule\"\n    aria-label=\"时间表模式\"\n    title=\"时间表模式\"\n  >\n    <svg       aria-hidden=\"true\"\n      viewBox=\"0 0 24 24\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"2\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    >\n      <rect x=\"3\" y=\"5\" width=\"18\" height=\"16\" rx=\"2\" ></rect>\n      <path d=\"M16 3v4M8 3v4M3 10h18M8 14h2M14 14h2M8 17h2M14 17h2\" ></path>\n    </svg>\n  </button>\n</div>",
-		"subSchedule": "<div id=\"subSchedule\">\n  {{# if (isEmpty) { }}\n  <div     class=\"flex min-h-24 items-center justify-center rounded-lg border border-dashed border-border/70 bg-card/50 py-4 text-center text-sm text-muted-foreground\"\n  >\n    订阅喜欢的番剧，在播放页面标题右侧添加订阅\n  </div>\n  {{# } else { }}\n  <div class=\"k-schedule-scroll\" tabindex=\"0\" aria-label=\"订阅时间表\">\n    <div class=\"k-schedule-grid\">\n      {{# days.forEach((day) => { }}\n      <section class=\"k-schedule-day{{ day.isToday ? ' is-today' : '' }}\">\n        <h3 class=\"k-schedule-heading\">\n          <span>{{ day.date }}</span>\n          <strong>{{ day.weekday }}{{ day.isToday ? ' · 今天' : '' }}</strong>\n        </h3>\n        <div class=\"k-schedule-items\">\n          {{# day.list.forEach((item) => { }} {{ renderItem({ item,\n          isUnscheduled: false }) }} {{# }) }} {{# if (!day.list.length) { }}\n          <p class=\"k-schedule-empty\">暂无更新</p>\n          {{# } }}\n        </div>\n      </section>\n      {{# }) }}\n    </div>\n  </div>\n  <div class=\"k-schedule-indicator\" aria-hidden=\"true\" hidden>\n    <div class=\"k-schedule-indicator-thumb\"></div>\n  </div>\n  {{# [ { title: '暂无固定更新时间', list: unscheduled }, { title: '已完结',\n  list: completed } ].filter((group) => group.list.length).forEach((group) => {\n  }}\n  <section class=\"k-schedule-unscheduled\">\n    <h3>{{ group.title }}</h3>\n    <div class=\"k-schedule-unscheduled-items\">\n      {{# group.list.forEach((item) => { }} {{ renderItem({ item, isUnscheduled:\n      true }) }} {{# }) }}\n    </div>\n  </section>\n  {{# }) }} {{# } }}\n</div>",
-		"subScheduleItem": "<article   id=\"subScheduleItem\"\n  class=\"k-subscription-card k-schedule-item{{ isUnscheduled ? ' is-unscheduled' : '' }}\"\n>\n  <div class=\"k-schedule-side\">\n    <span class=\"k-schedule-time\"\n      >{{- isUnscheduled ? (item.sub.status?.trim() || '未知状态') : (item.time\n      || '待定') }}</span>\n    <button       type=\"button\"\n      class=\"k-unsubscribe-btn\"\n      data-subscription-id=\"{{- item.sub.id }}\"\n      title=\"取消订阅\"\n      aria-label=\"取消订阅 {{- item.sub.title }}\"\n    >\n      <svg         aria-hidden=\"true\"\n        viewBox=\"0 0 24 24\"\n        fill=\"none\"\n        stroke=\"currentColor\"\n        stroke-width=\"2\"\n        stroke-linecap=\"round\"\n        stroke-linejoin=\"round\"\n      >\n        <path d=\"M15 18H4c0-2 3-2 3-9a5 5 0 0 1 8.5-3.5\" ></path>\n        <path d=\"M9 21h4\" ></path>\n        <path d=\"m16 14 5 5m0-5-5 5\" ></path>\n      </svg>\n    </button>\n  </div>\n  <a     class=\"k-schedule-cover\"\n    href=\"{{- item.sub.current.url }}\"\n    title=\"{{- item.sub.title }}\"\n  >\n    <img       src=\"{{- item.sub.thumbnail }}\"\n      alt=\"{{- item.sub.title }}\"\n      loading=\"lazy\"\n      decoding=\"async\"\n    >\n  </a>\n  <div class=\"k-schedule-details\">\n    <a class=\"k-schedule-title\" href=\"{{- item.sub.current.url }}\"\n      >{{- item.sub.title }}</a>\n    <div class=\"k-schedule-progress\">\n      <span>观看至</span>\n      <a href=\"{{- item.sub.current.url }}\">{{- item.sub.current.title }}</a>\n      <span>最新</span>\n      <a href=\"{{- item.sub.last.url }}\">{{- item.sub.last.title }}</a>\n    </div>\n  </div>\n</article>"
-	};
-	//#endregion
-	//#region src/adapter/common/subscriptionSchedule.scss
-	injectStyle(".cycanime #subListContainer.k-schedule-view,\n.girigirilove #subListContainer.k-schedule-view {\n  min-width: 0;\n  max-width: 1560px;\n}\n.cycanime #subListContainer .k-subscription-view-switch,\n.girigirilove #subListContainer .k-subscription-view-switch {\n  display: flex;\n  flex-shrink: 0;\n  gap: 2px;\n  padding: 3px;\n  border-radius: 9px;\n  background: rgba(128, 128, 128, 0.12);\n  color: inherit;\n}\n.cycanime #subListContainer .k-subscription-view-switch button,\n.girigirilove #subListContainer .k-subscription-view-switch button {\n  display: grid;\n  width: 34px;\n  height: 34px;\n  place-items: center;\n  border: 0;\n  border-radius: 6px;\n  background: transparent;\n  color: inherit;\n  cursor: pointer;\n  opacity: 0.6;\n}\n.cycanime #subListContainer .k-subscription-view-switch button[aria-pressed=true],\n.girigirilove #subListContainer .k-subscription-view-switch button[aria-pressed=true] {\n  background: rgba(128, 128, 128, 0.28);\n  opacity: 1;\n}\n.cycanime #subListContainer .k-subscription-view-switch button:hover:not([aria-pressed=true]),\n.girigirilove #subListContainer .k-subscription-view-switch button:hover:not([aria-pressed=true]) {\n  background: rgba(128, 128, 128, 0.16);\n  opacity: 1;\n}\n.cycanime #subListContainer .k-subscription-view-switch button:focus-visible,\n.girigirilove #subListContainer .k-subscription-view-switch button:focus-visible {\n  outline: 2px solid currentColor;\n  outline-offset: 2px;\n}\n.cycanime #subListContainer .k-subscription-view-switch svg,\n.girigirilove #subListContainer .k-subscription-view-switch svg {\n  width: 18px;\n  height: 18px;\n}\n.cycanime #subListContainer .k-schedule-scroll,\n.girigirilove #subListContainer .k-schedule-scroll {\n  overflow-x: auto;\n  cursor: grab;\n  scrollbar-width: none;\n  scroll-behavior: smooth;\n  scroll-snap-type: x mandatory;\n  user-select: none;\n}\n.cycanime #subListContainer .k-schedule-scroll::-webkit-scrollbar,\n.girigirilove #subListContainer .k-schedule-scroll::-webkit-scrollbar {\n  display: none;\n}\n.cycanime #subListContainer .k-schedule-scroll.is-dragging,\n.girigirilove #subListContainer .k-schedule-scroll.is-dragging {\n  cursor: grabbing;\n  scroll-behavior: auto;\n  scroll-snap-type: none;\n}\n.cycanime #subListContainer .k-schedule-scroll.is-dragging a,\n.cycanime #subListContainer .k-schedule-scroll.is-dragging button,\n.girigirilove #subListContainer .k-schedule-scroll.is-dragging a,\n.girigirilove #subListContainer .k-schedule-scroll.is-dragging button {\n  cursor: grabbing;\n}\n.cycanime #subListContainer .k-schedule-day,\n.girigirilove #subListContainer .k-schedule-day {\n  scroll-snap-align: start;\n}\n.cycanime #subListContainer .k-schedule-indicator,\n.girigirilove #subListContainer .k-schedule-indicator {\n  position: relative;\n  width: 80px;\n  max-width: 50%;\n  height: 4px;\n  margin: 12px auto 0;\n  overflow: hidden;\n  border-radius: 999px;\n  background: rgba(128, 128, 128, 0.2);\n}\n.cycanime #subListContainer .k-schedule-indicator-thumb,\n.girigirilove #subListContainer .k-schedule-indicator-thumb {\n  position: absolute;\n  top: 0;\n  height: 100%;\n  border-radius: inherit;\n  background: rgba(128, 128, 128, 0.7);\n}\n.cycanime #subListContainer .k-schedule-grid,\n.girigirilove #subListContainer .k-schedule-grid {\n  display: grid;\n  grid-template-columns: repeat(7, minmax(200px, 1fr));\n  min-width: 1496px;\n  gap: 16px;\n}\n.cycanime #subListContainer .k-schedule-heading,\n.girigirilove #subListContainer .k-schedule-heading {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: 0 0 12px;\n  padding: 4px 0 10px;\n  border-bottom: 2px solid rgba(128, 128, 128, 0.2);\n  font-size: 13px;\n  font-weight: normal;\n  line-height: 1.3;\n}\n.cycanime #subListContainer .k-schedule-heading span,\n.girigirilove #subListContainer .k-schedule-heading span {\n  opacity: 0.6;\n}\n.cycanime #subListContainer .k-schedule-heading strong,\n.girigirilove #subListContainer .k-schedule-heading strong {\n  font-size: 16px;\n}\n.cycanime #subListContainer .is-today .k-schedule-heading,\n.girigirilove #subListContainer .is-today .k-schedule-heading {\n  border-bottom-color: #fb7185;\n  color: #fb7185;\n}\n.cycanime #subListContainer .k-schedule-items,\n.girigirilove #subListContainer .k-schedule-items {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  min-height: 70px;\n  padding-left: 9px;\n  border-left: 1px solid rgba(128, 128, 128, 0.25);\n}\n.cycanime #subListContainer .k-schedule-empty,\n.girigirilove #subListContainer .k-schedule-empty {\n  margin: 0;\n  font-size: 12px;\n  opacity: 0.5;\n}\n.cycanime #subListContainer .k-schedule-item,\n.girigirilove #subListContainer .k-schedule-item {\n  position: relative;\n  display: grid;\n  grid-template-columns: 35px 54px minmax(0, 1fr);\n  align-items: start;\n  gap: 7px;\n  min-width: 0;\n}\n.cycanime #subListContainer .k-schedule-item.is-unscheduled,\n.girigirilove #subListContainer .k-schedule-item.is-unscheduled {\n  grid-template-columns: 48px 54px minmax(0, 1fr);\n}\n.cycanime #subListContainer .k-schedule-side,\n.girigirilove #subListContainer .k-schedule-side {\n  display: flex;\n  min-width: 0;\n  flex-direction: column;\n  align-items: center;\n  gap: 6px;\n}\n.cycanime #subListContainer .k-schedule-time,\n.girigirilove #subListContainer .k-schedule-time {\n  width: 100%;\n  padding-top: 2px;\n  font-size: 12px;\n  overflow-wrap: anywhere;\n  opacity: 0.65;\n}\n.cycanime #subListContainer .k-schedule-cover,\n.girigirilove #subListContainer .k-schedule-cover {\n  display: block;\n  overflow: hidden;\n  aspect-ratio: 3/4;\n  border-radius: 6px;\n  background: rgba(128, 128, 128, 0.15);\n}\n.cycanime #subListContainer .k-schedule-cover:hover, .cycanime #subListContainer .k-schedule-cover:focus-visible,\n.girigirilove #subListContainer .k-schedule-cover:hover,\n.girigirilove #subListContainer .k-schedule-cover:focus-visible {\n  outline: 2px solid #fb7185;\n  outline-offset: 2px;\n}\n.cycanime #subListContainer .k-schedule-cover img,\n.girigirilove #subListContainer .k-schedule-cover img {\n  width: 100%;\n  height: 100%;\n  object-fit: cover;\n}\n.cycanime #subListContainer .k-schedule-details,\n.girigirilove #subListContainer .k-schedule-details {\n  display: flex;\n  min-width: 0;\n  flex-direction: column;\n  gap: 5px;\n  font-size: 12px;\n}\n.cycanime #subListContainer .k-schedule-title,\n.girigirilove #subListContainer .k-schedule-title {\n  display: -webkit-box;\n  overflow: hidden;\n  font-size: 13px;\n  font-weight: 600;\n  line-height: 1.4;\n  -webkit-box-orient: vertical;\n  -webkit-line-clamp: 2;\n  transition: color 150ms ease;\n}\n.cycanime #subListContainer .k-schedule-title:hover,\n.cycanime #subListContainer .k-schedule-title:focus-visible,\n.cycanime #subListContainer .k-schedule-cover:hover + .k-schedule-details .k-schedule-title,\n.cycanime #subListContainer .k-schedule-cover:focus-visible + .k-schedule-details .k-schedule-title,\n.girigirilove #subListContainer .k-schedule-title:hover,\n.girigirilove #subListContainer .k-schedule-title:focus-visible,\n.girigirilove #subListContainer .k-schedule-cover:hover + .k-schedule-details .k-schedule-title,\n.girigirilove #subListContainer .k-schedule-cover:focus-visible + .k-schedule-details .k-schedule-title {\n  color: #fb7185;\n  text-decoration: underline;\n  text-underline-offset: 2px;\n}\n.cycanime #subListContainer .k-schedule-progress,\n.girigirilove #subListContainer .k-schedule-progress {\n  display: grid;\n  grid-template-columns: 3em minmax(0, 1fr);\n  gap: 2px 4px;\n  min-width: 0;\n  font-size: 11px;\n  line-height: 1.45;\n}\n.cycanime #subListContainer .k-schedule-progress span,\n.girigirilove #subListContainer .k-schedule-progress span {\n  opacity: 0.6;\n}\n.cycanime #subListContainer .k-schedule-progress a,\n.girigirilove #subListContainer .k-schedule-progress a {\n  min-width: 0;\n  overflow-wrap: anywhere;\n  opacity: 0.8;\n  transition: color 150ms ease, opacity 150ms ease;\n}\n.cycanime #subListContainer .k-schedule-progress a:hover, .cycanime #subListContainer .k-schedule-progress a:focus-visible,\n.girigirilove #subListContainer .k-schedule-progress a:hover,\n.girigirilove #subListContainer .k-schedule-progress a:focus-visible {\n  color: #fb7185;\n  opacity: 1;\n  text-decoration: underline;\n  text-underline-offset: 2px;\n}\n.cycanime #subListContainer .k-schedule-unscheduled,\n.girigirilove #subListContainer .k-schedule-unscheduled {\n  margin-top: 18px;\n}\n.cycanime #subListContainer .k-schedule-unscheduled h3,\n.girigirilove #subListContainer .k-schedule-unscheduled h3 {\n  margin: 0 0 12px;\n  font-size: 14px;\n  font-weight: 600;\n}\n.cycanime #subListContainer .k-schedule-unscheduled-items,\n.girigirilove #subListContainer .k-schedule-unscheduled-items {\n  display: grid;\n  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));\n  gap: 16px;\n}\n.cycanime #subListContainer .k-schedule-item .k-unsubscribe-btn,\n.girigirilove #subListContainer .k-schedule-item .k-unsubscribe-btn {\n  position: static;\n  transform: translateY(4px);\n}\n.cycanime #subListContainer .k-schedule-item:hover .k-unsubscribe-btn,\n.cycanime #subListContainer .k-schedule-item:focus-within .k-unsubscribe-btn,\n.girigirilove #subListContainer .k-schedule-item:hover .k-unsubscribe-btn,\n.girigirilove #subListContainer .k-schedule-item:focus-within .k-unsubscribe-btn {\n  transform: none;\n}\n@media (hover: none) {\n  .cycanime #subListContainer .k-schedule-item .k-unsubscribe-btn,\n  .girigirilove #subListContainer .k-schedule-item .k-unsubscribe-btn {\n    transform: none;\n  }\n}\n@media (prefers-reduced-motion: reduce) {\n  .cycanime #subListContainer .k-schedule-scroll,\n  .girigirilove #subListContainer .k-schedule-scroll {\n    scroll-behavior: auto;\n  }\n}");
-	//#endregion
-	//#region src/adapter/common/subscriptionSchedule.ts
-	function enableScheduleDragging(scroll) {
-		let start;
-		let dragged = false;
-		scroll.addEventListener("pointerdown", (event) => {
-			if (!event.isPrimary || event.pointerType === "touch" || event.button !== 0 || scroll.scrollWidth <= scroll.clientWidth) return;
-			start = {
-				pointerId: event.pointerId,
-				x: event.clientX,
-				scrollLeft: scroll.scrollLeft
-			};
-			dragged = false;
-		});
-		scroll.addEventListener("pointermove", (event) => {
-			if (!start || event.pointerId !== start.pointerId) return;
-			if (!(event.buttons & 1)) {
-				start = void 0;
-				dragged = false;
-				scroll.classList.remove("is-dragging");
-				return;
-			}
-			const distance = event.clientX - start.x;
-			if (!dragged && Math.abs(distance) < 6) return;
-			if (!dragged) {
-				dragged = true;
-				scroll.classList.add("is-dragging");
-				scroll.setPointerCapture(event.pointerId);
-			}
-			event.preventDefault();
-			scroll.scrollLeft = start.scrollLeft - distance;
-		});
-		const endDrag = (event) => {
-			if (!start || event.pointerId !== start.pointerId) return;
-			start = void 0;
-			scroll.classList.remove("is-dragging");
-			if (dragged) window.setTimeout(() => dragged = false, 0);
-		};
-		scroll.addEventListener("pointerup", endDrag);
-		scroll.addEventListener("pointercancel", endDrag);
-		scroll.addEventListener("lostpointercapture", endDrag);
-		scroll.addEventListener("dragstart", (event) => event.preventDefault());
-		scroll.addEventListener("click", (event) => {
-			if (!dragged) return;
-			event.preventDefault();
-			event.stopPropagation();
-		}, true);
-	}
-	function observeScheduleIndicator(scroll, indicator, onResize) {
-		const thumb = indicator.querySelector(".k-schedule-indicator-thumb");
-		if (!thumb) throw new Error("Schedule indicator thumb not found");
-		const update = () => {
-			const { clientWidth, scrollWidth } = scroll;
-			const maxScroll = Math.max(0, scrollWidth - clientWidth);
-			indicator.hidden = clientWidth === 0 || maxScroll <= 1;
-			if (indicator.hidden) return;
-			const left = Math.max(0, Math.min(scroll.scrollLeft, maxScroll));
-			thumb.style.width = `${clientWidth / scrollWidth * 100}%`;
-			thumb.style.left = `${left / scrollWidth * 100}%`;
-		};
-		const observer = new ResizeObserver(() => {
-			onResize();
-			update();
-		});
-		observer.observe(scroll);
-		if (scroll.firstElementChild) observer.observe(scroll.firstElementChild);
-		scroll.addEventListener("scroll", update, { passive: true });
-		update();
-		return {
-			update,
-			dispose: () => {
-				observer.disconnect();
-				scroll.removeEventListener("scroll", update);
-			}
-		};
-	}
-	function getSubscriptionSchedule(subscriptions) {
-		const weekdays = [
-			"周日",
-			"周一",
-			"周二",
-			"周三",
-			"周四",
-			"周五",
-			"周六"
-		];
-		const today = /* @__PURE__ */ new Date();
-		const todayIndex = (today.getDay() + 6) % 7;
-		const days = Array.from({ length: 7 }, (_, index) => {
-			const date = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-			date.setDate(date.getDate() + index - todayIndex);
-			return {
-				date: `${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`,
-				weekday: weekdays[date.getDay()],
-				dayNum: date.getDay(),
-				isToday: index === todayIndex,
-				list: []
-			};
-		});
-		const unscheduled = [];
-		const completed = [];
-		subscriptions.forEach((sub) => {
-			var _sub$status, _sub$status2;
-			if (((_sub$status = sub.status) === null || _sub$status === void 0 ? void 0 : _sub$status.trim()) === "已完结") {
-				completed.push({
-					sub,
-					time: null
-				});
-				return;
-			}
-			const match = (_sub$status2 = sub.status) === null || _sub$status2 === void 0 ? void 0 : _sub$status2.match(/周([日天一二三四五六])(?:\s*(\d{1,2})[:：](\d{2}))?/);
-			if (!match) {
-				unscheduled.push({
-					sub,
-					time: null
-				});
-				return;
-			}
-			let dayNum = "日一二三四五六".indexOf(match[1] === "天" ? "日" : match[1]);
-			let time = null;
-			if (match[2] !== void 0) {
-				const hour = Number(match[2]);
-				const minute = Number(match[3]);
-				if (hour >= 48 || minute >= 60) {
-					unscheduled.push({
-						sub,
-						time: null
-					});
-					return;
-				}
-				dayNum = (dayNum + Math.floor(hour / 24)) % 7;
-				time = `${String(hour % 24).padStart(2, "0")}:${match[3]}`;
-			}
-			days.find((day) => day.dayNum === dayNum).list.push({
-				sub,
-				time
-			});
-		});
-		days.forEach((day) => {
-			day.list.sort((a, b) => (a.time || "99:99").localeCompare(b.time || "99:99"));
-		});
-		return {
-			days,
-			unscheduled,
-			completed
-		};
-	}
-	function createSubscriptionView($root, sm, storageKey, listTemplate) {
-		$root.find("[data-subscription-view-switch]").replaceWith(subscriptionSchedule_template_default.viewSwitch);
-		const renderScheduleItem = template(subscriptionSchedule_template_default.subScheduleItem.replace(" id=\"subScheduleItem\"", ""));
-		let view = gm.getItem(storageKey) === "list" ? "list" : "schedule";
-		let indicatorObserver;
-		let pendingToday = false;
-		const positionToday = () => {
-			if (!pendingToday) return;
-			const scroll = $root.find(".k-schedule-scroll")[0];
-			const today = scroll === null || scroll === void 0 ? void 0 : scroll.querySelector(".is-today");
-			if (!(scroll === null || scroll === void 0 ? void 0 : scroll.isConnected) || !scroll.clientWidth || !today) return;
-			const todayRect = today.getBoundingClientRect();
-			if (!todayRect.width) return;
-			const left = todayRect.left - scroll.getBoundingClientRect().left + scroll.scrollLeft;
-			scroll.scrollTo({
-				left,
-				behavior: "instant"
-			});
-			pendingToday = false;
-		};
-		const render = () => {
-			$root.toggleClass("k-schedule-view", view === "schedule");
-			$root.find("[data-subscription-view]").each((_, button) => {
-				const active = $(button).attr("data-subscription-view") === view;
-				$(button).attr("aria-pressed", String(active));
-			});
-			const previousScroll = $root.find(".k-schedule-scroll")[0];
-			const scrollLeft = (previousScroll === null || previousScroll === void 0 ? void 0 : previousScroll.scrollLeft) || 0;
-			if (view === "schedule" && !previousScroll) pendingToday = true;
-			if (view === "list") pendingToday = false;
-			indicatorObserver === null || indicatorObserver === void 0 || indicatorObserver.dispose();
-			indicatorObserver = void 0;
-			if (view === "schedule") {
-				const subscriptions = sm.getSubscriptions();
-				const schedule = getSubscriptionSchedule(subscriptions);
-				$root.find("#subList, #subSchedule").replaceWith(template(subscriptionSchedule_template_default.subSchedule)(_objectSpread2(_objectSpread2({}, schedule), {}, {
-					isEmpty: subscriptions.length === 0,
-					renderItem: renderScheduleItem
-				})));
-				const scroll = $root.find(".k-schedule-scroll")[0];
-				const indicator = $root.find(".k-schedule-indicator")[0];
-				if (scroll && indicator) {
-					enableScheduleDragging(scroll);
-					scroll.scrollTo({
-						left: scrollLeft,
-						behavior: "instant"
-					});
-					positionToday();
-					indicatorObserver = observeScheduleIndicator(scroll, indicator, positionToday);
-				}
-			} else {
-				const list = sm.getSubscriptionsGroupByDay().reduce((items, group) => {
-					items.push(...group.list);
-					return items;
-				}, []);
-				$root.find("#subList, #subSchedule").replaceWith(template(listTemplate)({ list }));
-			}
-		};
-		const onSwitch = (event) => {
-			const nextView = $(event.currentTarget).attr("data-subscription-view");
-			if (nextView !== "list" && nextView !== "schedule") return;
-			if (view === nextView) return;
-			view = nextView;
-			gm.setItem(storageKey, view);
-			render();
-		};
-		$root.on("click", "[data-subscription-view]", onSwitch);
-		return {
-			render,
-			onMount: () => {
-				positionToday();
-				indicatorObserver === null || indicatorObserver === void 0 || indicatorObserver.update();
-			},
-			dispose: () => {
-				indicatorObserver === null || indicatorObserver === void 0 || indicatorObserver.dispose();
-				$root.off("click", "[data-subscription-view]", onSwitch);
-			}
-		};
-	}
-	//#endregion
 	//#region src/adapter/cycanime/subscribe.template.html
 	var subscribe_template_default$1 = {
 		"subListContainer": "<div id=\"subListContainer\" class=\"content-visibility-auto space-y-4\">\n  <div class=\"mb-4 flex items-center justify-between gap-4\">\n    <div>\n      <h2 class=\"text-xl font-semibold text-foreground md:text-2xl\">\n        订阅列表\n      </h2>\n      <button         class=\"update-info inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground\"\n        title=\"点击可强制更新数据\"\n        type=\"button\"\n      >\n        检查更新\n      </button>\n    </div>\n    <div data-subscription-view-switch></div>\n  </div>\n  <div id=\"subList\"></div>\n</div>",
-		"subList": "<div id=\"subList\">\n  {{# if (list.length === 0) { }}\n  <div     class=\"flex min-h-24 items-center justify-center rounded-lg border border-dashed border-border/70 bg-card/50 py-4 text-center text-sm text-muted-foreground\"\n  >\n    订阅喜欢的番剧，在播放页面标题右侧添加订阅\n  </div>\n  {{# } else { }}\n  <div     class=\"grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 lg:grid-cols-6 lg:gap-5\"\n  >\n    {{# list.forEach((item) => { }}\n    <div       class=\"group k-subscription-card block min-w-0 rounded-lg transition-transform duration-200 hover:-translate-y-0.5\"\n    >\n      <a href=\"{{item.current.url}}\">\n        <span           class=\"relative block overflow-hidden bg-muted aspect-[3/4] isolate rounded-lg [backface-visibility:hidden] [clip-path:inset(0_round_0.5rem)] [contain:paint] [transform:translateZ(0)]\"\n        >\n          <img             alt=\"{{item.title}}\"\n            loading=\"lazy\"\n            decoding=\"async\"\n            class=\"block h-full w-full object-cover transform-gpu transition-transform duration-300 [backface-visibility:hidden] group-hover:scale-[1.04]\"\n            src=\"{{item.thumbnail}}\"\n          >\n          <span             class=\"absolute bottom-2 right-2 inline-flex h-[22px] max-w-[calc(100%-16px)] items-center rounded-md bg-black/60 px-2 text-xs font-semibold text-white backdrop-blur truncate max-sm:bottom-1.5 max-sm:right-1.5 max-sm:h-[18px] max-sm:px-1.5 max-sm:text-[10px]\"\n            >{{item.status || item.last.title}}</span>\n        </span>\n      </a>\n      <div class=\"mt-2.5 space-y-1 max-sm:mt-1.5\">\n        <a           href=\"{{item.current.url}}\"\n          class=\"line-clamp-2 text-sm font-medium leading-[1.4] text-card-foreground transition-colors group-hover:text-primary max-sm:text-xs\"\n        >\n          {{item.title}}\n        </a>\n        <div           class=\"k-watch-row flex min-w-0 items-center gap-1 text-xs text-muted-foreground\"\n        >\n          <span class=\"k-watch-progress min-w-0 flex-1 truncate\">\n            观看至\n            <a href=\"{{item.current.url}}\" class=\"hover:text-foreground\">\n              {{item.current.title}}\n            </a>\n            /\n            <a href=\"{{item.last.url}}\" class=\"hover:text-foreground\">\n              {{item.last.title}}\n            </a>\n          </span>\n          <button             type=\"button\"\n            class=\"k-unsubscribe-btn\"\n            data-subscription-id=\"{{item.id}}\"\n            title=\"取消订阅\"\n            aria-label=\"取消订阅 {{item.title}}\"\n          >\n            <svg               aria-hidden=\"true\"\n              class=\"h-4 w-4\"\n              viewBox=\"0 0 24 24\"\n              fill=\"none\"\n              stroke=\"currentColor\"\n              stroke-width=\"2\"\n              stroke-linecap=\"round\"\n              stroke-linejoin=\"round\"\n            >\n              <path d=\"M15 18H4c0-2 3-2 3-9a5 5 0 0 1 8.5-3.5\" ></path>\n              <path d=\"M9 21h4\" ></path>\n              <path d=\"m16 14 5 5m0-5-5 5\" ></path>\n            </svg>\n          </button>\n        </div>\n      </div>\n    </div>\n    {{# }) }}\n  </div>\n  {{# } }}\n</div>"
+		"subList": "<div id=\"subList\">\n  {{# if (list.length === 0) { }}\n  <div class=\"k-schedule-empty-state\">\n    <svg       class=\"k-schedule-empty-icon\"\n      aria-hidden=\"true\"\n      viewBox=\"0 0 24 24\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"2\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    >\n      <path d=\"M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9\" ></path>\n      <path d=\"M13.7 21a2 2 0 0 1-3.4 0\" ></path>\n      <path d=\"M19 3v4M17 5h4\" ></path>\n    </svg>\n    <span>订阅喜欢的番剧，在播放页面标题右侧添加订阅</span>\n  </div>\n  {{# } else { }}\n  <div     class=\"grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 lg:grid-cols-6 lg:gap-5\"\n  >\n    {{# list.forEach((item) => { }}\n    <div       class=\"group k-subscription-card block min-w-0 rounded-lg transition-transform duration-200 hover:-translate-y-0.5\"\n    >\n      <a href=\"{{item.current.url}}\">\n        <span           class=\"relative block overflow-hidden bg-muted aspect-[3/4] isolate rounded-lg [backface-visibility:hidden] [clip-path:inset(0_round_0.5rem)] [contain:paint] [transform:translateZ(0)]\"\n        >\n          <img             alt=\"{{item.title}}\"\n            loading=\"lazy\"\n            decoding=\"async\"\n            class=\"block h-full w-full object-cover transform-gpu transition-transform duration-300 [backface-visibility:hidden] group-hover:scale-[1.04]\"\n            src=\"{{item.thumbnail}}\"\n          >\n          <span             class=\"absolute bottom-2 right-2 inline-flex h-[22px] max-w-[calc(100%-16px)] items-center rounded-md bg-black/60 px-2 text-xs font-semibold text-white backdrop-blur truncate max-sm:bottom-1.5 max-sm:right-1.5 max-sm:h-[18px] max-sm:px-1.5 max-sm:text-[10px]\"\n            >{{item.status || item.last.title}}</span>\n        </span>\n      </a>\n      <div class=\"mt-2.5 space-y-1 max-sm:mt-1.5\">\n        <a           href=\"{{item.current.url}}\"\n          class=\"line-clamp-2 text-sm font-medium leading-[1.4] text-card-foreground transition-colors group-hover:text-primary max-sm:text-xs\"\n        >\n          {{item.title}}\n        </a>\n        <div           class=\"k-watch-row flex min-w-0 items-center gap-1 text-xs text-muted-foreground\"\n        >\n          <span class=\"k-watch-progress min-w-0 flex-1 truncate\">\n            观看至\n            <a href=\"{{item.current.url}}\" class=\"hover:text-foreground\">\n              {{item.current.title}}\n            </a>\n            /\n            <a href=\"{{item.last.url}}\" class=\"hover:text-foreground\">\n              {{item.last.title}}\n            </a>\n          </span>\n          <button             type=\"button\"\n            class=\"k-unsubscribe-btn\"\n            data-subscription-id=\"{{item.id}}\"\n            title=\"取消订阅\"\n            aria-label=\"取消订阅 {{item.title}}\"\n          >\n            <svg               aria-hidden=\"true\"\n              class=\"h-4 w-4\"\n              viewBox=\"0 0 24 24\"\n              fill=\"none\"\n              stroke=\"currentColor\"\n              stroke-width=\"2\"\n              stroke-linecap=\"round\"\n              stroke-linejoin=\"round\"\n            >\n              <path d=\"M15 18H4c0-2 3-2 3-9a5 5 0 0 1 8.5-3.5\" ></path>\n              <path d=\"M9 21h4\" ></path>\n              <path d=\"m16 14 5 5m0-5-5 5\" ></path>\n            </svg>\n          </button>\n        </div>\n      </div>\n    </div>\n    {{# }) }}\n  </div>\n  {{# } }}\n</div>"
 	};
 	//#endregion
 	//#region src/adapter/cycanime/play.ts
@@ -8648,7 +8737,7 @@ ${[...speedList].reverse().map((speed) => `<li class="k-menu-item k-speed-item" 
 	//#region src/adapter/girigirilove/subscribe.template.html
 	var subscribe_template_default = {
 		"subListContainer": "<section id=\"subListContainer\" class=\"min-w-0 k-subscription-section\">\n  <div     class=\"section-heading flex flex-wrap items-center justify-between gap-3 pb-5\"\n  >\n    <div class=\"flex min-w-0 flex-col items-start gap-1\">\n      <h2         class=\"flex min-w-0 items-center gap-3 text-xl font-bold tracking-tight\"\n      >\n        <span           aria-hidden=\"true\"\n          class=\"h-5 w-1 shrink-0 rounded-full bg-primary\"\n        ></span>\n        <span>订阅列表</span>\n      </h2>\n      <button         class=\"update-info w-fit p-0 text-left text-xs text-muted-foreground transition-colors hover:text-foreground\"\n        title=\"点击可强制更新数据\"\n        type=\"button\"\n      >\n        检查更新\n      </button>\n    </div>\n    <div data-subscription-view-switch></div>\n  </div>\n  <div id=\"subList\"></div>\n</section>",
-		"subList": "<div id=\"subList\">\n  {{# if (list.length === 0) { }}\n  <div     class=\"flex min-h-24 items-center justify-center rounded-xl border border-dashed border-border bg-card/50 px-4 py-8 text-center text-sm text-muted-foreground\"\n  >\n    订阅喜欢的番剧，在播放页面标题右侧添加订阅\n  </div>\n  {{# } else { }}\n  <div class=\"media-grid pb-2\" aria-label=\"订阅列表\">\n    {{# list.forEach((item) => { }}\n    <article class=\"k-subscription-card group min-w-0\">\n      <a class=\"block\" href=\"{{item.current.url}}\" title=\"{{item.title}}\">\n        <div class=\"media-card min-w-0 flex flex-col gap-2.5\">\n          <div             class=\"poster relative aspect-[2/3] overflow-hidden rounded-xl bg-muted\"\n          >\n            <img               alt=\"{{item.title}}\"\n              loading=\"lazy\"\n              decoding=\"async\"\n              class=\"size-full object-cover\"\n              src=\"{{item.thumbnail}}\"\n            >\n            <div               class=\"absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent px-3 pb-3 pt-8 text-xs text-white\"\n            >\n              {{item.status || item.last.title}}\n            </div>\n          </div>\n          <h3             class=\"line-clamp-2 text-sm font-semibold leading-relaxed group-hover:text-primary\"\n          >\n            {{item.title}}\n          </h3>\n        </div>\n      </a>\n      <div         class=\"k-watch-row flex min-w-0 items-center gap-1 text-xs text-muted-foreground\"\n      >\n        <span class=\"k-watch-progress min-w-0 flex-1 truncate\">\n          观看至\n          <a href=\"{{item.current.url}}\" title=\"{{item.current.title}}\">\n            {{item.current.title}}\n          </a>\n          /\n          <a href=\"{{item.last.url}}\" title=\"{{item.last.title}}\">\n            {{item.last.title}}\n          </a>\n        </span>\n        <button           type=\"button\"\n          class=\"k-unsubscribe-btn\"\n          data-subscription-id=\"{{item.id}}\"\n          title=\"取消订阅\"\n          aria-label=\"取消订阅 {{item.title}}\"\n        >\n          <svg             aria-hidden=\"true\"\n            viewBox=\"0 0 24 24\"\n            fill=\"none\"\n            stroke=\"currentColor\"\n            stroke-width=\"2\"\n            stroke-linecap=\"round\"\n            stroke-linejoin=\"round\"\n          >\n            <path d=\"M15 18H4c0-2 3-2 3-9a5 5 0 0 1 8.5-3.5\" ></path>\n            <path d=\"M9 21h4\" ></path>\n            <path d=\"m16 14 5 5m0-5-5 5\" ></path>\n          </svg>\n        </button>\n      </div>\n    </article>\n    {{# }) }}\n  </div>\n  {{# } }}\n</div>"
+		"subList": "<div id=\"subList\">\n  {{# if (list.length === 0) { }}\n  <div class=\"k-schedule-empty-state\">\n    <svg       class=\"k-schedule-empty-icon\"\n      aria-hidden=\"true\"\n      viewBox=\"0 0 24 24\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"2\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    >\n      <path d=\"M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9\" ></path>\n      <path d=\"M13.7 21a2 2 0 0 1-3.4 0\" ></path>\n      <path d=\"M19 3v4M17 5h4\" ></path>\n    </svg>\n    <span>订阅喜欢的番剧，在播放页面标题右侧添加订阅</span>\n  </div>\n  {{# } else { }}\n  <div class=\"media-grid pb-2\" aria-label=\"订阅列表\">\n    {{# list.forEach((item) => { }}\n    <article class=\"k-subscription-card group min-w-0\">\n      <a class=\"block\" href=\"{{item.current.url}}\" title=\"{{item.title}}\">\n        <div class=\"media-card min-w-0 flex flex-col gap-2.5\">\n          <div             class=\"poster relative aspect-[2/3] overflow-hidden rounded-xl bg-muted\"\n          >\n            <img               alt=\"{{item.title}}\"\n              loading=\"lazy\"\n              decoding=\"async\"\n              class=\"size-full object-cover\"\n              src=\"{{item.thumbnail}}\"\n            >\n            <div               class=\"absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent px-3 pb-3 pt-8 text-xs text-white\"\n            >\n              {{item.status || item.last.title}}\n            </div>\n          </div>\n          <h3             class=\"line-clamp-2 text-sm font-semibold leading-relaxed group-hover:text-primary\"\n          >\n            {{item.title}}\n          </h3>\n        </div>\n      </a>\n      <div         class=\"k-watch-row flex min-w-0 items-center gap-1 text-xs text-muted-foreground\"\n      >\n        <span class=\"k-watch-progress min-w-0 flex-1 truncate\">\n          观看至\n          <a href=\"{{item.current.url}}\" title=\"{{item.current.title}}\">\n            {{item.current.title}}\n          </a>\n          /\n          <a href=\"{{item.last.url}}\" title=\"{{item.last.title}}\">\n            {{item.last.title}}\n          </a>\n        </span>\n        <button           type=\"button\"\n          class=\"k-unsubscribe-btn\"\n          data-subscription-id=\"{{item.id}}\"\n          title=\"取消订阅\"\n          aria-label=\"取消订阅 {{item.title}}\"\n        >\n          <svg             aria-hidden=\"true\"\n            viewBox=\"0 0 24 24\"\n            fill=\"none\"\n            stroke=\"currentColor\"\n            stroke-width=\"2\"\n            stroke-linecap=\"round\"\n            stroke-linejoin=\"round\"\n          >\n            <path d=\"M15 18H4c0-2 3-2 3-9a5 5 0 0 1 8.5-3.5\" ></path>\n            <path d=\"M9 21h4\" ></path>\n            <path d=\"m16 14 5 5m0-5-5 5\" ></path>\n          </svg>\n        </button>\n      </div>\n    </article>\n    {{# }) }}\n  </div>\n  {{# } }}\n</div>"
 	};
 	//#endregion
 	//#region src/adapter/girigirilove/play.ts
