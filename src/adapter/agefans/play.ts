@@ -1,9 +1,39 @@
-import { template } from 'lodash-es'
 import { closestSameDay } from '../../utils/date'
 import { sleep } from '../../utils/sleep'
 import { local } from '../../utils/storage'
 import { defineIframePlayer } from '../common/defineIframePlayer'
+import { createSubscriptionView } from '../common/subscriptionSchedule'
 import T from './subscribe.template.html'
+
+const SUBSCRIPTION_VIEW_KEY = 'agefans-subscription-view'
+
+function getWeeklySchedule() {
+  const schedule = new Map<string, { dayNum: number; time: string | null }>()
+
+  document
+    .querySelectorAll<HTMLElement>('.weekly_list [id^="week-"][id$="-pane"]')
+    .forEach((pane) => {
+      const dayNum = Number(pane.id.match(/^week-(\d)-pane$/)?.[1])
+      if (!Number.isInteger(dayNum)) return
+
+      pane.querySelectorAll('li').forEach((item) => {
+        const href = item
+          .querySelector<HTMLAnchorElement>('a[href*="/detail/"]')
+          ?.getAttribute('href')
+        const id = href?.match(/\/detail\/(\d+)/)?.[1]
+        if (!id || schedule.has(id)) return
+
+        const timeText = item.querySelector('.title_sub')?.textContent || ''
+        const match = timeText.match(/(\d{1,2}):(\d{2})/)
+        schedule.set(id, {
+          dayNum,
+          time: match ? `${match[1].padStart(2, '0')}:${match[2]}` : null,
+        })
+      })
+    })
+
+  return schedule
+}
 
 function calcSortDirection() {
   const $active = getActive()
@@ -195,6 +225,8 @@ export const iframePlayer = defineIframePlayer({
         sub?.url ||
         `/detail/${id}/`
       const thumbnail =
+        $doc.find('.video_detail_cover img').attr('data-original') ||
+        $doc.find('.video_detail_cover img').attr('src') ||
         $doc.find('.video_thumbs').attr('data-src') ||
         $doc.find('.video_thumbs').attr('src') ||
         $doc.find('meta[property="og:image"]').attr('content') ||
@@ -237,15 +269,69 @@ export const iframePlayer = defineIframePlayer({
     },
     renderSubscribedAnimes: function (sm) {
       const $root = $(T.subListContainer)
-      $root.insertBefore('.weekly_list')
+      let weeklySchedule = getWeeklySchedule()
 
-      sm.onChange(
-        () => {
-          const groups = sm.getSubscriptionsGroupByDay()
-          $root.find('#subList').replaceWith(template(T.subList)({ groups }))
-        },
-        { immediate: true }
+      const placeRoot = (view: 'list' | 'schedule') => {
+        const root = $root[0]
+        const weeklyList = document.querySelector<HTMLElement>('.weekly_list')
+        if (!weeklyList?.parentElement) return false
+
+        if (view === 'schedule') {
+          const section = weeklyList.closest('section')
+          const row = Array.from(section?.children || []).find((el) =>
+            el.classList.contains('row')
+          )
+          if (!row?.parentElement) return false
+          if (root.parentElement !== row.parentElement) {
+            row.parentElement.insertBefore(root, row)
+          }
+          return true
+        }
+
+        const parent = weeklyList.parentElement
+        if (root.parentElement !== parent) {
+          parent.insertBefore(root, weeklyList)
+        }
+        return true
+      }
+
+      const subscriptionView = createSubscriptionView(
+        $root,
+        sm,
+        SUBSCRIPTION_VIEW_KEY,
+        T.subList,
+        {
+          resolveSchedule: (sub) => weeklySchedule.get(sub.id),
+          onViewChange: placeRoot,
+          labels: { current: '看至', last: '最新' },
+        }
       )
+
+      const mount = () => {
+        if (!placeRoot(subscriptionView.getView())) return false
+        subscriptionView.onMount()
+        return true
+      }
+
+      if (!mount()) {
+        const observer = new MutationObserver(() => {
+          if (mount()) observer.disconnect()
+        })
+        observer.observe(document.body, { childList: true, subtree: true })
+      }
+
+      $root.on('click', '.k-unsubscribe-btn', (event) => {
+        event.preventDefault()
+        event.stopPropagation()
+        const id = $(event.currentTarget).attr('data-subscription-id')
+        if (id) sm.deleteSubscription(id)
+      })
+
+      const renderView = () => {
+        weeklySchedule = getWeeklySchedule()
+        subscriptionView.render()
+      }
+      sm.onChange(renderView, { immediate: true })
       return $root
     },
     renderSubscribeBtn($btn) {

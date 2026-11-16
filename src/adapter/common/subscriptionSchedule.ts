@@ -5,6 +5,13 @@ import T from './subscriptionSchedule.template.html'
 import './subscriptionSchedule.scss'
 
 type ScheduleItem = { sub: SubscribedAnime; time: string | null }
+type ScheduleResolution = { dayNum?: number; time?: string | null }
+type SubscriptionView = 'list' | 'schedule'
+type SubscriptionViewOptions = {
+  resolveSchedule?: (sub: SubscribedAnime) => ScheduleResolution | undefined
+  onViewChange?: (view: SubscriptionView) => void
+  labels?: { current: string; last: string }
+}
 
 function enableScheduleDragging(scroll: HTMLElement) {
   let start: { pointerId: number; x: number; scrollLeft: number } | undefined
@@ -105,7 +112,10 @@ function observeScheduleIndicator(
   }
 }
 
-function getSubscriptionSchedule(subscriptions: SubscribedAnime[]) {
+function getSubscriptionSchedule(
+  subscriptions: SubscribedAnime[],
+  resolveSchedule?: SubscriptionViewOptions['resolveSchedule']
+) {
   const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
   const today = new Date()
   const todayIndex = (today.getDay() + 6) % 7
@@ -130,28 +140,40 @@ function getSubscriptionSchedule(subscriptions: SubscribedAnime[]) {
   const completed: ScheduleItem[] = []
 
   subscriptions.forEach((sub) => {
-    if (sub.status?.trim() === '已完结') {
+    const status = sub.status?.trim() || ''
+    if (/完结/.test(status)) {
       completed.push({ sub, time: null })
       return
     }
-    const match = sub.status?.match(
-      /周([日天一二三四五六])(?:\s*(\d{1,2})[:：](\d{2}))?/
-    )
-    if (!match) {
-      unscheduled.push({ sub, time: null })
-      return
-    }
-    let dayNum = '日一二三四五六'.indexOf(match[1] === '天' ? '日' : match[1])
-    let time: string | null = null
-    if (match[2] !== undefined) {
-      const hour = Number(match[2])
-      const minute = Number(match[3])
-      if (hour >= 48 || minute >= 60) {
+
+    const resolved = resolveSchedule?.(sub)
+    let dayNum = resolved?.dayNum
+    let time: string | null = resolved?.time ?? null
+
+    if (dayNum === undefined) {
+      const match = status.match(
+        /周([日天一二三四五六])(?:\s*(\d{1,2})[:：](\d{2}))?/
+      )
+      if (!match) {
         unscheduled.push({ sub, time: null })
         return
       }
-      dayNum = (dayNum + Math.floor(hour / 24)) % 7
-      time = `${String(hour % 24).padStart(2, '0')}:${match[3]}`
+      dayNum = '日一二三四五六'.indexOf(match[1] === '天' ? '日' : match[1])
+      if (match[2] !== undefined) {
+        const hour = Number(match[2])
+        const minute = Number(match[3])
+        if (hour >= 48 || minute >= 60) {
+          unscheduled.push({ sub, time: null })
+          return
+        }
+        dayNum = (dayNum + Math.floor(hour / 24)) % 7
+        time = `${String(hour % 24).padStart(2, '0')}:${match[3]}`
+      }
+    }
+
+    if (!Number.isInteger(dayNum) || dayNum! < 0 || dayNum! > 6) {
+      unscheduled.push({ sub, time: null })
+      return
     }
     days.find((day) => day.dayNum === dayNum)!.list.push({ sub, time })
   })
@@ -164,18 +186,22 @@ function getSubscriptionSchedule(subscriptions: SubscribedAnime[]) {
   return { days, unscheduled, completed }
 }
 
-type SubscriptionView = 'list' | 'schedule'
-
 export function createSubscriptionView(
   $root: JQuery,
   sm: SubscriptionManager,
   storageKey: string,
-  listTemplate: string
+  listTemplate: string,
+  options: SubscriptionViewOptions = {}
 ) {
   $root.find('[data-subscription-view-switch]').replaceWith(T.viewSwitch)
-  const renderScheduleItem = template(
+  const itemTemplate = template(
     T.subScheduleItem.replace(' id="subScheduleItem"', '')
   )
+  const labels = options.labels || { current: '看至', last: '最新' }
+  const renderScheduleItem = (data: {
+    item: ScheduleItem
+    isUnscheduled: boolean
+  }) => itemTemplate({ ...data, labels })
   let view: SubscriptionView =
     gm.getItem<SubscriptionView>(storageKey) === 'list' ? 'list' : 'schedule'
   let indicatorObserver: ReturnType<typeof observeScheduleIndicator> | undefined
@@ -200,6 +226,7 @@ export function createSubscriptionView(
       const active = $(button).attr('data-subscription-view') === view
       $(button).attr('aria-pressed', String(active))
     })
+    options.onViewChange?.(view)
     const previousScroll = $root.find<HTMLElement>('.k-schedule-scroll')[0]
     const scrollLeft = previousScroll?.scrollLeft || 0
     if (view === 'schedule' && !previousScroll) pendingToday = true
@@ -208,7 +235,10 @@ export function createSubscriptionView(
     indicatorObserver = undefined
     if (view === 'schedule') {
       const subscriptions = sm.getSubscriptions()
-      const schedule = getSubscriptionSchedule(subscriptions)
+      const schedule = getSubscriptionSchedule(
+        subscriptions,
+        options.resolveSchedule
+      )
       $root.find('#subList, #subSchedule').replaceWith(
         template(T.subSchedule)({
           ...schedule,
@@ -236,7 +266,7 @@ export function createSubscriptionView(
       }, [] as (typeof groups)[number]['list'])
       $root
         .find('#subList, #subSchedule')
-        .replaceWith(template(listTemplate)({ list }))
+        .replaceWith(template(listTemplate)({ list, groups }))
     }
   }
 
@@ -252,6 +282,7 @@ export function createSubscriptionView(
 
   return {
     render,
+    getView: () => view,
     onMount: () => {
       positionToday()
       indicatorObserver?.update()

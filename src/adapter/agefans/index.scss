@@ -1,4 +1,268 @@
 .agefans-wrapper {
+  #subListContainer .k-subscription-view-switch[role='group'] {
+    gap: 0;
+    padding: 2px;
+    border-radius: 7px;
+    background: rgb(255 255 255 / 6%);
+
+    button {
+      width: 28px;
+      height: 28px;
+      border-radius: 5px;
+      opacity: 0.5;
+
+      &[aria-pressed='true'] {
+        background: rgb(255 255 255 / 10%);
+        color: #fff;
+        opacity: 1;
+      }
+
+      &:hover:not([aria-pressed='true']) {
+        background: rgb(255 255 255 / 6%);
+        opacity: 0.85;
+      }
+    }
+
+    svg {
+      width: 15px;
+      height: 15px;
+    }
+  }
+
+  #subListContainer.k-schedule-view {
+    .k-schedule-empty-state {
+      min-height: 64px;
+      gap: 6px;
+      padding: 18px 8px 6px;
+      color: rgb(208 224 240 / 45%);
+      font-size: 13px;
+      text-align: center;
+      opacity: 1;
+    }
+
+    .k-schedule-scroll {
+      overflow-x: visible;
+      scroll-snap-type: none;
+      cursor: default;
+    }
+
+    .k-schedule-grid {
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      min-width: 0;
+      gap: 8px;
+      padding-top: 16px;
+    }
+
+    .k-schedule-day {
+      min-width: 0;
+      padding: 0 10px;
+      border-left: 1px solid rgb(255 255 255 / 7%);
+
+      &:first-child {
+        padding-left: 0;
+        border-left: 0;
+      }
+
+      &:last-child {
+        padding-right: 0;
+      }
+    }
+
+    .k-schedule-heading {
+      margin-bottom: 8px;
+      padding: 2px 0 8px;
+      border-bottom: 1px solid rgb(255 255 255 / 10%);
+
+      span {
+        font-size: 14px;
+        color: rgb(208 224 240 / 38%);
+      }
+
+      strong {
+        font-size: 14px;
+      }
+    }
+
+    .is-today .k-schedule-heading {
+      border-bottom-color: rgb(251 113 133 / 50%);
+    }
+
+    .k-schedule-items {
+      gap: 12px;
+      min-height: 50px;
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    .k-schedule-item {
+      display: grid;
+      grid-template-columns: 46px minmax(0, 1fr);
+      align-items: start;
+      gap: 5px 8px;
+
+      &.is-unscheduled {
+        grid-template-columns: 46px minmax(0, 1fr);
+      }
+    }
+
+    .k-schedule-side {
+      display: flex;
+      min-width: 0;
+      grid-column: 1 / -1;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+      padding-bottom: 2px;
+    }
+
+    .k-schedule-time {
+      width: auto;
+      padding-top: 0;
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+      color: rgb(208 224 240 / 45%);
+      opacity: 1;
+    }
+
+    .is-today .k-schedule-time {
+      color: rgb(208 224 240 / 45%);
+    }
+
+    .k-schedule-cover {
+      display: block;
+      grid-column: 1;
+      grid-row: 2;
+      aspect-ratio: 3 / 4;
+      border-radius: 3px;
+      background: rgb(255 255 255 / 5%);
+
+      &:hover,
+      &:focus-visible {
+        outline: 1px solid #fb7185;
+        outline-offset: 1px;
+      }
+    }
+
+    .k-schedule-details {
+      display: flex;
+      min-width: 0;
+      grid-column: 2;
+      grid-row: 2;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .k-schedule-title {
+      display: -webkit-box;
+      overflow: hidden;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 1.4;
+      color: rgb(240 246 255 / 92%);
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+
+    .k-schedule-progress {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      min-width: 0;
+      gap: 1px 4px;
+      font-size: 11px;
+      line-height: 1.45;
+      color: rgb(208 224 240 / 45%);
+
+      span {
+        display: block;
+        white-space: nowrap;
+      }
+
+      a {
+        overflow: hidden;
+        max-width: 100%;
+        color: rgb(208 224 240 / 45%);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      a:hover {
+        color: #fb7185;
+      }
+    }
+
+    .k-schedule-item .k-unsubscribe-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      padding: 0;
+      border: 0;
+      border-radius: 4px;
+      background: transparent;
+      color: rgb(208 224 240 / 40%);
+      opacity: 0;
+      transform: none;
+      visibility: hidden;
+      box-sizing: border-box;
+      line-height: 0;
+
+      &:hover,
+      &:focus-visible {
+        background: rgb(251 113 133 / 12%);
+        color: #fb7185;
+        outline: none;
+      }
+
+      svg {
+        width: 13px;
+        height: 13px;
+      }
+    }
+
+    .k-schedule-item:hover .k-unsubscribe-btn,
+    .k-schedule-item:focus-within .k-unsubscribe-btn {
+      opacity: 1;
+      transform: none;
+      visibility: visible;
+    }
+
+    @media (hover: none) {
+      .k-schedule-item .k-unsubscribe-btn {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+
+    .k-schedule-empty {
+      margin: 0;
+      padding: 10px 0 0;
+      font-size: 11px;
+      color: rgb(208 224 240 / 28%);
+      opacity: 1;
+    }
+
+    @media (max-width: 1200px) {
+      .k-schedule-day {
+        padding: 0 7px;
+      }
+
+      .k-schedule-item {
+        grid-template-columns: 40px minmax(0, 1fr);
+        gap: 4px 6px;
+
+        &.is-unscheduled {
+          grid-template-columns: 40px minmax(0, 1fr);
+        }
+      }
+
+      .k-schedule-title {
+        font-size: 11px;
+      }
+    }
+  }
+
   .video_detail_episode {
     a:visited {
       color: rgb(220, 53, 69) !important;

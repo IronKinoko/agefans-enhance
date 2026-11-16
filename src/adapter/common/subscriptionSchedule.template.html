@@ -48,10 +48,22 @@
 
 <div id="subSchedule">
   {{# if (isEmpty) { }}
-  <div
-    class="flex min-h-24 items-center justify-center rounded-lg border border-dashed border-border/70 bg-card/50 py-4 text-center text-sm text-muted-foreground"
-  >
-    订阅喜欢的番剧，在播放页面标题右侧添加订阅
+  <div class="k-schedule-empty-state">
+    <svg
+      class="k-schedule-empty-icon"
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+      <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+      <path d="M19 3v4M17 5h4" />
+    </svg>
+    <span>订阅喜欢的番剧，在播放页面标题右侧添加订阅</span>
   </div>
   {{# } else { }}
   <div class="k-schedule-scroll" tabindex="0" aria-label="订阅时间表">
@@ -136,9 +148,9 @@
       >{{- item.sub.title }}</a
     >
     <div class="k-schedule-progress">
-      <span>观看至</span>
+      <span>{{- labels.current }}</span>
       <a href="{{- item.sub.current.url }}">{{- item.sub.current.title }}</a>
-      <span>最新</span>
+      <span>{{- labels.last }}</span>
       <a href="{{- item.sub.last.url }}">{{- item.sub.last.title }}</a>
     </div>
   </div>
