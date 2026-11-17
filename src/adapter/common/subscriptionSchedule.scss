@@ -224,6 +224,7 @@
     font-size: 13px;
     font-weight: 600;
     line-height: 1.4;
+    text-decoration: none;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
     transition: color 150ms ease;
@@ -240,8 +241,6 @@
     + .k-schedule-details
     .k-schedule-title {
     color: #fb7185;
-    text-decoration: underline;
-    text-underline-offset: 2px;
   }
 
   #subListContainer .k-schedule-progress {
@@ -260,14 +259,13 @@
       min-width: 0;
       overflow-wrap: anywhere;
       opacity: 0.8;
+      text-decoration: none;
       transition: color 150ms ease, opacity 150ms ease;
 
       &:hover,
       &:focus-visible {
         color: #fb7185;
         opacity: 1;
-        text-decoration: underline;
-        text-underline-offset: 2px;
       }
     }
   }

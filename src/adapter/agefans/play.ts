@@ -301,7 +301,10 @@ export const iframePlayer = defineIframePlayer({
         SUBSCRIPTION_VIEW_KEY,
         T.subList,
         {
-          resolveSchedule: (sub) => weeklySchedule.get(sub.id),
+          resolveSchedule: (sub) =>
+            weeklySchedule.get(sub.id) ?? {
+              dayNum: new Date(sub.updatedAt).getDay(),
+            },
           onViewChange: placeRoot,
           labels: { current: '看至', last: '最新' },
         }
