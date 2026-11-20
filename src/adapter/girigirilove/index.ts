@@ -28,8 +28,7 @@ runtime.register({
   ],
   search: {
     name: 'girigiri爱',
-    search: (cn) =>
-      `https://ani.girigirilove.com/search/-------------/?wd=${cn}`,
+    search: (cn) => `https://ani.girigirilove.com/search?q=${cn}`,
     getSearchName: () =>
       document.querySelector('#main-content h1')?.textContent?.trim() || '',
     getEpisode: () => getModernCurrentEpisodeTitle() || '',
