@@ -34,10 +34,9 @@
       min-height: 64px;
       gap: 6px;
       padding: 18px 8px 6px;
-      color: rgb(208 224 240 / 45%);
+      color: rgb(166 179 192);
       font-size: 13px;
       text-align: center;
-      opacity: 1;
     }
 
     .k-schedule-scroll {
@@ -75,7 +74,7 @@
 
       span {
         font-size: 14px;
-        color: rgb(208 224 240 / 38%);
+        color: rgb(150 165 180);
       }
 
       strong {
@@ -95,44 +94,27 @@
     }
 
     .k-schedule-item {
-      display: grid;
       grid-template-columns: 46px minmax(0, 1fr);
-      align-items: start;
       gap: 5px 8px;
-
-      &.is-unscheduled {
-        grid-template-columns: 46px minmax(0, 1fr);
-      }
     }
 
     .k-schedule-side {
-      display: flex;
-      min-width: 0;
-      grid-column: 1 / -1;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
       gap: 4px;
       padding-bottom: 2px;
     }
 
     .k-schedule-time {
-      width: auto;
-      padding-top: 0;
-      font-size: 11px;
+      font-size: 12px;
+      line-height: 1.5;
       font-variant-numeric: tabular-nums;
-      color: rgb(208 224 240 / 45%);
-      opacity: 1;
+      color: rgb(166 179 192);
     }
 
     .is-today .k-schedule-time {
-      color: rgb(208 224 240 / 45%);
+      color: rgb(166 179 192);
     }
 
     .k-schedule-cover {
-      display: block;
-      grid-column: 1;
-      grid-row: 2;
       aspect-ratio: 3 / 4;
       border-radius: 3px;
       background: rgb(255 255 255 / 5%);
@@ -145,11 +127,6 @@
     }
 
     .k-schedule-details {
-      display: flex;
-      min-width: 0;
-      grid-column: 2;
-      grid-row: 2;
-      flex-direction: column;
       gap: 2px;
     }
 
@@ -159,7 +136,7 @@
       font-size: 12px;
       font-weight: 500;
       line-height: 1.4;
-      color: rgb(240 246 255 / 92%);
+      color: rgb(240 246 255);
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 2;
     }
@@ -169,19 +146,20 @@
       grid-template-columns: auto minmax(0, 1fr);
       min-width: 0;
       gap: 1px 4px;
-      font-size: 11px;
+      font-size: 12px;
       line-height: 1.45;
-      color: rgb(208 224 240 / 45%);
+      color: rgb(166 179 192);
 
       span {
         display: block;
+        color: rgb(150 165 180);
         white-space: nowrap;
       }
 
       a {
         overflow: hidden;
         max-width: 100%;
-        color: rgb(208 224 240 / 45%);
+        color: rgb(166 179 192);
         text-overflow: ellipsis;
         white-space: nowrap;
       }
@@ -236,11 +214,14 @@
     }
 
     .k-schedule-empty {
+      display: flex;
+      min-height: 18px;
+      align-items: center;
       margin: 0;
-      padding: 10px 0 0;
-      font-size: 11px;
-      color: rgb(208 224 240 / 28%);
-      opacity: 1;
+      padding: 0;
+      font-size: 12px;
+      line-height: 1.5;
+      color: rgb(150 165 180);
     }
 
     @media (max-width: 1200px) {
@@ -251,14 +232,6 @@
       .k-schedule-item {
         grid-template-columns: 40px minmax(0, 1fr);
         gap: 4px 6px;
-
-        &.is-unscheduled {
-          grid-template-columns: 40px minmax(0, 1fr);
-        }
-      }
-
-      .k-schedule-title {
-        font-size: 11px;
       }
     }
   }

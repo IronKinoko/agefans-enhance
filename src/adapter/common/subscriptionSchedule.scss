@@ -1,310 +1,310 @@
 .cycanime,
 .girigirilove,
 .agefans-wrapper {
-  #subListContainer.k-schedule-view {
-    min-width: 0;
-    max-width: 1560px;
-  }
+  #subListContainer {
+    &.k-schedule-view {
+      min-width: 0;
+      max-width: 1560px;
+    }
 
-  #subListContainer .k-subscription-view-switch {
-    display: flex;
-    flex-shrink: 0;
-    gap: 2px;
-    padding: 3px;
-    border-radius: 9px;
-    background: rgb(128 128 128 / 12%);
-    color: inherit;
-
-    button {
-      display: grid;
-      width: 34px;
-      height: 34px;
-      place-items: center;
-      border: 0;
-      border-radius: 6px;
-      background: transparent;
+    .k-subscription-view-switch {
+      display: flex;
+      flex-shrink: 0;
+      gap: 2px;
+      padding: 3px;
+      border-radius: 9px;
+      background: rgb(128 128 128 / 12%);
       color: inherit;
-      cursor: pointer;
-      opacity: 0.6;
 
-      &[aria-pressed='true'] {
-        background: rgb(128 128 128 / 28%);
-        opacity: 1;
+      button {
+        display: grid;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        border: 0;
+        border-radius: 6px;
+        background: transparent;
+        color: inherit;
+        cursor: pointer;
+        opacity: 0.6;
+
+        &[aria-pressed='true'] {
+          background: rgb(128 128 128 / 28%);
+          opacity: 1;
+        }
+
+        &:hover:not([aria-pressed='true']) {
+          background: rgb(128 128 128 / 16%);
+          opacity: 1;
+        }
+
+        &:focus-visible {
+          outline: 2px solid currentColor;
+          outline-offset: 2px;
+        }
       }
 
-      &:hover:not([aria-pressed='true']) {
-        background: rgb(128 128 128 / 16%);
-        opacity: 1;
+      svg {
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    .k-schedule-scroll {
+      overflow-x: auto;
+      cursor: grab;
+      scrollbar-width: none;
+      scroll-behavior: smooth;
+      scroll-snap-type: x mandatory;
+      user-select: none;
+
+      &::-webkit-scrollbar {
+        display: none;
       }
 
+      &.is-dragging {
+        cursor: grabbing;
+        scroll-behavior: auto;
+        scroll-snap-type: none;
+
+        a,
+        button {
+          cursor: grabbing;
+        }
+      }
+    }
+
+    .k-schedule-empty-state {
+      display: flex;
+      min-height: 72px;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 16px 8px;
+      color: rgb(115 115 115);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .k-schedule-empty-icon {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+    }
+
+    .k-schedule-day {
+      scroll-snap-align: start;
+    }
+
+    .k-schedule-indicator {
+      position: relative;
+      width: 80px;
+      max-width: 50%;
+      height: 4px;
+      margin: 12px auto 0;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgb(128 128 128 / 20%);
+    }
+
+    .k-schedule-indicator-thumb {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: rgb(128 128 128 / 70%);
+    }
+
+    .k-schedule-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(200px, 1fr));
+      min-width: 1496px;
+      gap: 16px;
+    }
+
+    .k-schedule-heading {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin: 0 0 12px;
+      padding: 4px 0 10px;
+      border-bottom: 2px solid rgb(128 128 128 / 20%);
+      font-size: 13px;
+      font-weight: normal;
+      line-height: 1.3;
+
+      span {
+        color: rgb(115 115 115);
+      }
+
+      strong {
+        font-size: 16px;
+      }
+
+      .is-today & {
+        border-bottom-color: #fb7185;
+        color: #fb7185;
+      }
+    }
+
+    .k-schedule-items {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-height: 70px;
+      padding-left: 9px;
+      border-left: 1px solid rgb(128 128 128 / 25%);
+    }
+
+    .k-schedule-empty {
+      margin: 0;
+      color: rgb(115 115 115);
+      font-size: 12px;
+    }
+
+    .k-schedule-item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 54px minmax(0, 1fr);
+      align-items: start;
+      gap: 7px;
+      min-width: 0;
+
+      .k-unsubscribe-btn {
+        position: static;
+        transform: translateY(4px);
+      }
+
+      &:hover .k-unsubscribe-btn,
+      &:focus-within .k-unsubscribe-btn {
+        transform: none;
+      }
+
+      @media (hover: none) {
+        .k-unsubscribe-btn {
+          transform: none;
+        }
+      }
+    }
+
+    .k-schedule-side {
+      display: flex;
+      min-width: 0;
+      grid-column: 1 / -1;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .k-schedule-time {
+      width: auto;
+      padding-top: 0;
+      color: rgb(115 115 115);
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .k-schedule-cover {
+      display: block;
+      grid-column: 1;
+      grid-row: 2;
+      overflow: hidden;
+      aspect-ratio: 3 / 4;
+      border-radius: 6px;
+      background: rgb(128 128 128 / 15%);
+
+      &:hover,
       &:focus-visible {
-        outline: 2px solid currentColor;
+        outline: 2px solid #fb7185;
         outline-offset: 2px;
       }
-    }
 
-    svg {
-      width: 18px;
-      height: 18px;
-    }
-  }
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
 
-  #subListContainer .k-schedule-scroll {
-    overflow-x: auto;
-    cursor: grab;
-    scrollbar-width: none;
-    scroll-behavior: smooth;
-    scroll-snap-type: x mandatory;
-    user-select: none;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
-
-    &.is-dragging {
-      cursor: grabbing;
-      scroll-behavior: auto;
-      scroll-snap-type: none;
-
-      a,
-      button {
-        cursor: grabbing;
+      &:hover + .k-schedule-details .k-schedule-title,
+      &:focus-visible + .k-schedule-details .k-schedule-title {
+        color: #fb7185;
       }
     }
-  }
 
-  #subListContainer .k-schedule-empty-state {
-    display: flex;
-    min-height: 72px;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    padding: 16px 8px;
-    font-size: 13px;
-    text-align: center;
-    opacity: 0.7;
-  }
-
-  #subListContainer .k-schedule-empty-icon {
-    width: 15px;
-    height: 15px;
-    flex-shrink: 0;
-  }
-
-  #subListContainer .k-schedule-day {
-    scroll-snap-align: start;
-  }
-
-  #subListContainer .k-schedule-indicator {
-    position: relative;
-    width: 80px;
-    max-width: 50%;
-    height: 4px;
-    margin: 12px auto 0;
-    overflow: hidden;
-    border-radius: 999px;
-    background: rgb(128 128 128 / 20%);
-  }
-
-  #subListContainer .k-schedule-indicator-thumb {
-    position: absolute;
-    top: 0;
-    height: 100%;
-    border-radius: inherit;
-    background: rgb(128 128 128 / 70%);
-  }
-
-  #subListContainer .k-schedule-grid {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(200px, 1fr));
-    min-width: 1496px;
-    gap: 16px;
-  }
-
-  #subListContainer .k-schedule-heading {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    margin: 0 0 12px;
-    padding: 4px 0 10px;
-    border-bottom: 2px solid rgb(128 128 128 / 20%);
-    font-size: 13px;
-    font-weight: normal;
-    line-height: 1.3;
-
-    span {
-      opacity: 0.6;
-    }
-
-    strong {
-      font-size: 16px;
-    }
-  }
-
-  #subListContainer .is-today .k-schedule-heading {
-    border-bottom-color: #fb7185;
-    color: #fb7185;
-  }
-
-  #subListContainer .k-schedule-items {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    min-height: 70px;
-    padding-left: 9px;
-    border-left: 1px solid rgb(128 128 128 / 25%);
-  }
-
-  #subListContainer .k-schedule-empty {
-    margin: 0;
-    font-size: 12px;
-    opacity: 0.5;
-  }
-
-  #subListContainer .k-schedule-item {
-    position: relative;
-    display: grid;
-    grid-template-columns: 35px 54px minmax(0, 1fr);
-    align-items: start;
-    gap: 7px;
-    min-width: 0;
-
-    &.is-unscheduled {
-      grid-template-columns: 48px 54px minmax(0, 1fr);
-    }
-  }
-
-  #subListContainer .k-schedule-side {
-    display: flex;
-    min-width: 0;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-  }
-
-  #subListContainer .k-schedule-time {
-    width: 100%;
-    padding-top: 2px;
-    font-size: 12px;
-    overflow-wrap: anywhere;
-    opacity: 0.65;
-  }
-
-  #subListContainer .k-schedule-cover {
-    display: block;
-    overflow: hidden;
-    aspect-ratio: 3 / 4;
-    border-radius: 6px;
-    background: rgb(128 128 128 / 15%);
-
-    &:hover,
-    &:focus-visible {
-      outline: 2px solid #fb7185;
-      outline-offset: 2px;
-    }
-
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-  }
-
-  #subListContainer .k-schedule-details {
-    display: flex;
-    min-width: 0;
-    flex-direction: column;
-    gap: 5px;
-    font-size: 12px;
-  }
-
-  #subListContainer .k-schedule-title {
-    display: -webkit-box;
-    overflow: hidden;
-    font-size: 13px;
-    font-weight: 600;
-    line-height: 1.4;
-    text-decoration: none;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    transition: color 150ms ease;
-  }
-
-  #subListContainer .k-schedule-title:hover,
-  #subListContainer .k-schedule-title:focus-visible,
-  #subListContainer
-    .k-schedule-cover:hover
-    + .k-schedule-details
-    .k-schedule-title,
-  #subListContainer
-    .k-schedule-cover:focus-visible
-    + .k-schedule-details
-    .k-schedule-title {
-    color: #fb7185;
-  }
-
-  #subListContainer .k-schedule-progress {
-    display: grid;
-    grid-template-columns: 3em minmax(0, 1fr);
-    gap: 2px 4px;
-    min-width: 0;
-    font-size: 11px;
-    line-height: 1.45;
-
-    span {
-      opacity: 0.6;
-    }
-
-    a {
+    .k-schedule-details {
+      display: flex;
       min-width: 0;
-      overflow-wrap: anywhere;
-      opacity: 0.8;
+      grid-column: 2;
+      grid-row: 2;
+      flex-direction: column;
+      gap: 5px;
+      font-size: 12px;
+    }
+
+    .k-schedule-title {
+      display: -webkit-box;
+      overflow: hidden;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.4;
       text-decoration: none;
-      transition: color 150ms ease, opacity 150ms ease;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      transition: color 150ms ease;
 
       &:hover,
       &:focus-visible {
         color: #fb7185;
-        opacity: 1;
       }
     }
-  }
 
-  #subListContainer .k-schedule-unscheduled {
-    margin-top: 18px;
+    .k-schedule-progress {
+      display: grid;
+      grid-template-columns: 3em minmax(0, 1fr);
+      gap: 2px 4px;
+      min-width: 0;
+      font-size: 11px;
+      line-height: 1.45;
 
-    h3 {
-      margin: 0 0 12px;
-      font-size: 14px;
-      font-weight: 600;
+      span {
+        color: rgb(115 115 115);
+      }
+
+      a {
+        min-width: 0;
+        color: rgb(115 115 115);
+        overflow-wrap: anywhere;
+        text-decoration: none;
+        transition: color 150ms ease;
+
+        &:hover,
+        &:focus-visible {
+          color: #fb7185;
+        }
+      }
     }
-  }
 
-  #subListContainer .k-schedule-unscheduled-items {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-    gap: 16px;
-  }
+    .k-schedule-unscheduled {
+      margin-top: 18px;
 
-  #subListContainer .k-schedule-item .k-unsubscribe-btn {
-    position: static;
-    transform: translateY(4px);
-  }
-
-  #subListContainer .k-schedule-item:hover .k-unsubscribe-btn,
-  #subListContainer .k-schedule-item:focus-within .k-unsubscribe-btn {
-    transform: none;
-  }
-
-  @media (hover: none) {
-    #subListContainer .k-schedule-item .k-unsubscribe-btn {
-      transform: none;
+      h3 {
+        margin: 0 0 12px;
+        font-size: 14px;
+        font-weight: 600;
+      }
     }
-  }
 
-  @media (prefers-reduced-motion: reduce) {
-    #subListContainer .k-schedule-scroll {
-      scroll-behavior: auto;
+    .k-schedule-unscheduled-items {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 16px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .k-schedule-scroll {
+        scroll-behavior: auto;
+      }
     }
   }
 }
